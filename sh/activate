@@ -1,0 +1,20 @@
+# Set home path
+export ERRATA_HOME="$( dirname "$( dirname "${BASH_SOURCE[0]}" )" )"
+declare DIR=$ERRATA_HOME
+
+# Ensure shell scripts are executable.
+chmod a+x $ERRATA_HOME/sh/*.sh
+
+# Web-service commands.
+alias errata-ws=$ERRATA_HOME/sh/web_run_service.sh
+
+# Database commands.
+alias errata-db-install=$ERRATA_HOME/sh/db_install.sh
+alias errata-db-uninstall=$ERRATA_HOME/sh/db_uninstall.sh
+alias errata-db-reset=$ERRATA_HOME/sh/db_reset.sh
+
+# Test related commands.
+alias errata-db-insert-test-issues=$ERRATA_HOME/sh/db_insert_test_issues.sh
+
+# Virtual environment related commands.
+alias errata-venv-setup=$ERRATA_HOME/sh/venv_setup.sh
