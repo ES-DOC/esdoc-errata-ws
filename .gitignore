@@ -64,3 +64,6 @@ target/
 #Ipython Notebook
 .ipynb_checkpoints
 >>>>>>> 30b608d912d71b2846c2973615c41934fce7a153
+
+# Handle service logs.
+logs

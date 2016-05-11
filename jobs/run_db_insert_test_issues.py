@@ -16,8 +16,6 @@ import os
 import glob
 
 import sqlalchemy
-import sys
-sys.path.append('/home/abennasser/Bureau/esdoc-errata/ws')
 
 from errata import db
 from errata.db.models import Issue
@@ -42,20 +40,20 @@ def _get_issue(obj):
     issue.uid = obj['id']
     issue.title = obj['title']
     issue.description = obj['description']
-    issue.issue_created_date = obj['created_at']
-    issue.issue_updated_date = obj['last_updated_at']
-    issue.issue_closed_date = obj['closed_at']
+    issue.date_created = obj['created_at']
+    issue.date_updated = obj['last_updated_at']
+    issue.date_closed = obj['closed_at']
     issue.state = obj['state']
     issue.severity = obj['severity']
     issue.url = obj['url']
     issue.materials = obj['materials']
+    issue.status = 'Open' if issue.closed_date else 'Closed'
+
     # TODO get datasets
     issue.dsets = None
-    if issue.issue_closed_date is not None:
-        issue.status = 'Open'
-    else:
-        issue.status = 'Closed'
+
     logger.log_db('ISSUE INSTANCE HAS BEEN CREATED')
+
     return issue
 
 
@@ -91,6 +89,3 @@ def _main(args):
 # Main entry point.
 if __name__ == '__main__':
     _main(_ARGS.parse_args())
-
-
-_yield_issues("/home/abennasser/Bureau/errata-esdoc/esdoc-errata-master/test-data")

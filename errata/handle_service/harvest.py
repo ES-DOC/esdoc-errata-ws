@@ -1,12 +1,15 @@
-from time import time
-from b2handle.handleclient import EUDATHandleClient
 import logging
-from utils import crawler, get_handle_by_handle_string
+from time import time
+
+from b2handle.handleclient import EUDATHandleClient
+
+from utils import crawler
+from utils import get_handle_by_handle_string
 
 
 def harvest_errata_information(input_handle_string):
-    """
-    Given a handle, this will harvest all the errata data related to that handle as well as the previous versions.
+    """Given a handle, this will harvest all the errata data related to that handle as well as the previous versions.
+
     :param input_handle_string: Handle identifier
     :return: errata information
     """

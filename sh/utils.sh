@@ -59,6 +59,6 @@ remove_files()
 
 # Define core directories.
 declare ERRATA_DIR_BASH=$ERRATA_HOME/sh
-declare ERRATA_DIR_WS_JOBS=$ERRATA_HOME/ws/jobs
+declare ERRATA_DIR_WS_JOBS=$ERRATA_HOME/jobs
 declare ERRATA_DIR_TEST_DATA=$ERRATA_HOME/test-data
 

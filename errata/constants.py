@@ -45,3 +45,21 @@ ISSUE_STATES = [
 		'key': ISSUE_STATE_RESOLVED
 	},
 ]
+
+# Issue status - open.
+ISSUE_STATUS_OPEN = "open"
+
+# Issue status - closed.
+ISSUE_STATUS_CLOSED = "closed"
+
+# Issue severity - low.
+ISSUE_SEVERITY_LOW = "low"
+
+# Issue severity - medium.
+ISSUE_SEVERITY_MEDIUM = "medium"
+
+# Issue severity - high.
+ISSUE_SEVERITY_HIGH = "high"
+
+# Issue severity - critical.
+ISSUE_SEVERITY_CRITICAL = "critical"

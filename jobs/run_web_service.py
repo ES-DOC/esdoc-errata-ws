@@ -10,8 +10,8 @@
 
 """
 import sys
-sys.path.append("/home/abennasser/Bureau/esdoc-errata/ws")
 import errata
+
 
 
 def _main():
@@ -20,7 +20,6 @@ def _main():
     """
     # Run web service.
     try:
-        # errata.stop()
         errata.run()
 
     # Handle unexpected exceptions.

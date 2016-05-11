@@ -1,20 +1,29 @@
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning, InsecurePlatformWarning, SNIMissingWarning
-from constants import *
-import uuid
 import logging
+import os
+import uuid
+
+import requests
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+from requests.packages.urllib3.exceptions import InsecurePlatformWarning
+from requests.packages.urllib3.exceptions import SNIMissingWarning
+
+from constants import *
 from custom_exceptions import *
 
-# DISABLING WARNINGS
+
+
+# Diable requests warnings.
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 requests.packages.urllib3.disable_warnings(InsecurePlatformWarning)
 requests.packages.urllib3.disable_warnings(SNIMissingWarning)
 
 
+# Initialize logging.
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(message)s',
-                    filename='/home/abennasser/errata.log',
+                    filename=os.path.join(os.environ["ERRATA_HOME"], "logs/errata.log"),
                     filemode='w')
+
 
 
 def get_handle_by_handle_string(handle_string, handle_client_instance):

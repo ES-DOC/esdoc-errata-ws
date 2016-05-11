@@ -2,7 +2,7 @@
     "closed_at": "2016-04-15T09:53:43+00:00",
     "created_at": "2016-04-13T09:53:42+00:00",
     "description": "Ocean (PISCES) the hydrogen ion (H+) concentration instead of pH. pH variable has to be computed as follows: pH = -log10[H+].",
-    "id": "9de57705-48b8-4343-8bcd-22dad2c28c9a",
+    "id": "979e3ad5-9123-483c-89e9-c2de2372d0a8",
     "last_updated_at": "2016-04-13T09:53:43+00:00",
     "materials": [
         "http://errata.ipsl.upmc.fr/static/images_errata/time.jpg",
@@ -14,7 +14,7 @@
     "number": 10,
     "project": "CMIP5",
     "severity": "High",
-    "state": "Hold",
-    "title": "Invalid pH computing",
-    "url": "http://errata.ipsl.upmc.fr/issue/2"
+    "state": "WontFix",
+    "title": "Incorrect pH computing",
+    "url": "http://errata.ipsl.upmc.fr/issue/3"
 }

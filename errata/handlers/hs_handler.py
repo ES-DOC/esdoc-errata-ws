@@ -10,16 +10,13 @@
 
 
 """
-import sys
-
-sys.path.append('/home/abennasser/Bureau/esdoc-errata-updated-fe/esdoc-errata-master/ws')
-
 from errata.utils.http import HTTPRequestHandler
 from errata.handle_service.harvest import harvest_errata_information
 from errata import db
 
 # Query parameter names.
 _PARAM_UID = 'handle'
+
 
 
 class HandleServiceRequestHandler(HTTPRequestHandler):

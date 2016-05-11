@@ -10,8 +10,6 @@
 
 
 """
-import sys
-sys.path.append('/home/abennasser/Bureau/esdoc-errata-updated-fe/esdoc-errata-master/ws')
 from errata import db
 from errata.utils.http import HTTPRequestHandler
 
