@@ -18,11 +18,11 @@ from errata.utils.http import HTTPRequestHandler
 # Query parameter names.
 _PARAM_UID = 'uid'
 
-# URL query parameter validation schema.
+# Query parameter validation schema.
 _REQUEST_VALIDATION_SCHEMA = {
     _PARAM_UID: {
         'required': True,
-        'type': 'list', 'items': [{'type': 'string'}]
+        'type': 'list', 'items': [{'type': 'uuid'}]
     }
 }
 

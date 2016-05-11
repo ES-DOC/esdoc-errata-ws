@@ -10,6 +10,7 @@
 
 """
 import json
+import uuid
 
 import cerberus
 import tornado
@@ -24,6 +25,20 @@ from errata.utils import logger
 # Http response codes.
 _HTTP_RESPONSE_BAD_REQUEST = 400
 _HTTP_RESPONSE_SERVER_ERROR = 500
+
+
+class _RequestValidator(cerberus.Validator):
+    def _validate_type_uuid(self, field, value):
+        """Enables validation for `uuid` schema attribute.
+
+        :param field: field name.
+        :param value: field value.
+
+        """
+        try:
+            uuid.UUID(value)
+        except ValueError:
+            self._error(field, cerberus.errors.ERROR_BAD_TYPE.format('uuid'))
 
 
 class HTTPRequestHandler(tornado.web.RequestHandler):
@@ -209,7 +224,7 @@ class HTTPRequestHandler(tornado.web.RequestHandler):
         _log_start()
 
         # Validate request.
-        v = cerberus.Validator(validation_schema or dict())
+        v = _RequestValidator(validation_schema or dict())
         if not v.validate(self.request.query_arguments):
             _log_security("Invalid request :: {}".format(v.errors))
             self.clear()

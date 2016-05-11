@@ -22,7 +22,7 @@ _PARAM_STATE = 'state'
 _PARAM_TIMESTAMP = 'timestamp'
 _PARAM_WORKFLOW = 'workflow'
 
-# URL query parameter validation schema.
+# Query parameter validation schema.
 _REQUEST_VALIDATION_SCHEMA = {
     _PARAM_PROJECT: {
         'required': True,
