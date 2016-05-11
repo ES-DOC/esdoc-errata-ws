@@ -9,12 +9,16 @@
 
 
 """
+from errata.db.dao_validator import validate_get_issue
+from errata.db.dao_validator import validate_get_issues
 from errata.db.models import Issue
 from errata.db.session import query
 from errata.db.utils import text_filter
+from errata.utils.validation import validate
 
 
 
+@validate(validate_get_issue)
 def get_issue(uid):
     """Returns an issue.
 
@@ -30,7 +34,13 @@ def get_issue(uid):
     return qry.first()
 
 
-def get_issues(project=None, severity=None, state=None, workflow=None):
+@validate(validate_get_issues)
+def get_issues(
+    project=None,
+    severity=None,
+    state=None,
+    workflow=None
+    ):
     """Returns an issue.
 
     :param str project: Project associated with the issue state, e.g. cmip6.
