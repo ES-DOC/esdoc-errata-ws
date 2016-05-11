@@ -46,6 +46,7 @@ def _get_issue(obj):
     issue.materials = ",".join(obj['materials'])
     issue.severity = obj['severity'].lower()
     issue.state = STATUS_CLOSED if issue.date_closed else STATUS_OPEN
+    issue.project = obj['project'].lower()
     issue.title = obj['title']
     issue.uid = obj['id']
     issue.url = obj['url']

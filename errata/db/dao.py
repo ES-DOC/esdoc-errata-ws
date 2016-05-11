@@ -30,9 +30,11 @@ def get_issue(uid):
     return qry.first()
 
 
-def get_issues(severity=None, state=None, workflow=None):
+def get_issues(project=None, severity=None, state=None, workflow=None):
     """Returns an issue.
 
+    :param str project: Project associated with the issue state, e.g. cmip6.
+    :param str severity: Issue severity, e.g. low.
     :param str state: Issue state, e.g. open.
     :param str status: Issue workflow, e.g. hold.
 
@@ -41,6 +43,8 @@ def get_issues(severity=None, state=None, workflow=None):
 
     """
     qry = query(Issue)
+    if project:
+        qry = qry.filter(Issue.project == project)
     if severity:
         qry = qry.filter(Issue.severity == severity)
     if state:
@@ -49,15 +53,3 @@ def get_issues(severity=None, state=None, workflow=None):
         qry = qry.filter(Issue.workflow == workflow)
 
     return qry.all()
-
-
-def get_issues_by_uids(uid_list):
-    """Returns list of issues relative to a list of uids.
-
-    :param list uids: List of issue uids.
-
-    :return: list of issues
-    :rtype: list of db.models.Issue
-
-    """
-    return [get_issue(uid) for uid in uid_list]

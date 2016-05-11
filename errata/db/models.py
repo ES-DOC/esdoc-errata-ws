@@ -75,6 +75,7 @@ class Issue(Entity):
     )
 
     # Column definitions.
+    project = Column(Unicode(63), nullable=False)
     uid = Column(Unicode(63), nullable=False, unique=True, default=uuid.uuid4())
     title = Column(Unicode(255), nullable=False)
     description = Column(Text, nullable=False)

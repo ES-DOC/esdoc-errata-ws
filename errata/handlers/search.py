@@ -17,6 +17,7 @@ from errata.utils import logger
 
 
 # Query parameter names.
+_PARAM_PROJECT = 'project'
 _PARAM_SEVERITY = 'severity'
 _PARAM_STATE = 'state'
 _PARAM_TIMESTAMP = 'timestamp'
@@ -34,6 +35,7 @@ class SearchRequestHandler(HTTPRequestHandler):
         super(SearchRequestHandler, self).__init__(application, request, **kwargs)
 
         self.issues = []
+        self.project = None
         self.severity = None
         self.state = None
         self.timestamp = None
@@ -49,6 +51,10 @@ class SearchRequestHandler(HTTPRequestHandler):
             """Decodes request.
 
             """
+            if self.get_argument(_PARAM_PROJECT) != "*":
+                logger.log_web("PARAM RECEIVED " + _PARAM_PROJECT)
+                self.project = self.get_argument(_PARAM_PROJECT)
+
             if self.get_argument(_PARAM_SEVERITY) != "*":
                 logger.log_web("PARAM RECEIVED " + _PARAM_SEVERITY)
                 self.severity = self.get_argument(_PARAM_SEVERITY)
@@ -72,6 +78,7 @@ class SearchRequestHandler(HTTPRequestHandler):
             """
             with db.session.create():
                 self.issues = db.dao.get_issues(
+                    project=self.project,
                     state=self.state,
                     workflow=self.workflow,
                     severity=self.severity)

@@ -31,7 +31,6 @@ class RetrieveRequestHandler(HTTPRequestHandler):
 
         self.uid = None
         self.issue = None
-        self.list_of_uids = None
 
 
     def get(self):
@@ -50,10 +49,7 @@ class RetrieveRequestHandler(HTTPRequestHandler):
 
             """
             with db.session.create():
-                # self.issues = db.dao.get_issues_by_uids(self.list_of_uids)
                 self.issue = db.dao.get_issue(self.uid)
-
-            print self.issue
 
 
         def _set_output():
@@ -67,10 +63,8 @@ class RetrieveRequestHandler(HTTPRequestHandler):
 
 
         # Invoke tasks.
-        # TODO input request validation.
         self.invoke([], [
             _decode_request,
             _set_data,
             _set_output
             ])
-
