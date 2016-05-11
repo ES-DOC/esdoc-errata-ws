@@ -4,11 +4,19 @@ Installing
 **Step 1: Download source code from GitHub**
 
 ```
-git clone https://github.com/ES-DOC/esdoc-errata.git YOUR_WORKING_DIRECTORY/esdoc-errata
+git clone https://github.com/ES-DOC/esdoc-errata-ws.git YOUR_WORKING_DIRECTORY/esdoc-errata-ws
 ```
 
-**Step 2: Activate shell**
+**Step 2: Edit your .bash_profile settings**
 
 ```
-source YOUR_WORKING_DIRECTORY/esdoc-errata/sh/activate
+# ERRATA: home path.
+export ERRATA_HOME=YOUR_WORKING_DIRECTORY/esdoc-errata-ws
+
+# ERRATA WEB-SERVICE: activate shell
+source $ERRATA_HOME/sh/activate
+
+# ERRATA WEB-SERVICE: web-service python path
+export PYTHONPATH=$PYTHONPATH:$ERRATA_HOME
+
 ```
