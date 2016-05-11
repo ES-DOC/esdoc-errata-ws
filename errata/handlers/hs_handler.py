@@ -17,7 +17,15 @@ from errata.utils.http import HTTPRequestHandler
 
 
 # Query parameter names.
-_PARAM_UID = 'handle'
+_PARAM_HANDLE = 'handle'
+
+# URL query parameter validation schema.
+_REQUEST_VALIDATION_SCHEMA = {
+    _PARAM_HANDLE: {
+        'required': True,
+        'type': 'list', 'items': [{'type': 'string'}]
+    }
+}
 
 
 class HandleServiceRequestHandler(HTTPRequestHandler):
@@ -43,7 +51,7 @@ class HandleServiceRequestHandler(HTTPRequestHandler):
             """Decodes request.
 
             """
-            self.handle_string = self.get_argument(_PARAM_UID)
+            self.handle_string = self.get_argument(_PARAM_HANDLE)
 
 
         def _set_data():
@@ -66,7 +74,7 @@ class HandleServiceRequestHandler(HTTPRequestHandler):
 
 
         # Invoke tasks.
-        self.invoke([], [
+        self.invoke(_REQUEST_VALIDATION_SCHEMA, [
             _decode_request,
             _set_data,
             _set_output
