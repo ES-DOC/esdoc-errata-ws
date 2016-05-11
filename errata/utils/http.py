@@ -11,6 +11,7 @@
 """
 import json
 
+import cerberus
 import tornado
 
 from errata.utils.convert import to_dict
@@ -56,7 +57,7 @@ class HTTPRequestHandler(tornado.web.RequestHandler):
 
     def invoke(
         self,
-        validation_taskset,
+        validation_schema,
         processing_taskset,
         processing_error_taskset=[],
         write_raw_output=False
@@ -145,20 +146,19 @@ class HTTPRequestHandler(tornado.web.RequestHandler):
         def _log_error(error):
             """Logs an error response.
 
-            :param Exception error: Runtime error.
-
             """
             msg = "[{0}]: --> error --> {1} --> {2}"
             msg = msg.format(id(self), self, error)
             logger.log_web_error(msg)
 
-        def log_test(msg):
-            """Logs a test message
+
+        def _log_security(error):
+            """Logs a security related response.
 
             """
-            # msg = "[{0}]: --> error --> {1} --> {2}"
-            # msg = msg.format(id(self), self, error)
-            logger.log_web(msg)
+            msg = "[{0}]: --> security --> {1} --> {2}"
+            msg = msg.format(id(self), self, error)
+            logger.log_web_security(msg)
 
 
         def _get_taskset(taskset):
@@ -209,10 +209,11 @@ class HTTPRequestHandler(tornado.web.RequestHandler):
         _log_start()
 
         # Validate request.
-        taskset = _get_taskset(validation_taskset)
-        error_taskset = [_log_error, _write_invalid_request]
-        error = _invoke_taskset(taskset, error_taskset)
-        if error:
+        v = cerberus.Validator(validation_schema or dict())
+        if not v.validate(self.request.query_arguments):
+            _log_security("Invalid request :: {}".format(v.errors))
+            self.clear()
+            self.send_error(_HTTP_RESPONSE_BAD_REQUEST)
             return
 
         # Process request.

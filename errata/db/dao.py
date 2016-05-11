@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-.. module:: db.dao.py
+.. module:: handlers.retrieve.py
    :license: GPL/CeCIL
    :platform: Unix
-   :synopsis: ES-DOC Errata - db data access.
+   :synopsis: ES-DOC Errata - retrieve issue endpoint.
 
-.. moduleauthor:: Atef Ben nasser <abenasser@ipsl.jussieu.fr>
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """

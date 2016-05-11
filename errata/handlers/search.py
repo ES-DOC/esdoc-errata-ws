@@ -12,7 +12,6 @@
 """
 from errata import db
 from errata.utils.http import HTTPRequestHandler
-from errata.utils import logger
 
 
 
@@ -22,6 +21,30 @@ _PARAM_SEVERITY = 'severity'
 _PARAM_STATE = 'state'
 _PARAM_TIMESTAMP = 'timestamp'
 _PARAM_WORKFLOW = 'workflow'
+
+# URL query parameter validation schema.
+_REQUEST_VALIDATION_SCHEMA = {
+    _PARAM_PROJECT: {
+        'required': True,
+        'type': 'list', 'items': [{'type': 'string'}]
+    },
+    _PARAM_SEVERITY: {
+        'required': True,
+        'type': 'list', 'items': [{'type': 'string'}]
+    },
+    _PARAM_STATE: {
+        'required': True,
+        'type': 'list', 'items': [{'type': 'string'}]
+    },
+    _PARAM_TIMESTAMP: {
+        'required': True,
+        'type': 'list', 'items': [{'type': 'string'}]
+    },
+    _PARAM_WORKFLOW: {
+        'required': True,
+        'type': 'list', 'items': [{'type': 'string'}]
+    }
+}
 
 
 class SearchRequestHandler(HTTPRequestHandler):
@@ -51,24 +74,14 @@ class SearchRequestHandler(HTTPRequestHandler):
             """Decodes request.
 
             """
+            self.timestamp = self.get_argument(_PARAM_TIMESTAMP)
             if self.get_argument(_PARAM_PROJECT) != "*":
-                logger.log_web("PARAM RECEIVED " + _PARAM_PROJECT)
                 self.project = self.get_argument(_PARAM_PROJECT)
-
             if self.get_argument(_PARAM_SEVERITY) != "*":
-                logger.log_web("PARAM RECEIVED " + _PARAM_SEVERITY)
                 self.severity = self.get_argument(_PARAM_SEVERITY)
-
             if self.get_argument(_PARAM_STATE) != "*":
-                logger.log_web("PARAM RECEIVED " + _PARAM_STATE)
                 self.state = self.get_argument(_PARAM_STATE)
-
-            if self.get_argument(_PARAM_TIMESTAMP) != "*":
-                logger.log_web("PARAM RECEIVED " + _PARAM_TIMESTAMP)
-                self.timestamp = self.get_argument(_PARAM_TIMESTAMP)
-
             if self.get_argument(_PARAM_WORKFLOW) != "*":
-                logger.log_web("PARAM RECEIVED " + _PARAM_WORKFLOW)
                 self.workflow = self.get_argument(_PARAM_WORKFLOW)
 
 
@@ -99,7 +112,7 @@ class SearchRequestHandler(HTTPRequestHandler):
 
 
         # Invoke tasks.
-        self.invoke([], [
+        self.invoke(_REQUEST_VALIDATION_SCHEMA, [
             _decode_request,
             _set_data,
             _set_output

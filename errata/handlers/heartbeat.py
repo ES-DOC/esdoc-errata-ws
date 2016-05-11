@@ -34,4 +34,4 @@ class HeartbeatRequestHandler(HTTPRequestHandler):
             }
 
         # Invoke tasks.
-        self.invoke([], _set_output)
+        self.invoke(None, _set_output)

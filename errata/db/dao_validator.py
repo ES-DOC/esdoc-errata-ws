@@ -34,14 +34,17 @@ def validate_get_issues(
     """
     if project is not None:
         v.validate_str(project, "Project code")
+
     if severity is not None:
         v.validate_str(severity, "Issue severity")
         v.validate_enum(
             [i['key'] for i in constants.SEVERITY], severity, "Issue severity")
+
     if state is not None:
         v.validate_str(state, "Issue state")
         v.validate_enum(
             [i['key'] for i in constants.STATUS], state, "Issue state")
+
     if workflow is not None:
         v.validate_str(workflow, "Issue workflow")
         v.validate_enum(

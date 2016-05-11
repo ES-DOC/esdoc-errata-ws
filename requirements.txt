@@ -1,4 +1,5 @@
 arrow
+cerberus
 nose
 psycopg2
 SQLAlchemy

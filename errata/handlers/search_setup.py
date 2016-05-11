@@ -11,7 +11,6 @@
 
 """
 from errata import constants
-from errata import db
 from errata.utils.http import HTTPRequestHandler
 
 
@@ -24,15 +23,6 @@ class SearchSetupRequestHandler(HTTPRequestHandler):
         """HTTP GET handler.
 
         """
-        def _set_data():
-            """Pulls data from db.
-
-            """
-            with db.session.create():
-                # TODO - pull required data from db
-                pass
-
-
         def _set_output():
             """Sets response to be returned to client.
 
@@ -46,7 +36,4 @@ class SearchSetupRequestHandler(HTTPRequestHandler):
 
 
         # Invoke tasks.
-        self.invoke([], [
-            _set_data,
-            _set_output
-            ])
+        self.invoke(None, _set_output)

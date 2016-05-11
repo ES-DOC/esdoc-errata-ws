@@ -20,6 +20,7 @@ LOG_LEVEL_WARNING = 'WARNING'
 LOG_LEVEL_ERROR = 'ERROR'
 LOG_LEVEL_CRITICAL = 'CRITICAL'
 LOG_LEVEL_FATAL = 'FATAL'
+LOG_LEVEL_SECURITY = 'SECURITY'
 
 # Defaults.
 _DEFAULT_MODULE = "**"
@@ -115,6 +116,15 @@ def log_web_warning(msg):
 
     """
     log_web(msg, LOG_LEVEL_WARNING)
+
+
+def log_web_security(msg):
+    """Logs a web security event.
+
+    :param str msg: A log message.
+
+    """
+    log_web(msg, LOG_LEVEL_SECURITY)
 
 
 def log_web_error(err):

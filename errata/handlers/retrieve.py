@@ -18,6 +18,14 @@ from errata.utils.http import HTTPRequestHandler
 # Query parameter names.
 _PARAM_UID = 'uid'
 
+# URL query parameter validation schema.
+_REQUEST_VALIDATION_SCHEMA = {
+    _PARAM_UID: {
+        'required': True,
+        'type': 'list', 'items': [{'type': 'string'}]
+    }
+}
+
 
 class RetrieveRequestHandler(HTTPRequestHandler):
     """Retrieve issue request handler.
@@ -63,7 +71,7 @@ class RetrieveRequestHandler(HTTPRequestHandler):
 
 
         # Invoke tasks.
-        self.invoke([], [
+        self.invoke(_REQUEST_VALIDATION_SCHEMA, [
             _decode_request,
             _set_data,
             _set_output
