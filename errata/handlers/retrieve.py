@@ -73,8 +73,3 @@ class RetrieveRequestHandler(HTTPRequestHandler):
             _set_output
             ])
 
-
-# list_of_uids = ["11221244-2194-4c1f-bdea-4887036a9e63", "11111111-1111-1111-1111-1111111111"]
-# list = db.dao.get_issues_by_uids(list_of_uids)
-# for item in list:
-#     print item

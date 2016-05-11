@@ -10,12 +10,17 @@
 
 
 """
-import sqlalchemy
-
 from errata import db
 from errata.utils import config
 from errata.utils import logger
 
+
+
+# Name of standard db user.
+_DB_USER = "esdoc_errata_db_user"
+
+# Name of admin db user.
+_DB_ADMIN_USER = "esdoc_errata_db_admin"
 
 
 def _main():
@@ -23,7 +28,7 @@ def _main():
 
     """
     # Db connection must be admin.
-    connection = config.db.replace(db.constants.DB_USER, db.constants.DB_ADMIN_USER)
+    connection = config.db.replace(_DB_USER, _DB_ADMIN_USER)
 
     logger.log_db("db setup begins : db = {0}".format(connection))
 

@@ -14,8 +14,11 @@ from sqlalchemy.schema import DropSchema
 
 from errata.db import session as db_session
 from errata.db.utils import METADATA
-from errata.db.constants import SCHEMAS
 
+
+
+# Set of db schemas.
+_SCHEMAS = {'errata'}
 
 
 def execute():
@@ -24,7 +27,7 @@ def execute():
     """
     # Initialize schemas.
     db_session.sa_engine.execute(DropSchema('public'))
-    for schema in SCHEMAS:
+    for schema in _SCHEMAS:
         db_session.sa_engine.execute(CreateSchema(schema))
 
     # Initialize tables.

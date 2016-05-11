@@ -23,6 +23,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from errata.db import session
 
 
+
 # Sqlalchemy metadata singleton.
 METADATA = MetaData()
 

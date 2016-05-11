@@ -16,6 +16,7 @@ from errata.utils import logger
 
 
 # Query parameter names.
+_PARAM_STATE = 'state'
 _PARAM_STATUS = 'status'
 _PARAM_TIMESTAMP = 'timestamp'
 
@@ -44,6 +45,7 @@ class SearchRequestHandler(HTTPRequestHandler):
         self.issues = []
         self.total = 0
 
+
     def get(self):
         """HTTP GET handler.
 
@@ -59,6 +61,7 @@ class SearchRequestHandler(HTTPRequestHandler):
             if self.get_argument(_PARAM_TIMESTAMP) != "*":
                 self.timestamp = self.get_argument(_PARAM_TIMESTAMP)
 
+
         def _set_data():
             """Pulls data from db.
 
@@ -66,6 +69,7 @@ class SearchRequestHandler(HTTPRequestHandler):
             with db.session.create():
                 self.issues = db.dao.get_issues(status=self.status)
                 self.total = db.utils.get_count(db.models.Issue)
+
 
         def _set_output():
             """Sets response to be returned to client.
@@ -78,6 +82,7 @@ class SearchRequestHandler(HTTPRequestHandler):
                 'timestamp': self.timestamp,
                 'total': self.total,
             }
+
 
         # Invoke tasks.
         # TODO input request validation.

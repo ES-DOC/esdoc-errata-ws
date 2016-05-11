@@ -10,56 +10,94 @@
 
 
 """
-# Issue state - new.
-ISSUE_STATE_NEW = 'new'
+# Issue workflow state - new.
+WORKFLOW_NEW = 'new'
 
-# Issue state - on hold.
-ISSUE_STATE_ON_HOLD = 'hold'
+# Issue workflow state - on hold.
+WORKFLOW_ON_HOLD = 'hold'
 
-# Issue state - resolved.
-ISSUE_STATE_RESOLVED = 'resolved'
+# Issue workflow state - resolved.
+WORKFLOW_RESOLVED = 'resolved'
 
-# Issue state - won fix.
-ISSUE_STATE_WONT_FIX = 'wontfix'
+# Issue workflow state - won fix.
+WORKFLOW_WONT_FIX = 'wontfix'
 
-# Set of supported issue states.
-ISSUE_STATES = [
+# Issue workflow state set.
+WORKFLOW = [
 	{
 		'color': "#00ff00",
 		'label': 'New',
-		'key': ISSUE_STATE_NEW
+		'key': WORKFLOW_NEW
 	},
 	{
 		'color': "#ff9900",
 		'label': 'OnHold',
-		'key': ISSUE_STATE_ON_HOLD
+		'key': WORKFLOW_ON_HOLD
 	},
 	{
 		'color': "#0c343d",
 		'label': 'Resolved',
-		'key': ISSUE_STATE_WONT_FIX
+		'key': WORKFLOW_WONT_FIX
 	},
 	{
 		'color': "#38761d",
 		'label': 'WontFix',
-		'key': ISSUE_STATE_RESOLVED
+		'key': WORKFLOW_RESOLVED
 	},
 ]
 
 # Issue status - open.
-ISSUE_STATUS_OPEN = "open"
+STATUS_OPEN = "open"
 
 # Issue status - closed.
-ISSUE_STATUS_CLOSED = "closed"
+STATUS_CLOSED = "closed"
+
+# Issue states set.
+STATUS = [
+	{
+		'color': "#00ff00",
+		'label': 'Open',
+		'key': STATUS_OPEN
+	},
+	{
+		'color': "#ff9900",
+		'label': 'Closed',
+		'key': STATUS_CLOSED
+	}
+]
 
 # Issue severity - low.
-ISSUE_SEVERITY_LOW = "low"
+SEVERITY_LOW = "low"
 
 # Issue severity - medium.
-ISSUE_SEVERITY_MEDIUM = "medium"
+SEVERITY_MEDIUM = "medium"
 
 # Issue severity - high.
-ISSUE_SEVERITY_HIGH = "high"
+SEVERITY_HIGH = "high"
 
 # Issue severity - critical.
-ISSUE_SEVERITY_CRITICAL = "critical"
+SEVERITY_CRITICAL = "critical"
+
+# Issue severity level set.
+SEVERITY = [
+	{
+		'color': "#00ff00",
+		'label': 'Low',
+		'key': SEVERITY_LOW
+	},
+	{
+		'color': "#ff9900",
+		'label': 'Medium',
+		'key': SEVERITY_MEDIUM
+	},
+	{
+		'color': "#0c343d",
+		'label': 'High',
+		'key': SEVERITY_HIGH
+	},
+	{
+		'color': "#38761d",
+		'label': 'Critical',
+		'key': SEVERITY_CRITICAL
+	},
+]

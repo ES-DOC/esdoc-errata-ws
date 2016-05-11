@@ -9,9 +9,10 @@
 
 
 """
-from errata.db.session import query
 from errata.db.models import Issue
+from errata.db.session import query
 from errata.db.utils import text_filter
+
 
 
 def get_issue(uid):
@@ -29,46 +30,32 @@ def get_issue(uid):
     return qry.first()
 
 
-def get_issues(status=None):
+def get_issues(state=None, workflow=None):
     """Returns an issue.
 
-    :param str status: Issue status filter field.
+    :param str state: Issue state, e.g. open.
+    :param str status: Issue workflow, e.g. hold.
 
-    :returns: First matching issue.
-    :rtype: db.models.Issue
+    :returns: List of matching issues.
+    :rtype: list
 
     """
     qry = query(Issue)
-    if status:
-        qry = text_filter(qry, Issue.status, status)
+    if state:
+        qry = text_filter(qry, Issue.state, state)
+    if workflow:
+        qry = text_filter(qry, Issue.workflow, workflow)
 
     return qry.all()
 
 
-def get_issues_by_uids(list_of_uids):
-    """
-    returns list of issues relative to a list of uids
-    :param list_of_uids: list of uids
+def get_issues_by_uids(uid_list):
+    """Returns list of issues relative to a list of uids.
+
+    :param list uids: List of issue uids.
+
     :return: list of issues
     :rtype: list of db.models.Issue
-    """
-    qry = query(Issue)
-    list_of_issues = []
-    for uid in list_of_uids:
-        list_of_issues.append(get_issue(uid))
-    return list_of_issues
-
-
-def get_issue(state):
-    """Returns issues corresponding to a state.
-
-    :param str state: State of the issue (new, on hold, wont fix, closed).
-
-    :returns: First matching issue.
-    :rtype: db.models.Issue
 
     """
-    qry = query(Issue)
-    qry = text_filter(qry, Issue.state, state)
-
-    return qry.all()
+    return [get_issue(uid) for uid in uid_list]

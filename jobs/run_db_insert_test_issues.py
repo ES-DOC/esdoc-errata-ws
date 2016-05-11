@@ -18,6 +18,8 @@ import glob
 import sqlalchemy
 
 from errata import db
+from errata.constants import STATUS_CLOSED
+from errata.constants import STATUS_OPEN
 from errata.db.models import Issue
 from errata.utils import logger
 
@@ -37,22 +39,20 @@ def _get_issue(obj):
 
     """
     issue = Issue()
-    issue.uid = obj['id']
-    issue.title = obj['title']
-    issue.description = obj['description']
     issue.date_created = obj['created_at']
     issue.date_updated = obj['last_updated_at']
     issue.date_closed = obj['closed_at']
-    issue.state = obj['state']
-    issue.severity = obj['severity']
+    issue.description = obj['description']
+    issue.materials = ",".join(obj['materials'])
+    issue.severity = obj['severity'].lower()
+    issue.state = STATUS_CLOSED if issue.date_closed else STATUS_OPEN
+    issue.title = obj['title']
+    issue.uid = obj['id']
     issue.url = obj['url']
-    issue.materials = obj['materials']
-    issue.status = 'Open' if issue.closed_date else 'Closed'
+    issue.workflow = obj['state'].lower()
 
     # TODO get datasets
     issue.dsets = None
-
-    logger.log_db('ISSUE INSTANCE HAS BEEN CREATED')
 
     return issue
 
@@ -70,20 +70,20 @@ def _main(args):
     """Main entry point.
 
     """
-    print args.input_dir
     if not os.path.exists(args.input_dir):
         raise ValueError("Input directory is invalid.")
 
     with db.session.create():
         for issue in _yield_issues(args.input_dir):
             try:
-                logger.log_db('TRYING TO INSERT ISSUE')
                 db.session.insert(issue)
             except sqlalchemy.exc.IntegrityError:
-                logger.log_db("skipping issue {} :: already inserted".format(issue.uid))
+                logger.log_db("issue skipped (already inserted) :: {}".format(issue.uid))
                 db.session.rollback()
             except UnicodeDecodeError:
                 logger.log_db('DECODING EXCEPTION')
+            else:
+                logger.log_db("issue inserted :: {}".format(issue.uid))
 
 
 # Main entry point.
