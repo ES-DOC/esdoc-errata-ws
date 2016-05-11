@@ -9,16 +9,13 @@ git clone https://github.com/ES-DOC/esdoc-errata-ws.git YOUR_WORKING_DIRECTORY/e
 
 **Step 2: Edit your .bash_profile settings**
 
-```
+# ERRATA: home path.  
+export ERRATA_HOME=YOUR_WORKING_DIRECTORY/esdoc-errata-ws  
 
-# ERRATA: home path.
-export ERRATA_HOME=YOUR_WORKING_DIRECTORY/esdoc-errata-ws
+# ERRATA WEB-SERVICE: activate shell  
+source $ERRATA_HOME/sh/activate  
 
-# ERRATA WEB-SERVICE: activate shell
-source $ERRATA_HOME/sh/activate
-
-# ERRATA WEB-SERVICE: web-service python path
-export PYTHONPATH=$PYTHONPATH:$ERRATA_HOME
-
+# ERRATA WEB-SERVICE: web-service python path  
+export PYTHONPATH=$PYTHONPATH:$ERRATA_HOME  
 
 ```
