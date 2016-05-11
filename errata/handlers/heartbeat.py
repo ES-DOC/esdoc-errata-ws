@@ -6,7 +6,7 @@
    :platform: Unix
    :synopsis: ES-DOC Errata - heartbeat endpoint.
 
-.. moduleauthor:: Atef Bennasser <abenasser@ipsl.jussieu.fr>
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """

@@ -13,8 +13,8 @@
     ],
     "number": 10,
     "project": "CMIP5",
-    "severity": "High",
-    "state": "Hold",
+    "severity": "Medium",
+    "state": "OnHold",
     "title": "Invalid pH computing",
     "url": "http://errata.ipsl.upmc.fr/issue/2"
 }

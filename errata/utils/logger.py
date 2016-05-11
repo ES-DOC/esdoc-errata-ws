@@ -51,8 +51,7 @@ def log(msg=None, module=_DEFAULT_MODULE, level=LOG_LEVEL_INFO):
     :param str level: Message level (e.g. INFO).
 
     """
-    # TODO use structlog or other such library rather
-    # than printing to stdout
+    # TODO use structlog rather than printing to stdout
     print(_get_formatted_message(msg, module, level))
 
 

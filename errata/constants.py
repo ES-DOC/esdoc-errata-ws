@@ -14,7 +14,7 @@
 WORKFLOW_NEW = 'new'
 
 # Issue workflow state - on hold.
-WORKFLOW_ON_HOLD = 'hold'
+WORKFLOW_ON_HOLD = 'onhold'
 
 # Issue workflow state - resolved.
 WORKFLOW_RESOLVED = 'resolved'

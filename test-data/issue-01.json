@@ -13,7 +13,7 @@
     ],
     "number": 9,
     "project": "CMIP5",
-    "severity": "High",
+    "severity": "Low",
     "state": "New",
     "title": "Wrong pH computing",
     "url": "http://errata.ipsl.upmc.fr/issue/2"

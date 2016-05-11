@@ -6,12 +6,13 @@
    :platform: Unix
    :synopsis: ES-DOC Errata - retrieve issue endpoint.
 
-.. moduleauthor:: Atef Bennasser <abenasser@ipsl.jussieu.fr>
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """
 from errata import db
 from errata.utils.http import HTTPRequestHandler
+
 
 
 # Query parameter names.

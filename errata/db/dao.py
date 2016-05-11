@@ -30,7 +30,7 @@ def get_issue(uid):
     return qry.first()
 
 
-def get_issues(state=None, workflow=None):
+def get_issues(severity=None, state=None, workflow=None):
     """Returns an issue.
 
     :param str state: Issue state, e.g. open.
@@ -41,10 +41,12 @@ def get_issues(state=None, workflow=None):
 
     """
     qry = query(Issue)
+    if severity:
+        qry = qry.filter(Issue.severity == severity)
     if state:
-        qry = text_filter(qry, Issue.state, state)
+        qry = qry.filter(Issue.state == state)
     if workflow:
-        qry = text_filter(qry, Issue.workflow, workflow)
+        qry = qry.filter(Issue.workflow == workflow)
 
     return qry.all()
 

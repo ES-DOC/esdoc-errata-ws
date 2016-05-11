@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: handlers.search.py
+.. module:: handlers.search_setup.py
    :license: GPL/CeCIL
    :platform: Unix
-   :synopsis: ES-DOC Errata - search issues endpoint.
+   :synopsis: ES-DOC Errata - search setup endpoint.
 
-.. moduleauthor:: Atef Bennasser <abennasser@ipsl.jussieu.fr>
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """
@@ -39,8 +39,9 @@ class SearchSetupRequestHandler(HTTPRequestHandler):
             """
             self.output_encoding = 'json'
             self.output = {
-                'workflow_state': constants.WORKFLOW_,
-                'severities': constants.ISSUE_SEVERITY
+                'workflow': constants.WORKFLOW,
+                'severity': constants.SEVERITY,
+                'status': constants.STATUS
             }
 
 
