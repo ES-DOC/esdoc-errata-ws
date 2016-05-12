@@ -31,38 +31,38 @@ WORKFLOW = [
 	},
 	{
 		'color': "#ff9900",
-		'label': 'OnHold',
+		'label': 'On Hold',
 		'key': WORKFLOW_ON_HOLD
 	},
 	{
 		'color': "#0c343d",
 		'label': 'Resolved',
-		'key': WORKFLOW_WONT_FIX
+		'key': WORKFLOW_RESOLVED
 	},
 	{
 		'color': "#38761d",
-		'label': 'WontFix',
-		'key': WORKFLOW_RESOLVED
+		'label': 'Wont Fix',
+		'key': WORKFLOW_WONT_FIX
 	},
 ]
 
-# Issue status - open.
-STATUS_OPEN = "open"
+# Issue state - open.
+STATE_OPEN = "open"
 
-# Issue status - closed.
-STATUS_CLOSED = "closed"
+# Issue state - closed.
+STATE_CLOSED = "closed"
 
 # Issue states set.
-STATUS = [
+STATE = [
 	{
 		'color': "#00ff00",
 		'label': 'Open',
-		'key': STATUS_OPEN
+		'key': STATE_OPEN
 	},
 	{
 		'color': "#ff9900",
 		'label': 'Closed',
-		'key': STATUS_CLOSED
+		'key': STATE_CLOSED
 	}
 ]
 

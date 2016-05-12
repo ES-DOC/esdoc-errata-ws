@@ -26,6 +26,9 @@ from errata.utils import logger
 _HTTP_RESPONSE_BAD_REQUEST = 400
 _HTTP_RESPONSE_SERVER_ERROR = 500
 
+# HTTP CORS header.
+HTTP_HEADER_Access_Control_Allow_Origin = "Access-Control-Allow-Origin"
+
 
 class _RequestValidator(cerberus.Validator):
     def _validate_type_uuid(self, field, value):

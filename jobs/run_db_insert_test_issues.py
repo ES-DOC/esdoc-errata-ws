@@ -18,8 +18,8 @@ import glob
 import sqlalchemy
 
 from errata import db
-from errata.constants import STATUS_CLOSED
-from errata.constants import STATUS_OPEN
+from errata.constants import STATE_CLOSED
+from errata.constants import STATE_OPEN
 from errata.db.models import Issue
 from errata.utils import logger
 
@@ -45,7 +45,7 @@ def _get_issue(obj):
     issue.description = obj['description']
     issue.materials = ",".join(obj['materials'])
     issue.severity = obj['severity'].lower()
-    issue.state = STATUS_CLOSED if issue.date_closed else STATUS_OPEN
+    issue.state = STATE_CLOSED if issue.date_closed else STATE_OPEN
     issue.project = obj['project'].lower()
     issue.title = obj['title']
     issue.uid = obj['id']

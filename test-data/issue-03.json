@@ -12,7 +12,7 @@
         "IPSL-CM5A-LR"
     ],
     "number": 10,
-    "project": "CMIP5",
+    "project": "CMIP6",
     "severity": "High",
     "state": "Resolved",
     "title": "Incorrect pH computing",

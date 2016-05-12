@@ -43,7 +43,7 @@ def validate_get_issues(
     if state is not None:
         v.validate_str(state, "Issue state")
         v.validate_enum(
-            [i['key'] for i in constants.STATUS], state, "Issue state")
+            [i['key'] for i in constants.STATE], state, "Issue state")
 
     if workflow is not None:
         v.validate_str(workflow, "Issue workflow")

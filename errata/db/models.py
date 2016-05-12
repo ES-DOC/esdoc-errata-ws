@@ -26,8 +26,8 @@ from errata.constants import SEVERITY_LOW
 from errata.constants import SEVERITY_MEDIUM
 from errata.constants import SEVERITY_HIGH
 from errata.constants import SEVERITY_CRITICAL
-from errata.constants import STATUS_CLOSED
-from errata.constants import STATUS_OPEN
+from errata.constants import STATE_CLOSED
+from errata.constants import STATE_OPEN
 from errata.db.utils import Entity
 
 
@@ -57,8 +57,8 @@ _SEVERITY_ENUM = Enum(
 
 # Issue state enumeration.
 _STATE_ENUM = Enum(
-    STATUS_CLOSED,
-    STATUS_OPEN,
+    STATE_CLOSED,
+    STATE_OPEN,
     schema=_SCHEMA,
     name="IssueStateEnum"
     )

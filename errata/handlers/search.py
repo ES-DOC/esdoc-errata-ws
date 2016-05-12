@@ -12,6 +12,7 @@
 """
 from errata import db
 from errata.utils.http import HTTPRequestHandler
+from errata.utils.http import HTTP_HEADER_Access_Control_Allow_Origin
 
 
 
@@ -64,6 +65,13 @@ class SearchRequestHandler(HTTPRequestHandler):
         self.timestamp = None
         self.total = 0
         self.workflow = None
+
+
+    def set_default_headers(self):
+        """Set HTTP headers at the beginning of the request.
+
+        """
+        self.set_header(HTTP_HEADER_Access_Control_Allow_Origin, "*")
 
 
     def get(self):

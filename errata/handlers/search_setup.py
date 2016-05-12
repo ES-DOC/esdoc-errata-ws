@@ -12,6 +12,7 @@
 """
 from errata import constants
 from errata.utils.http import HTTPRequestHandler
+from errata.utils.http import HTTP_HEADER_Access_Control_Allow_Origin
 
 
 
@@ -19,6 +20,13 @@ class SearchSetupRequestHandler(HTTPRequestHandler):
     """Search issue request handler.
 
     """
+    def set_default_headers(self):
+        """Set HTTP headers at the beginning of the request.
+
+        """
+        self.set_header(HTTP_HEADER_Access_Control_Allow_Origin, "*")
+
+
     def get(self):
         """HTTP GET handler.
 
@@ -30,8 +38,18 @@ class SearchSetupRequestHandler(HTTPRequestHandler):
             self.output_encoding = 'json'
             self.output = {
                 'workflow': constants.WORKFLOW,
+                'project': [
+                    {
+                        'key': "cmip5",
+                        'label': "CMIP5"
+                    },
+                    {
+                        'key': "cmip6",
+                        'label': "CMIP6"
+                    }
+                ],
                 'severity': constants.SEVERITY,
-                'status': constants.STATUS
+                'state': constants.STATE
             }
 
 
