@@ -40,6 +40,7 @@ _ARGS.add_argument(
     type=int
     )
 
+
 def _get_issue(obj):
     """Maps a dictionary decoded from a file to an issue instance.
 
@@ -49,6 +50,7 @@ def _get_issue(obj):
     issue.date_updated = obj['last_updated_at']
     issue.date_closed = obj['closed_at']
     issue.description = obj['description']
+    issue.institute = obj['institute']
     issue.materials = ",".join(obj['materials'])
     issue.severity = obj['severity'].lower()
     issue.state = STATE_CLOSED if issue.date_closed else STATE_OPEN

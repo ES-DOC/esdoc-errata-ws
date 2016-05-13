@@ -94,27 +94,27 @@ class Issue(Entity):
     # TODO - dataset tables ?
 
 
-class IssueDataset(Entity):
-    """An issue raised by an institute post-publication.
+# class IssueDataset(Entity):
+#     """An issue raised by an institute post-publication.
 
-    """
-    # SQLAlchemy directives.
-    __tablename__ = 'tbl_issue'
-    __table_args__ = (
-        {'schema':_SCHEMA}
-    )
+#     """
+#     # SQLAlchemy directives.
+#     __tablename__ = 'tbl_issue'
+#     __table_args__ = (
+#         {'schema':_SCHEMA}
+#     )
 
-    # TODO
+#     # TODO
 
 
-class Dataset(Entity):
-    """An issue raised by an institute post-publication.
+# class Dataset(Entity):
+#     """An issue raised by an institute post-publication.
 
-    """
-    # SQLAlchemy directives.
-    __tablename__ = 'tbl_issue'
-    __table_args__ = (
-        {'schema':_SCHEMA}
-    )
+#     """
+#     # SQLAlchemy directives.
+#     __tablename__ = 'tbl_issue'
+#     __table_args__ = (
+#         {'schema':_SCHEMA}
+#     )
 
-    # TODO
+#     # TODO
