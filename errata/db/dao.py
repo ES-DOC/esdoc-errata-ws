@@ -36,6 +36,7 @@ def get_issue(uid):
 
 @validate(validate_get_issues)
 def get_issues(
+    institute=None,
     project=None,
     severity=None,
     state=None,
@@ -43,7 +44,8 @@ def get_issues(
     ):
     """Returns an issue.
 
-    :param str project: Project associated with the issue state, e.g. cmip6.
+    :param str institute: Institute associated with the issue, e.g. ipsl.
+    :param str project: Project associated with the issue, e.g. cmip6.
     :param str severity: Issue severity, e.g. low.
     :param str state: Issue state, e.g. open.
     :param str status: Issue workflow, e.g. hold.
@@ -53,6 +55,8 @@ def get_issues(
 
     """
     qry = query(Issue)
+    if institute:
+        qry = qry.filter(Issue.institute == institute)
     if project:
         qry = qry.filter(Issue.project == project)
     if severity:

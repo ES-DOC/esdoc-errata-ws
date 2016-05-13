@@ -17,6 +17,7 @@ from errata.utils.http import HTTP_HEADER_Access_Control_Allow_Origin
 
 
 # Query parameter names.
+_PARAM_INSTITUTE = 'institute'
 _PARAM_PROJECT = 'project'
 _PARAM_SEVERITY = 'severity'
 _PARAM_STATE = 'state'
@@ -25,6 +26,10 @@ _PARAM_WORKFLOW = 'workflow'
 
 # Query parameter validation schema.
 _REQUEST_VALIDATION_SCHEMA = {
+    _PARAM_INSTITUTE: {
+        'required': True,
+        'type': 'list', 'items': [{'type': 'string'}]
+    },
     _PARAM_PROJECT: {
         'required': True,
         'type': 'list', 'items': [{'type': 'string'}]
@@ -59,6 +64,7 @@ class SearchRequestHandler(HTTPRequestHandler):
         super(SearchRequestHandler, self).__init__(application, request, **kwargs)
 
         self.issues = []
+        self.institute = None
         self.project = None
         self.severity = None
         self.state = None
@@ -83,6 +89,8 @@ class SearchRequestHandler(HTTPRequestHandler):
 
             """
             self.timestamp = self.get_argument(_PARAM_TIMESTAMP)
+            if self.get_argument(_PARAM_INSTITUTE) != "*":
+                self.institute = self.get_argument(_PARAM_INSTITUTE)
             if self.get_argument(_PARAM_PROJECT) != "*":
                 self.project = self.get_argument(_PARAM_PROJECT)
             if self.get_argument(_PARAM_SEVERITY) != "*":
@@ -99,6 +107,7 @@ class SearchRequestHandler(HTTPRequestHandler):
             """
             with db.session.create():
                 self.issues = db.dao.get_issues(
+                    institute=self.institute,
                     project=self.project,
                     state=self.state,
                     workflow=self.workflow,

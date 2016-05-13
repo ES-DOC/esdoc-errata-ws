@@ -37,7 +37,20 @@ class SearchSetupRequestHandler(HTTPRequestHandler):
             """
             self.output_encoding = 'json'
             self.output = {
-                'workflow': constants.WORKFLOW,
+                'institute': [
+                    {
+                        'key': "badc",
+                        'label': "BADC"
+                    },
+                    {
+                        'key': "dkrz",
+                        'label': "DKRZ"
+                    },
+                    {
+                        'key': "ipsl",
+                        'label': "IPSL"
+                    }
+                ],
                 'project': [
                     {
                         'key': "cmip5",
@@ -49,7 +62,8 @@ class SearchSetupRequestHandler(HTTPRequestHandler):
                     }
                 ],
                 'severity': constants.SEVERITY,
-                'state': constants.STATE
+                'state': constants.STATE,
+                'workflow': constants.WORKFLOW
             }
 
 

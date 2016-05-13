@@ -11,13 +11,16 @@
 
 """
 import argparse
+import datetime as dt
+import glob
 import json
 import os
-import glob
+import random
 import uuid
 
 import sqlalchemy
 
+import errata
 from errata import db
 from errata.constants import STATE_CLOSED
 from errata.constants import STATE_OPEN
@@ -39,6 +42,10 @@ _ARGS.add_argument(
     dest="count",
     type=int
     )
+
+
+# Global now.
+_NOW = dt.datetime.now()
 
 
 def _get_issue(obj):
@@ -78,21 +85,22 @@ def _yield_issues(input_dir, count):
 
     # Get a test issue, update it & yield.
     for i in xrange(count):
-        i = issues[i % 5]
+        i = issues[i % len(issues)]
         issue = Issue()
-        issue.date_created = i.date_created
-        issue.date_updated = i.date_updated
-        issue.date_closed = i.date_closed
+        issue.date_created = _NOW - dt.timedelta(days=random.randint(30, 60))
+        issue.date_updated = issue.date_created + dt.timedelta(days=2)
+        if random.randint(0, 1):
+            issue.date_closed = issue.date_updated + dt.timedelta(days=2)
         issue.description = i.description
-        issue.institute = i.institute
+        issue.institute = random.choice(list(errata.constants.INSTITUTE))
         issue.materials = i.materials
-        issue.severity = i.severity
-        issue.state = i.state
-        issue.project = i.project
+        issue.severity = random.choice(errata.constants.SEVERITY)['key']
+        issue.state = random.choice(errata.constants.STATE)['key']
+        issue.project = random.choice(list(errata.constants.PROJECT))
         issue.title = unicode(uuid.uuid4())[:50]
         issue.uid = unicode(uuid.uuid4())
         issue.url = i.url
-        issue.workflow = i.workflow
+        issue.workflow = random.choice(errata.constants.WORKFLOW)['key']
         yield issue
 
 

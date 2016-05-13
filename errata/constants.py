@@ -101,3 +101,34 @@ SEVERITY = [
 		'key': SEVERITY_CRITICAL
 	},
 ]
+
+# TODO - leverage pyessv
+# Project - cmip5.
+PROJECT_CMIP5 = "cmip5"
+
+# Project - cmip6.
+PROJECT_CMIP6 = "cmip6"
+
+# Project - all.
+PROJECT = {
+	PROJECT_CMIP5,
+	PROJECT_CMIP6
+}
+
+# TODO - leverage pyessv
+# Institute - IPSL.
+INSTITUTE_IPSL = "ipsl"
+
+# Institute - DKRZ.
+INSTITUTE_DKRZ = "dkrz"
+
+# Institute - BADC.
+INSTITUTE_BADC = "badc"
+
+# Institute - all.
+INSTITUTE = {
+	INSTITUTE_IPSL,
+	INSTITUTE_DKRZ,
+	INSTITUTE_BADC
+}
+

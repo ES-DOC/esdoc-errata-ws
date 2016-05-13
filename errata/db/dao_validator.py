@@ -24,6 +24,7 @@ def validate_get_issue(uid):
 
 
 def validate_get_issues(
+    institute=None,
     project=None,
     severity=None,
     state=None,
@@ -32,6 +33,9 @@ def validate_get_issues(
     """Function input validator: get_issues.
 
     """
+    if institute is not None:
+        v.validate_str(institute, "Institute code")
+
     if project is not None:
         v.validate_str(project, "Project code")
 
