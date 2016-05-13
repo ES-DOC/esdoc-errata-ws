@@ -4,6 +4,7 @@
     "description": "TEST ISSUE N°2",
     "id": "4d4c9942-f3a4-4538-891c-069007ed37f1",
     "last_updated_at": null,
+    "institute": "IPSL",
     "materials": [
         "http://errata.ipsl.upmc.fr/static/images_errata/time_it_is_time.jpg"
     ],
@@ -13,7 +14,7 @@
     "number": 18,
     "project": "CMIP6",
     "severity": "Critical",
-    "state": "WontFix",
+    "workflow": "WontFix",
     "title": "TEST ISSUE",
     "url": "http://errata.ipsl.upmc.fr/issue/4"
 }

@@ -14,6 +14,7 @@ import argparse
 import json
 import os
 import glob
+import uuid
 
 import sqlalchemy
 
@@ -32,7 +33,12 @@ _ARGS.add_argument(
     dest="input_dir",
     type=str
     )
-
+_ARGS.add_argument(
+    "-c", "--count",
+    help="Numbers of issues to insert into database",
+    dest="count",
+    type=int
+    )
 
 def _get_issue(obj):
     """Maps a dictionary decoded from a file to an issue instance.
@@ -43,7 +49,6 @@ def _get_issue(obj):
     issue.date_updated = obj['last_updated_at']
     issue.date_closed = obj['closed_at']
     issue.description = obj['description']
-    issue.institute = obj['institute'].lower()
     issue.materials = ",".join(obj['materials'])
     issue.severity = obj['severity'].lower()
     issue.state = STATE_CLOSED if issue.date_closed else STATE_OPEN
@@ -59,13 +64,34 @@ def _get_issue(obj):
     return issue
 
 
-def _yield_issues(input_dir):
-    """Yields issues found in json files within input directory.
+def _yield_issues(input_dir, count):
+    """Yields a large number of issues for testing purposes.
 
     """
+    # Open set of test issues.
+    issues = []
     for fpath in glob.iglob("{}/*.json".format(input_dir)):
         with open(fpath, 'r') as fstream:
-            yield _get_issue(json.loads(fstream.read()))
+            issues.append(_get_issue(json.loads(fstream.read())))
+
+    # Get a test issue, update it & yield.
+    for i in xrange(count):
+        i = issues[i % 5]
+        issue = Issue()
+        issue.date_created = i.date_created
+        issue.date_updated = i.date_updated
+        issue.date_closed = i.date_closed
+        issue.description = i.description
+        issue.institute = i.institute
+        issue.materials = i.materials
+        issue.severity = i.severity
+        issue.state = i.state
+        issue.project = i.project
+        issue.title = unicode(uuid.uuid4())[:50]
+        issue.uid = unicode(uuid.uuid4())
+        issue.url = i.url
+        issue.workflow = i.workflow
+        yield issue
 
 
 def _main(args):
@@ -76,7 +102,7 @@ def _main(args):
         raise ValueError("Input directory is invalid.")
 
     with db.session.create():
-        for issue in _yield_issues(args.input_dir):
+        for issue in _yield_issues(args.input_dir, args.count):
             try:
                 db.session.insert(issue)
             except sqlalchemy.exc.IntegrityError:

@@ -76,6 +76,7 @@ class Issue(Entity):
 
     # Column definitions.
     project = Column(Unicode(63), nullable=False)
+    institute = Column(Unicode(63), nullable=False)
     uid = Column(Unicode(63), nullable=False, unique=True, default=uuid.uuid4())
     title = Column(Unicode(255), nullable=False)
     description = Column(Text, nullable=False)
@@ -92,3 +93,28 @@ class Issue(Entity):
     # TODO - deprecate enum usage ?
     # TODO - dataset tables ?
 
+
+class IssueDataset(Entity):
+    """An issue raised by an institute post-publication.
+
+    """
+    # SQLAlchemy directives.
+    __tablename__ = 'tbl_issue'
+    __table_args__ = (
+        {'schema':_SCHEMA}
+    )
+
+    # TODO
+
+
+class Dataset(Entity):
+    """An issue raised by an institute post-publication.
+
+    """
+    # SQLAlchemy directives.
+    __tablename__ = 'tbl_issue'
+    __table_args__ = (
+        {'schema':_SCHEMA}
+    )
+
+    # TODO

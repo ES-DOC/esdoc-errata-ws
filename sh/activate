@@ -15,6 +15,7 @@ alias errata-db-reset=$ERRATA_HOME/sh/db_reset.sh
 
 # Test related commands.
 alias errata-db-insert-test-issues=$ERRATA_HOME/sh/db_insert_test_issues.sh
+alias errata-db-create-large-for-testing=$ERRATA_HOME/sh/run_db_create_large_for_testing.sh
 
 # Virtual environment related commands.
 alias errata-venv-setup=$ERRATA_HOME/sh/venv_setup.sh
