@@ -12,6 +12,7 @@
 """
 from errata import db
 from errata.utils.http import HTTPRequestHandler
+from errata.utils.http import HTTP_HEADER_Access_Control_Allow_Origin
 
 
 
@@ -41,6 +42,13 @@ class RetrieveRequestHandler(HTTPRequestHandler):
         self.issue = None
 
 
+    def set_default_headers(self):
+        """Set HTTP headers at the beginning of the request.
+
+        """
+        self.set_header(HTTP_HEADER_Access_Control_Allow_Origin, "*")
+
+
     def get(self):
         """HTTP GET handler.
 
@@ -58,6 +66,8 @@ class RetrieveRequestHandler(HTTPRequestHandler):
             """
             with db.session.create():
                 self.issue = db.dao.get_issue(self.uid)
+
+            print self.issue
 
 
         def _set_output():

@@ -39,8 +39,7 @@ def _get_app_endpoints():
         (r'/1/issue/retrieve', handlers.RetrieveRequestHandler),
         (r'/1/issue/search', handlers.SearchRequestHandler),
         (r'/1/issue/search/setup', handlers.SearchSetupRequestHandler),
-        (r'/1/issue/handler', handlers.HandleServiceRequestHandler),
-
+        (r'/1/issue/handler', handlers.HandleServiceRequestHandler)
     }
 
     log("Endpoint to handler mappings:")
