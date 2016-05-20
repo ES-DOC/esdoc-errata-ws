@@ -47,6 +47,25 @@ _ARGS.add_argument(
 # Global now.
 _NOW = dt.datetime.now()
 
+# Loaded datasets collection.
+_DATASETS = [
+    "cmip5.aaa.IPSL.IPSL-CM5A-LR.1pctCO2.yr.ocnBgchem.Oyr.r2i1p1#20161010",
+    "cmip5.ddd.IPSL.IPSL-CM5A-LR.1pctCO2.yr.ocnBgchem.Oyr.r2i1p1#20161010",
+    "cmip5.eee.IPSL.IPSL-CM5A-LR.1pctCO2.yr.ocnBgchem.Oyr.r2i1p1#20161010",
+    "cmip5.ccc.IPSL.IPSL-CM5A-LR.1pctCO2.yr.ocnBgchem.Oyr.r2i1p1#20161010",
+    "cmip5.bbb.IPSL.IPSL-CM5A-LR.1pctCO2.yr.ocnBgchem.Oyr.r2i1p1#20161010"
+]
+
+
+def _get_datasets():
+    """Returns test affected  datasets.
+
+    """
+    if not _DATASETS:
+        pass
+
+    return ",".join(_DATASETS)
+
 
 def _get_issue(obj):
     """Maps a dictionary decoded from a file to an issue instance.
@@ -66,9 +85,6 @@ def _get_issue(obj):
     issue.uid = obj['id']
     issue.url = obj['url']
     issue.workflow = obj['workflow'].lower()
-
-    # TODO get datasets
-    issue.dsets = None
 
     return issue
 
@@ -97,10 +113,12 @@ def _yield_issues(input_dir, count):
         issue.severity = random.choice(errata.constants.SEVERITY)['key']
         issue.state = random.choice(errata.constants.STATE)['key']
         issue.project = random.choice(list(errata.constants.PROJECT))
-        issue.title = unicode(uuid.uuid4())[:50]
+        issue.title = "Test issue title - {}".format(unicode(uuid.uuid4())[:50])
         issue.uid = unicode(uuid.uuid4())
         issue.url = i.url
         issue.workflow = random.choice(errata.constants.WORKFLOW)['key']
+        issue.dsets = _get_datasets()
+
         yield issue
 
 
