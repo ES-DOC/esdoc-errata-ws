@@ -90,21 +90,19 @@ class Issue(Entity):
     materials = Column(Text)
     datasets = Column(Text)
 
-    # TODO - deprecate enum usage ?
-    # TODO - dataset tables ?
 
+class Dataset(Entity):
+    """A dataset associated with some sort of issue.
 
-# class IssueDataset(Entity):
-#     """An issue raised by an institute post-publication.
+    """
+    # SQLAlchemy directives.
+    __tablename__ = 'tbl_dataset'
+    __table_args__ = (
+        {'schema':_SCHEMA}
+    )
 
-#     """
-#     # SQLAlchemy directives.
-#     __tablename__ = 'tbl_issue'
-#     __table_args__ = (
-#         {'schema':_SCHEMA}
-#     )
-
-#     # TODO
+    esgf_id = Column(Unicode(1023), nullable=False)
+    esgf_id_raw = Column(Unicode(1023), nullable=False)
 
 
 # class Dataset(Entity):
