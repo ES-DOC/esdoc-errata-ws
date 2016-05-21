@@ -33,8 +33,25 @@ _ARGS.add_argument(
     type=str
     )
 
+# Loaded datasets collection.
+_DATASETS = []
 
-def _get_issue(obj):
+
+def _get_datasets(input_dir, institute):
+    """Returns test affected  datasets.
+
+    """
+    global _DATASETS
+
+    if not _DATASETS:
+        with open("{}/datasets-01.txt".format(input_dir), 'r') as fstream:
+            institute = institute.upper()
+            _DATASETS += [l.replace("IPSL", institute) for l in fstream.readlines()]
+
+    return ",".join(_DATASETS)
+
+
+def _get_issue(obj, input_dir):
     """Maps a dictionary decoded from a file to an issue instance.
 
     """
@@ -52,9 +69,7 @@ def _get_issue(obj):
     issue.uid = obj['id']
     issue.url = obj['url']
     issue.workflow = obj['workflow'].lower()
-
-    # TODO get datasets
-    issue.dsets = None
+    issue.datasets = _get_datasets(input_dir, issue.institute)
 
     return issue
 
@@ -65,7 +80,7 @@ def _yield_issues(input_dir):
     """
     for fpath in glob.iglob("{}/*.json".format(input_dir)):
         with open(fpath, 'r') as fstream:
-            yield _get_issue(json.loads(fstream.read()))
+            yield _get_issue(json.loads(fstream.read()), input_dir)
 
 
 def _main(args):

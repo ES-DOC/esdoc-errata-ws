@@ -111,7 +111,7 @@ def _yield_issues(input_dir, count):
         issue.title = u"Test issue title - {}".format(unicode(uuid.uuid4())[:50])
         issue.uid = unicode(uuid.uuid4())
         issue.workflow = random.choice(errata.constants.WORKFLOW)['key']
-        issue.dsets = _get_datasets(input_dir, issue.institute)
+        issue.datasets = _get_datasets(input_dir, issue.institute)
 
         i = issues[i % len(issues)]
         issue.description = i.description

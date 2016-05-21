@@ -88,7 +88,7 @@ class Issue(Entity):
     date_closed = Column(DateTime)
     url = Column(Unicode(1023))
     materials = Column(Text)
-    dsets = Column(Text)
+    datasets = Column(Text)
 
     # TODO - deprecate enum usage ?
     # TODO - dataset tables ?
