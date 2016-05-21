@@ -9,6 +9,7 @@ chmod a+x $ERRATA_HOME/sh/*.sh
 alias errata-ws=$ERRATA_HOME/sh/web_run_service.sh
 
 # Database commands.
+alias errata-db-ingest=$ERRATA_HOME/sh/db_ingest.sh
 alias errata-db-install=$ERRATA_HOME/sh/db_install.sh
 alias errata-db-uninstall=$ERRATA_HOME/sh/db_uninstall.sh
 alias errata-db-reset=$ERRATA_HOME/sh/db_reset.sh
