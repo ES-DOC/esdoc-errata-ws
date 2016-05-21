@@ -111,7 +111,8 @@ class SearchRequestHandler(HTTPRequestHandler):
                     project=self.project,
                     state=self.state,
                     workflow=self.workflow,
-                    severity=self.severity)
+                    severity=self.severity
+                    )
                 self.total = db.utils.get_count(db.models.Issue)
 
 

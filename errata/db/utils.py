@@ -281,3 +281,27 @@ def persist(hydrate, etype, retriever):
         session.update(instance)
 
     return instance
+
+
+def as_datetime_string(col):
+    """Converts a column result into a datetime string.
+
+    :param sqlalchemy.Column col: Collumn to be converted.
+
+    :returns: The column wrapped in a date string conversion function.
+    :rtype: sqlalchemy.Column
+
+    """
+    return sqlalchemy.func.to_char(col, "YYYY-MM-DD HH24:MI:ss.US")
+
+
+def as_date_string(col):
+    """Converts a column result into a date string.
+
+    :param sqlalchemy.Column col: Collumn to be converted.
+
+    :returns: The column wrapped in a date string conversion function.
+    :rtype: sqlalchemy.Column
+
+    """
+    return sqlalchemy.func.to_char(col, "YYYY-MM-DD")

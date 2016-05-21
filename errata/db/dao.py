@@ -15,7 +15,9 @@ from errata.db.dao_validator import validate_get_issue_datasets
 from errata.db.models import Issue
 from errata.db.models import IssueDataset
 from errata.db.session import query
+from errata.db.session import raw_query
 from errata.db.utils import text_filter
+from errata.db.utils import as_date_string
 from errata.utils.validation import validate
 
 
@@ -46,7 +48,7 @@ def get_issue_datasets(issue_id):
     :rtype: list
 
     """
-    qry = query(IssueDataset.dataset_id)
+    qry = raw_query(IssueDataset.dataset_id)
     qry = qry.filter(IssueDataset.issue_id == issue_id)
     qry = qry.order_by(IssueDataset.dataset_id)
 
@@ -73,7 +75,18 @@ def get_issues(
     :rtype: list
 
     """
-    qry = query(Issue)
+    qry = raw_query(
+        Issue.project,
+        Issue.institute,
+        Issue.uid,
+        Issue.title,
+        Issue.state,
+        Issue.severity,
+        Issue.workflow,
+        as_date_string(Issue.date_created),
+        as_date_string(Issue.date_updated)
+        )
+
     if institute:
         qry = qry.filter(Issue.institute == institute)
     if project:
