@@ -48,21 +48,19 @@ _ARGS.add_argument(
 _NOW = dt.datetime.now()
 
 # Loaded datasets collection.
-_DATASETS = [
-    "cmip5.aaa.IPSL.IPSL-CM5A-LR.1pctCO2.yr.ocnBgchem.Oyr.r2i1p1#20161010",
-    "cmip5.ddd.IPSL.IPSL-CM5A-LR.1pctCO2.yr.ocnBgchem.Oyr.r2i1p1#20161010",
-    "cmip5.eee.IPSL.IPSL-CM5A-LR.1pctCO2.yr.ocnBgchem.Oyr.r2i1p1#20161010",
-    "cmip5.ccc.IPSL.IPSL-CM5A-LR.1pctCO2.yr.ocnBgchem.Oyr.r2i1p1#20161010",
-    "cmip5.bbb.IPSL.IPSL-CM5A-LR.1pctCO2.yr.ocnBgchem.Oyr.r2i1p1#20161010"
-]
+_DATASETS = []
 
 
-def _get_datasets():
+def _get_datasets(input_dir, institute):
     """Returns test affected  datasets.
 
     """
+    global _DATASETS
+
     if not _DATASETS:
-        pass
+        with open("{}/datasets-01.txt".format(input_dir), 'r') as fstream:
+            institute = institute.upper()
+            _DATASETS += [l.replace("IPSL", institute) for l in fstream.readlines()]
 
     return ",".join(_DATASETS)
 
@@ -101,23 +99,24 @@ def _yield_issues(input_dir, count):
 
     # Get a test issue, update it & yield.
     for i in xrange(count):
-        i = issues[i % len(issues)]
         issue = Issue()
         issue.date_created = _NOW - dt.timedelta(days=random.randint(30, 60))
         issue.date_updated = issue.date_created + dt.timedelta(days=2)
         if random.randint(0, 1):
             issue.date_closed = issue.date_updated + dt.timedelta(days=2)
-        issue.description = i.description
-        issue.institute = random.choice(list(errata.constants.INSTITUTE))
-        issue.materials = i.materials
+        issue.institute = unicode(random.choice(list(errata.constants.INSTITUTE)))
         issue.severity = random.choice(errata.constants.SEVERITY)['key']
         issue.state = random.choice(errata.constants.STATE)['key']
-        issue.project = random.choice(list(errata.constants.PROJECT))
-        issue.title = "Test issue title - {}".format(unicode(uuid.uuid4())[:50])
+        issue.project = unicode(random.choice(list(errata.constants.PROJECT)))
+        issue.title = u"Test issue title - {}".format(unicode(uuid.uuid4())[:50])
         issue.uid = unicode(uuid.uuid4())
-        issue.url = i.url
         issue.workflow = random.choice(errata.constants.WORKFLOW)['key']
-        issue.dsets = _get_datasets()
+        issue.dsets = _get_datasets(input_dir, issue.institute)
+
+        i = issues[i % len(issues)]
+        issue.description = i.description
+        issue.materials = i.materials
+        issue.url = i.url
 
         yield issue
 

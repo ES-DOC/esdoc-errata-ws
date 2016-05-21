@@ -67,8 +67,6 @@ class RetrieveRequestHandler(HTTPRequestHandler):
             with db.session.create():
                 self.issue = db.dao.get_issue(self.uid)
 
-            print self.issue
-
 
         def _set_output():
             """Sets response to be returned to client.
