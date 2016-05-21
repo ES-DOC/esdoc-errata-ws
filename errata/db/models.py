@@ -14,8 +14,11 @@ import uuid
 
 from sqlalchemy import Column
 from sqlalchemy import DateTime
+from sqlalchemy import ForeignKey
+from sqlalchemy import Integer
 from sqlalchemy import Text
 from sqlalchemy import Unicode
+from sqlalchemy import UniqueConstraint
 from sqlalchemy import Enum
 
 from errata.constants import WORKFLOW_NEW
@@ -88,31 +91,20 @@ class Issue(Entity):
     date_closed = Column(DateTime)
     url = Column(Unicode(1023))
     materials = Column(Text)
-    datasets = Column(Text)
 
 
-class Dataset(Entity):
-    """A dataset associated with some sort of issue.
+class IssueDataset(Entity):
+    """Associates an issue with a dataset.
 
     """
     # SQLAlchemy directives.
-    __tablename__ = 'tbl_dataset'
+    __tablename__ = 'tbl_issue_dataset'
     __table_args__ = (
+        UniqueConstraint('issue_id' ,'dataset_id'),
         {'schema':_SCHEMA}
     )
 
-    esgf_id = Column(Unicode(1023), nullable=False)
-    esgf_id_raw = Column(Unicode(1023), nullable=False)
-
-
-# class Dataset(Entity):
-#     """An issue raised by an institute post-publication.
-
-#     """
-#     # SQLAlchemy directives.
-#     __tablename__ = 'tbl_issue'
-#     __table_args__ = (
-#         {'schema':_SCHEMA}
-#     )
-
-#     # TODO
+    # Column definitions.
+    issue_id = Column(
+        Integer, ForeignKey('{}.tbl_issue.id'.format(_SCHEMA)), nullable=False)
+    dataset_id = Column(Unicode(1023), nullable=False, index=True)

@@ -11,7 +11,9 @@
 """
 from errata.db.dao_validator import validate_get_issue
 from errata.db.dao_validator import validate_get_issues
+from errata.db.dao_validator import validate_get_issue_datasets
 from errata.db.models import Issue
+from errata.db.models import IssueDataset
 from errata.db.session import query
 from errata.db.utils import text_filter
 from errata.utils.validation import validate
@@ -32,6 +34,23 @@ def get_issue(uid):
     qry = text_filter(qry, Issue.uid, uid)
 
     return qry.first()
+
+
+@validate(validate_get_issue_datasets)
+def get_issue_datasets(issue_id):
+    """Returns datasets associated with an issue.
+
+    :param int issue_id: Issue identifier.
+
+    :returns: Matching issues.
+    :rtype: list
+
+    """
+    qry = query(IssueDataset.dataset_id)
+    qry = qry.filter(IssueDataset.issue_id == issue_id)
+    qry = qry.order_by(IssueDataset.dataset_id)
+
+    return qry.all()
 
 
 @validate(validate_get_issues)

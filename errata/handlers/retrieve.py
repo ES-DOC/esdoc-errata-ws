@@ -40,6 +40,7 @@ class RetrieveRequestHandler(HTTPRequestHandler):
 
         self.uid = None
         self.issue = None
+        self.datasets = []
 
 
     def set_default_headers(self):
@@ -66,6 +67,7 @@ class RetrieveRequestHandler(HTTPRequestHandler):
             """
             with db.session.create():
                 self.issue = db.dao.get_issue(self.uid)
+                self.datasets = db.dao.get_issue_datasets(self.issue.id)
 
 
         def _set_output():
@@ -74,7 +76,8 @@ class RetrieveRequestHandler(HTTPRequestHandler):
             """
             self.output_encoding = 'json'
             self.output = {
-                'issue': self.issue
+                'issue': self.issue,
+                'datasets': self.datasets
             }
 
 

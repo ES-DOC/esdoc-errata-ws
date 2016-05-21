@@ -11,9 +11,8 @@
 
 """
 import argparse
+import collections
 import datetime as dt
-import glob
-import json
 import os
 import random
 import uuid
@@ -25,6 +24,7 @@ from errata import db
 from errata.constants import STATE_CLOSED
 from errata.constants import STATE_OPEN
 from errata.db.models import Issue
+from errata.db.models import IssueDataset
 from errata.utils import logger
 
 
@@ -47,78 +47,71 @@ _ARGS.add_argument(
 # Global now.
 _NOW = dt.datetime.now()
 
-# Loaded datasets collection.
-_DATASETS = []
+# Datasets identifiers keyed by institute.
+_DATASETS = collections.defaultdict(list)
+
+# Material urls.
+_MATERIALS = []
 
 
 def _get_datasets(input_dir, institute):
     """Returns test affected  datasets.
 
     """
-    global _DATASETS
-
-    if not _DATASETS:
+    institute = institute.upper()
+    if not _DATASETS[institute]:
         with open("{}/datasets-01.txt".format(input_dir), 'r') as fstream:
-            institute = institute.upper()
-            _DATASETS += [l.replace("IPSL", institute) for l in fstream.readlines()]
+            for l in [l.strip() for l in fstream.readlines() if l.strip()]:
+                _DATASETS[institute].append(l.replace("IPSL", institute))
 
-    return ",".join(_DATASETS)
-
-
-def _get_issue(obj):
-    """Maps a dictionary decoded from a file to an issue instance.
-
-    """
-    issue = Issue()
-    issue.date_created = obj['created_at']
-    issue.date_updated = obj['last_updated_at']
-    issue.date_closed = obj['closed_at']
-    issue.description = obj['description']
-    issue.institute = obj['institute']
-    issue.materials = ",".join(obj['materials'])
-    issue.severity = obj['severity'].lower()
-    issue.state = STATE_CLOSED if issue.date_closed else STATE_OPEN
-    issue.project = obj['project'].lower()
-    issue.title = obj['title']
-    issue.uid = obj['id']
-    issue.url = obj['url']
-    issue.workflow = obj['workflow'].lower()
-
-    return issue
+    return _DATASETS[institute]
 
 
-def _yield_issues(input_dir, count):
-    """Yields a large number of issues for testing purposes.
+def _get_materials(input_dir):
+    """Returns test affected  datasets.
 
     """
-    # Open set of test issues.
-    issues = []
-    for fpath in glob.iglob("{}/*.json".format(input_dir)):
-        with open(fpath, 'r') as fstream:
-            issues.append(_get_issue(json.loads(fstream.read())))
+    if not _MATERIALS:
+        with open("{}/materials-01.txt".format(input_dir), 'r') as fstream:
+            for l in [l.strip() for l in fstream.readlines() if l.strip()]:
+                _MATERIALS.append(l)
 
-    # Get a test issue, update it & yield.
-    for i in xrange(count):
+    return _MATERIALS
+
+
+def _yield_issue(input_dir, count):
+    """Yields issue for testing purposes.
+
+    """
+    for _ in xrange(count):
         issue = Issue()
         issue.date_created = _NOW - dt.timedelta(days=random.randint(30, 60))
         issue.date_updated = issue.date_created + dt.timedelta(days=2)
         if random.randint(0, 1):
             issue.date_closed = issue.date_updated + dt.timedelta(days=2)
+        issue.description = u"Test issue description - {}".format(unicode(uuid.uuid4()))
         issue.institute = unicode(random.choice(list(errata.constants.INSTITUTE)))
+        issue.materials = _get_materials(input_dir)
         issue.severity = random.choice(errata.constants.SEVERITY)['key']
         issue.state = random.choice(errata.constants.STATE)['key']
         issue.project = unicode(random.choice(list(errata.constants.PROJECT)))
         issue.title = u"Test issue title - {}".format(unicode(uuid.uuid4())[:50])
         issue.uid = unicode(uuid.uuid4())
         issue.workflow = random.choice(errata.constants.WORKFLOW)['key']
-        issue.datasets = _get_datasets(input_dir, issue.institute)
-
-        i = issues[i % len(issues)]
-        issue.description = i.description
-        issue.materials = i.materials
-        issue.url = i.url
 
         yield issue
+
+
+def _yield_datasets(input_dir, issue):
+    """Yields datasets for testing purposes.
+
+    """
+    for dataset_id in _get_datasets(input_dir, issue.institute):
+        dataset = IssueDataset()
+        dataset.issue_id = issue.id
+        dataset.dataset_id = dataset_id
+
+        yield dataset
 
 
 def _main(args):
@@ -129,16 +122,23 @@ def _main(args):
         raise ValueError("Input directory is invalid.")
 
     with db.session.create():
-        for issue in _yield_issues(args.input_dir, args.count):
+        issues = []
+        for issue in _yield_issue(args.input_dir, args.count):
             try:
                 db.session.insert(issue)
             except sqlalchemy.exc.IntegrityError:
                 logger.log_db("issue skipped (already inserted) :: {}".format(issue.uid))
                 db.session.rollback()
-            except UnicodeDecodeError:
-                logger.log_db('DECODING EXCEPTION')
             else:
+                issues.append(issue)
                 logger.log_db("issue inserted :: {}".format(issue.uid))
+
+        for issue in issues:
+            for dataset in _yield_datasets(args.input_dir, issue):
+                try:
+                    db.session.insert(dataset)
+                except sqlalchemy.exc.IntegrityError as err:
+                    db.session.rollback()
 
 
 # Main entry point.

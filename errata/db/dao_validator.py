@@ -23,6 +23,13 @@ def validate_get_issue(uid):
     v.validate_uid(uid, 'Issue unique identifier')
 
 
+def validate_get_issue_datasets(issue_id):
+    """Function input validator: get_issue_datasets.
+
+    """
+    v.validate_int(issue_id, "Issue id")
+
+
 def validate_get_issues(
     institute=None,
     project=None,
