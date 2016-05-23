@@ -64,7 +64,7 @@ def _get_datasets(input_dir, institute):
             for l in [l.strip() for l in fstream.readlines() if l.strip()]:
                 _DATASETS[institute].append(l.replace("IPSL", institute))
 
-    return _DATASETS[institute]
+    return random.sample(_DATASETS[institute], 50)
 
 
 def _get_materials(input_dir):
@@ -76,7 +76,7 @@ def _get_materials(input_dir):
             for l in [l.strip() for l in fstream.readlines() if l.strip()]:
                 _MATERIALS.append(l)
 
-    return _MATERIALS
+    return ",".join(_MATERIALS)
 
 
 def _yield_issue(input_dir, count):

@@ -11,6 +11,7 @@
 
 """
 import argparse
+import collections
 import json
 import os
 import glob
@@ -33,22 +34,21 @@ _ARGS.add_argument(
     type=str
     )
 
-# Loaded datasets collection.
-_DATASETS = []
+# Datasets identifiers keyed by institute.
+_DATASETS = collections.defaultdict(list)
 
 
 def _get_datasets(input_dir, institute):
     """Returns test affected  datasets.
 
     """
-    global _DATASETS
-
-    if not _DATASETS:
+    institute = institute.upper()
+    if not _DATASETS[institute]:
         with open("{}/datasets-01.txt".format(input_dir), 'r') as fstream:
-            institute = institute.upper()
-            _DATASETS += [l.replace("IPSL", institute) for l in fstream.readlines()]
+            for l in [l.strip() for l in fstream.readlines() if l.strip()]:
+                _DATASETS[institute].append(l.replace("IPSL", institute))
 
-    return ",".join(_DATASETS)
+    return _DATASETS[institute]
 
 
 def _get_issue(obj, input_dir):
