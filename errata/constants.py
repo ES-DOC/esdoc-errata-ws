@@ -83,22 +83,26 @@ SEVERITY = [
 	{
 		'color': "#00ff00",
 		'label': 'Low',
-		'key': SEVERITY_LOW
+		'key': SEVERITY_LOW,
+		'sortOrdinal': 0
 	},
 	{
 		'color': "#ff9900",
 		'label': 'Medium',
-		'key': SEVERITY_MEDIUM
+		'key': SEVERITY_MEDIUM,
+		'sortOrdinal': 1
 	},
 	{
 		'color': "#0c343d",
 		'label': 'High',
-		'key': SEVERITY_HIGH
+		'key': SEVERITY_HIGH,
+		'sortOrdinal': 2
 	},
 	{
 		'color': "#38761d",
 		'label': 'Critical',
-		'key': SEVERITY_CRITICAL
+		'key': SEVERITY_CRITICAL,
+		'sortOrdinal': 3
 	},
 ]
 
