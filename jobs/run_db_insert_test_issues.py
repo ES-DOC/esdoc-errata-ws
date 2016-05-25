@@ -57,10 +57,13 @@ def _get_issue(obj, input_dir):
     """
     issue = Issue()
     issue.date_created = obj['created_at']
+
     if 'last_updated_at' in obj.keys():
         issue.date_updated = obj['last_updated_at']
     if 'closed_at' in obj.keys():
         issue.date_closed = obj['closed_at']
+    issue.date_updated = obj['last_updated_at']
+    issue.date_closed = obj['closed_at']
     issue.description = obj['description']
     issue.institute = obj['institute'].lower()
     issue.materials = ",".join(obj['materials'])

@@ -23,6 +23,7 @@ data = None
 def _init():
     """Initializes configuration."""
     global data
+
     # Search up file system hierarchy.
     dpath = os.path.dirname(os.path.abspath(__file__))
     while dpath != '/':
@@ -40,3 +41,4 @@ def _init():
 
 # Auto-initialize.
 _init()
+

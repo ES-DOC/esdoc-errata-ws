@@ -81,24 +81,28 @@ SEVERITY_CRITICAL = "critical"
 # Issue severity level set.
 SEVERITY = [
 	{
-		'color': "#00ff00",
+		'color': "#e6b8af",
 		'label': 'Low',
-		'key': SEVERITY_LOW
+		'key': SEVERITY_LOW,
+		'sortOrdinal': 0
 	},
 	{
-		'color': "#ff9900",
+		'color': "#dd7e6b",
 		'label': 'Medium',
-		'key': SEVERITY_MEDIUM
+		'key': SEVERITY_MEDIUM,
+		'sortOrdinal': 1
 	},
 	{
-		'color': "#0c343d",
+		'color': "#cc4125",
 		'label': 'High',
-		'key': SEVERITY_HIGH
+		'key': SEVERITY_HIGH,
+		'sortOrdinal': 2
 	},
 	{
-		'color': "#38761d",
+		'color': "#a61c00",
 		'label': 'Critical',
-		'key': SEVERITY_CRITICAL
+		'key': SEVERITY_CRITICAL,
+		'sortOrdinal': 3
 	},
 ]
 
@@ -131,4 +135,3 @@ INSTITUTE = {
 	INSTITUTE_DKRZ,
 	INSTITUTE_BADC
 }
-

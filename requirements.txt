@@ -5,7 +5,10 @@ psycopg2
 SQLAlchemy
 SQLAlchemy-Utils
 tornado
+<<<<<<< HEAD
 requests
 github3
 bs4
 jsonschema
+=======
+>>>>>>> 5cef874bc174191ed5fcdb3e030746544f4d5086
