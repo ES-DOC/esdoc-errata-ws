@@ -1,0 +1,25 @@
+# Misc
+USERNAME = 'esgf-issue-manager'
+REPO = 'ipsl'
+BASE_API_URL = 'http://hdl.handle.net/api/handles/21.14100'
+PORT = '21.14100'
+HS_ADMIN = 'HS_ADMIN'
+TYPE = 'type'
+DATA = 'data'
+VALUE = 'value'
+VALUES = 'values'
+
+# Aggregation levels:
+AGGREGATION_LEVEL = 'AGGREGATION_LEVEL'
+FILE_NAME = 'FILENAME'
+FILE = 'FILE'
+DATASET = 'DATASET'
+PARENT = 'PARENT'
+CHILDREN = 'CHILDREN'
+
+# Handle tree
+PREDECESSOR = 'PRECEDED_BY'
+SUCCESSOR = 'REPLACED_BY'
+
+# Handle attributes
+CHECKSUM = 'CHECKSUM'

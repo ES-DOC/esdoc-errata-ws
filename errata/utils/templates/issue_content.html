@@ -1,0 +1,31 @@
+@require(id, description, materials, url, dsets)
+<h2>ESGF ID</h2>
+<div id="id"><code>@id</code></div>
+<h2>Description</h2>
+<div id="description">@description</div>
+<h2>Materials</h2>
+<div id="materials">
+@if materials:
+    @for material in materials:
+<img src=@material width=100% />
+    @end
+@else:
+<em>Not documented</em>
+@end
+</div>
+<h2>Landing Page</h2>
+<div id="url">
+@if url:
+<a href=@url>@url</a>
+@else:
+<em>Not documented</em>
+@end
+</div>
+<h2>Affected Datasets</h2>
+<div id="dsets">
+<ul>
+@for dset in dsets:
+<li><code>@dset</code></li>
+@end
+</ul>
+</div>
