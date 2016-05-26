@@ -11,6 +11,8 @@ gh_login, gh = github_connector(username=cfg.get('issues', 'gh_login'),
 directory = args.issue
 if not os.path.exists(directory):
     os.makedirs(directory)
+# issues number returns the ordinal number for the next json & txt file.
+issues_number = get_file_number(directory, extension='.json')
 if args.id:
     for n in args.id:
         # Get issue number
@@ -22,9 +24,9 @@ if args.id:
         remote_issue.validate(action=args.command,
                               projects=get_projects(cfg))
         # Retrieve the corresponding GitHub issue
-        remote_issue.retrieve(issue_f=open('{0}/issue{1}.json'.format(os.path.realpath(args.issue), number)
+        remote_issue.retrieve(issue_f=open('{0}/issue{1}.json'.format(os.path.realpath(args.issue), issues_number)
                                            , 'w'),
-                              dsets_f=open('{0}/dsets{1}.list'.format(os.path.realpath(args.dsets), number)
+                              dsets_f=open('{0}/datasets{1}.txt'.format(os.path.realpath(args.dsets), issues_number)
                                            , 'w'))
 else:
     for issue in gh.iter_issues(state='all'):
@@ -34,11 +36,10 @@ else:
         # Validate GitHub issue against JSON schema
         remote_issue.validate(action=args.command,
                               projects=get_projects(cfg))
-        issues_number = get_file_number(directory, extension='.json')
         dsets_number = get_file_number(directory, extension='.txt')
 
         # Retrieve the corresponding GitHub issue
         remote_issue.retrieve(issue_f=open('{0}/issue-{1}.json'.format(os.path.realpath(args.issue),
                                                                        issues_number), 'w'),
-                              dsets_f=open('{0}/dsets-{1}.list'.format(os.path.realpath(args.dsets),
-                                                                       dsets_number), 'w'))
+                              dsets_f=open('{0}/datasets-{1}.txt'.format(os.path.realpath(args.dsets),
+                                                                      issues_number), 'w'))
