@@ -234,11 +234,15 @@ class HTTPRequestHandler(tornado.web.RequestHandler):
             self.send_error(_HTTP_RESPONSE_BAD_REQUEST)
             return
 
-        # Process request.
+        # Set green-line taskset.
         taskset = _get_taskset(processing_taskset)
         taskset.append(_log_success)
         taskset.append(_write_success)
+
+        # Set red-line taskset.
         error_taskset = _get_taskset(processing_error_taskset)
         error_taskset.append(_log_error)
         error_taskset.append(_write_failure)
+
+        # Invoke taskset(s).
         _invoke_taskset(taskset, error_taskset)

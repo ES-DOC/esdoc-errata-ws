@@ -13,17 +13,23 @@
 from errata import db
 from errata.handle_service.harvest import harvest_errata_information
 from errata.utils.http import HTTPRequestHandler
+from errata.utils.http import HTTP_HEADER_Access_Control_Allow_Origin
 
 
 
 # Query parameter names.
-_PARAM_HANDLE = 'handle'
+_PARAM_HANDLES = 'handles'
+_PARAM_TIMESTAMP = 'timestamp'
 
 # Query parameter validation schema.
 _REQUEST_VALIDATION_SCHEMA = {
-    _PARAM_HANDLE: {
+    _PARAM_HANDLES: {
         'required': True,
         'type': 'list', 'schema': {'type': 'string'}
+    },
+    _PARAM_TIMESTAMP: {
+        'required': True,
+        'type': 'list', 'items': [{'type': 'string'}]
     }
 }
 
@@ -38,9 +44,17 @@ class HandleServiceRequestHandler(HTTPRequestHandler):
         """
         super(HandleServiceRequestHandler, self).__init__(application, request, **kwargs)
 
-        self.handle_string = None
-        self.uid_list = None
+        self.handles = []
+        self.uid_list = []
         self.issues = None
+        self.timestamp = None
+
+
+    def set_default_headers(self):
+        """Set HTTP headers at the beginning of the request.
+
+        """
+        self.set_header(HTTP_HEADER_Access_Control_Allow_Origin, "*")
 
 
     def get(self):
@@ -51,14 +65,23 @@ class HandleServiceRequestHandler(HTTPRequestHandler):
             """Decodes request.
 
             """
-            self.handle_string = self.get_argument(_PARAM_HANDLE)
+            self.timestamp = self.get_argument(_PARAM_TIMESTAMP)
+            self.handles = self.get_argument(_PARAM_HANDLES).split(",")
+
+
+        def _invoke_pid_handle_service():
+            """Inokve remote PID handle service.
+
+            """
+            for handle in self.handles:
+                self.uid_list += harvest_errata_information(handle)
 
 
         def _set_data():
             """Pulls data from db.
 
             """
-            self.uid_list = harvest_errata_information(self.handle_string)
+            print "_set_data"
             with db.session.create():
                 self.issues = [db.dao.get_issue(uid) for uid in self.uid_list]
 
@@ -69,13 +92,15 @@ class HandleServiceRequestHandler(HTTPRequestHandler):
             """
             self.output_encoding = 'json'
             self.output = {
-                'issues': self.issues
+                'issues': self.uid_list,
+                'timestamp': self.timestamp
             }
 
 
         # Invoke tasks.
         self.invoke(_REQUEST_VALIDATION_SCHEMA, [
             _decode_request,
+            _invoke_pid_handle_service,
             _set_data,
             _set_output
             ])
