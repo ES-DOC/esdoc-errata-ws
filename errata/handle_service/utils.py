@@ -3,13 +3,13 @@ import os
 import uuid
 
 import requests
+import random
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 from requests.packages.urllib3.exceptions import InsecurePlatformWarning
 from requests.packages.urllib3.exceptions import SNIMissingWarning
 
 from constants import *
 from custom_exceptions import *
-
 
 
 # Diable requests warnings.
@@ -21,9 +21,8 @@ requests.packages.urllib3.disable_warnings(SNIMissingWarning)
 # Initialize logging.
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(message)s',
-                    filename=os.path.join(os.environ["ERRATA_HOME"], "logs/errata.log"),
+                    filename=os.path.join("/home/abennasser", "logs/errata.log"),
                     filemode='w')
-
 
 
 def get_handle_by_handle_string(handle_string, handle_client_instance):
@@ -227,13 +226,15 @@ def crawler(input_handle, input_handle_string, handle_client_instance):
     :param handle_client_instance: EUDATClient instance
     :return: list of couples [(dataset_handler/file_handler, issue_identifier)]
     """
+    # initializing return list
+    list_of_uids = dict()
+
     # resolving whether the user input is on a file level or a dataset level.
     aggregation_level = get_aggregation_level(input_handle)
     logging.debug('THE HANDLE PROVIDED IS OF AN AGGREGATION LEVEL ' + aggregation_level)
 
     # initializing handles according to aggregation level.
     # Please note this is for code readability purposes only.
-
     if aggregation_level == FILE:
             initial_file_handle = input_handle
             logging.debug("GETTING PARENT HANDLE...")
@@ -265,6 +266,7 @@ def crawler(input_handle, input_handle_string, handle_client_instance):
                 next_lineage = has_successor_and_predecessors(_dataset_handle)
                 logging.debug("PREDECESSOR FOUND WITH THE FOLLOWING LINEAGE ")
                 logging.debug(next_lineage)
+                list_of_uids[_dataset_handle['DRS_ID'] +_dataset_handle['VERSION_NUMBER']]  = get_issue_id()
                 if aggregation_level == FILE:
                     try:
                         find_file_within_dataset(_dataset_handle, _file_handle, input_handle_string,
@@ -291,6 +293,7 @@ def crawler(input_handle, input_handle_string, handle_client_instance):
                 next_lineage = has_successor_and_predecessors(_dataset_handle)
                 logging.debug("SUCCESSOR FOUND WITH THE FOLLOWING LINEAGE")
                 logging.debug(next_lineage)
+                list_of_uids[_dataset_handle['DRS_ID'] + _dataset_handle['VERSION_NUMBER']] = get_issue_id()
                 if aggregation_level == FILE:
                     try:
                         find_file_within_dataset(_dataset_handle, _file_handle, input_handle_string,
@@ -304,3 +307,13 @@ def crawler(input_handle, input_handle_string, handle_client_instance):
                 logging.debug('A LOOKUP FOR A SUCCESSOR HANDLE HAS FAILED' + _dataset_handle[SUCCESSOR])
                 break
         logging.debug('EXITING DOWNWARDS CRAWLER...')
+    return list_of_uids
+
+
+def get_issue_id():
+    issue_list = ["11221244-2194-4c1f-bdea-4887036a9e63", "9de57705-48b8-4343-8bcd-22dad2c28c9a"
+                  , "979e3ad5-9123-483c-89e9-c2de2372d0a8", "4d4c9942-f3a4-4538-891c-069007ed37f1"
+                  , "27897958-f462-43d3-8c19-309cd6a43ce3"
+                  , "96eba87b-2f6d-4eea-a474-3f5c9dff6675"]
+
+    return random.choice(issue_list)

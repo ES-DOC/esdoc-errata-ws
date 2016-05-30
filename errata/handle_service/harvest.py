@@ -22,5 +22,6 @@ def harvest_errata_information(input_handle_string):
     list_of_uids = crawler(handle, input_handle_string, handle_client)
     logging.info("ELAPSED TIME TILL COMPLETION : " + str(time()-tick) + " SECONDS")
     logging.info("-----------------------------------END ISSUE TRACKING-----------------------------------")
-    list_of_uids = ["11111111-1111-1111-1111-1111111111", "11221244-2194-4c1f-bdea-4887036a9e63"]
+    logging.info("LIST OF UIDS GENERATED IS...")
+    logging.info(list_of_uids)
     return list_of_uids

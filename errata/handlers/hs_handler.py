@@ -45,7 +45,7 @@ class HandleServiceRequestHandler(HTTPRequestHandler):
         super(HandleServiceRequestHandler, self).__init__(application, request, **kwargs)
 
         self.handles = []
-        self.uid_list = []
+        self.uid_list = dict()
         self.issues = None
         self.timestamp = None
 
@@ -70,11 +70,11 @@ class HandleServiceRequestHandler(HTTPRequestHandler):
 
 
         def _invoke_pid_handle_service():
-            """Inokve remote PID handle service.
+            """Invoke remote PID handle service.
 
             """
             for handle in self.handles:
-                self.uid_list += harvest_errata_information(handle)
+                self.uid_list = harvest_errata_information(handle)
 
 
         def _set_data():
@@ -83,7 +83,7 @@ class HandleServiceRequestHandler(HTTPRequestHandler):
             """
             print "_set_data"
             with db.session.create():
-                self.issues = [db.dao.get_issue(uid) for uid in self.uid_list]
+                self.issues = [db.dao.get_issue(uid) for dset_id, uid in self.uid_list.iteritems()]
 
 
         def _set_output():
