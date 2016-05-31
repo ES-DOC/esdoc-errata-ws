@@ -16,7 +16,6 @@ from errata.utils.http import HTTPRequestHandler
 from errata.utils.http import HTTP_HEADER_Access_Control_Allow_Origin
 
 
-
 # Query parameter names.
 _PARAM_HANDLES = 'handles'
 _PARAM_TIMESTAMP = 'timestamp'
@@ -74,7 +73,7 @@ class HandleServiceRequestHandler(HTTPRequestHandler):
 
             """
             for handle in self.handles:
-                self.uid_list = harvest_errata_information(handle)
+                self.uid_list[handle] = harvest_errata_information(handle)
 
 
         def _set_data():
@@ -83,7 +82,9 @@ class HandleServiceRequestHandler(HTTPRequestHandler):
             """
             print "_set_data"
             with db.session.create():
-                self.issues = [db.dao.get_issue(uid) for dset_id, uid in self.uid_list.iteritems()]
+                self.issues = dict()
+                for handle, uid_dic in self.uid_list.iteritems():
+                    self.issues[handle] = [db.dao.get_issue(uid) for dset_id, uid in uid_dic.iteritems()]
 
 
         def _set_output():
@@ -92,7 +93,7 @@ class HandleServiceRequestHandler(HTTPRequestHandler):
             """
             self.output_encoding = 'json'
             self.output = {
-                'issues': self.uid_list,
+                'issues': self.issues,
                 'timestamp': self.timestamp
             }
 
