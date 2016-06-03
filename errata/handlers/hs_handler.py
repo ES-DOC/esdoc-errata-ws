@@ -9,6 +9,11 @@
 .. moduleauthor:: Atef Bennasser <abenasser@ipsl.jussieu.fr>
 
 
+WS return is a dictionary of dictionaries.
+
+Structure of self.issues = {Queried_handle_1 : {Queried/Predecessors/Successors_handles : Issue ...}
+                            , Queried_handle_2 : {Queried/Predecessors/Successors_handles : Issue ...}
+
 """
 from errata import db
 from errata.handle_service.harvest import harvest_errata_information
@@ -73,8 +78,8 @@ class HandleServiceRequestHandler(HTTPRequestHandler):
 
             """
             for handle in self.handles:
-                self.uid_list[handle] = harvest_errata_information(handle)
-
+                retrieved_tuple = harvest_errata_information(handle)
+                self.uid_list[retrieved_tuple[1]] = retrieved_tuple[0]
 
         def _set_data():
             """Pulls data from db.
@@ -83,8 +88,11 @@ class HandleServiceRequestHandler(HTTPRequestHandler):
             print "_set_data"
             with db.session.create():
                 self.issues = dict()
+                issue_dic = dict()
                 for handle, uid_dic in self.uid_list.iteritems():
-                    self.issues[handle] = [db.dao.get_issue(uid) for dset_id, uid in uid_dic.iteritems()]
+                    for dset_or_file_id, uid in uid_dic.iteritems():
+                        issue_dic[dset_or_file_id] = db.dao.get_issue(uid)
+                    self.issues[handle] = issue_dic
 
 
         def _set_output():
