@@ -247,6 +247,8 @@ def crawler(input_handle, input_handle_string, handle_client_instance):
     aggregation_level = get_aggregation_level(input_handle)
     # initial id will serve for web service return readability
     initial_id = get_dataset_or_file_id(input_handle, aggregation_level)
+    # order_index is used at every loop to maintain
+    order_index = 0
     logging.debug('THE HANDLE PROVIDED IS OF AN AGGREGATION LEVEL ' + aggregation_level)
     # initializing handles according to aggregation level.
     # Please note this is for code readability purposes only.
@@ -264,7 +266,8 @@ def crawler(input_handle, input_handle_string, handle_client_instance):
             _dataset_handle = input_handle
     # Added current dataset errata return information
     # Todo process the file difference in return
-    list_of_uids[_dataset_handle['DRS_ID'] + '#' + _dataset_handle['VERSION_NUMBER']] = get_issue_id()
+    list_of_uids[_dataset_handle['DRS_ID'] + '#' + _dataset_handle['VERSION_NUMBER']] = [get_issue_id(_dataset_handle)
+                                                                                         , order_index]
 
     # lineage variable contains information whether the crawler needs to go up or down the tree.
     # lineage may indicate that the crawler needs to go both up and down, in that case, up will be treated first.
@@ -284,7 +287,9 @@ def crawler(input_handle, input_handle_string, handle_client_instance):
                 next_lineage = has_successor_and_predecessors(_dataset_handle)
                 logging.debug("PREDECESSOR FOUND WITH THE FOLLOWING LINEAGE ")
                 logging.debug(next_lineage)
-                list_of_uids[_dataset_handle['DRS_ID'] + '#' + _dataset_handle['VERSION_NUMBER']] = get_issue_id()
+                order_index -= 1
+                list_of_uids[_dataset_handle['DRS_ID'] + '#' + _dataset_handle['VERSION_NUMBER']] = [get_issue_id(_dataset_handle)
+                                                                                                     , order_index]
                 if aggregation_level == FILE:
                     try:
                         find_file_within_dataset(_dataset_handle, _file_handle, input_handle_string,
@@ -300,6 +305,7 @@ def crawler(input_handle, input_handle_string, handle_client_instance):
     # Reinitializing handle in case it got modified in the process of finding a predecessor
     logging.debug('UPWARDS LOOP HAS BEEN COMPLETED, HANDLE IS NOW RESTORED TO START LEVEL...')
     _dataset_handle = initial_handle
+    order_index = 0
 
     if lineage[1]:
         logging.debug('STARTING DOWNWARDS CRAWLER...')
@@ -311,7 +317,9 @@ def crawler(input_handle, input_handle_string, handle_client_instance):
                 next_lineage = has_successor_and_predecessors(_dataset_handle)
                 logging.debug("SUCCESSOR FOUND WITH THE FOLLOWING LINEAGE")
                 logging.debug(next_lineage)
-                list_of_uids[_dataset_handle['DRS_ID'] + '#' + _dataset_handle['VERSION_NUMBER']] = get_issue_id()
+                order_index += 1
+                list_of_uids[_dataset_handle['DRS_ID'] + '#' + _dataset_handle['VERSION_NUMBER']] = [get_issue_id(_dataset_handle)
+                                                                                                     , order_index]
                 if aggregation_level == FILE:
                     try:
                         find_file_within_dataset(_dataset_handle, _file_handle, input_handle_string,
@@ -325,13 +333,17 @@ def crawler(input_handle, input_handle_string, handle_client_instance):
                 logging.debug('A LOOKUP FOR A SUCCESSOR HANDLE HAS FAILED' + _dataset_handle[SUCCESSOR])
                 break
         logging.debug('EXITING DOWNWARDS CRAWLER...')
+
     return list_of_uids, initial_id
 
 
-def get_issue_id():
-    issue_list = ["11221244-2194-4c1f-bdea-4887036a9e63", "9de57705-48b8-4343-8bcd-22dad2c28c9a"
-                  , "979e3ad5-9123-483c-89e9-c2de2372d0a8", "4d4c9942-f3a4-4538-891c-069007ed37f1"
-                  , "27897958-f462-43d3-8c19-309cd6a43ce3"
-                  , "96eba87b-2f6d-4eea-a474-3f5c9dff6675"]
-
-    return random.choice(issue_list)
+def get_issue_id(handle):
+    """
+    gets the uid for the issue of the handle
+    :param handle:
+    :return: uid
+    """
+    try:
+        return handle['ERRATA_IDS']
+    except KeyError:
+        return ''

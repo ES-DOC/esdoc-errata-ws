@@ -27,3 +27,5 @@ def harvest_errata_information(input_handle_string):
     logging.info("LIST OF UIDS GENERATED IS...")
     logging.info(list_of_uids)
     return list_of_uids, dataset_or_file_id
+
+

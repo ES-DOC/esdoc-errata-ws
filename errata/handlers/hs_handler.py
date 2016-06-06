@@ -91,7 +91,12 @@ class HandleServiceRequestHandler(HTTPRequestHandler):
                 issue_dic = dict()
                 for handle, uid_dic in self.uid_list.iteritems():
                     for dset_or_file_id, uid in uid_dic.iteritems():
-                        issue_dic[dset_or_file_id] = db.dao.get_issue(uid)
+                        # print uid
+                        if uid[0] != '':
+                            issue_dic[dset_or_file_id] = [db.dao.get_issue(uid[0]), uid[1]]
+                        else:
+                            issue_dic[dset_or_file_id] = [uid[0], uid[1]]
+
                     self.issues[handle] = issue_dic
 
 
