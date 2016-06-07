@@ -19,7 +19,8 @@ from errata import db
 from errata.handle_service.harvest import harvest_errata_information
 from errata.utils.http import HTTPRequestHandler
 from errata.utils.http import HTTP_HEADER_Access_Control_Allow_Origin
-
+import logging
+import json
 
 # Query parameter names.
 _PARAM_HANDLES = 'handles'
@@ -93,12 +94,14 @@ class HandleServiceRequestHandler(HTTPRequestHandler):
                     for dset_or_file_id, uid in uid_dic.iteritems():
                         # print uid
                         if uid[0] != '':
-                            issue_dic[dset_or_file_id] = [db.dao.get_issue(uid[0]), uid[1]]
+                            issue_dic[dset_or_file_id] = [uid[0], uid[1]]
                         else:
                             issue_dic[dset_or_file_id] = [uid[0], uid[1]]
 
                     self.issues[handle] = issue_dic
-
+            logging.info('The json response is...')
+            print json.dumps(self.issues)
+            logging.info(json.dumps(self.issues))
 
         def _set_output():
             """Sets response to be returned to client.

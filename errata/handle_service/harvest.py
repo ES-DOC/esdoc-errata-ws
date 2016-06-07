@@ -19,6 +19,7 @@ def harvest_errata_information(input_handle_string):
     logging.info("--HANDLE CLIENT CREATED--")
     logging.info("----------------------------------BEGIN ISSUE TRACKING----------------------------------")
     handle = get_handle_by_handle_string(input_handle_string, handle_client)
+    print handle
     crawler_output = crawler(handle, input_handle_string, handle_client)
     list_of_uids = crawler_output[0]
     dataset_or_file_id = crawler_output[1]
@@ -27,5 +28,4 @@ def harvest_errata_information(input_handle_string):
     logging.info("LIST OF UIDS GENERATED IS...")
     logging.info(list_of_uids)
     return list_of_uids, dataset_or_file_id
-
 
