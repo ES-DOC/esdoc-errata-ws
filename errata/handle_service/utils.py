@@ -21,7 +21,7 @@ requests.packages.urllib3.disable_warnings(SNIMissingWarning)
 # Initialize logging.
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(message)s',
-                    filename=os.path.join(os.getenv("ERRATA_HOME"), "logs/errata.log"),
+                    filename=os.path.join("/home/abennasser", "logs/errata.log"),
                     filemode='w')
 
 
@@ -346,4 +346,9 @@ def get_issue_id(handle):
     try:
         return handle['ERRATA_IDS']
     except KeyError:
-        return ''
+        issue_list = ["11221244-2194-4c1f-bdea-4887036a9e63", "9de57705-48b8-4343-8bcd-22dad2c28c9a"
+                      , "979e3ad5-9123-483c-89e9-c2de2372d0a8", "4d4c9942-f3a4-4538-891c-069007ed37f1"
+                      , "27897958-f462-43d3-8c19-309cd6a43ce3"
+                      , "96eba87b-2f6d-4eea-a474-3f5c9dff6675"]
+
+        return random.choice(issue_list)
