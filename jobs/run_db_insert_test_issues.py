@@ -113,13 +113,6 @@ def _main(args):
     if not os.path.exists(args.input_dir):
         raise ValueError("Input directory is invalid.")
 
-    # for issue, issue_id in _yield_issues(args.input_dir):
-    #     issue.file_id = issue_id
-    #     for dataset in _yield_datasets(args.input_dir, issue, issue.file_id):
-    #         print "AA", issue_id, dataset.issue_id, dataset.dataset_id
-
-    # return
-
     with db.session.create():
         issues = []
         # Insert issues found in input directory.
@@ -141,7 +134,7 @@ def _main(args):
             for dataset in _yield_datasets(args.input_dir, issue, issue.file_id):
                 try:
                     db.session.insert(dataset)
-                except sqlalchemy.exc.IntegrityError as err:
+                except sqlalchemy.exc.IntegrityError:
                     db.session.rollback()
 
 
