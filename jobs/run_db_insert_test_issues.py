@@ -61,7 +61,7 @@ def _get_issue(obj):
     issue.date_updated = obj['last_updated_at']
     issue.description = obj['description']
     issue.institute = obj['institute'].lower()
-    if 'materials' in obj.keys:
+    if 'materials' in obj.keys():
         issue.materials = ",".join(obj['materials'])
     issue.severity = obj['severity'].lower()
     issue.state = STATE_CLOSED if issue.date_closed else STATE_OPEN
@@ -90,7 +90,7 @@ def _yield_issues(input_dir):
     """
     for fpath in glob.iglob("{}/issues/*.json".format(input_dir)):
         with open(fpath, 'r') as fstream:
-            yield _get_issue(json.loads(fstream.read()), input_dir), \
+            yield _get_issue(json.loads(fstream.read())), \
                   _get_issue_id(fpath)
 
 
