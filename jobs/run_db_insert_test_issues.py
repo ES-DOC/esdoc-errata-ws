@@ -39,7 +39,7 @@ def _get_datasets(input_dir, file_id):
     """Returns test affected  datasets by a given issue from the respective txt file.
 
     """
-    fpath = "{0}/dsets/dsets-{1}.txt".format(input_dir, file_id)
+    fpath = "{0}/dsets/dsets-{1}.list".format(input_dir, file_id)
     if not os.path.isfile(fpath):
         raise ValueError("Datasets file does not exist: {}".format(fpath))
 
