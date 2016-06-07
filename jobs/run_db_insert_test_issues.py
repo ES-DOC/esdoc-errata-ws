@@ -39,13 +39,12 @@ def _get_datasets(input_dir, file_id):
     """Returns test affected  datasets by a given issue from the respective txt file.
 
     """
-    _DATASETS = []
-    print 'here is the file_id ' + file_id
-    if os.path.isfile("{0}/dsets-{1}.list".format(input_dir, file_id)):
-        with open("{0}/dsets-{1}.list".format(input_dir, file_id), 'r') as fstream:
-            for l in fstream.readlines():
-                _DATASETS.append(l)
-    return _DATASETS
+    fpath = "{0}/dsets/dsets-{1}.txt".format(input_dir, file_id)
+    if not os.path.isfile(fpath):
+        raise ValueError("Datasets file does not exist: {}".format(fpath))
+
+    with open(fpath, 'r') as fstream:
+        return [l.replace("\n", "") for l in fstream.readlines() if l]
 
 
 def _get_issue(obj):
@@ -62,7 +61,7 @@ def _get_issue(obj):
     issue.date_updated = obj['last_updated_at']
     issue.description = obj['description']
     issue.institute = obj['institute'].lower()
-    if 'materials' in obj.keys():
+    if 'materials' in obj.keys:
         issue.materials = ",".join(obj['materials'])
     issue.severity = obj['severity'].lower()
     issue.state = STATE_CLOSED if issue.date_closed else STATE_OPEN
@@ -75,29 +74,24 @@ def _get_issue(obj):
     return issue
 
 
-def get_issue_id(path_to_file):
+def _get_issue_id(fpath):
+    """Returns issue json file number used to identify the adequate affected dataset list.
+
     """
-    returns the number of the issue json file.
-    This will be used to identify the adequate affected dataset list.
-    :param path_to_file: string containing the path to the file
-    :return: the number of the dataset/issue file.
-    """
-    file_name = os.path.splitext(os.path.basename(path_to_file))[0]
+    file_name = os.path.splitext(os.path.basename(fpath))[0]
     for s in file_name.split('-'):
         if s.isdigit():
-            issue_id = s
-    return issue_id
+            return s
 
 
 def _yield_issues(input_dir):
     """Yields issues found in json files within input directory.
 
     """
-    for fpath in glob.iglob("{}/*.json".format(input_dir)):
-        print fpath
-        print get_issue_id(fpath)
+    for fpath in glob.iglob("{}/issues/*.json".format(input_dir)):
         with open(fpath, 'r') as fstream:
-            yield _get_issue(json.loads(fstream.read()), input_dir), get_issue_id(fpath)
+            yield _get_issue(json.loads(fstream.read()), input_dir), \
+                  _get_issue_id(fpath)
 
 
 def _yield_datasets(input_dir, issue, issue_id):
@@ -119,20 +113,16 @@ def _main(args):
     if not os.path.exists(args.input_dir):
         raise ValueError("Input directory is invalid.")
 
-    # with db.session.create():
-    #     for issue in _yield_issues(args.input_dir):
-    #         try:
-    #             db.session.insert(issue)
-    #         except sqlalchemy.exc.IntegrityError:
-    #             logger.log_db("issue skipped (already inserted) :: {}".format(issue.uid))
-    #             db.session.rollback()
-    #         except UnicodeDecodeError:
-    #             logger.log_db('DECODING EXCEPTION')
-    #         else:
-    #             logger.log_db("issue inserted :: {}".format(issue.uid))
+    # for issue, issue_id in _yield_issues(args.input_dir):
+    #     issue.file_id = issue_id
+    #     for dataset in _yield_datasets(args.input_dir, issue, issue.file_id):
+    #         print "AA", issue_id, dataset.issue_id, dataset.dataset_id
+
+    # return
 
     with db.session.create():
         issues = []
+        # Insert issues found in input directory.
         for issue, issue_id in _yield_issues(args.input_dir):
             issue.file_id = issue_id
             try:
@@ -144,9 +134,9 @@ def _main(args):
                 logger.log_db('DECODING EXCEPTION')
             else:
                 issues.append(issue)
-
                 logger.log_db("issue inserted :: {}".format(issue.uid))
 
+        # Insert related datasets.
         for issue in issues:
             for dataset in _yield_datasets(args.input_dir, issue, issue.file_id):
                 try:
