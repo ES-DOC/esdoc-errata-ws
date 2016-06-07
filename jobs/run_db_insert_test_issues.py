@@ -11,7 +11,6 @@
 
 """
 import argparse
-import collections
 import json
 import os
 import glob
@@ -23,6 +22,7 @@ from errata.constants import STATE_CLOSED
 from errata.constants import STATE_OPEN
 from errata.db.models import Issue, IssueDataset
 from errata.utils import logger
+
 
 
 # Define command line arguments.
@@ -39,10 +39,17 @@ def _get_datasets(input_dir, file_id):
     """Returns test affected  datasets by a given issue from the respective txt file.
 
     """
-    fpath = "{0}/dsets/dsets-{1}.list".format(input_dir, file_id)
-    if not os.path.isfile(fpath):
-        raise ValueError("Datasets file does not exist: {}".format(fpath))
+    # Derive path to datasets list file.
+    for fext in {"list", "txt"}:
+        fpath = "{0}/dsets/dsets-{1}.{2}".format(input_dir, file_id, fext)
+        if os.path.isfile(fpath):
+            break
 
+    # Error if not found.
+    if not os.path.isfile(fpath):
+        raise ValueError("Datasets list file not found: {}".format(file_id))
+
+    # Return set of dataset identifiers.
     with open(fpath, 'r') as fstream:
         return [l.replace("\n", "") for l in fstream.readlines() if l]
 
@@ -53,7 +60,6 @@ def _get_issue(obj):
     """
     issue = Issue()
     issue.date_created = obj['created_at']
-
     if 'last_updated_at' in obj.keys():
         issue.date_updated = obj['last_updated_at']
     if 'closed_at' in obj.keys():
@@ -71,6 +77,7 @@ def _get_issue(obj):
     if 'url' in obj.keys():
         issue.url = obj['url']
     issue.workflow = obj['workflow'].lower()
+
     return issue
 
 
@@ -79,9 +86,9 @@ def _get_issue_id(fpath):
 
     """
     file_name = os.path.splitext(os.path.basename(fpath))[0]
-    for s in file_name.split('-'):
-        if s.isdigit():
-            return s
+    for fpart in file_name.split('-'):
+        if fpart.isdigit():
+            return fpart
 
 
 def _yield_issues(input_dir):
