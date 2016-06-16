@@ -21,7 +21,7 @@ requests.packages.urllib3.disable_warnings(SNIMissingWarning)
 # Initialize logging.
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(message)s',
-                    filename=os.path.join(os.getenv("ERRATA_HOME"), "logs/errata.log"),
+                    filename=os.path.join("/home/abennasser", "logs/errata.log"),
                     filemode='w')
 
 
@@ -144,7 +144,7 @@ def find_file_within_dataset(_dataset_handle, _file_handle, file_handle_string, 
     :param _dataset_handle: handle of the dataset
     :param _file_handle: handle of the file
     :param handle_client_instance: EUDATClient instance
-    :return: next_file_handle(same if it is found within dataset), errata_information(blank if no change occurred)
+    :return: next_file_handle(same if it is found within dataset), errata_information(None if no change occurred)
     :except file not found in successor
     """
     # list containing the file_handle_strings
@@ -177,6 +177,16 @@ def find_file_within_dataset(_dataset_handle, _file_handle, file_handle_string, 
         raise FileNotFoundInSuccessor
 
 
+def get_parent_handle(file_handle, handle_client_instance):
+    """
+    Using a file handle, this function returns the handle of the containing dataset
+    :param file_handle: handle string of the file
+    :param handle_client_instance : EUDATClient instance
+    :return: file handle
+    """
+    return get_handle_by_handle_string(file_handle[PARENT], handle_client_instance)
+
+
 def get_aggregation_level(handle):
     """
     returns aggregation level of handle
@@ -196,7 +206,19 @@ def get_dataset_or_file_id(handle, aggregation_level):
     if aggregation_level == FILE:
         return handle[FILE_NAME]
     elif aggregation_level == DATASET:
-        return handle[DRS] + '#' + handle[VERSION]
+        return handle[DRS]
+
+
+def get_version(handle):
+    """
+    returns version of dataset or file from handle
+    :param handle: handle dictionary
+    :return: version string
+    """
+    try:
+        return handle[VERSION]
+    except KeyError:
+        logging.warn('VERSION COULD NOT BE RETRIEVED FROM HANDLE.')
 
 
 def get_successor_or_predecessor(handle, key, handle_client_instance):
@@ -232,6 +254,23 @@ def list_children_filenames(_dataset_handle, handle_client_instance):
     return result
 
 
+def get_issue_id(handle):
+    """
+    gets the uid for the issue of the handle
+    :param handle:
+    :return: uid
+    """
+    try:
+        return handle['ERRATA_IDS']
+    except KeyError:
+        issue_list = ["11221244-2194-4c1f-bdea-4887036a9e63", "9de57705-48b8-4343-8bcd-22dad2c28c9a"
+                      , "979e3ad5-9123-483c-89e9-c2de2372d0a8", "4d4c9942-f3a4-4538-891c-069007ed37f1"
+                      , "27897958-f462-43d3-8c19-309cd6a43ce3"
+                      , "96eba87b-2f6d-4eea-a474-3f5c9dff6675"]
+
+        return random.choice(issue_list)
+
+
 def crawler(input_handle, input_handle_string, handle_client_instance):
     """
     Crawls up the tree on a dataset aggregation level. Can also manage on file level.
@@ -242,12 +281,11 @@ def crawler(input_handle, input_handle_string, handle_client_instance):
     """
     # initializing return list
     list_of_uids = dict()
-
     # resolving whether the user input is on a file level or a dataset level.
     aggregation_level = get_aggregation_level(input_handle)
     # initial id will serve for web service return readability
     initial_id = get_dataset_or_file_id(input_handle, aggregation_level)
-    # order_index is used at every loop to maintain
+    # order_index is used at every loop to maintain order of successor and predecessors
     order_index = 0
     logging.debug('THE HANDLE PROVIDED IS OF AN AGGREGATION LEVEL ' + aggregation_level)
     # initializing handles according to aggregation level.
@@ -265,9 +303,7 @@ def crawler(input_handle, input_handle_string, handle_client_instance):
             initial_handle = input_handle
             _dataset_handle = input_handle
     # Added current dataset errata return information
-    # Todo process the file difference in return
-    list_of_uids[_dataset_handle['DRS_ID'] + '#' + _dataset_handle['VERSION_NUMBER']] = [get_issue_id(_dataset_handle)
-                                                                                         , order_index]
+    list_of_uids[_dataset_handle[DRS]] = [get_issue_id(_dataset_handle), order_index]
 
     # lineage variable contains information whether the crawler needs to go up or down the tree.
     # lineage may indicate that the crawler needs to go both up and down, in that case, up will be treated first.
@@ -288,7 +324,7 @@ def crawler(input_handle, input_handle_string, handle_client_instance):
                 logging.debug("PREDECESSOR FOUND WITH THE FOLLOWING LINEAGE ")
                 logging.debug(next_lineage)
                 order_index -= 1
-                list_of_uids[_dataset_handle['DRS_ID'] + '#' + _dataset_handle['VERSION_NUMBER']] = [get_issue_id(_dataset_handle)
+                list_of_uids[_dataset_handle[DRS]] = [get_issue_id(_dataset_handle)
                                                                                                      , order_index]
                 if aggregation_level == FILE:
                     try:
@@ -318,7 +354,7 @@ def crawler(input_handle, input_handle_string, handle_client_instance):
                 logging.debug("SUCCESSOR FOUND WITH THE FOLLOWING LINEAGE")
                 logging.debug(next_lineage)
                 order_index += 1
-                list_of_uids[_dataset_handle['DRS_ID'] + '#' + _dataset_handle['VERSION_NUMBER']] = [get_issue_id(_dataset_handle)
+                list_of_uids[_dataset_handle[DRS]] = [get_issue_id(_dataset_handle)
                                                                                                      , order_index]
                 if aggregation_level == FILE:
                     try:
@@ -337,18 +373,30 @@ def crawler(input_handle, input_handle_string, handle_client_instance):
     return list_of_uids, initial_id
 
 
-def get_issue_id(handle):
-    """
-    gets the uid for the issue of the handle
-    :param handle:
-    :return: uid
-    """
-    try:
-        return handle['ERRATA_IDS']
-    except KeyError:
-        issue_list = ["11221244-2194-4c1f-bdea-4887036a9e63", "9de57705-48b8-4343-8bcd-22dad2c28c9a"
-                      , "979e3ad5-9123-483c-89e9-c2de2372d0a8", "4d4c9942-f3a4-4538-891c-069007ed37f1"
-                      , "27897958-f462-43d3-8c19-309cd6a43ce3"
-                      , "96eba87b-2f6d-4eea-a474-3f5c9dff6675"]
-
-        return random.choice(issue_list)
+# def crawler_v1(hs, input_handle, input_handle_string, handle_client_instance):
+#     """
+#     newer version of the crawler, with enhanced performance and organization.
+#     :param hs:
+#     :param input_handle:
+#     :param input_handle_string:
+#     :param handle_client_instance:
+#     :return:
+#     """
+#
+#     initial_id = hs.id
+#     order_index = 0
+#     logging.debug('THE HANDLE PROVIDED IS OF AN AGGREGATION LEVEL ' + hs.aggregation)
+#     if hs.aggregation == FILE:
+#             initial_file_handle = input_handle
+#             logging.debug("GETTING PARENT HANDLE...")
+#             initial_handle = hs.get_parent_handle()
+#             logging.debug("PARENT HANDLE SUCCESSFULLY FOUND.")
+#             # replacing file_handle by dataset_handle for looping purposes
+#             _dataset_handle = initial_handle
+#             _file_handle = input_handle
+#
+#     elif hs.aggregation == DATASET:
+#             initial_handle = input_handle
+#             _dataset_handle = input_handle
+#
+#     return None

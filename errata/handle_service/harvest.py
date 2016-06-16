@@ -3,8 +3,9 @@ from time import time
 
 from b2handle.handleclient import EUDATHandleClient
 
-from utils import crawler
+from utils import crawler, crawler_v1
 from utils import get_handle_by_handle_string
+from entities import HandleRegister
 
 
 def harvest_errata_information(input_handle_string):
@@ -19,6 +20,9 @@ def harvest_errata_information(input_handle_string):
     logging.info("--HANDLE CLIENT CREATED--")
     logging.info("----------------------------------BEGIN ISSUE TRACKING----------------------------------")
     handle = get_handle_by_handle_string(input_handle_string, handle_client)
+    # initialize the handleRegister instance
+    hs = HandleRegister(handle, handle_client)
+    crawler_output = crawler_v1(hs, input_handle_string, handle_client)
     crawler_output = crawler(handle, input_handle_string, handle_client)
     list_of_uids = crawler_output[0]
     dataset_or_file_id = crawler_output[1]
@@ -27,3 +31,6 @@ def harvest_errata_information(input_handle_string):
     logging.info("LIST OF UIDS GENERATED IS...")
     logging.info(list_of_uids)
     return list_of_uids, dataset_or_file_id
+
+
+harvest_errata_information('21.14100/atef_esgf_testfile_windvelocity.nc_w348h1')

@@ -13,7 +13,6 @@ import sys
 import errata
 
 
-
 def _main():
     """Main entry point.
 
