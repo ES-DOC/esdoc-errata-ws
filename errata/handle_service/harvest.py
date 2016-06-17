@@ -22,10 +22,11 @@ def harvest_errata_information(input_handle_string):
     handle = get_handle_by_handle_string(input_handle_string, handle_client)
     # initialize the handleRegister instance
     hs = HandleRegister(handle, handle_client)
+    print dir(hs)
     crawler_output = crawler_v1(hs, input_handle_string, handle_client)
-    crawler_output = crawler(handle, input_handle_string, handle_client)
+    # crawler_output = crawler(handle, input_handle_string, handle_client)
     list_of_uids = crawler_output[0]
-    dataset_or_file_id = crawler_output[1]
+    # dataset_or_file_id = crawler_output[1]
     logging.info("ELAPSED TIME TILL COMPLETION : " + str(time()-tick) + " SECONDS")
     logging.info("-----------------------------------END ISSUE TRACKING-----------------------------------")
     logging.info("LIST OF UIDS GENERATED IS...")
