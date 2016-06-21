@@ -10,6 +10,7 @@ from requests.packages.urllib3.exceptions import SNIMissingWarning
 
 from constants import *
 from custom_exceptions import *
+from entities import *
 
 
 # Diable requests warnings.
@@ -243,7 +244,7 @@ def get_successor_or_predecessor(handle, key, handle_client_instance):
 
 def list_children_filenames(_dataset_handle, handle_client_instance):
     """
-    lists children from dataset
+    lists children filenames from dataset
     :param _dataset_handle: dataset handle
     :param handle_client_instance: EUDATClient instance
     :return: list of children contained in dataset
@@ -252,6 +253,21 @@ def list_children_filenames(_dataset_handle, handle_client_instance):
     for child in _dataset_handle[CHILDREN].split(';'):
         child_handle = get_handle_by_handle_string(child, handle_client_instance)
         result.append(child_handle[FILE_NAME])
+    return result
+
+
+def list_children_handles(_dataset_handle, handle_client_instance):
+    """
+    lists children from dataset
+    :param _dataset_handle: dataset handle
+    :param handle_client_instance: EUDATClient instance
+    :return: list of child handle registers contained in dataset
+    """
+    result = []
+    for child in _dataset_handle[CHILDREN].split(';'):
+        child_handle = get_handle_by_handle_string(child, handle_client_instance)
+        child_handle_register = FileHandleRegister(child_handle, handle_client_instance)
+        result.append(child_handle_register)
     return result
 
 
@@ -384,13 +400,18 @@ def crawler_v1(input_handle, input_handle_string, handle_client_instance):
     list_of_uids = dict()
     # resolving whether the user input is on a file level or a dataset level.
     aggregation_level = get_aggregation_level(input_handle)
-    # initial id will serve for web service return readability
-    initial_id = get_dataset_or_file_id(input_handle, aggregation_level)
-    # order_index is used at every loop to maintain order of successor and predecessors
     order_index = 0
+    if aggregation_level == FILE:
+        initial_file_handle_register = FileHandleRegister(input_handle, handle_client_instance)
+        list_of_uids[initial_file_handle_register.id] = [initial_file_handle_register.parent_handle.]
+    elif aggregation_level == DATASET:
+        initial_dataset_handle_register = DatasetHandleRegister(input_handle, handle_client_instance)
+        list_of_uids[initial_dataset_handle_register.id] == [initial_dataset_handle_register.errata, order_index]
+    else:
+        raise UnresolvedAggregationLevel
     logging.debug('THE HANDLE PROVIDED IS OF AN AGGREGATION LEVEL ' + aggregation_level)
-    # initializing handles according to aggregation level.
-    # Please note this is for code readability purposes only.
+    logging.debug('THE REGISTRY OF APPROPRIATE AGGREGATION HAS BEEN CREATED SUCCESSFULLY...')
+
     if aggregation_level == FILE:
             initial_file_handle = input_handle
             logging.debug("GETTING PARENT HANDLE...")

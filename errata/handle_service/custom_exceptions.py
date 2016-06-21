@@ -5,6 +5,16 @@ Author: Atef BEN NASSER (IPSL), 2016
 """
 
 
+class UnresolvedAggregationLevel(Exception):
+    """
+    To be raised if the aggregation level found is neither DATASET or FILE.
+    """
+    def __init__(self, **args):
+
+        # Default message
+        self.msg = 'UNRESOLVABLE AGGREGATION LEVEL RECEIVED FROM HANDLE SERVER'
+        super(self.__class__, self).__init__(self.msg)
+
 class HandleNotFoundException(Exception):
     """
     To be raised if the self.handle was not found on the Handle Server.
@@ -18,7 +28,7 @@ class HandleNotFoundException(Exception):
 
 class FileNotFoundInSuccessor(Exception):
     """
-    To be raised if a file disappears from tree.
+    To be raised if a file is no longer traceable for whatever reason.
     """
     def __init__(self, **args):
 

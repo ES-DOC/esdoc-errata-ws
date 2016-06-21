@@ -27,9 +27,9 @@ class DatasetHandleRegister(GenericHandleRegister):
             self.lineage[1] = True
         except KeyError:
             self.first = True
-        for child in handle[CHILDREN].split(';'):
-            self.children.append(child)
-        self.children = list_children_filenames(handle, handle_client_instance)
+        # for child in handle[CHILDREN].split(';'):
+        #     self.children.append(child)
+        self.children = list_children_handles(handle, handle_client_instance)
         self.id = handle[DRS]
         self.version = handle[VERSION]
         try:
@@ -38,27 +38,40 @@ class DatasetHandleRegister(GenericHandleRegister):
         except KeyError:
             self.has_issue = False
 
+    def get_successor(self, handle_client_instance):
+        """
+        :param handle_client_instance
+        :return successor handle
+        """
+        return get_handle_by_handle_string(self.successor, handle_client_instance)
+
+    def get_predecessor(self, handle_client_instance):
+        """
+        :param handle_client_instance
+        :return predecessor handle
+        """
+        return get_handle_by_handle_string(self.predecessor, handle_client_instance)
+
 
 class FileHandleRegister(GenericHandleRegister):
-    def __init__(self, handle):
+    def __init__(self, handle, handle_client_instance, parent):
+        """
+        Needs handle client instance to get parent
+        """
         self.filename = handle[FILE_NAME]
-        self.parent = handle[PARENT]
+        self.parent_handle_string = handle[PARENT]
+        if parent is None:
+            self.parent_handle = self.get_parent_handle(self, handle_client_instance)
+        else:
+            self.parent_handle = self.get_parent_handle(self, handle_client_instance)
 
     def get_parent_handle(self, handle_client_instance):
         """
-        returns handle instance's parent handle.
         :param handle_client_instance: instance of the handle client
         :return: parent handle
         """
-        return get_handle_by_handle_string(self.parent, handle_client_instance)
+        return get_handle_by_handle_string(self.parent_handle_string, handle_client_instance)
 
-
-class HandleRegister(object):
-    def __init__(self, handle, handle_client):
-        if handle[AGGREGATION_LEVEL] == FILE:
-            self.handle = FileHandleRegister(handle)
-        elif handle[AGGREGATION_LEVEL] == DATASET:
-            self.handle = DatasetHandleRegister(handle)
 
 
 
