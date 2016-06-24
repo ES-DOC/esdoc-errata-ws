@@ -5,7 +5,7 @@ from b2handle.handleclient import EUDATHandleClient
 
 from utils import crawler, crawler_v1
 from utils import get_handle_by_handle_string
-from entities import HandleRegister
+from entities import *
 
 
 def harvest_errata_information(input_handle_string):

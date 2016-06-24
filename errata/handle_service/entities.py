@@ -64,6 +64,7 @@ class FileHandleRegister(GenericHandleRegister):
             self.parent_handle = self.get_parent_handle(self, handle_client_instance)
         else:
             self.parent_handle = self.get_parent_handle(self, handle_client_instance)
+        self.id = handle[FILE_NAME]
 
     def get_parent_handle(self, handle_client_instance):
         """

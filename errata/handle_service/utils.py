@@ -139,7 +139,7 @@ def get_parent_handle(file_handle, handle_client_instance):
     return get_handle_by_handle_string(file_handle[PARENT], handle_client_instance)
 
 
-def find_file_within_dataset(_dataset_handle, _file_handle, file_handle_string, handle_client_instance):
+def find_file_within_dataset(_dataset_handle_register, _file_handle_register, fhs, handle_client_instance, direction):
     """
     Finds specific file, designated by its filename in a dataset designated by its handle.
     :param _dataset_handle: handle of the dataset
@@ -149,31 +149,32 @@ def find_file_within_dataset(_dataset_handle, _file_handle, file_handle_string, 
     :except file not found in successor
     """
     # list containing the file_handle_strings
-    list_of_children = _dataset_handle[CHILDREN].split(";")
+    list_of_children = _dataset_handle_register.children
     logging.debug("THE CURRENT DATASET CONTAINS " + str(len(list_of_children)) + " CHILDREN...")
     logging.debug(list_of_children)
     logging.debug("STARTING LOOP OVER CHILDREN...")
     # Test added to improve performance
     # If file handle is automatically in the list we just bypass the filename test.
-    if file_handle_string not in list_of_children:
-        for file_handle_string in list_of_children:
-            logging.debug("PROCESSING FILE " + file_handle_string + " IN COMPARISON TO " + _file_handle[FILE_NAME])
-            child_file_handle = get_handle_by_handle_string(file_handle_string, handle_client_instance)
-            logging.debug("CURRENT HANDLE STRING CONTAINS THE FOLLOWING FILE NAME" + child_file_handle[FILE_NAME])
-            if _file_handle[FILE_NAME] == child_file_handle[FILE_NAME]:
+    if _file_handle_register not in list_of_children:
+        for fhs in list_of_children:
+            logging.debug("PROCESSING FILE " + _file_handle_register.filename + " IN COMPARISON TO " + fhs.filename)
+            if _file_handle_register.filename == fhs.filename:
                 logging.debug("FILE HAS BEEN FOUND WITHIN PREDECESSOR/SUCCESSOR COMPARING CHECKSUMS...")
-                if is_same_checksum(_file_handle[CHECKSUM], child_file_handle[CHECKSUM]):
+                if is_same_checksum(_file_handle_register.checksum, fhs.checksum):
                     logging.debug("SIMILAR CHECKSUMS WERE FOUND, FILE IS INTACT SO FAR...")
-                    return _file_handle, None
+                    return _file_handle_register, None
                 else:
                     # TODO REPLACE NONE WITH PROPER ERRATA INFO
                     logging.debug("CHECKSUM DIFFERENCE HAS BEEN DETECTED, REPLACING FILE HANDLE AND RETRIEVING ISSUE...")
-                    logging.debug(child_file_handle[CHECKSUM] + " AND " + _file_handle[CHECKSUM])
-                    return child_file_handle, None
+                    if direction == SUCCESSOR:
+                        logging.debug('FILE WAS CHANGED IN THE SUCCEDING DATASET, GETTING ISSUE FROM PREVIOUS HANDLE')
+                        return _dataset_handle_register.predecessor.errata
+                    elif direction == PREDECESSOR:
+                        logging.debug('FILE WAS CHANGED IN THE PRECEDING DATASET, GETTING ISSUE FROM THIS HANDLE')
             else:
                 pass
     else:
-        return _file_handle, None
+        return _file_handle_register, None
         logging.warn("FILE WAS NOT FOUND IN THIS PREDECESSOR/SUCCESSOR...")
         logging.warn("DEDUCING ERRATA INFORMATION ON AGGREGATION LEVEL OF FILES IS IMPOSSIBLE IN THIS CASE...")
         raise FileNotFoundInSuccessor
@@ -401,37 +402,28 @@ def crawler_v1(input_handle, input_handle_string, handle_client_instance):
     # resolving whether the user input is on a file level or a dataset level.
     aggregation_level = get_aggregation_level(input_handle)
     order_index = 0
+    is_file = False
     if aggregation_level == FILE:
         initial_file_handle_register = FileHandleRegister(input_handle, handle_client_instance)
-        list_of_uids[initial_file_handle_register.id] = [initial_file_handle_register.parent_handle.]
+        list_of_uids[initial_file_handle_register.id] = [initial_file_handle_register.parent_handle.errata, order_index]
+        is_file = True
     elif aggregation_level == DATASET:
         initial_dataset_handle_register = DatasetHandleRegister(input_handle, handle_client_instance)
         list_of_uids[initial_dataset_handle_register.id] == [initial_dataset_handle_register.errata, order_index]
     else:
         raise UnresolvedAggregationLevel
+
     logging.debug('THE HANDLE PROVIDED IS OF AN AGGREGATION LEVEL ' + aggregation_level)
     logging.debug('THE REGISTRY OF APPROPRIATE AGGREGATION HAS BEEN CREATED SUCCESSFULLY...')
+    if is_file:
+        _dataset_handle = initial_file_handle_register.parent_handle
+        _file_handle = initial_file_handle_register
+        initial_id = initial_file_handle_register.id
+    else:
+        _dataset_handle = initial_dataset_handle_register
+        initial_id = initial_dataset_handle_register.id
 
-    if aggregation_level == FILE:
-            initial_file_handle = input_handle
-            logging.debug("GETTING PARENT HANDLE...")
-            initial_handle = get_parent_handle(input_handle, handle_client_instance)
-            logging.debug("PARENT HANDLE SUCCESSFULLY FOUND.")
-            # replacing file_handle by dataset_handle for looping purposes
-            _dataset_handle = initial_handle
-            _file_handle = input_handle
-
-    elif aggregation_level == DATASET:
-            initial_handle = input_handle
-            _dataset_handle = input_handle
-    # Added current dataset errata return information
-    list_of_uids[_dataset_handle[DRS]] = [get_issue_id(_dataset_handle), order_index]
-
-    # lineage variable contains information whether the crawler needs to go up or down the tree.
-    # lineage may indicate that the crawler needs to go both up and down, in that case, up will be treated first.
-    # The treatment will go in its entirety in one direction before assessing the other one.
-
-    lineage = has_successor_and_predecessors(_dataset_handle)
+    lineage = _dataset_handle.lineage
     logging.debug("LINEAGE TEST YIELDED ")
     logging.debug(lineage)
     if lineage[0]:
@@ -441,42 +433,43 @@ def crawler_v1(input_handle, input_handle_string, handle_client_instance):
         while _dataset_handle is not None and next_lineage[0]:
             try:
                 logging.debug("GETTING PREDECESSOR...")
-                _dataset_handle = get_successor_or_predecessor(_dataset_handle, PREDECESSOR, handle_client_instance)
-                next_lineage = has_successor_and_predecessors(_dataset_handle)
+                predecessor = _dataset_handle.predecessor
+                next_lineage = predecessor.lineage
                 logging.debug("PREDECESSOR FOUND WITH THE FOLLOWING LINEAGE ")
                 logging.debug(next_lineage)
                 order_index -= 1
-                list_of_uids[_dataset_handle[DRS]] = [get_issue_id(_dataset_handle), order_index]
-                if aggregation_level == FILE:
+                list_of_uids[predecessor.id] = [predecessor.errata, order_index]
+                if is_file:
                     try:
                         find_file_within_dataset(_dataset_handle, _file_handle, input_handle_string,
                                                  handle_client_instance)
                     except FileNotFoundInSuccessor:
                         logging.debug("FILE SEEMS TO HAVE BEEN CREATED IN THIS DATASET...")
             except HandleNotFoundException:
-                logging.debug('A LOOKUP FOR A PREVIOUS HANDLE HAS FAILED FOR THE HANDLE ' +
-                              _dataset_handle[PREDECESSOR])
+                logging.debug('A LOOKUP FOR A PREVIOUS HANDLE HAS FAILED FOR THE HANDLE ' + predecessor)
                 break
+            _dataset_handle = predecessor
+            lineage = next_lineage
         logging.debug('EXITING UPWARDS CRAWLER...')
 
     # Reinitializing handle in case it got modified in the process of finding a predecessor
     logging.debug('UPWARDS LOOP HAS BEEN COMPLETED, HANDLE IS NOW RESTORED TO START LEVEL...')
-    _dataset_handle = initial_handle
+    _dataset_handle = initial_dataset_handle_register
     order_index = 0
 
     if lineage[1]:
         logging.debug('STARTING DOWNWARDS CRAWLER...')
-        next_lineage = lineage
+        next_lineage = _dataset_handle.lineage
         while _dataset_handle is not None and next_lineage[1]:
             try:
                 logging.debug("FINDING SUCCESSOR...")
-                _dataset_handle = get_successor_or_predecessor(_dataset_handle, SUCCESSOR, handle_client_instance)
-                next_lineage = has_successor_and_predecessors(_dataset_handle)
+                successor = _dataset_handle.successor
+                next_lineage = successor.lineage
                 logging.debug("SUCCESSOR FOUND WITH THE FOLLOWING LINEAGE")
                 logging.debug(next_lineage)
                 order_index += 1
-                list_of_uids[_dataset_handle[DRS]] = [get_issue_id(_dataset_handle), order_index]
-                if aggregation_level == FILE:
+                list_of_uids[_dataset_handle.id] = [_dataset_handle.errata, order_index]
+                if is_file:
                     try:
                         find_file_within_dataset(_dataset_handle, _file_handle, input_handle_string,
                                                  handle_client_instance)
@@ -488,6 +481,8 @@ def crawler_v1(input_handle, input_handle_string, handle_client_instance):
             except HandleNotFoundException:
                 logging.debug('A LOOKUP FOR A SUCCESSOR HANDLE HAS FAILED' + _dataset_handle[SUCCESSOR])
                 break
+            _dataset_handle = successor
+            next_lineage = successor.lineage
         logging.debug('EXITING DOWNWARDS CRAWLER...')
 
     return list_of_uids, initial_id
