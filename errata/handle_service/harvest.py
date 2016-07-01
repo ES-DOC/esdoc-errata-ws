@@ -36,9 +36,9 @@ def harvest_errata_information(input_handle_string):
     # crawler_output = crawler(handle, input_handle_string, handle_client)
     list_of_uids = crawler_output[0]
     dataset_or_file_id = crawler_output[1]
-    is_latest = None
-    has_issues = None
-    incomplete_retracing = None
+    is_latest = crawler_output[2]
+    has_issues = crawler_output[3]
+    incomplete_retracing = crawler_output[4]
     logging.info("ELAPSED TIME TILL COMPLETION : " + str(time()-tick) + " SECONDS")
     logging.info("-----------------------------------END ISSUE TRACKING-----------------------------------")
     logging.info("LIST OF UIDS GENERATED IS...")
