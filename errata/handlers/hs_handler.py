@@ -49,7 +49,9 @@ def _get_errata_information(handle):
 
     """
     result = harvest_errata_information(handle)
-    data = [(k, v[0], v[1]) for k, v in result[0].iteritems()]
+    print('here is the result')
+    print(result)
+    data = [(k, v[0], v[1], v[2]) for k, v in result[0].iteritems()]
     is_latest = result[2]
     has_issues = result[3]
     incomplete_retracing = result[4]
