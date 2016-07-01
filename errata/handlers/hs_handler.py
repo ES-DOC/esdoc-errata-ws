@@ -48,9 +48,13 @@ def _get_errata_information(handle):
         }
 
     """
-    data = [(k, v[0], v[1], v[2], v[3]) for k, v in harvest_errata_information(handle)[0].iteritems()]
+    result = harvest_errata_information(handle)
+    data = [(k, v[0], v[1]) for k, v in result[0].iteritems()]
+    is_latest = result[2]
+    has_issues = result[3]
+    incomplete_retracing = result[4]
 
-    return sorted(data, key=lambda i: i[2])
+    return sorted(data, key=lambda i: i[2]), is_latest, has_issues, incomplete_retracing
 
 
 class HandleServiceRequestHandler(HTTPRequestHandler):
@@ -68,6 +72,9 @@ class HandleServiceRequestHandler(HTTPRequestHandler):
         self.data = []
         self.errata = []
         self.timestamp = None
+        self.has_issue = None
+        self.latest = None
+        self.incomplete_retracing = None
 
 
     def set_default_headers(self):
@@ -94,7 +101,11 @@ class HandleServiceRequestHandler(HTTPRequestHandler):
 
             """
             for handle in self.handles:
-                self.errata.append([handle, _get_errata_information(handle)])
+                errata_info = _get_errata_information(handle)
+                self.errata.append([handle, errata_info[0]])
+                self.has_issue = errata_info[1]
+                self.is_latest = errata_info[2]
+                self.incomplete_retracing = errata_info[3]
 
 
         def _set_output():

@@ -139,8 +139,8 @@ def crawler_v1(input_handle, input_handle_string, handle_client_instance):
             _dataset_handle = successor
             next_lineage = successor.lineage
         logging.debug('EXITING DOWNWARDS CRAWLER...')
-    list_of_uids['is_latest'] = is_latest
-    list_of_uids['has_issue'] = has_issue
+    # list_of_uids['is_latest'] = is_latest
+    # list_of_uids['has_issue'] = has_issue
     if incomplete_retracing:
         list_of_uids['incomplete_retracing'] = incomplete_retracing
-    return list_of_uids, initial_id
+    return list_of_uids, initial_id, is_latest, has_issue, incomplete_retracing
