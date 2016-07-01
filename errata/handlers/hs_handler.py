@@ -48,7 +48,7 @@ def _get_errata_information(handle):
         }
 
     """
-    data = [(k, v[0], v[1]) for k, v in harvest_errata_information(handle)[0].iteritems()]
+    data = [(k, v[0], v[1], v[2], v[3]) for k, v in harvest_errata_information(handle)[0].iteritems()]
 
     return sorted(data, key=lambda i: i[2])
 
@@ -104,6 +104,9 @@ class HandleServiceRequestHandler(HTTPRequestHandler):
             self.output_encoding = 'json'
             self.output = {
                 'errata': sorted(self.errata, key=lambda i: i[0]),
+                'has_issue': self.has_issue,
+                'latest': self.is_latest,
+                'incomplete_retracing': self.incomplete_retracing,
                 'timestamp': self.timestamp
             }
 
