@@ -89,7 +89,7 @@ class DatasetHandleRegister(GenericHandleRegister):
 
 
 class FileHandleRegister(GenericHandleRegister):
-    def __init__(self, handle, handle_client_instance):
+    def __init__(self, handle, handle_client_instance, parent_handle):
         """
         Needs handle client instance to get parent
         """
@@ -100,8 +100,12 @@ class FileHandleRegister(GenericHandleRegister):
         self.parent_handle_string = handle[PARENT]
         # logging.DEBUG('SETTING THE PARENT HANDLE REGISTER TO FILE REGISTER, THIS WILL FLOOD THE LOG WITH SUCCESSOR'
         #               'AND PREDECESSOR FETCHING PROCESS...')
-        self.parent_handle = DatasetHandleRegister(self.get_parent_handle(handle_client_instance), handle_client_instance)
+        if parent_handle is not None:
+            self.parent_handle = parent_handle
+        else:
+            self.parent_handle = DatasetHandleRegister(self.get_parent_handle(handle_client_instance), handle_client_instance)
         self.id = handle[FILE_NAME]
+        self.handle = handle
         print(self.checksum)
 
     def get_parent_handle(self, handle_client_instance):

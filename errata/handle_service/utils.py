@@ -10,8 +10,7 @@ from requests.packages.urllib3.exceptions import SNIMissingWarning
 
 from constants import *
 from custom_exceptions import *
-# from entities import *
-
+from difflib import SequenceMatcher
 
 # Diable requests warnings.
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
@@ -155,9 +154,13 @@ def find_file_within_dataset(_dataset_handle_register, _file_handle_register, di
     logging.debug("STARTING LOOP OVER CHILDREN...")
     # Test added to improve performance
     # If file handle is automatically in the list we just bypass the filename test.
-    if _file_handle_register not in list_of_children:
+    if _file_handle_register.handle not in list_of_children:
+        logging.debug('FILE NOT FOUND IN CHILDREN LIST, PROCEEDING TO FILENAME TESTING...')
         for fhs in list_of_children:
             logging.debug("PROCESSING FILE " + _file_handle_register.filename + " IN COMPARISON TO " + fhs[FILE_NAME])
+            logging.debug("STARTING RESEMBLANCE TEST.")
+            ratio = SequenceMatcher(None, _file_handle_register.filename, fhs[FILE_NAME])
+            logging.debug("THE RECEIVED RATION IS OF..."+str(ratio.ratio()))
             if _file_handle_register.filename == fhs[FILE_NAME]:
                 logging.debug("FILE HAS BEEN FOUND WITHIN PREDECESSOR/SUCCESSOR COMPARING CHECKSUMS...")
                 if is_same_checksum(_file_handle_register.checksum, fhs[CHECKSUM]):
@@ -176,8 +179,11 @@ def find_file_within_dataset(_dataset_handle_register, _file_handle_register, di
                 pass
         logging.warn("FILE WAS NOT FOUND IN THIS PREDECESSOR/SUCCESSOR...")
         logging.warn("DEDUCING ERRATA INFORMATION ON AGGREGATION LEVEL OF FILES IS IMPOSSIBLE IN THIS CASE...")
-        raise FileNotFoundInSuccessor
-        return _file_handle_register, None
+        logging.info(_dataset_handle_register.errata)
+        return _file_handle_register.handle, _dataset_handle_register.errata
+    else:
+        logging.debug('FILE UNCHANGED, MOVING ON...')
+        return _file_handle_register.handle, None
 
 
 def get_parent_handle(file_handle, handle_client_instance):
@@ -264,11 +270,11 @@ def list_children_handles(_dataset_handle, handle_client_instance):
     :param handle_client_instance: EUDATClient instance
     :return: list of child handle registers contained in dataset
     """
-    result = []
+    list_of_children = []
     for child in _dataset_handle[CHILDREN].split(';'):
         child_handle = get_handle_by_handle_string(child, handle_client_instance)
-        result.append(child_handle)
-    return result
+        list_of_children.append(child_handle)
+    return list_of_children
 
 
 def get_issue_id(handle):

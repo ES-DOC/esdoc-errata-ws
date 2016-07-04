@@ -25,11 +25,12 @@ def crawler_v1(input_handle, input_handle_string, handle_client_instance):
     is_file = False
     incomplete_retracing = False
     if aggregation_level == FILE:
-        initial_file_handle_register = FileHandleRegister(input_handle, handle_client_instance)
-        list_of_uids[initial_file_handle_register.id] = [initial_file_handle_register.parent_handle.errata,
-                                                         initial_file_handle_register.parent_handle.id,
-                                                         initial_file_handle_register.parent_handle.version,
-                                                         order_index]
+        initial_file_handle_register = FileHandleRegister(input_handle, handle_client_instance, None)
+        #TODO investigate if we need file errata initialization
+        # list_of_uids[initial_file_handle_register.id] = [initial_file_handle_register.parent_handle.errata,
+        #                                                  initial_file_handle_register.parent_handle.id,
+        #                                                  initial_file_handle_register.parent_handle.version,
+        #                                                  order_index]
         is_file = True
     elif aggregation_level == DATASET:
         initial_dataset_handle_register = DatasetHandleRegister(input_handle, handle_client_instance)
@@ -73,10 +74,11 @@ def crawler_v1(input_handle, input_handle_string, handle_client_instance):
                 if is_file:
                     try:
                         _file_handle, errata = find_file_within_dataset(_dataset_handle, _file_handle, PREDECESSOR)
-                        _file_handle = FileHandleRegister(_file_handle, handle_client_instance)
-                        list_of_uids[_file_handle.parent_handle.handle_string] = [errata, _file_handle.parent_handle.id,
-                                                                                  _file_handle.parent_handle.version,
-                                                                                  order_index]
+                        _file_handle = FileHandleRegister(_file_handle, handle_client_instance, None)
+                        if errata is not None:
+                            list_of_uids[_file_handle.parent_handle.handle_string] = [errata, _file_handle.parent_handle.id,
+                                                                                      _file_handle.parent_handle.version,
+                                                                                      order_index]
                     except FileNotFoundInSuccessor:
                         logging.debug("FILE SEEMS TO HAVE BEEN CREATED IN THIS DATASET...")
                         incomplete_retracing = True
@@ -111,15 +113,15 @@ def crawler_v1(input_handle, input_handle_string, handle_client_instance):
                 logging.debug("SUCCESSOR FOUND WITH THE FOLLOWING LINEAGE")
                 logging.debug(next_lineage)
                 order_index += 1
-                list_of_uids[_dataset_handle.handle_string] = [_dataset_handle.errata, _dataset_handle.id,
-                                                               _dataset_handle.version, order_index]
                 if is_file:
                     try:
                         raw_handle, errata = find_file_within_dataset(_dataset_handle, _file_handle, SUCCESSOR)
                         print('CHILD FILE FOUND...')
-                        _file_handle = FileHandleRegister(raw_handle, handle_client_instance)
-                        list_of_uids[_file_handle.parent_handle.handle_string] = [errata, _file_handle.parent_handle.id,
-                                                                       _file_handle.parent_handle.version, order_index]
+                        _file_handle = FileHandleRegister(raw_handle, handle_client_instance, _dataset_handle)
+                        if errata is not None:
+                            logging.debug('AN ISSUE HAS BEEN DETECTED, FILLING LIST...')
+                            list_of_uids[_file_handle.parent_handle.handle_string] = [errata, _file_handle.parent_handle.id,
+                                                                                       _file_handle.parent_handle.version, order_index]
                     except FileNotFoundInSuccessor:
                         logging.warn("COULD NOT DEDUCE FURTHER ERRATA HISTORY SINCE FILE "
                                      "DISAPPEARED IN SUCCESSOR...")
@@ -139,8 +141,5 @@ def crawler_v1(input_handle, input_handle_string, handle_client_instance):
             _dataset_handle = successor
             next_lineage = successor.lineage
         logging.debug('EXITING DOWNWARDS CRAWLER...')
-    # list_of_uids['is_latest'] = is_latest
-    # list_of_uids['has_issue'] = has_issue
-    if incomplete_retracing:
-        list_of_uids['incomplete_retracing'] = incomplete_retracing
+
     return list_of_uids, initial_id, is_latest, has_issue, incomplete_retracing

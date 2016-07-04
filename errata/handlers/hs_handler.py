@@ -51,7 +51,11 @@ def _get_errata_information(handle):
     result = harvest_errata_information(handle)
     print('here is the result')
     print(result)
+    print('printing values...')
+    for k, v in result[0].iteritems():
+        print(k, v)
     data = [(k, v[0], v[1], v[2]) for k, v in result[0].iteritems()]
+    print('data has been emptied')
     id = result[1]
     is_latest = result[2]
     has_issues = result[3]
@@ -98,7 +102,6 @@ class HandleServiceRequestHandler(HTTPRequestHandler):
             """
             self.timestamp = self.get_argument(_PARAM_TIMESTAMP)
             self.handles = self.get_argument(_PARAM_HANDLES).split(",")
-
 
         def _invoke_pid_handle_service():
             """Invoke remote PID handle service.
