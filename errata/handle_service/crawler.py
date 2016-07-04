@@ -83,13 +83,9 @@ def crawler_v1(input_handle, input_handle_string, handle_client_instance):
                         logging.debug("FILE SEEMS TO HAVE BEEN CREATED IN THIS DATASET...")
                         incomplete_retracing = True
                 elif not is_file:
-                    print(predecessor.id+predecessor.version)
-                    print(predecessor.errata)
-                    print('adding to list')
+
                     list_of_uids[predecessor.handle_string] = [predecessor.errata, predecessor.id, predecessor.version,
                                                                order_index]
-                    print('added to list')
-                    print list_of_uids
             except HandleNotFoundException:
                 logging.debug('A LOOKUP FOR A PREVIOUS HANDLE HAS FAILED FOR THE HANDLE ' + predecessor)
                 break
@@ -116,7 +112,6 @@ def crawler_v1(input_handle, input_handle_string, handle_client_instance):
                 if is_file:
                     try:
                         raw_handle, errata = find_file_within_dataset(_dataset_handle, _file_handle, SUCCESSOR)
-                        print('CHILD FILE FOUND...')
                         _file_handle = FileHandleRegister(raw_handle, handle_client_instance, _dataset_handle)
                         if errata is not None:
                             logging.debug('AN ISSUE HAS BEEN DETECTED, FILLING LIST...')
@@ -129,12 +124,8 @@ def crawler_v1(input_handle, input_handle_string, handle_client_instance):
                         # in case one failure of finding files is disregarded remove the break.
                         break
                 elif not is_file:
-                    print(successor.id+successor.version)
-                    print(successor.errata)
-                    print('adding to list')
                     list_of_uids[successor.handle_string] = [successor.errata, successor.id, successor.version,
                                                              order_index]
-                    print('added successor to list')
             except HandleNotFoundException:
                 logging.debug('A LOOKUP FOR A SUCCESSOR HANDLE HAS FAILED' + _dataset_handle.successor[DRS])
                 break

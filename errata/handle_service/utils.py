@@ -159,8 +159,7 @@ def find_file_within_dataset(_dataset_handle_register, _file_handle_register, di
         for fhs in list_of_children:
             logging.debug("PROCESSING FILE " + _file_handle_register.filename + " IN COMPARISON TO " + fhs[FILE_NAME])
             logging.debug("STARTING RESEMBLANCE TEST.")
-            ratio = SequenceMatcher(None, _file_handle_register.filename, fhs[FILE_NAME])
-            logging.debug("THE RECEIVED RATION IS OF..."+str(ratio.ratio()))
+            ratio = SequenceMatcher(None, _file_handle_register.filename, fhs[FILE_NAME]).ratio()
             if _file_handle_register.filename == fhs[FILE_NAME]:
                 logging.debug("FILE HAS BEEN FOUND WITHIN PREDECESSOR/SUCCESSOR COMPARING CHECKSUMS...")
                 if is_same_checksum(_file_handle_register.checksum, fhs[CHECKSUM]):
@@ -175,6 +174,9 @@ def find_file_within_dataset(_dataset_handle_register, _file_handle_register, di
                     elif direction == PREDECESSOR:
                         logging.debug('FILE WAS CHANGED IN THE PRECEDING DATASET, GETTING ISSUE FROM THIS HANDLE')
                         return fhs, _dataset_handle_register.errata
+
+            elif 1 > ratio > 0.9:
+                logging.info('A CONTENDER TO THAT BARES A STRONG RESEMBLANCE TO THE FILE IN HANDS HAS BEEN DETECTED...')
             else:
                 pass
         logging.warn("FILE WAS NOT FOUND IN THIS PREDECESSOR/SUCCESSOR...")

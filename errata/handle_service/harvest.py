@@ -21,15 +21,6 @@ def harvest_errata_information(input_handle_string):
     logging.info("--HANDLE CLIENT CREATED--")
     logging.info("----------------------------------BEGIN ISSUE TRACKING----------------------------------")
     handle = get_handle_by_handle_string(input_handle_string, handle_client)
-    print handle
-    try:
-        print(handle['REPLACED_BY'])
-    except KeyError:
-        pass
-    try:
-        print(handle['PRECEDED_BY'])
-    except KeyError:
-        pass
 
     # initialize the handleRegister instance
     crawler_output = crawler_v1(handle, input_handle_string, handle_client)

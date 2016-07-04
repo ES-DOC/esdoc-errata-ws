@@ -106,7 +106,6 @@ class FileHandleRegister(GenericHandleRegister):
             self.parent_handle = DatasetHandleRegister(self.get_parent_handle(handle_client_instance), handle_client_instance)
         self.id = handle[FILE_NAME]
         self.handle = handle
-        print(self.checksum)
 
     def get_parent_handle(self, handle_client_instance):
         """
