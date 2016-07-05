@@ -74,7 +74,7 @@ class Issue(Entity):
     # SQLAlchemy directives.
     __tablename__ = 'tbl_issue'
     __table_args__ = (
-        {'schema':_SCHEMA}
+        {'schema': _SCHEMA}
     )
 
     # Column definitions.
@@ -100,8 +100,8 @@ class IssueDataset(Entity):
     # SQLAlchemy directives.
     __tablename__ = 'tbl_issue_dataset'
     __table_args__ = (
-        UniqueConstraint('issue_id' ,'dataset_id'),
-        {'schema':_SCHEMA}
+        UniqueConstraint('issue_id', 'dataset_id'),
+        {'schema': _SCHEMA}
     )
 
     # Column definitions.
