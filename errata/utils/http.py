@@ -56,7 +56,7 @@ class HTTPRequestHandler(tornado.web.RequestHandler):
         return self.application.settings.get('debug', False)
 
 
-    def decode_json_body(self, as_namedtuple=True):
+    def decode_json_body(self, as_namedtuple=False):
         """Decodes request body JSON string.
 
         :param tornado.web.RequestHandler handler: A web request handler.
@@ -69,7 +69,6 @@ class HTTPRequestHandler(tornado.web.RequestHandler):
             return None
 
         body = json.loads(self.request.body)
-
         return to_namedtuple(body) if as_namedtuple else body
 
 

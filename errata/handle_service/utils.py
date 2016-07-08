@@ -21,7 +21,7 @@ requests.packages.urllib3.disable_warnings(SNIMissingWarning)
 # Initialize logging.
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(message)s',
-                    filename=os.path.join("/home/abennasser", "logs/errata.log"),
+                    filename=os.path.join(os.environ['ERRATA_HOME'], "logs/errata.log"),
                     filemode='w')
 
 

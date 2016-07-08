@@ -17,12 +17,11 @@ from errata.handle_service.harvest import harvest_errata_information
 from errata.utils.http import HTTPRequestHandler
 from errata.utils.http import HTTP_HEADER_Access_Control_Allow_Origin
 
-
-
 # Query parameter names.
 _PARAM_HANDLES = 'handles'
 _PARAM_TIMESTAMP = 'timestamp'
-
+_PARAM_DSETID = 'dsetid'
+_PARAM_VERSION = 'version'
 # Query parameter validation schema.
 _REQUEST_VALIDATION_SCHEMA = {
     _PARAM_HANDLES: {
@@ -122,7 +121,6 @@ class HandleServiceRequestHandler(HTTPRequestHandler):
                 'incomplete_retracing': self.incomplete_retracing,
                 'timestamp': self.timestamp
             }
-
 
         # Invoke tasks.
         self.invoke(_REQUEST_VALIDATION_SCHEMA, [

@@ -99,3 +99,19 @@ def get_issues(
         qry = qry.filter(Issue.workflow == workflow)
 
     return qry.all()
+
+
+def check_description(description):
+    """
+    Checks for the existence of a similar description in the db.
+    :param description: string
+    :return: boolean
+    """
+
+    qry = raw_query(Issue.description)
+    qry = qry.filter(Issue.description == description)
+    if not qry.all():
+        return True
+    else:
+        return False
+

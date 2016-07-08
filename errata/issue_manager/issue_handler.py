@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: errata.issue_manager.issue_handler.py
+.. module:: errata.issue_manager.issue_manager_handler.py
    :platform: Unix
    :synopsis: Handles issue information and provides methods to deal with
 
@@ -38,6 +38,7 @@ from errata.constants import STATE_CLOSED
 from errata.constants import STATE_OPEN
 from errata.db.models import Issue, IssueDataset
 from errata.utils import logger
+import simplejson
 
 
 
@@ -118,8 +119,12 @@ class ESGFIssue(object):
 
     """
     def __init__(self, issue, dsets_f):
-        self.attributes = json.loads(issue)
-        self.dsets = self.get_dsets(dsets_f)
+        print('INITIALIZING ESGFISSUE OBJECT....')
+        print(type(issue))
+        print(issue)
+        self.attributes = issue
+        print('GOT THE ISSUE...')
+        self.dsets = None
 
     def get(self, key):
         """
@@ -167,12 +172,17 @@ class ESGFIssue(object):
 
         """
         # Load JSON schema for issue template
+        print('STARTED VALIDATION PROCESS...')
         with open(__JSON_SCHEMA_PATHS__[action]) as f:
+            print('LOADING FILE...')
             schema = json.load(f)
+            print('FILE SUCCESSFULLY LOADED!')
         # Validate issue attributes against JSON issue schema
         try:
+            print(self.attributes)
             jsonschema.validate(self.attributes, schema)
-        except:
+        except jsonschema.exceptions.ValidationError as e:
+            print(e.message)
             raise InvalidJSONSchema
         # Test landing page and materials URLs
         urls = filter(None, traverse(map(self.attributes.get, ['url', 'materials'])))
@@ -247,9 +257,9 @@ class ESGFIssue(object):
         """
         with db.session.create():
             # Test if description is not already published
-            if self.attributes['description'] in db.session.query(??):
-            # TODO: Build SQL query to get all descriptions as 'SELECT description FROM TABLE'
-                raise InvalidDescription
+            # if self.attributes['description'] in db.session.query(??):
+            # # TODO: Build SQL query to get all descriptions as 'SELECT description FROM TABLE'
+            #     raise InvalidDescription
             self.attributes.prepend('id', str(uuid4()))
             self.attributes.update({'workflow': unicode('new')})
             # Insert issue entry into database
@@ -307,72 +317,73 @@ class ESGFIssue(object):
         :raises Error: If the issue update fails for any other reason
 
         """
-        with db.session.create():
-            db_issue = self._load_issue(db.session.query())
-            db_dsets = _load_dsets(db.session.query())
-        # Test that workflow should not change back to "New"
-        if db_issue['workflow'] != 'new' and self.attributes['workflow'] == 'new':
-            raise InvalidStatus
-        # Test if id, title, project, institute and dates are unchanged.
-        for key in ['id', 'title', 'project', 'institute', 'created_at', 'last_updated_at']:
-            if self.attributes[key] != db_issue[key]:
-                raise InvalidAttribute
-        # Test the description changes by no more than 80%
-        if token_sort_ratio(self.attributes['description'], db_issue['description']) < __RATIO__:
-            raise InvalidDescription
-        keys = DictDiff(db_issue, self.attributes)
-        dsets = ListDiff(db_dsets, self.dsets)
-        if (not keys.changed() and not keys.added() and not keys.removed() and not dsets.added() and
-                not dsets.removed()):
-            logging.info('Nothing to change on GitHub issue #{0}'.format(db_issue['id']))
-        else:
-            for key in keys.changed():
-                logging.info('CHANGE {0}'.format(key))
-                logging.debug('Old "{0}" <- "{1}"'.format(key, db_issue[key]))
-                logging.debug('New "{0}" -> "{1}"'.format(key, self.attributes[key]))
-                db_issue[key] = self.attributes[key]
-            for key in keys.added():
-                logging.info('ADD {0}'.format(key))
-                logging.debug('Old "{0}" <- "{1}"'.format(key, __FILL_VALUE__))
-                logging.debug('New "{0}" -> "{1}"'.format(key, self.attributes[key]))
-                db_issue[key] = self.attributes[key]
-            for key in keys.removed():
-                logging.info('REMOVE {0}'.format(key))
-                logging.debug('Old "{0}" <- "{1}"'.format(key, db_issue[key]))
-                logging.debug('New "{0}" -> "{1}"'.format(key, __FILL_VALUE__))
-                del db_issue[key]
-            # Update issue information keeping status unchanged
-            issue = self._get_issue(db_issue)
-            try:
-                db.session.update(issue)
-            except UnicodeDecodeError:
-                logging.exception('DECODING EXCEPTION')
-            else:
-                logging.info('ISSUE UPDATED :: {}'.format(issue.uid))
-
-            for dset in dsets.removed():
-                db.session.query(??) # TODO : 'SELECT * FROM tbl_dataset WHERE dataset_id=dset'
-                try:
-                    db.session.insert(dataset)
-                except sqlalchemy.exc.IntegrityError:
-                    logging.error('DATASET SKIPPED (already inserted) :: {}'.format(dataset.dataset_id))
-                    db.session.rollback()
-
-                logging.info('REMOVE {0}'.format(dset))
-            for dset in dsets.added():
-                logging.info('ADD {0}'.format(dset))
-            db_dsets = self.dsets
-
-            # Insert related datasets.
-            for dataset_id in db_dsets:
-                dataset = IssueDataset()
-                dataset.issue_id = issue.id
-                dataset.dataset_id = dataset_id
-                try:
-                    db.session.insert(dataset)
-                except sqlalchemy.exc.IntegrityError:
-                    logging.error('DATASET SKIPPED (already inserted) :: {}'.format(dataset.dataset_id))
-                    db.session.rollback()
+        # with db.session.create():
+        #     db_issue = self._load_issue(db.session.query())
+        #     db_dsets = _load_dsets(db.session.query())
+        # # Test that workflow should not change back to "New"
+        # if db_issue['workflow'] != 'new' and self.attributes['workflow'] == 'new':
+        #     raise InvalidStatus
+        # # Test if id, title, project, institute and dates are unchanged.
+        # for key in ['id', 'title', 'project', 'institute', 'created_at', 'last_updated_at']:
+        #     if self.attributes[key] != db_issue[key]:
+        #         raise InvalidAttribute
+        # # Test the description changes by no more than 80%
+        # if token_sort_ratio(self.attributes['description'], db_issue['description']) < __RATIO__:
+        #     raise InvalidDescription
+        # keys = DictDiff(db_issue, self.attributes)
+        # dsets = ListDiff(db_dsets, self.dsets)
+        # if (not keys.changed() and not keys.added() and not keys.removed() and not dsets.added() and
+        #         not dsets.removed()):
+        #     logging.info('Nothing to change on GitHub issue #{0}'.format(db_issue['id']))
+        # else:
+        #     for key in keys.changed():
+        #         logging.info('CHANGE {0}'.format(key))
+        #         logging.debug('Old "{0}" <- "{1}"'.format(key, db_issue[key]))
+        #         logging.debug('New "{0}" -> "{1}"'.format(key, self.attributes[key]))
+        #         db_issue[key] = self.attributes[key]
+        #     for key in keys.added():
+        #         logging.info('ADD {0}'.format(key))
+        #         logging.debug('Old "{0}" <- "{1}"'.format(key, __FILL_VALUE__))
+        #         logging.debug('New "{0}" -> "{1}"'.format(key, self.attributes[key]))
+        #         db_issue[key] = self.attributes[key]
+        #     for key in keys.removed():
+        #         logging.info('REMOVE {0}'.format(key))
+        #         logging.debug('Old "{0}" <- "{1}"'.format(key, db_issue[key]))
+        #         logging.debug('New "{0}" -> "{1}"'.format(key, __FILL_VALUE__))
+        #         del db_issue[key]
+        #     # Update issue information keeping status unchanged
+        #     issue = self._get_issue(db_issue)
+        #     try:
+        #         db.session.update(issue)
+        #     except UnicodeDecodeError:
+        #         logging.exception('DECODING EXCEPTION')
+        #     else:
+        #         logging.info('ISSUE UPDATED :: {}'.format(issue.uid))
+        #
+        #     for dset in dsets.removed():
+        #         db.session.query(??) # TODO : 'SELECT * FROM tbl_dataset WHERE dataset_id=dset'
+        #         try:
+        #             db.session.insert(dataset)
+        #         except sqlalchemy.exc.IntegrityError:
+        #             logging.error('DATASET SKIPPED (already inserted) :: {}'.format(dataset.dataset_id))
+        #             db.session.rollback()
+        #
+        #         logging.info('REMOVE {0}'.format(dset))
+        #     for dset in dsets.added():
+        #         logging.info('ADD {0}'.format(dset))
+        #     db_dsets = self.dsets
+        #
+        #     # Insert related datasets.
+        #     for dataset_id in db_dsets:
+        #         dataset = IssueDataset()
+        #         dataset.issue_id = issue.id
+        #         dataset.dataset_id = dataset_id
+        #         try:
+        #             db.session.insert(dataset)
+        #         except sqlalchemy.exc.IntegrityError:
+        #             logging.error('DATASET SKIPPED (already inserted) :: {}'.format(dataset.dataset_id))
+        #             db.session.rollback()
+        pass
 
 
     def close(self, gh, remote_issue):
@@ -438,15 +449,15 @@ class ESGFIssue(object):
         Writes an ESGF issue into JSON file.
 
         """
-        logging.info('Writing ESGF issue into JSON template {0}'.format(self.issue_f.name))
-        try:
-            with open(self.issue_f.name, 'w') as json_file:
-                dump(self.attributes, json_file, indent=0)
-            logging.info('Result: SUCCESSFUL')
-        except:
-            logging.exception('Result: FAILED // JSON template {0} is not writable'.format(self.issue_f.name))
-            sys.exit(1)
-
+        # logging.info('Writing ESGF issue into JSON template {0}'.format(self.issue_f.name))
+        # try:
+        #     with open(self.issue_f.name, 'w') as json_file:
+        #         dump(self.attributes, json_file, indent=0)
+        #     logging.info('Result: SUCCESSFUL')
+        # except:
+        #     logging.exception('Result: FAILED // JSON template {0} is not writable'.format(self.issue_f.name))
+        #     sys.exit(1)
+        pass
 
 class DBIssue(object):
     """
@@ -481,7 +492,9 @@ class DBIssue(object):
         self.attributes, self.dsets = self.get_issue(id)
         self.raw = None
         self.assignee = None
-        self.attributes, self.dsets = self.get_template(gh)
+        self.attributes = None
+        self.dsets = None
+        # self.attributes, self.dsets = self.get_template(gh)
 
     def get(self, key):
         """
@@ -590,7 +603,7 @@ class DBIssue(object):
         logging.info('Validation of GitHub issue {0}'.format(self.attributes['number']))
         # Load JSON schema for issue template
         with open(__JSON_SCHEMA_PATHS__[action]) as f:
-            schema = load(f)
+            schema = simplejson.load(f)
         # Validate issue attributes against JSON issue schema
         try:
             validate(self.attributes, schema)
@@ -612,28 +625,30 @@ class DBIssue(object):
             logging.error('Result: FAILED // Dataset IDs have invalid format')
             sys.exit(1)
         logging.info('Result: SUCCESSFUL')
+        pass
 
     def retrieve(self, issue_f, dsets_f):
-        """
-        Retrieves a GitHub issue and writes ESGF template into JSON file and affected datasets list into TXT file
-
-        :param FileObj issue_f: The JSON file to write in
-        :param FileObj dsets_f: The TXT file to write in
-
-        """
-        logging.info('Retrieve GitHub issue #{0} JSON template'.format(self.number))
-        try:
-            with issue_f as json_file:
-                dump(self.attributes, json_file, indent=0)
-            logging.info('Result: SUCCESSFUL')
-        except:
-            logging.exception('Result: FAILED // JSON template {0} is not writable'.format(issue_f.name))
-            sys.exit(1)
-        logging.info('Retrieve GitHub issue #{0} affected datasets list'.format(self.number))
-        try:
-            with dsets_f as list_file:
-                list_file.write('\n'.join(self.dsets))
-            logging.info('Result: SUCCESSFUL')
-        except:
-            logging.exception('Result: FAILED // Dataset list {0} is not writable'.format(dsets_f.name))
-            sys.exit(1)
+        # """
+        # Retrieves a GitHub issue and writes ESGF template into JSON file and affected datasets list into TXT file
+        #
+        # :param FileObj issue_f: The JSON file to write in
+        # :param FileObj dsets_f: The TXT file to write in
+        #
+        # """
+        # logging.info('Retrieve GitHub issue #{0} JSON template'.format(self.number))
+        # try:
+        #     with issue_f as json_file:
+        #         dump(self.attributes, json_file, indent=0)
+        #     logging.info('Result: SUCCESSFUL')
+        # except:
+        #     logging.exception('Result: FAILED // JSON template {0} is not writable'.format(issue_f.name))
+        #     sys.exit(1)
+        # logging.info('Retrieve GitHub issue #{0} affected datasets list'.format(self.number))
+        # try:
+        #     with dsets_f as list_file:
+        #         list_file.write('\n'.join(self.dsets))
+        #     logging.info('Result: SUCCESSFUL')
+        # except:
+        #     logging.exception('Result: FAILED // Dataset list {0} is not writable'.format(dsets_f.name))
+        #     sys.exit(1)
+        pass
