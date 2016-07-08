@@ -30,18 +30,54 @@ _HTTP_RESPONSE_SERVER_ERROR = 500
 HTTP_HEADER_Access_Control_Allow_Origin = "Access-Control-Allow-Origin"
 
 
-class _RequestValidator(cerberus.Validator):
+class _RequestBodyValidator(object):
+    """An HTTP request body validator.
+
+    """
+    def __init__(self, request, schema):
+        """Instance initializer.
+
+        """
+        self.request = request
+        self.schema = schema
+
+
+    def validate(self):
+        """Validates the request body.
+
+        """
+        # TODO implement using jsonschema ?
+        return []
+
+
+class _RequestQueryParamsValidator(cerberus.Validator):
+    """An HTTP request query params validator that extends the cerberus library.
+
+    """
+    def __init__(self, request, schema):
+        """Instance initializer.
+
+        """
+        super(_RequestQueryParamsValidator, self).__init__(schema)
+
+        self.request = request
+
+
     def _validate_type_uuid(self, field, value):
         """Enables validation for `uuid` schema attribute.
-
-        :param field: field name.
-        :param value: field value.
 
         """
         try:
             uuid.UUID(value)
         except ValueError:
             self._error(field, cerberus.errors.ERROR_BAD_TYPE.format('uuid'))
+
+
+    def validate(self):
+        """Validates request parameters against schema.
+
+        """
+        return super(_RequestQueryParamsValidator, self).validate(self.request.query_arguments)
 
 
 class HTTPRequestHandler(tornado.web.RequestHandler):
@@ -226,10 +262,19 @@ class HTTPRequestHandler(tornado.web.RequestHandler):
         # Log start.
         _log_start()
 
+        # Set validator.
+        if isinstance(validation_schema, str):
+            validator = _RequestBodyValidator
+        else:
+            validator = _RequestQueryParamsValidator
+        validator = validator(self.request, validation_schema)
+
         # Validate request.
-        v = _RequestValidator(validation_schema or dict())
-        if not v.validate(self.request.query_arguments):
-            _log_security("Invalid request :: {}".format(v.errors))
+        validator.validate()
+
+        # HTTP 400 if request is invalid.
+        if validator.errors:
+            _log_security("Invalid request :: {}".format(validator.errors))
             self.clear()
             self.send_error(_HTTP_RESPONSE_BAD_REQUEST)
             return
