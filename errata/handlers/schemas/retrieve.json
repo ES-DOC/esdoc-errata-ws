@@ -1,0 +1,95 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "additionalProperties": false,
+    "properties": {
+        "closed_at": {
+            "format": "date-time",
+            "type": "string"
+        },
+        "created_at": {
+            "format": "date-time",
+            "type": "string"
+        },
+        "description": {
+            "minLength": 1,
+            "type": "string"
+        },
+        "id": {
+            "pattern": "^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$",
+            "type": "string"
+        },
+        "institute": {
+            "minLength": 1,
+            "type": "string"
+        },
+        "last_updated_at": {
+            "format": "date-time",
+            "type": "string"
+        },
+        "materials": {
+            "items": {
+                "pattern": "\\.(jpg|gif|png|tiff)$",
+                "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
+        },
+        "models": {
+            "items": {
+                "minLength": 1,
+                "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
+        },
+        "number": {
+            "minimum": 0,
+            "type": "integer"
+        },
+        "project": {
+            "minLength": 1,
+            "type": "string"
+        },
+        "severity": {
+            "enum": [
+                "Low",
+                "Medium",
+                "High",
+                "Critical"
+            ],
+            "type": "string"
+        },
+        "title": {
+            "minLength": 1,
+            "type": "string"
+        },
+        "url": {
+            "minLength": 1,
+            "type": "string"
+        },
+        "workflow": {
+            "enum": [
+                "New",
+                "On hold",
+                "Wontfix",
+                "Resolved"
+            ],
+            "type": "string"
+        }
+    },
+    "required": [
+        "number",
+        "id",
+        "title",
+        "description",
+        "severity",
+        "project",
+        "models",
+        "institute",
+        "workflow",
+        "created_at",
+        "last_updated_at"
+    ],
+    "title": "ESGF issue JSON schema",
+    "type": "object"
+}
