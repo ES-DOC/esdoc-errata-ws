@@ -1,13 +1,13 @@
 from constants import *
 from utils import get_handle_by_handle_string, list_children_handles, make_handle_from_drsid_and_versionnumber
 import sys
-sys.path.append('/home/abennasser/Bureau/errata_service/esdoc-errata-ws-master')
+
 import logging, os
 from custom_exceptions import *
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(message)s',
-                    filename=os.path.join("/home/abennasser", "logs/errata.log"),
+                    filename=os.path.join(os.getenv("ERRATA_HOME"), "logs/errata.log"),
                     filemode='w')
 
 class GenericHandleRegister(object):

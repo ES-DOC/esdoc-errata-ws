@@ -1,3 +1,5 @@
+import os
+
 from utils import *
 import logging
 from entities import *
@@ -5,7 +7,7 @@ from entities import *
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(message)s',
-                    filename=os.path.join("/home/abennasser", "logs/errata.log"),
+                    filename=os.path.join(os.getenv("ERRATA_HOME"), "logs/errata.log"),
                     filemode='w')
 
 

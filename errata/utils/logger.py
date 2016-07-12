@@ -3,9 +3,9 @@
 .. module:: utils.logger.py
    :license: GPL/CeCIL
    :platform: Unix
-   :synopsis: ES-DOC Errata - logging utility functions.
+   :synopsis: Logging utility functions.
 
-.. moduleauthor:: Atef Benasser <abenasser@ipsl.jussieu.fr>
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """
@@ -36,7 +36,7 @@ def _get_formatted_message(msg, module, level):
     if msg is None:
         return _NULL_MSG
 
-    return "{} [{}] :: ERRATA > {} : {}".format(
+    return "{} [{}] :: ES-DOC > {} : {}".format(
         unicode(arrow.get())[0:-13],
         level,
         module,

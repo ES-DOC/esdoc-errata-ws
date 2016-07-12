@@ -3,13 +3,14 @@
 .. module:: utils.http_validator.py
    :license: GPL/CeCIL
    :platform: Unix
-   :synopsis: ES-DOC Errata - http validation functions.
+   :synopsis: HTTP request validation.
 
-.. moduleauthor:: Atef Benasser <abenasser@ipsl.jussieu.fr>
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """
 import uuid
+from collections import Sequence
 
 import cerberus
 
@@ -46,13 +47,11 @@ class _RequestQueryParamsValidator(cerberus.Validator):
     """An HTTP request query params validator that extends the cerberus library.
 
     """
-    def __init__(self, request, schema):
+    def __init__(self, schema):
         """Instance initializer.
 
         """
         super(_RequestQueryParamsValidator, self).__init__(schema)
-
-        self.query_arguments = request.query_arguments
 
 
     def _validate_type_uuid(self, field, value):
@@ -65,11 +64,13 @@ class _RequestQueryParamsValidator(cerberus.Validator):
             self._error(field, cerberus.errors.ERROR_BAD_TYPE.format('uuid'))
 
 
-    def validate(self):
-        """Validates request parameters against schema.
+    def _validate_allowed_case_insensitive(self, allowed_values, field, value):
+        """Enables validation for `allowed_case_insensitive` schema attribute.
 
         """
-        return super(_RequestQueryParamsValidator, self).validate(self.query_arguments)
+        value = [i.lower() for i in value]
+        allowed = [i.lower() for i in allowed_values]
+        super(_RequestQueryParamsValidator, self)._validate_allowed(allowed, field, value)
 
 
 def _log(handler, error):
@@ -81,19 +82,19 @@ def _log(handler, error):
     logger.log_web_security(msg)
 
 
-def is_request_valid(handler, schema):
+def is_request_valid(handler, schema, options={}):
     """Returns a flag indicating whether an HTTP request is considered to be valid.
 
     """
-    # Set validator.
-    if isinstance(schema, str):
-        validator = _RequestBodyValidator
-    else:
-        validator = _RequestQueryParamsValidator
-    validator = validator(handler.request, schema)
-
+    return True
     # Validate request.
-    validator.validate()
+    if isinstance(schema, str):
+        validator = _RequestBodyValidator(handler.request, schema)
+    else:
+        validator = _RequestQueryParamsValidator(schema)
+        # validator.allow_unknown = options.get('allow_unknown', False)
+        validator.validate(handler.request.query_arguments)
+        print "DDDD"
 
     # HTTP 400 if request is invalid.
     if validator.errors:

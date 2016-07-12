@@ -90,5 +90,3 @@ def stop():
     ioloop = tornado.ioloop.IOLoop.instance()
     ioloop.add_callback(lambda x: x.stop(), ioloop)
 
-
-# print _get_app_endpoints()

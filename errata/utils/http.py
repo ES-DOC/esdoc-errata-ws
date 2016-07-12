@@ -3,9 +3,9 @@
 .. module:: utils.http.py
    :license: GPL/CeCIL
    :platform: Unix
-   :synopsis: ES-DOC Errata - http utility functions.
+   :synopsis: HTTP request handler utility functions.
 
-.. moduleauthor:: Atef Benasser <abenasser@ipsl.jussieu.fr>
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """
@@ -14,7 +14,7 @@ import json
 import tornado
 
 from errata.utils import logger
-from errata.utils.convert import to_namedtuple
+from errata.utils.convertor import to_namedtuple
 from errata.utils.http_invoker import execute as process_request
 from errata.utils.http_validator import is_request_valid
 
@@ -60,5 +60,12 @@ class HTTPRequestHandler(tornado.web.RequestHandler):
         logger.log_web(msg)
 
         # Validate & process request.
-        if is_request_valid(self, schema):
+        if schema is None or is_request_valid(self, schema):
             process_request(self, taskset, error_taskset)
+
+
+    def validate(self, schema, options={}):
+        """Validates request against schema.
+
+        """
+        return schema is None or is_request_valid(self, schema, options)

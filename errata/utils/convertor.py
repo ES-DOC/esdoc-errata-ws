@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-.. module:: utils.convert.py
+.. module:: utils.convertor.py
    :license: GPL/CeCIL
    :platform: Unix
-   :synopsis: ES-DOC Errata - conversion utility functions.
+   :synopsis: Conversion utility functions.
 
-.. moduleauthor:: Atef Benasser <abenasser@ipsl.jussieu.fr>
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """

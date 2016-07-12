@@ -3,15 +3,15 @@
 .. module:: utils.http_invoker.py
    :license: GPL/CeCIL
    :platform: Unix
-   :synopsis: ES-DOC Errata - http invocation functions.
+   :synopsis: HTTP request handler task invoker.
 
-.. moduleauthor:: Atef Benasser <abenasser@ipsl.jussieu.fr>
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """
-from errata.utils import logger
-from errata.utils.convert import to_dict
-from errata.utils.convert import to_camel_case
+from errata.utils import http_logger as logger
+from errata.utils.convertor import to_dict
+from errata.utils.convertor import to_camel_case
 
 
 
@@ -26,46 +26,71 @@ def _can_return_debug_info(handler):
     return handler.application.settings.get('debug', False)
 
 
-def _log_error(handler, error):
-    """Logs an error response.
+def _write_csv(handler, data):
+    """Writes HTTP response CSV data.
 
     """
-    msg = "[{0}]: --> error --> {1} --> {2}"
-    msg = msg.format(id(handler), handler, error)
-    logger.log_web_error(msg)
+    handler.write(data)
+    handler.set_header("Content-Type", "application/csv; charset=utf-8")
 
 
-def _log_success(handler):
-    """Logs a successful response.
+def _write_json(handler, data):
+    """Writes HTTP response JSON data.
 
     """
-    msg = "[{0}]: success --> {1}"
-    msg = msg.format(id(handler), handler)
-    logger.log_web(msg)
+    handler.write(to_dict(data, to_camel_case))
+    handler.set_header("Content-Type", "application/json; charset=utf-8")
 
 
-def _write(handler, data):
+def _write_html(handler, data):
+    """Writes HTTP response HTML data.
+
+    """
+    handler.write(data)
+    handler.set_header("Content-Type", "text/html; charset=utf-8")
+
+
+def _write_pdf(handler, data):
+    """Writes HTTP response PDF data.
+
+    """
+    handler.write(data)
+    handler.set_header("Content-Type", "application/pdf; charset=utf-8")
+
+
+def _write_xml(handler, data):
+    """Writes HTTP response XML data.
+
+    """
+    handler.write(data)
+    handler.set_header("Content-Type", "application/xml; charset=utf-8")
+
+
+# Map of response writers to encodings.
+_WRITERS = {
+    'csv': _write_csv,
+    'json': _write_json,
+    'html': _write_html,
+    'pdf': _write_pdf,
+    'xml': _write_xml
+}
+
+
+def _write(handler, data, encoding='json'):
     """Writes HTTP response data.
 
     """
     # Log begin.
-    msg = "[{0}]: response writing begins --> {1}"
-    msg = msg.format(id(handler), handler)
-    logger.log_web(msg)
+    logger.log(handler, "response writing begins --> {}".format(handler))
 
-    # Write response.
-    handler.write(to_dict(data, to_camel_case))
-
-    # Set HTTP header.
-    handler.set_header("Content-Type", "application/json; charset=utf-8")
+    # Write.
+    _WRITERS[encoding](handler, data)
 
     # Log end.
-    msg = "[{0}]: response writing ends --> {1}"
-    msg = msg.format(id(handler), handler)
-    logger.log_web(msg)
+    logger.log(handler, "response writing ends --> {}".format(handler))
 
 
-def _write_error(handler, error):
+def write_error(handler, error):
     """Writes processing error to response stream.
 
     """
@@ -79,13 +104,19 @@ def _write_success(handler):
 
     """
     try:
+        encoding = handler.output_encoding
+    except AttributeError:
+        encoding = 'json'
+
+    try:
         data = handler.output
     except AttributeError:
-        data = {}
-    if 'status' not in data:
+        data = {} if encoding == 'json' else unicode()
+
+    if encoding == 'json' and 'status' not in data:
         data['status'] = 0
 
-    _write(handler, data)
+    _write(handler, data, encoding)
 
 
 def _get_tasks(tasks, defaults):
@@ -125,8 +156,8 @@ def execute(handler, tasks, error_tasks):
 
     """
     # Extend tasks.
-    tasks = _get_tasks(tasks, [_log_success, _write_success])
-    error_tasks = _get_tasks(error_tasks, [_log_error, _write_error])
+    tasks = _get_tasks(tasks, [logger.log_success, _write_success])
+    error_tasks = _get_tasks(error_tasks, [logger.log_error, write_error])
 
     # Invoke normal processing tasks.
     for task in tasks:

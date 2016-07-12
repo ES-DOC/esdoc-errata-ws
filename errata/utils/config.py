@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-.. module:: utils.errata.py
+.. module:: utils.config.py
    :license: GPL/CeCIL
    :platform: Unix
-   :synopsis: ES-DOC Errata - logging utility functions.
+   :synopsis: Configuration utility functions.
 
-.. moduleauthor:: Atef Bennasser <abenasser@ipsl.jussieu.fr>
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """
@@ -13,7 +13,7 @@ import os
 
 import logger
 
-from errata.utils.convert import json_file_to_namedtuple
+from errata.utils.convertor import json_file_to_namedtuple
 
 
 
