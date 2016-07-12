@@ -17,12 +17,12 @@ from errata.utils.http import HTTP_HEADER_Access_Control_Allow_Origin
 
 
 # Query parameter names.
-_PARAM_HANDLES = 'handles'
+_PARAM_PIDS = 'pids'
 _PARAM_TIMESTAMP = 'timestamp'
 
 # Query parameter validation schema.
 _REQUEST_VALIDATION_SCHEMA = {
-    _PARAM_HANDLES: {
+    _PARAM_PIDS: {
         'required': True,
         # 'type': 'list', 'schema': {'type': 'string'}
     },
@@ -54,17 +54,6 @@ class HandleServiceRequestHandler(HTTPRequestHandler):
     """Retrieve issue request handler.
 
     """
-    def __init__(self, application, request, **kwargs):
-        """Instance constructor.
-
-        """
-        super(HandleServiceRequestHandler, self).__init__(application, request, **kwargs)
-
-        self.handles = []
-        self.errata = []
-        self.timestamp = None
-
-
     def set_default_headers(self):
         """Set HTTP headers at the beginning of the request.
 
@@ -81,15 +70,14 @@ class HandleServiceRequestHandler(HTTPRequestHandler):
 
             """
             self.timestamp = self.get_argument(_PARAM_TIMESTAMP)
-            self.handles = self.get_argument(_PARAM_HANDLES).split(",")
+            self.pids = self.get_argument(_PARAM_PIDS).split(",")
 
 
         def _invoke_pid_handle_service():
             """Invoke remote PID handle service.
 
             """
-            for pid in self.handles:
-                self.errata.append(_get_errata_information(pid))
+            self.errata = [_get_errata_information(i) for i in self.pids]
 
 
         def _set_output():
