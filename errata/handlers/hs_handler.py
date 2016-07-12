@@ -24,7 +24,7 @@ _PARAM_TIMESTAMP = 'timestamp'
 _REQUEST_VALIDATION_SCHEMA = {
     _PARAM_HANDLES: {
         'required': True,
-        'type': 'list', 'schema': {'type': 'string'}
+        # 'type': 'list', 'schema': {'type': 'string'}
     },
     _PARAM_TIMESTAMP: {
         'required': True,

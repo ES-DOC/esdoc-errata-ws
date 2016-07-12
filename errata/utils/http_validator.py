@@ -86,15 +86,13 @@ def is_request_valid(handler, schema, options={}):
     """Returns a flag indicating whether an HTTP request is considered to be valid.
 
     """
-    return True
     # Validate request.
     if isinstance(schema, str):
         validator = _RequestBodyValidator(handler.request, schema)
     else:
         validator = _RequestQueryParamsValidator(schema)
-        # validator.allow_unknown = options.get('allow_unknown', False)
+        validator.allow_unknown = options.get('allow_unknown', False)
         validator.validate(handler.request.query_arguments)
-        print "DDDD"
 
     # HTTP 400 if request is invalid.
     if validator.errors:
