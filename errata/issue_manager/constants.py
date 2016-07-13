@@ -20,3 +20,8 @@ __JSON_SCHEMA_PATHS__ = {'create': '{0}/schemas/create.json'.format(os.path.dirn
                          'update': '{0}/schemas/update.json'.format(os.path.dirname(os.path.abspath(__file__))),
                          'close': '{0}/schemas/update.json'.format(os.path.dirname(os.path.abspath(__file__))),
                          'retrieve': '{0}/schemas/retrieve.json'.format(os.path.dirname(os.path.abspath(__file__)))}
+# List of keys that cannot be updated
+NON_CHANGEABLE_KEYS = ['id', 'title', 'project', 'institute', 'created_at', 'last_updated_at']
+
+# Ratio of similarity between descriptions of updated and database issue.
+RATIO = 20

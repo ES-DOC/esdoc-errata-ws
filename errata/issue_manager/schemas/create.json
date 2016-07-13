@@ -53,7 +53,7 @@
     }
   }
 },
-"additionalProperties": false,
+"additionalProperties": true,
 "required": [
   "title",
   "description",

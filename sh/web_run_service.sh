@@ -7,7 +7,7 @@ source $ERRATA_HOME/sh/utils.sh
 main()
 {
     log "WEB-SERVICE : running ..."
-	python $ERRATA_DIR_WS_JOBS/run_web_service.py
+	/usr/local/bin/python2.7 $ERRATA_DIR_WS_JOBS/run_web_service.py
 }
 
 # Invoke entry point.

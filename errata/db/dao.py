@@ -21,7 +21,6 @@ from errata.db.utils import as_date_string
 from errata.utils.validation import validate
 
 
-
 @validate(validate_get_issue)
 def get_issue(uid):
     """Returns an issue.
@@ -48,11 +47,38 @@ def get_issue_datasets(issue_id):
     :rtype: list
 
     """
+
     qry = raw_query(IssueDataset.dataset_id)
     qry = qry.filter(IssueDataset.issue_id == issue_id)
     qry = qry.order_by(IssueDataset.dataset_id)
 
     return qry.all()
+
+
+@validate(validate_get_issue_datasets)
+def get_issue_datasets_by_uid(issue_uid):
+    """Returns datasets associated with an issue.
+
+    :param int issue_uid: Issue uid.
+
+    :returns: Matching issues.
+    :rtype: list
+
+    """
+    print('YOLO')
+    issues = raw_query(Issue.uid)
+    real_issue = issues.filter(Issue.uid == issue_uid).first()
+    print('HERE')
+    qry = raw_query(IssueDataset.dataset_id)
+    qry = qry.filter(IssueDataset.issue_id == real_issue.id)
+    qry = qry.order_by(IssueDataset.dataset_id)
+
+    return qry.all()
+
+
+# @validate()
+def get_dset_by_id(dset_id):
+    pass
 
 
 @validate(validate_get_issues)

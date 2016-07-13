@@ -317,12 +317,12 @@ class ESGFIssue(object):
         :raises Error: If the issue update fails for any other reason
 
         """
-        # with db.session.create():
-        #     db_issue = self._load_issue(db.session.query())
-        #     db_dsets = _load_dsets(db.session.query())
-        # # Test that workflow should not change back to "New"
-        # if db_issue['workflow'] != 'new' and self.attributes['workflow'] == 'new':
-        #     raise InvalidStatus
+        with db.session.create():
+            db_issue = self._load_issue(db.session.query())
+            db_dsets = _load_dsets(db.session.query())
+        # Test that workflow should not change back to "New"
+        if db_issue['workflow'] != 'new' and self.attributes['workflow'] == 'new':
+            raise InvalidStatus
         # # Test if id, title, project, institute and dates are unchanged.
         # for key in ['id', 'title', 'project', 'institute', 'created_at', 'last_updated_at']:
         #     if self.attributes[key] != db_issue[key]:

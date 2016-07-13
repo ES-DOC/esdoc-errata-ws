@@ -27,16 +27,6 @@ _REQUEST_VALIDATION_SCHEMA = {
 }
 
 
-def _validate_json(request):
-    """
-    This will be the validation process of the incoming json request.
-    Any creation or update request needs to be conform with a set of rules.
-    :param request: json request
-    :return: valid or not
-    """
-    pass
-
-
 class CloseRequestHandler(HTTPRequestHandler):
     """issue handler.
 
@@ -46,6 +36,7 @@ class CloseRequestHandler(HTTPRequestHandler):
 
         """
         super(CloseRequestHandler, self).__init__(application, request, **kwargs)
+        self.uid = None
 
     def put(self):
         """
@@ -62,5 +53,5 @@ class CloseRequestHandler(HTTPRequestHandler):
                 "status": 0
             }
 
-        self.invoke(None, [_decode_request, _invoke_issue_handler, _set_output])
+        self.invoke(_REQUEST_VALIDATION_SCHEMA, [_decode_request, _invoke_issue_handler, _set_output])
 

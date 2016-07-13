@@ -7,7 +7,7 @@ source $ERRATA_HOME/sh/utils.sh
 main()
 {
     log "SH : installing requirements ..."
-    pip install -r $ERRATA_HOME/requirements.txt
+    /usr/local/bin/python2.7 /usr/bin/pip install -r $ERRATA_HOME/requirements.txt
 }
 
 # Invoke entry point.
