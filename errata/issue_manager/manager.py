@@ -32,6 +32,7 @@ def _get_issue(obj):
     """Maps a dictionary decoded from a file to an issue instance.
 
     """
+    print('gettin issue...')
     issue = Issue()
     issue.date_created = obj['date_created']
     if 'date_updated' in obj.keys():
@@ -206,64 +207,80 @@ def update(issue):
                 print('Warning: unacceptable change detected.')
                 print(key, str(issue[key]), str(db_issue[key]))
                 raise InvalidAttribute
+        print('Done testing the non changeable keys, proceeding to check description ratio...')
     # Test the description changes by no more than 80%
-    if round(SequenceMatcher(None, db_issue['description'], issue['description']).ratio(), 3)*100 < RATIO:
-        logger.log_web('Description has been changed more than the allowed amount of 80%. Aborting update.')
-        raise InvalidDescription
-    keys = DictDiff(db_issue, issue)
-    dsets = ListDiff([k['dataset_id'] for k in db_dsets], issue.dsets)
-    if (not keys.changed() and not keys.added() and not keys.removed() and not dsets.added() and
-            not dsets.removed()):
-        logger.log_web('Nothing to change on GitHub issue #{0}'.format(db_issue['uid']))
-    else:
-        for key in keys.changed():
-            logger.log_web('Changing key {}'.format(key))
-            logger.log_web('Old value {}'.format(db_issue[key]))
-            logger.log_web('New value {}'.format(issue[key]))
-            db_issue[key] = issue[key]
-        for key in keys.added():
-            logger.low_web('Adding key {}'.format(key))
-            logger.log_web('Value {}"'.format(issue[key]))
-            db_issue[key] = issue[key]
-        for key in keys.removed():
-            logger.low_web('REMOVE {}'.format(key))
-            del db_issue[key]
-        # Update issue information keeping status unchanged
-        issue = _get_issue(db_issue)
-        try:
-            logger.log_db('updating issue {}'.format(issue.uid))
-            db.session.update(issue)
-        except UnicodeDecodeError:
-            logger.log_db('DECODING EXCEPTION')
+        if round(SequenceMatcher(None, db_issue['description'], issue['description']).ratio(), 3)*100 < RATIO:
+            logger.log_web('Description has been changed more than the allowed amount of 80%. Aborting update.')
+            raise InvalidDescription
+        print('ratio checks out...')
+        print('applying changes...')
+        keys = DictDiff(db_issue, issue)
+        print(issue)
+        dsets = ListDiff([k['dset_id'] for k in db_dsets], issue['datasets'])
+        if (not keys.changed() and not keys.added() and not keys.removed() and not dsets.added() and
+                not dsets.removed()):
+            logger.log_web('Nothing to change on GitHub issue #{0}'.format(db_issue['uid']))
         else:
-            logger.log_db('ISSUE UPDATED :: {}'.format(issue.uid))
-
-        # processing removed datasets.
-        for dset in dsets.removed():
+            for key in keys.changed():
+                logger.log_web('Changing key {}'.format(key))
+                logger.log_web('Old value {}'.format(db_issue[key]))
+                logger.log_web('New value {}'.format(issue[key]))
+                db_issue[key] = issue[key]
+            for key in keys.added():
+                logger.log_web('Adding key {}'.format(key))
+                logger.log_web('Value {}"'.format(issue[key]))
+                db_issue[key] = issue[key]
+            for key in keys.removed():
+                logger.log_web('REMOVE {}'.format(key))
+                del db_issue[key]
+            # Update issue information keeping status unchanged
+            print('Done updating...')
+            issue = _get_issue(db_issue)
             try:
-                # Retrieve the dataset respective to that dset_id and then delete it.
-                logger.log_db('Recreating dataset instance {}'.format(dset))
+                logger.log_db('updating issue {}'.format(issue.uid))
+                db.session.update(issue)
+            except UnicodeDecodeError:
+                logger.log_db('DECODING EXCEPTION')
+            else:
+                logger.log_db('ISSUE UPDATED :: {}'.format(issue.uid))
+
+            # processing removed datasets.
+            for dset in dsets.removed():
+                try:
+                    # Retrieve the dataset respective to that dset_id and then delete it.
+                    logger.log_db('Recreating dataset instance {}'.format(dset))
+                    dataset = IssueDataset()
+                    dataset.issue_id = issue.id
+                    dataset.dataset_id = dset
+                    logger.log_db('Deleting the formed dataset instance..')
+                    db.session.delete(dataset)
+                    logger.log_db('Successfully removed {}'.format(dset))
+                except Exception as e:
+                    logger.log_db(repr(e))
+
+            for dset in dsets.added():
+                logger.log_web('ADD {0}'.format(dset))
                 dataset = IssueDataset()
                 dataset.issue_id = issue.id
                 dataset.dataset_id = dset
-                logger.log_db('Deleting the formed dataset instance..')
-                db.session.delete(dataset)
-                logger.log_db('Successfully removed {}'.format(dset))
-            except Exception as e:
-                logger.log_db(repr(e))
-
-        for dset in dsets.added():
-            logger.log_web('ADD {0}'.format(dset))
-            db_dsets = dsets
-            # Insert related datasets.
-            for dataset_id in db_dsets.dataset_id:
-                dataset = IssueDataset()
-                dataset.issue_id = issue.id
-                dataset.dataset_id = dataset_id
                 try:
                     db.session.insert(dataset)
                 except sqlalchemy.exc.IntegrityError:
                     logger.log_db('DATASET SKIPPED (already inserted) :: {}'.format(dataset.dataset_id))
                     db.session.rollback()
+
+
+                # db_dsets = dsets
+                # # Insert related datasets.
+                # print(type(db_dsets))
+                # for dataset_id in db_dsets:
+                #     dataset = IssueDataset()
+                #     dataset.issue_id = issue.id
+                #     dataset.dataset_id = dataset_id
+                #     try:
+                #         db.session.insert(dataset)
+                #     except sqlalchemy.exc.IntegrityError:
+                #         logger.log_db('DATASET SKIPPED (already inserted) :: {}'.format(dataset.dataset_id))
+                #         db.session.rollback()
 
 
