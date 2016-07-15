@@ -23,12 +23,20 @@ def validate_get_issue(uid):
     v.validate_uid(uid, 'Issue unique identifier')
 
 
-
 def validate_get_issue_datasets(issue_id):
     """Function input validator: get_issue_datasets.
 
     """
     v.validate_int(issue_id, "Issue id")
+
+
+def validate_get_issue_datasets_by_uid(issue_uid):
+    """
+    Function input validator get datasets by uid of issue
+    :param issue_uid:
+    :return:
+    """
+    v.validate_str(issue_uid, "issue uid")
 
 
 def validate_get_issues(

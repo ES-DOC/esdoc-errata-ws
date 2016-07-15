@@ -108,6 +108,8 @@ def _yield_datasets(input_dir, issue):
     """
     for dataset_id in _get_datasets(input_dir, issue.institute):
         dataset = IssueDataset()
+        print('YOLOOOOOOOOOO')
+        print(issue.id)
         dataset.issue_id = issue.id
         dataset.dataset_id = dataset_id
 

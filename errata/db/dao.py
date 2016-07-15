@@ -12,6 +12,8 @@
 from errata.db.dao_validator import validate_get_issue
 from errata.db.dao_validator import validate_get_issues
 from errata.db.dao_validator import validate_get_issue_datasets
+from errata.db.dao_validator import validate_get_issue_datasets_by_uid
+
 from errata.db.models import Issue
 from errata.db.models import IssueDataset
 from errata.db.session import query
@@ -31,6 +33,7 @@ def get_issue(uid):
     :rtype: db.models.Issue
 
     """
+    print('querying issue...')
     qry = query(Issue)
     qry = text_filter(qry, Issue.uid, uid)
 
@@ -55,24 +58,36 @@ def get_issue_datasets(issue_id):
     return qry.all()
 
 
-@validate(validate_get_issue_datasets)
+@validate(validate_get_issue_datasets_by_uid)
 def get_issue_datasets_by_uid(issue_uid):
     """Returns datasets associated with an issue.
 
-    :param int issue_uid: Issue uid.
+    :param string issue_uid: Issue uid.
 
     :returns: Matching issues.
     :rtype: list
 
     """
-    print('YOLO')
-    issues = raw_query(Issue.uid)
-    real_issue = issues.filter(Issue.uid == issue_uid).first()
+    print('YOLO ' + issue_uid)
+    issues = raw_query(Issue)
+    print('Got all issues with the provided uid')
+    issues = issues.filter(Issue.uid == issue_uid)
+    # issues = issues.first()
+    # real_issue = real_issue.first()
+    # print(real_issue.all())
+    print(type(issues))
+    print(issues)
+    print(issues is None)
+    try:
+        print(issues.first().id)
+    except Exception as e:
+        print(repr(e))
     print('HERE')
-    qry = raw_query(IssueDataset.dataset_id)
-    qry = qry.filter(IssueDataset.issue_id == real_issue.id)
+    qry = raw_query(IssueDataset)
+    qry = qry.filter(IssueDataset.issue_id == issues.first().id)
     qry = qry.order_by(IssueDataset.dataset_id)
-
+    print(qry.all())
+    print("DONE!")
     return qry.all()
 
 

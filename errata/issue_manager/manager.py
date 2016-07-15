@@ -33,12 +33,11 @@ def _get_issue(obj):
 
     """
     issue = Issue()
-    issue.date_created = obj['created_at']
-    if 'last_updated_at' in obj.keys():
-        issue.date_updated = obj['last_updated_at']
-    if 'closed_at' in obj.keys():
-        issue.date_closed = obj['closed_at']
-    issue.date_updated = obj['last_updated_at']
+    issue.date_created = obj['date_created']
+    if 'date_updated' in obj.keys():
+        issue.date_updated = obj['date_updated']
+    if 'date_closed' in obj.keys():
+        issue.date_closed = obj['date_closed']
     issue.description = obj['description']
     issue.institute = obj['institute'].lower()
     if 'materials' in obj.keys():
@@ -71,12 +70,13 @@ def _load_issue(db_instance):
         Maps an issue instance to a dictionary
 
         """
+        print('loading issue...')
         issue = dict()
-        issue['created_at'] = db_instance.date_created
+        issue['date_created'] = db_instance.date_created
         if db_instance.date_updated:
-            issue['last_updated_at'] = db_instance.date_updated
+            issue['date_updated'] = db_instance.date_updated
         if db_instance.date_closed:
-            issue['closed_at'] = db_instance.date_closed
+            issue['date_closed'] = db_instance.date_closed
         issue['description'] = db_instance.description
         issue['institute'] = db_instance.institute.upper()
         if db_instance.materials:
@@ -84,7 +84,8 @@ def _load_issue(db_instance):
         issue['severity'] = db_instance.severity
         issue['project'] = db_instance.project.upper()
         issue['title'] = db_instance.title
-        issue['id'] = db_instance.uid
+        issue['id'] = db_instance.id
+        issue['uid'] = db_instance.uid
         if db_instance.url:
             issue['url'] = db_instance.url
         issue['workflow'] = db_instance.workflow
@@ -99,10 +100,12 @@ def _load_dsets(db_instances_list):
     :return: list of dictionaries
     """
     list_of_dic = []
+    print('loading datasets ')
     for dset in db_instances_list:
+        print(dset)
         dset_dic = dict()
-        dset_dic['issue_id'] = db_instances_list.issue_id
-        dset_dic['dset_id'] = db_instances_list.dataset_id
+        dset_dic['issue_id'] = dset.issue_id
+        dset_dic['dset_id'] = dset.dataset_id
         list_of_dic.append(dset_dic)
     return list_of_dic
 
@@ -184,18 +187,24 @@ def update(issue):
     print('Starting update process...')
     with db.session.create():
         # Returns a single issue
+        print('loading issue with id ' + str(issue['id']))
         db_issue = _load_issue(db.dao.get_issue(issue['id']))
-        print(db_issue.id)
+        print(db_issue['id'])
         print('retrieving database issue...')
         # Returns a list.
-        print('uid = ' + issue['id'])
-        # db_dsets = _load_dsets(db.dao.get_issue_datasets_by_uid(issue['id']))
+        print('id = ' + str(db_issue['id']))
+        print('db_issue uid is '+db_issue['uid'])
+        db_dsets = _load_dsets(db.dao.get_issue_datasets_by_uid(db_issue['uid']))
+        print(len(db_dsets))
+        print('Got the datasets related to the issue...')
         # Workflow shouldn't revert to new if it is any other value
         if db_issue['workflow'] != WORKFLOW_NEW and issue['workflow'] == WORKFLOW_NEW:
             raise InvalidStatus
         # id, title, project, institute as well as the creation and update date should remain unchanged
         for key in NON_CHANGEABLE_KEYS:
-            if issue[key] != db_issue[key]:
+            if str(issue[key]).lower() != str(db_issue[key]).lower():
+                print('Warning: unacceptable change detected.')
+                print(key, str(issue[key]), str(db_issue[key]))
                 raise InvalidAttribute
     # Test the description changes by no more than 80%
     if round(SequenceMatcher(None, db_issue['description'], issue['description']).ratio(), 3)*100 < RATIO:
@@ -205,7 +214,7 @@ def update(issue):
     dsets = ListDiff([k['dataset_id'] for k in db_dsets], issue.dsets)
     if (not keys.changed() and not keys.added() and not keys.removed() and not dsets.added() and
             not dsets.removed()):
-        logger.log_web('Nothing to change on GitHub issue #{0}'.format(db_issue['id']))
+        logger.log_web('Nothing to change on GitHub issue #{0}'.format(db_issue['uid']))
     else:
         for key in keys.changed():
             logger.log_web('Changing key {}'.format(key))

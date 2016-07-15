@@ -91,7 +91,6 @@ class Issue(Entity):
     date_closed = Column(DateTime)
     url = Column(Unicode(1023))
     materials = Column(Text)
-    identifier = Column(Integer, nullable=False, autoincrement=True)
 
 
 class IssueDataset(Entity):
