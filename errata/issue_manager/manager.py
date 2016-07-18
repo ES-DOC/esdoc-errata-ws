@@ -25,7 +25,6 @@ import datetime as dt
 from custom_exceptions import *
 from constants import *
 from difflib import SequenceMatcher
-from utils import DictDiff, ListDiff
 
 
 def _get_issue(obj):
@@ -47,7 +46,8 @@ def _get_issue(obj):
     issue.state = STATE_CLOSED if issue.date_closed else STATE_OPEN
     issue.project = obj['project'].lower()
     issue.title = obj['title']
-    issue.uid = obj['id']
+    if 'uid' in obj.keys():
+        issue.uid = obj['uid']
     if 'url' in obj.keys():
         issue.url = obj['url']
     issue.workflow = obj['workflow'].lower()
@@ -55,11 +55,11 @@ def _get_issue(obj):
     return issue
 
 
-def _get_datasets(issue):
+def _get_datasets(issue, dsets):
     """Yields datasets for testing purposes.
 
     """
-    for dataset_id in issue.datasets:
+    for dataset_id in dsets:
         dataset = IssueDataset()
         dataset.issue_id = issue.id
         dataset.dataset_id = dataset_id
@@ -109,6 +109,101 @@ def _load_dsets(db_instances_list):
         dset_dic['dset_id'] = dset.dataset_id
         list_of_dic.append(dset_dic)
     return list_of_dic
+
+
+def check_status(old_issue, new_issue):
+    """
+    checks the status change, the new status cannot replace a status that is different than new with a new value.
+    :param old_issue: old issue instance
+    :param new_issue: new issue instance
+    :return: Boolean
+    """
+    if old_issue.workflow != WORKFLOW_NEW and new_issue.workflow == WORKFLOW_NEW:
+        return False
+    else:
+        return True
+
+
+def check_ratio(old_description, new_description):
+    """
+    checks the change ratio in description
+    :param old_description:
+    :param new_description:
+    :return:
+    """
+    change_ratio = round(SequenceMatcher(None, new_description, old_description).ratio(), 3)*100
+    logger.log_web('The change between the descriptions has been detected to be about {}'.format(change_ratio))
+    if change_ratio < RATIO:
+        logger.log_web('Description has been changed more than the allowed amount of 80%. Aborting update.'
+                       'The detected change ratio in description is around {}'.format(change_ratio))
+        return False
+    else:
+        return True
+
+
+def update_issue(old_issue, new_issue):
+    """
+    updates issue object instance
+    :param old_issue: old instance
+    :param new_issue: new instance
+    :return: updated instance
+    """
+    for k, v in old_issue.__dict__.iteritems():
+        if k in NON_CHANGEABLE_KEYS and str(old_issue.__dict__[k]).lower() != str(new_issue.__dict__[k]).lower():
+            logger.log_web('Warning: unacceptable change detected.')
+            logger.log_web('checking key {0}, with value {1} in db and {2} in request'.format(k,
+                           str(old_issue.__dict__[k]), str(new_issue.__dict__[k])))
+            raise InvalidAttribute
+    if old_issue.description != new_issue.description:
+        if check_ratio(old_issue.description, new_issue.description):
+            old_issue.description = new_issue.description
+        else:
+            raise InvalidDescription
+    elif old_issue.severity != new_issue.severity:
+        old_issue.severity = new_issue.severity
+    elif old_issue.workflow != new_issue.workflow:
+        if check_status(old_issue, new_issue):
+            old_issue.workflow = new_issue.workflow
+        else:
+            raise InvalidStatus
+    elif old_issue.materials != new_issue.materials:
+        old_issue.materials = new_issue.materials
+    elif old_issue.state != new_issue.state:
+        old_issue.state = new_issue.state
+    elif old_issue.url != new_issue.url:
+        old_issue.url = new_issue.url
+    elif old_issue.date_updated != new_issue.date_updated:
+        old_issue.date_updated = new_issue.date_updated
+    elif old_issue.date_closed != new_issue.date_closed:
+        old_issue.date_closed = new_issue.date_closed
+
+
+def compare_dsets(old_dset, new_dset, issue):
+    """
+    compares the dataset lists and returns the list to be updated.
+    :param old_dset: DatasetIssue Instance
+    :param new_dset: list of dset id
+    :return: dataset instances to be updated
+    """
+    old_dset_id = []
+    dset_to_remove = []
+    dset_to_add = []
+    for dset in old_dset:
+        old_dset_id.append(dset.dataset_id)
+    for x in old_dset_id:
+        if x not in new_dset:
+            logger.log_web('Removing dataset {}'.format(x))
+            dset_to_remove.append(x)
+        else:
+            logger.log_web('Dataset {} is being kept'.format(x))
+    for x in new_dset:
+        if x not in old_dset_id:
+            logger.log_web('Adding dataset {}'.format(x))
+            dset_to_add.append(x)
+    # converting to dataset object instance
+    dset_to_add = _get_datasets(issue, dset_to_add)
+    dset_to_remove = _get_datasets(issue, dset_to_remove)
+    return dset_to_add, dset_to_remove
 
 
 def create(issue):
@@ -182,105 +277,82 @@ def close(uid):
 def update(issue):
     """
     Manager's function to update the issue.
-    :param issue: issue dictianary
+    :param new_issue: issue dictianary
     :return:
     """
     print('Starting update process...')
+    new_issue = _get_issue(issue)
+    print(new_issue)
     with db.session.create():
         # Returns a single issue
-        print('loading issue with id ' + str(issue['id']))
-        db_issue = _load_issue(db.dao.get_issue(issue['id']))
-        print(db_issue['id'])
-        print('retrieving database issue...')
-        # Returns a list.
-        print('id = ' + str(db_issue['id']))
-        print('db_issue uid is '+db_issue['uid'])
-        db_dsets = _load_dsets(db.dao.get_issue_datasets_by_uid(db_issue['uid']))
-        print(len(db_dsets))
-        print('Got the datasets related to the issue...')
+        logger.log_web('Loading issue with id  {}'.format(new_issue.uid))
+        db_issue = db.dao.get_issue(new_issue.uid)
+        logger.log_web('database issue retrieved')
         # Workflow shouldn't revert to new if it is any other value
-        if db_issue['workflow'] != WORKFLOW_NEW and issue['workflow'] == WORKFLOW_NEW:
-            raise InvalidStatus
-        # id, title, project, institute as well as the creation and update date should remain unchanged
-        for key in NON_CHANGEABLE_KEYS:
-            if str(issue[key]).lower() != str(db_issue[key]).lower():
-                print('Warning: unacceptable change detected.')
-                print(key, str(issue[key]), str(db_issue[key]))
-                raise InvalidAttribute
-        print('Done testing the non changeable keys, proceeding to check description ratio...')
-    # Test the description changes by no more than 80%
-        if round(SequenceMatcher(None, db_issue['description'], issue['description']).ratio(), 3)*100 < RATIO:
-            logger.log_web('Description has been changed more than the allowed amount of 80%. Aborting update.')
-            raise InvalidDescription
-        print('ratio checks out...')
-        print('applying changes...')
-        keys = DictDiff(db_issue, issue)
-        print(issue)
-        dsets = ListDiff([k['dset_id'] for k in db_dsets], issue['datasets'])
-        if (not keys.changed() and not keys.added() and not keys.removed() and not dsets.added() and
-                not dsets.removed()):
-            logger.log_web('Nothing to change on GitHub issue #{0}'.format(db_issue['uid']))
+        logger.log_web('Comparing instances and updating..')
+        try:
+            update_issue(db_issue, new_issue)
+        except InvalidDescription as e:
+            return e.msg, -1
+        except InvalidAttribute as e:
+            return e.msg, -1
+        except InvalidStatus as e:
+            return e.msg, -1
+
+        # Updating affected dataset list
+        dsets_to_add, dsets_to_remove = compare_dsets(db.dao.get_issue_datasets_by_uid(db_issue.uid), issue['datasets']
+                                                      , db_issue)
+        logger.log_web('Got the datasets related to the issue...')
+
+        try:
+            db.session.update(db_issue)
+            for dset in dsets_to_remove:
+                db.session.delete(dset)
+            for dset in dsets_to_add:
+                db.session.insert(dset)
+            logger.log_db('issue updated...')
+            db_issue = db.dao.get_issue(db_issue.uid)
+            print(db_issue.severity)
+
+        except UnicodeDecodeError:
+            logger.log_db('DECODING EXCEPTION')
         else:
-            for key in keys.changed():
-                logger.log_web('Changing key {}'.format(key))
-                logger.log_web('Old value {}'.format(db_issue[key]))
-                logger.log_web('New value {}'.format(issue[key]))
-                db_issue[key] = issue[key]
-            for key in keys.added():
-                logger.log_web('Adding key {}'.format(key))
-                logger.log_web('Value {}"'.format(issue[key]))
-                db_issue[key] = issue[key]
-            for key in keys.removed():
-                logger.log_web('REMOVE {}'.format(key))
-                del db_issue[key]
-            # Update issue information keeping status unchanged
-            print('Done updating...')
-            issue = _get_issue(db_issue)
-            try:
-                logger.log_db('updating issue {}'.format(issue.uid))
-                db.session.update(issue)
-            except UnicodeDecodeError:
-                logger.log_db('DECODING EXCEPTION')
-            else:
-                logger.log_db('ISSUE UPDATED :: {}'.format(issue.uid))
-
-            # processing removed datasets.
-            for dset in dsets.removed():
-                try:
-                    # Retrieve the dataset respective to that dset_id and then delete it.
-                    logger.log_db('Recreating dataset instance {}'.format(dset))
-                    dataset = IssueDataset()
-                    dataset.issue_id = issue.id
-                    dataset.dataset_id = dset
-                    logger.log_db('Deleting the formed dataset instance..')
-                    db.session.delete(dataset)
-                    logger.log_db('Successfully removed {}'.format(dset))
-                except Exception as e:
-                    logger.log_db(repr(e))
-
-            for dset in dsets.added():
-                logger.log_web('ADD {0}'.format(dset))
-                dataset = IssueDataset()
-                dataset.issue_id = issue.id
-                dataset.dataset_id = dset
-                try:
-                    db.session.insert(dataset)
-                except sqlalchemy.exc.IntegrityError:
-                    logger.log_db('DATASET SKIPPED (already inserted) :: {}'.format(dataset.dataset_id))
-                    db.session.rollback()
-
-
-                # db_dsets = dsets
-                # # Insert related datasets.
-                # print(type(db_dsets))
-                # for dataset_id in db_dsets:
-                #     dataset = IssueDataset()
-                #     dataset.issue_id = issue.id
-                #     dataset.dataset_id = dataset_id
-                #     try:
-                #         db.session.insert(dataset)
-                #     except sqlalchemy.exc.IntegrityError:
-                #         logger.log_db('DATASET SKIPPED (already inserted) :: {}'.format(dataset.dataset_id))
-                #         db.session.rollback()
-
-
+            logger.log_db('ISSUE UPDATED')
+        return SUCCESS_MESSAGE, 0
+        # keys = DictDiff(db_issue, issue)
+        # print(issue)
+        # dsets = ListDiff([k['dset_id'] for k in db_dsets], issue['datasets'])
+        # if (not keys.changed() and not keys.added() and not keys.removed() and not dsets.added() and
+        #         not dsets.removed()):
+        #     logger.log_web('Nothing to change on GitHub issue #{0}'.format(db_issue['uid']))
+        # else:
+        #     for key in keys.changed():
+        #         logger.log_web('Changing key {}'.format(key))
+        #         logger.log_web('Old value {}'.format(db_issue[key]))
+        #         logger.log_web('New value {}'.format(issue[key]))
+        #         db_issue[key] = issue[key]
+        #     for key in keys.added():
+        #         logger.log_web('Adding key {}'.format(key))
+        #         logger.log_web('Value {}"'.format(issue[key]))
+        #         db_issue[key] = issue[key]
+        #     for key in keys.removed():
+        #         logger.log_web('REMOVE {}'.format(key))
+        #         del db_issue[key]
+        #     # Update issue information keeping status unchanged
+        #     print('Done updating...')
+        #     print(db_issue)
+        #     issue = _get_issue(db_issue)
+        #     print(issue.description)
+        #     try:
+        #         logger.log_db('updating issue {}'.format(issue.uid))
+        #         db.session.update(issue)
+        #         logger.log_db('issue updated...')
+        #         db_issue = _load_issue(db.dao.get_issue(issue.uid))
+        #         print(db_issue['description'])
+        #
+        #     except UnicodeDecodeError:
+        #         logger.log_db('DECODING EXCEPTION')
+        #     else:
+        #         logger.log_db('ISSUE UPDATED :: {}'.format(issue.uid))
+        #     db_issue = _load_issue(db.dao.get_issue(issue.uid))
+        #     print(db_issue['description'])

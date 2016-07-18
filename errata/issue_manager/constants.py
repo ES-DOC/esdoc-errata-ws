@@ -25,3 +25,5 @@ NON_CHANGEABLE_KEYS = ['title', 'project', 'institute', 'date_created', 'date_up
 
 # Ratio of similarity between descriptions of updated and database issue.
 RATIO = 20
+
+SUCCESS_MESSAGE = 'UPDATE SUCCEEDED.'
