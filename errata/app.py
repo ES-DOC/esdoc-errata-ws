@@ -45,8 +45,8 @@ def _get_app_endpoints():
     }
 
     log("Endpoint to handler mappings:")
-    for url, handler in sorted(endpoints, key=lambda ep: ep[0]):
-        log("{0} ---> {1}".format(url, handler))
+    for url, handler in sorted(endpoints, key=lambda i: i[0]):
+        log("{0} ---> {1}".format(url, str(handler).split(".")[-1][0:-2]))
 
     return endpoints
 
@@ -92,5 +92,3 @@ def stop():
     ioloop = tornado.ioloop.IOLoop.instance()
     ioloop.add_callback(lambda x: x.stop(), ioloop)
 
-
-# print _get_app_endpoints()

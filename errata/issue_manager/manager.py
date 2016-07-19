@@ -183,26 +183,28 @@ def compare_dsets(old_dset, new_dset, issue):
     compares the dataset lists and returns the list to be updated.
     :param old_dset: DatasetIssue Instance
     :param new_dset: list of dset id
+    :param issue: Issue instance
     :return: dataset instances to be updated
     """
-    old_dset_id = []
     dset_to_remove = []
     dset_to_add = []
-    for dset in old_dset:
-        old_dset_id.append(dset.dataset_id)
-    for x in old_dset_id:
-        if x not in new_dset:
-            logger.log_web('Removing dataset {}'.format(x))
+    # for dset in old_dset:
+    #     old_dset_id.append(dset.dataset_id)
+    for x in old_dset:
+        if x.dataset_id not in new_dset:
+            logger.log_web('Appending dataset {} to removal list'.format(x.dataset_id))
             dset_to_remove.append(x)
         else:
-            logger.log_web('Dataset {} is being kept'.format(x))
+            logger.log_web('Appending dataset {} to kept list'.format(x.dataset_id))
     for x in new_dset:
-        if x not in old_dset_id:
-            logger.log_web('Adding dataset {}'.format(x))
+        for y in old_dset:
+            if x == y.dataset_id:
+                logger.log_web('Dataset {} was found within existing datasets, skipping.'.format(x))
+                break
+            logger.log_web('Appending dataset {} to adding list'.format(x))
             dset_to_add.append(x)
     # converting to dataset object instance
     dset_to_add = _get_datasets(issue, dset_to_add)
-    dset_to_remove = _get_datasets(issue, dset_to_remove)
     return dset_to_add, dset_to_remove
 
 
@@ -277,7 +279,7 @@ def close(uid):
 def update(issue):
     """
     Manager's function to update the issue.
-    :param new_issue: issue dictianary
+    :param issue: issue dictianary
     :return:
     """
     print('Starting update process...')
@@ -302,15 +304,24 @@ def update(issue):
         # Updating affected dataset list
         dsets_to_add, dsets_to_remove = compare_dsets(db.dao.get_issue_datasets_by_uid(db_issue.uid), issue['datasets']
                                                       , db_issue)
-        logger.log_web('Got the datasets related to the issue...')
+        # Magic
+        for x in dsets_to_add:
+            pass
 
+        logger.log_web('Got the datasets related to the issue.')
         try:
             db.session.update(db_issue)
+            logger.log_db('issue updated.')
             for dset in dsets_to_remove:
                 db.session.delete(dset)
+                logger.log_db('Removing dataset {}'.format(dset.dataset_id))
+                db.session.commit()
+            logger.log_db('Extra datasets were removed.')
             for dset in dsets_to_add:
+                logger.log_db('processing dataset {}'.format(dset.dataset_id))
                 db.session.insert(dset)
-            logger.log_db('issue updated...')
+                logger.log_db('Adding dataset {}'.format(dset.dataset_id))
+            logger.log_db('Additional datasets were added.')
             db_issue = db.dao.get_issue(db_issue.uid)
             print(db_issue.severity)
 
@@ -319,40 +330,4 @@ def update(issue):
         else:
             logger.log_db('ISSUE UPDATED')
         return SUCCESS_MESSAGE, 0
-        # keys = DictDiff(db_issue, issue)
-        # print(issue)
-        # dsets = ListDiff([k['dset_id'] for k in db_dsets], issue['datasets'])
-        # if (not keys.changed() and not keys.added() and not keys.removed() and not dsets.added() and
-        #         not dsets.removed()):
-        #     logger.log_web('Nothing to change on GitHub issue #{0}'.format(db_issue['uid']))
-        # else:
-        #     for key in keys.changed():
-        #         logger.log_web('Changing key {}'.format(key))
-        #         logger.log_web('Old value {}'.format(db_issue[key]))
-        #         logger.log_web('New value {}'.format(issue[key]))
-        #         db_issue[key] = issue[key]
-        #     for key in keys.added():
-        #         logger.log_web('Adding key {}'.format(key))
-        #         logger.log_web('Value {}"'.format(issue[key]))
-        #         db_issue[key] = issue[key]
-        #     for key in keys.removed():
-        #         logger.log_web('REMOVE {}'.format(key))
-        #         del db_issue[key]
-        #     # Update issue information keeping status unchanged
-        #     print('Done updating...')
-        #     print(db_issue)
-        #     issue = _get_issue(db_issue)
-        #     print(issue.description)
-        #     try:
-        #         logger.log_db('updating issue {}'.format(issue.uid))
-        #         db.session.update(issue)
-        #         logger.log_db('issue updated...')
-        #         db_issue = _load_issue(db.dao.get_issue(issue.uid))
-        #         print(db_issue['description'])
-        #
-        #     except UnicodeDecodeError:
-        #         logger.log_db('DECODING EXCEPTION')
-        #     else:
-        #         logger.log_db('ISSUE UPDATED :: {}'.format(issue.uid))
-        #     db_issue = _load_issue(db.dao.get_issue(issue.uid))
-        #     print(db_issue['description'])
+

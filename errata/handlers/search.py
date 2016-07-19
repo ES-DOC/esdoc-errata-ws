@@ -120,7 +120,6 @@ class SearchRequestHandler(HTTPRequestHandler):
             """Sets response to be returned to client.
 
             """
-            self.output_encoding = 'json'
             self.output = {
                 'count': len(self.issues),
                 'results': self.issues,

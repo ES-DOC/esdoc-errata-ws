@@ -35,7 +35,6 @@ class SearchSetupRequestHandler(HTTPRequestHandler):
             """Sets response to be returned to client.
 
             """
-            self.output_encoding = 'json'
             self.output = {
                 'institute': [
                     {

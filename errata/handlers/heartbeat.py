@@ -29,7 +29,7 @@ class HeartbeatRequestHandler(HTTPRequestHandler):
 
             """
             self.output = {
-                "message": "ERRATA web service is operational @ {}".format(dt.datetime.now()),
+                "message": "ES-DOC ERRATA web service is operational @ {}".format(dt.datetime.now()),
                 "status": 0
             }
 
