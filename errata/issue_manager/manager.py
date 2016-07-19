@@ -31,7 +31,6 @@ def _get_issue(obj):
     """Maps a dictionary decoded from a file to an issue instance.
 
     """
-    print('gettin issue...')
     issue = Issue()
     issue.date_created = obj['date_created']
     if 'date_updated' in obj.keys():
@@ -101,9 +100,7 @@ def _load_dsets(db_instances_list):
     :return: list of dictionaries
     """
     list_of_dic = []
-    print('loading datasets ')
     for dset in db_instances_list:
-        print(dset)
         dset_dic = dict()
         dset_dic['issue_id'] = dset.issue_id
         dset_dic['dset_id'] = dset.dataset_id
@@ -282,7 +279,6 @@ def update(issue):
     :param issue: issue dictianary
     :return:
     """
-    print('Starting update process...')
     new_issue = _get_issue(issue)
     print(new_issue)
     with db.session.create():
@@ -323,7 +319,6 @@ def update(issue):
                 logger.log_db('Adding dataset {}'.format(dset.dataset_id))
             logger.log_db('Additional datasets were added.')
             db_issue = db.dao.get_issue(db_issue.uid)
-            print(db_issue.severity)
 
         except UnicodeDecodeError:
             logger.log_db('DECODING EXCEPTION')

@@ -119,11 +119,7 @@ class ESGFIssue(object):
 
     """
     def __init__(self, issue, dsets_f):
-        print('INITIALIZING ESGFISSUE OBJECT....')
-        print(type(issue))
-        print(issue)
         self.attributes = issue
-        print('GOT THE ISSUE...')
         self.dsets = None
 
     def get(self, key):
@@ -172,17 +168,12 @@ class ESGFIssue(object):
 
         """
         # Load JSON schema for issue template
-        print('STARTED VALIDATION PROCESS...')
         with open(__JSON_SCHEMA_PATHS__[action]) as f:
-            print('LOADING FILE...')
             schema = json.load(f)
-            print('FILE SUCCESSFULLY LOADED!')
         # Validate issue attributes against JSON issue schema
         try:
-            print(self.attributes)
             jsonschema.validate(self.attributes, schema)
         except jsonschema.exceptions.ValidationError as e:
-            print(e.message)
             raise InvalidJSONSchema
         # Test landing page and materials URLs
         urls = filter(None, traverse(map(self.attributes.get, ['url', 'materials'])))

@@ -33,7 +33,6 @@ def get_issue(uid):
     :rtype: db.models.Issue
 
     """
-    print('querying issue...')
     qry = query(Issue)
     qry = text_filter(qry, Issue.uid, uid)
 
@@ -68,26 +67,11 @@ def get_issue_datasets_by_uid(issue_uid):
     :rtype: list
 
     """
-    print('YOLO ' + issue_uid)
     issues = raw_query(Issue)
-    print('Got all issues with the provided uid')
     issues = issues.filter(Issue.uid == issue_uid)
-    # issues = issues.first()
-    # real_issue = real_issue.first()
-    # print(real_issue.all())
-    print(type(issues))
-    print(issues)
-    print(issues is None)
-    try:
-        print(issues.first().id)
-    except Exception as e:
-        print(repr(e))
-    print('HERE')
     qry = raw_query(IssueDataset)
     qry = qry.filter(IssueDataset.issue_id == issues.first().id)
     qry = qry.order_by(IssueDataset.dataset_id)
-    print(qry.all())
-    print("DONE!")
     return qry.all()
 
 
