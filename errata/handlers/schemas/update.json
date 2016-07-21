@@ -2,7 +2,7 @@
     "$schema": "http://json-schema.org/schema#",
     "additionalProperties": false,
     "properties": {
-        "created_at": {
+        "date_created": {
             "format": "date-time",
             "type": "string"
         },
@@ -10,11 +10,11 @@
             "minLength": 1,
             "type": "string"
         },
-        "id": {
+        "uid": {
             "pattern": "^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$",
             "type": "string"
         },
-        "last_updated_at": {
+        "date_updated": {
             "format": "date-time",
             "type": "string"
         },
@@ -34,10 +34,6 @@
             "type": "array",
             "uniqueItems": true
         },
-        "number": {
-            "minimum": 0,
-            "type": "integer"
-        },
         "project": {
             "minLength": 1,
             "type": "string"
@@ -51,7 +47,7 @@
             ],
             "type": "string"
         },
-        "state": {
+        "workflow": {
             "enum": [
                 "New",
                 "On hold",
@@ -67,19 +63,21 @@
         "url": {
             "minLength": 1,
             "type": "string"
-        }
+        },
+
     },
     "required": [
-        "number",
-        "id",
+        "uid",
         "title",
         "description",
         "severity",
+        "institute",
         "project",
         "models",
-        "state",
-        "created_at",
-        "last_updated_at"
+        "workflow",
+        "date_created",
+        "date_updated",
+        "datasets"
     ],
     "title": "ESGF issue JSON schema",
     "type": "object"

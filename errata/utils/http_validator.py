@@ -57,8 +57,9 @@ class _RequestBodyValidator(object):
             self.errors = UnreachableURLs
             raise UnreachableURLs
         # Validate the datasets list against the dataset id pattern
-        if not all(map(test_pattern, request['datasets'])):
-            raise InvalidDatasetIDs
+        if 'datasets' in request.keys():
+            if not all(map(test_pattern, request['datasets'])):
+                raise InvalidDatasetIDs
         if 'uid' in request.keys():
             logging.info('VALID ISSUE :: {}'.format(request['uid']))
         else:
@@ -111,7 +112,6 @@ def is_request_valid(handler, schema, options={}):
 
     """
     # Validate request.
-
     if isinstance(schema, str):
         validator = _RequestBodyValidator(handler.request, schema)
         validator.validate()

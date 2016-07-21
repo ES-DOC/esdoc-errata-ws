@@ -14,7 +14,7 @@ from errata.issue_manager.manager import *
 from errata.issue_manager.constants import __JSON_SCHEMA_PATHS__
 from errata.utils.http import HTTPRequestHandler
 import json
-
+import time
 
 with open(__JSON_SCHEMA_PATHS__['update']) as f:
     schema = f.read()
@@ -30,6 +30,7 @@ class UpdateRequestHandler(HTTPRequestHandler):
         """
         super(UpdateRequestHandler, self).__init__(application, request, **kwargs)
         self.json_body = None
+        self.date_updated = None
 
     def post(self):
         """
@@ -41,11 +42,14 @@ class UpdateRequestHandler(HTTPRequestHandler):
         def _invoke_issue_handler():
             issue = self.json_body
             self.message, self.status = update(issue)
+            if self.status == 0:
+                self.date_updated = time.strftime('%Y/%m/%d %I:%M:%S %p')
 
         def _set_output():
             self.output = {
                 'message': self.message,
-                'status': self.status
+                'status': self.status,
+                'date_updated': self.date_updated,
             }
 
         self.invoke(schema, [_decode_request, _invoke_issue_handler, _set_output])

@@ -3,6 +3,10 @@
 "title": "ESGF issue JSON schema",
 "type": "object",
 "properties": {
+  "id": {
+    "type": "string",
+    "pattern": "^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$"
+  },
   "title": {
     "type": "string",
     "minLength": 1
@@ -51,9 +55,26 @@
       "type": "string",
       "pattern": "\\.(jpg|gif|png|tiff)$"
     }
+  },
+  "datasets":{ "items": {
+      "minLength": 1,
+      "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+  },
+  "workflow": {
+    "type": "string",
+    "enum": [
+      "new",
+      "on hold",
+      "wontfix",
+      "resolved"
+    ]
   }
 },
-"additionalProperties": true,
+
+"additionalProperties": false,
 "required": [
   "title",
   "description",

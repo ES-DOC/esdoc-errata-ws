@@ -57,15 +57,13 @@ class HTTPRequestHandler(tornado.web.RequestHandler):
         error_taskset=[]
         ):
         """Invokes handler tasks.
-
         """
         # Log all requests.
         msg = "[{0}]: executing --> {1}"
         msg = msg.format(id(self), self)
         logger.log_web(msg)
-
         # Validate & process request.
-        if schema is None or is_request_valid(self, schema):
+        if schema is None or is_request_valid(handler=self, schema=schema):
             process_request(self, taskset, error_taskset)
 
     def validate(self, schema, options={}):

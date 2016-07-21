@@ -42,6 +42,13 @@
         "url": {
             "minLength": 1,
             "type": "string"
+        },
+        "datasets":{ "items": {
+            "minLength": 1,
+            "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
         }
     },
     "required": [
@@ -49,7 +56,8 @@
         "description",
         "severity",
         "project",
-        "models"
+        "models",
+        "datasets"
     ],
     "title": "ESGF issue JSON schema",
     "type": "object"

@@ -48,6 +48,8 @@ def _get_issue(obj):
     issue.title = obj['title']
     if 'uid' in obj.keys():
         issue.uid = obj['uid']
+    if 'id' in obj.keys():
+        issue.uid = obj['id']
     if 'url' in obj.keys():
         issue.url = obj['url']
     issue.workflow = obj['workflow'].lower()
@@ -224,7 +226,6 @@ def create(issue):
         :raises Error: If the issue registration fails without any result
 
         """
-        issues = []
         # Convert dictionary into Issue instance
         log.info('STARTED INJECTING A NEW ISSUE...')
         issue = _get_issue(issue)
@@ -235,37 +236,33 @@ def create(issue):
             issue.uid = str(uuid4())
             issue.workflow = WORKFLOW_NEW
             # Insert issue entry into database
-            with db.session.create():
-                with db.session.create():
-                    # Check if description exists within db already. Duplication of description is not tolerated.
-                    logger.log_db('checking issue description for duplicates.')
-                    if db.dao.check_description(issue.description):
-                        # Insert issues
-                        logger.log_db('description checks out, proceeding to issue insertion.')
-                        try:
-                            db.session.insert(issue)
-                        except sqlalchemy.exc.IntegrityError:
-                            logger.log_db("issue skipped (already inserted) :: {}".format(issue.id))
-                            db.session.rollback()
-                            return "issue skipped (already inserted) :: {}".format(issue.id), -1
-                        except UnicodeDecodeError:
-                            logger.log_db('DECODING EXCEPTION')
-                            return 'Decoding Exception', -1
-                        else:
-                            issues.append(issue)
-                            logger.log_db("issue inserted :: {}".format(issue.id))
-                            return 'successfully inserted', 0
+            # Check if description exists within db already. Duplication of description is not tolerated.
+            logger.log_db('checking issue description for duplicates.')
+            if db.dao.check_description(issue.description):
+                # Insert issues
+                logger.log_db('description checks out, proceeding to issue insertion.')
+                try:
+                    db.session.insert(issue)
+                except sqlalchemy.exc.IntegrityError:
+                    logger.log_db("issue skipped (already inserted) :: {}".format(issue.id))
+                    db.session.rollback()
+                    return "issue skipped (already inserted) :: {}".format(issue.id), -1
+                except UnicodeDecodeError:
+                    logger.log_db('DECODING EXCEPTION')
+                    return 'Decoding Exception', -1
+                else:
+                    logger.log_db("issue inserted :: {}".format(issue.id))
+                    return 'successfully inserted', 0
 
-                        # Insert related datasets.
-                        for issue in issues:
-                            for dataset in _get_datasets_from_issue(issue):
-                                try:
-                                    db.session.insert(dataset)
-                                except sqlalchemy.exc.IntegrityError:
-                                    db.session.rollback()
-                    else:
-                        logger.log_db('an issue with a similar description has been already inserted to the errata db.')
-                        return 'an issue with a similar description has been already inserted to the errata db', -1
+                # Insert related datasets.
+                for dataset in _get_datasets_from_issue(issue):
+                    try:
+                        db.session.insert(dataset)
+                    except sqlalchemy.exc.IntegrityError:
+                        db.session.rollback()
+            else:
+                logger.log_db('an issue with a similar description has been already inserted to the errata db.')
+                return 'an issue with a similar description has been already inserted to the errata db', -1
 
 
 def close(uid):
@@ -324,8 +321,6 @@ def update(issue):
                 logger.log_db('Removing dataset {}'.format(dset.dataset_id))
                 db.session.commit()
             logger.log_db('Extra datasets were removed.')
-            # for x in dsets_to_add:
-            #     print(x)
             for dset in dsets_to_add:
                 logger.log_db('processing dataset {}'.format(dset.dataset_id))
                 db.session.insert(dset)

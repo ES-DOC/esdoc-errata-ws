@@ -1,5 +1,5 @@
 {   "$schema": "http://json-schema.org/schema#",
-    "additionalProperties": false,
+    "additionalProperties": true,
     "properties": {
         "description": {
             "minLength": 1,
@@ -27,10 +27,10 @@
         },
         "severity": {
             "enum": [
-                "Low",
-                "Medium",
-                "High",
-                "Critical"
+                "low",
+                "medium",
+                "high",
+                "critical"
             ],
             "type": "string"
         },
@@ -41,6 +41,27 @@
         "url": {
             "minLength": 1,
             "type": "string"
+        },
+        "date_updated": {
+            "format": "date-time",
+            "type": "string"
+        },
+        "date_created": {
+            "format": "date-time",
+            "type": "string"
+        },
+        "institute": {
+            "minLength": 1,
+            "type": "string"
+        },
+        "workflow": {
+            "enum": [
+                "New",
+                "On hold",
+                "Wontfix",
+                "Resolved"
+            ],
+            "type": "string"
         }
     },
     "required": [
@@ -48,7 +69,8 @@
         "description",
         "severity",
         "project",
-        "models"
+        "models",
+        "workflow"
     ],
     "title": "ESGF issue JSON schema",
     "type": "object"

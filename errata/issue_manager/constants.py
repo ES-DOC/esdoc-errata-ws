@@ -17,9 +17,9 @@ __UNSENT_MESSAGES_DIR__ = "{0}/unsent_rabbit_messages".format(os.path.dirname(os
 
 # JSON issue schemas full path
 __JSON_SCHEMA_PATHS__ = {'create': os.path.join(os.getenv('ERRATA_HOME'), 'errata/issue_manager/schemas/create.json'),
-                         'update': os.path.join(os.getenv('ERRATA_HOME'), 'errata/issue_manager/schemas/update.json')
+                         'update': os.path.join(os.getenv('ERRATA_HOME'), 'errata/issue_manager/schemas/update.json'),
+                         'close': os.path.join(os.getenv('ERRATA_HOME'), 'errata/issue_manager/schemas/close.json')
                          # Retrieve & close methods don't require json validation for now.
-                         # , 'close': os.path.join(os.getenv('ERRATA_HOME'), 'errata/issue_manager/schemas/close.json'),
                          # , 'retrieve': '{0}/schemas/retrieve.json'.format(os.path.dirname(os.path.abspath(__file__)))
                          }
 # List of keys that cannot be updated
