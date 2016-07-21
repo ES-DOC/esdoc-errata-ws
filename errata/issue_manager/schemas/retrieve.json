@@ -65,15 +65,15 @@
       "resolved"
     ]
   },
-  "created_at": {
+  "date_created": {
     "type": "string",
     "format": "date-time"
   },
-  "last_updated_at": {
+  "date_updated": {
     "type": "string",
     "format": "date-time"
   },
-  "closed_at": {
+  "date_closed": {
     "type": "string",
     "format": "date-time"
   }

@@ -32,7 +32,8 @@ def _get_issue(obj):
 
     """
     issue = Issue()
-    issue.date_created = obj['date_created']
+    if 'date_created' in obj.keys():
+        issue.date_created = obj['date_created']
     if 'date_updated' in obj.keys():
         issue.date_updated = obj['date_updated']
     if 'date_closed' in obj.keys():
@@ -54,6 +55,17 @@ def _get_issue(obj):
     return issue
 
 
+def _get_datasets_from_issue(issue):
+    """Yields datasets for testing purposes.
+
+    """
+    for dataset_id in issue.datasets:
+        dataset = IssueDataset()
+        dataset.issue_id = issue.id
+        dataset.dataset_id = dataset_id
+        yield dataset
+
+
 def _get_datasets(issue, dsets):
     """Yields datasets for testing purposes.
 
@@ -70,7 +82,6 @@ def _load_issue(db_instance):
         Maps an issue instance to a dictionary
 
         """
-        print('loading issue...')
         issue = dict()
         issue['date_created'] = db_instance.date_created
         if db_instance.date_updated:
@@ -183,23 +194,23 @@ def compare_dsets(old_dset, new_dset, issue):
     :param issue: Issue instance
     :return: dataset instances to be updated
     """
+    # initializing return.
     dset_to_remove = []
     dset_to_add = []
-    # for dset in old_dset:
-    #     old_dset_id.append(dset.dataset_id)
     for x in old_dset:
         if x.dataset_id not in new_dset:
             logger.log_web('Appending dataset {} to removal list'.format(x.dataset_id))
             dset_to_remove.append(x)
         else:
             logger.log_web('Appending dataset {} to kept list'.format(x.dataset_id))
+    # Trimming old dataset list to only ids to facilitate test.
+    old_dset_id = [x.dataset_id for x in old_dset]
     for x in new_dset:
-        for y in old_dset:
-            if x == y.dataset_id:
-                logger.log_web('Dataset {} was found within existing datasets, skipping.'.format(x))
-                break
+        if x not in old_dset_id:
             logger.log_web('Appending dataset {} to adding list'.format(x))
             dset_to_add.append(x)
+        else:
+            logger.log_web('Dataset {} was found within existing datasets, skipping.'.format(x))
     # converting to dataset object instance
     dset_to_add = _get_datasets(issue, dset_to_add)
     return dset_to_add, dset_to_remove
@@ -236,21 +247,25 @@ def create(issue):
                         except sqlalchemy.exc.IntegrityError:
                             logger.log_db("issue skipped (already inserted) :: {}".format(issue.id))
                             db.session.rollback()
+                            return "issue skipped (already inserted) :: {}".format(issue.id), -1
                         except UnicodeDecodeError:
                             logger.log_db('DECODING EXCEPTION')
+                            return 'Decoding Exception', -1
                         else:
                             issues.append(issue)
                             logger.log_db("issue inserted :: {}".format(issue.id))
+                            return 'successfully inserted', 0
 
                         # Insert related datasets.
                         for issue in issues:
-                            for dataset in _get_datasets(issue):
+                            for dataset in _get_datasets_from_issue(issue):
                                 try:
                                     db.session.insert(dataset)
                                 except sqlalchemy.exc.IntegrityError:
                                     db.session.rollback()
                     else:
                         logger.log_db('an issue with a similar description has been already inserted to the errata db.')
+                        return 'an issue with a similar description has been already inserted to the errata db', -1
 
 
 def close(uid):
@@ -271,6 +286,8 @@ def close(uid):
         except Exception as e:
             logger.log_db('an error has occurred.')
             logger.log_db(repr(e))
+            return repr(e), -1
+        return 'issue closed', 0
 
 
 def update(issue):
@@ -280,7 +297,6 @@ def update(issue):
     :return:
     """
     new_issue = _get_issue(issue)
-    print(new_issue)
     with db.session.create():
         # Returns a single issue
         logger.log_web('Loading issue with id  {}'.format(new_issue.uid))
@@ -300,10 +316,6 @@ def update(issue):
         # Updating affected dataset list
         dsets_to_add, dsets_to_remove = compare_dsets(db.dao.get_issue_datasets_by_uid(db_issue.uid), issue['datasets']
                                                       , db_issue)
-        # Magic
-        for x in dsets_to_add:
-            pass
-
         logger.log_web('Got the datasets related to the issue.')
         try:
             db.session.update(db_issue)
@@ -313,6 +325,8 @@ def update(issue):
                 logger.log_db('Removing dataset {}'.format(dset.dataset_id))
                 db.session.commit()
             logger.log_db('Extra datasets were removed.')
+            # for x in dsets_to_add:
+            #     print(x)
             for dset in dsets_to_add:
                 logger.log_db('processing dataset {}'.format(dset.dataset_id))
                 db.session.insert(dset)

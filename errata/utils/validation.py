@@ -15,7 +15,6 @@ import uuid
 import arrow
 
 
-
 def validate(validator):
     """Validation function decorator.
 

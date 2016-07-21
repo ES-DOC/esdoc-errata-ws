@@ -10,17 +10,16 @@
 
 """
 import uuid
-from collections import Sequence
-
-import cerberus
-
 from errata.utils import logger
-
+from errata.issue_manager.constants import __JSON_SCHEMA_PATHS__
+from errata.issue_manager.utils import *
+from errata.issue_manager.custom_exceptions import *
+import json, jsonschema
+import cerberus
 
 
 # Invalid request HTTP response code.
 _HTTP_RESPONSE_BAD_REQUEST = 400
-
 
 
 class _RequestBodyValidator(object):
@@ -33,13 +32,37 @@ class _RequestBodyValidator(object):
         """
         self.request = request
         self.schema = schema
+        self.errors = None
 
 
     def validate(self):
         """Validates the request body.
 
         """
-        # TODO implement using jsonschema ?
+        # with open(__JSON_SCHEMA_PATHS__['create']) as f:
+        #     schema = json.load(f)
+        schema = self.schema
+        # Validate issue attributes against JSON issue schema
+        request = json.loads(self.request.body)
+        try:
+            jsonschema.validate(request, schema)
+        except jsonschema.exceptions.ValidationError as e:
+            print(repr(e))
+            self.errors = UnreachableURLs
+            raise InvalidJSONSchema
+        # Test landing page and materials URLs
+        urls = filter(None, traverse(map(request.get, ['url', 'materials'])))
+        if not all(map(test_url, urls)):
+            self.errors = UnreachableURLs
+            raise UnreachableURLs
+        # Validate the datasets list against the dataset id pattern
+        if not all(map(test_pattern, request['datasets'])):
+            raise InvalidDatasetIDs
+        if 'uid' in request.keys():
+            logging.info('VALID ISSUE :: {}'.format(request['uid']))
+        else:
+            logging.info('VALID ISSUE :: {}'.format(request['id']))
+
         return []
 
 
@@ -87,8 +110,9 @@ def is_request_valid(handler, schema, options={}):
 
     """
     # Validate request.
-    if isinstance(schema, str):
+    if isinstance(schema, dict):
         validator = _RequestBodyValidator(handler.request, schema)
+        validator.validate()
     else:
         validator = _RequestQueryParamsValidator(schema)
         validator.allow_unknown = options.get('allow_unknown', False)
@@ -99,5 +123,4 @@ def is_request_valid(handler, schema, options={}):
         _log(handler, "Invalid request :: {}".format(validator.errors))
         handler.clear()
         handler.send_error(_HTTP_RESPONSE_BAD_REQUEST)
-
-    return len(validator.errors) == 0
+    return validator.errors is None

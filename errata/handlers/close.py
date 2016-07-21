@@ -46,11 +46,12 @@ class CloseRequestHandler(HTTPRequestHandler):
             self.uid = self.get_argument(_PARAM_UID)
 
         def _invoke_issue_handler():
-            close(self.uid)
+            self.message, self.status = close(self.uid)
 
         def _set_output():
             self.output = {
-                "status": 0
+                "message": self.message,
+                "status": self.status
             }
 
         self.invoke(_REQUEST_VALIDATION_SCHEMA, [_decode_request, _invoke_issue_handler, _set_output])

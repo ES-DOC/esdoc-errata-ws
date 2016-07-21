@@ -59,6 +59,7 @@
   "description",
   "severity",
   "project",
-  "models"
+  "models",
+  "datasets"
 ]
 }

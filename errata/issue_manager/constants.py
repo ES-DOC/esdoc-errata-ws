@@ -16,10 +16,12 @@ import os
 __UNSENT_MESSAGES_DIR__ = "{0}/unsent_rabbit_messages".format(os.path.dirname(os.path.abspath(__file__)))
 
 # JSON issue schemas full path
-__JSON_SCHEMA_PATHS__ = {'create': '{0}/schemas/create.json'.format(os.path.dirname(os.path.abspath(__file__))),
-                         'update': '{0}/schemas/update.json'.format(os.path.dirname(os.path.abspath(__file__))),
-                         'close': '{0}/schemas/update.json'.format(os.path.dirname(os.path.abspath(__file__))),
-                         'retrieve': '{0}/schemas/retrieve.json'.format(os.path.dirname(os.path.abspath(__file__)))}
+__JSON_SCHEMA_PATHS__ = {'create': os.path.join(os.getenv('ERRATA_HOME'), 'errata/issue_manager/schemas/create.json'),
+                         'update': os.path.join(os.getenv('ERRATA_HOME'), 'errata/issue_manager/schemas/update.json')
+                         # Retrieve & close methods don't require json validation for now.
+                         # , 'close': os.path.join(os.getenv('ERRATA_HOME'), 'errata/issue_manager/schemas/close.json'),
+                         # , 'retrieve': '{0}/schemas/retrieve.json'.format(os.path.dirname(os.path.abspath(__file__)))
+                         }
 # List of keys that cannot be updated
 NON_CHANGEABLE_KEYS = ['title', 'project', 'institute', 'date_created', 'date_updated']
 

@@ -11,18 +11,13 @@
 
 """
 from errata.issue_manager.manager import *
+from errata.issue_manager.constants import __JSON_SCHEMA_PATHS__
 from errata.utils.http import HTTPRequestHandler
 import json
 
 
-def _validate_json(request):
-    """
-    This will be the validation process of the incoming json request.
-    Any creation or update request needs to be conform with a set of rules.
-    :param request: json request
-    :return: valid or not
-    """
-    pass
+with open(__JSON_SCHEMA_PATHS__['update']) as f:
+    schema = json.load(f)
 
 
 class UpdateRequestHandler(HTTPRequestHandler):
@@ -53,4 +48,4 @@ class UpdateRequestHandler(HTTPRequestHandler):
                 'status': self.status
             }
 
-        self.invoke(None, [_decode_request, _invoke_issue_handler, _set_output])
+        self.invoke(schema, [_decode_request, _invoke_issue_handler, _set_output])
