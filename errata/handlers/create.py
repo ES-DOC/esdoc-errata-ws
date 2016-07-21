@@ -15,7 +15,7 @@ from errata.utils.http import HTTPRequestHandler
 import json
 
 with open(__JSON_SCHEMA_PATHS__['create']) as f:
-    schema = json.load(f)
+    schema = f.read()
 
 class CreateRequestHandler(HTTPRequestHandler):
     """issue handler.

@@ -11,15 +11,16 @@
 """
 import uuid
 from errata.utils import logger
-from errata.issue_manager.constants import __JSON_SCHEMA_PATHS__
 from errata.issue_manager.utils import *
 from errata.issue_manager.custom_exceptions import *
 import json, jsonschema
 import cerberus
 
 
+
 # Invalid request HTTP response code.
 _HTTP_RESPONSE_BAD_REQUEST = 400
+
 
 
 class _RequestBodyValidator(object):
@@ -31,7 +32,7 @@ class _RequestBodyValidator(object):
 
         """
         self.request = request
-        self.schema = schema
+        self.schema = json.loads(schema)
         self.errors = None
 
 
@@ -110,17 +111,19 @@ def is_request_valid(handler, schema, options={}):
 
     """
     # Validate request.
-    if isinstance(schema, dict):
+
+    if isinstance(schema, str):
         validator = _RequestBodyValidator(handler.request, schema)
         validator.validate()
+
     else:
         validator = _RequestQueryParamsValidator(schema)
         validator.allow_unknown = options.get('allow_unknown', False)
         validator.validate(handler.request.query_arguments)
-
     # HTTP 400 if request is invalid.
     if validator.errors:
         _log(handler, "Invalid request :: {}".format(validator.errors))
         handler.clear()
         handler.send_error(_HTTP_RESPONSE_BAD_REQUEST)
-    return validator.errors is None
+
+    return validator.errors is None or len(validator.errors) == 0

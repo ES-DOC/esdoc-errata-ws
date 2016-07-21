@@ -17,7 +17,7 @@ import json
 
 
 with open(__JSON_SCHEMA_PATHS__['update']) as f:
-    schema = json.load(f)
+    schema = f.read()
 
 
 class UpdateRequestHandler(HTTPRequestHandler):

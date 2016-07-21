@@ -274,7 +274,6 @@ def close(uid):
     :param uid: unique identifier of issues.
     :return:
     """
-    print("started close function, retrieving issue...")
     with db.session.create():
         issue = db.dao.get_issue(uid)
         # Test workflow, if Won't Fix or Resolved
