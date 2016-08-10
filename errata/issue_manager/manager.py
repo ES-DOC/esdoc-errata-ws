@@ -160,7 +160,9 @@ def update_issue(old_issue, new_issue):
     """
     for k, v in old_issue.__dict__.iteritems():
         if k in NON_CHANGEABLE_KEYS and str(old_issue.__dict__[k]).lower() != str(new_issue.__dict__[k]).lower():
-            logger.log_web('Warning: unacceptable change detected.')
+            logger.log_web('old issue creation date {}'.format(old_issue.__dict__['date_created']))
+            logger.log_web('old issue creation date {}'.format(new_issue.__dict__['date_created']))
+            logger.log_web('Warning: unacceptable change detected. Attempted to change the key {}.'.format(k))
             logger.log_web('checking key {0}, with value {1} in db and {2} in request'.format(k,
                            str(old_issue.__dict__[k]), str(new_issue.__dict__[k])))
             raise InvalidAttribute
@@ -233,8 +235,8 @@ def create(issue):
         with db.session.create():
             # Adding attributes
             log.info('ADDING ATTRIBUTES...')
-            issue.uid = str(uuid4())
-            issue.workflow = WORKFLOW_NEW
+            # issue.uid = str(uuid4())
+            # issue.workflow = WORKFLOW_NEW
             # Insert issue entry into database
             # Check if description exists within db already. Duplication of description is not tolerated.
             logger.log_db('checking issue description for duplicates.')
@@ -246,13 +248,13 @@ def create(issue):
                 except sqlalchemy.exc.IntegrityError:
                     logger.log_db("issue skipped (already inserted) :: {}".format(issue.id))
                     db.session.rollback()
-                    return "issue skipped (already inserted) :: {}".format(issue.id), -1
+                    return "issue skipped (already inserted) :: {}".format(issue.id), -1, None
                 except UnicodeDecodeError:
                     logger.log_db('DECODING EXCEPTION')
-                    return 'Decoding Exception', -1
+                    return 'Decoding Exception', -1, None
                 else:
                     logger.log_db("issue inserted :: {}".format(issue.id))
-                    return 'successfully inserted', 0
+                    return 'successfully inserted', 0, issue.date_created
 
                 # Insert related datasets.
                 for dataset in _get_datasets_from_issue(issue):
@@ -262,7 +264,7 @@ def create(issue):
                         db.session.rollback()
             else:
                 logger.log_db('an issue with a similar description has been already inserted to the errata db.')
-                return 'an issue with a similar description has been already inserted to the errata db', -1
+                return 'an issue with a similar description has been already inserted to the errata db', -1, None
 
 
 def close(uid):
@@ -277,13 +279,16 @@ def close(uid):
         if issue.workflow in [WORKFLOW_WONT_FIX, WORKFLOW_RESOLVED]:
             issue.state = STATE_CLOSED
             issue.date_closed = dt.datetime.utcnow()
-        try:
-            db.session.update(issue)
-        except Exception as e:
-            logger.log_db('an error has occurred.')
-            logger.log_db(repr(e))
-            return repr(e), -1
-        return 'issue closed', 0
+            try:
+                db.session.update(issue)
+            except Exception as e:
+                logger.log_db('an error has occurred.')
+                logger.log_db(repr(e))
+                return repr(e), -1, None
+
+            return 'issue closed', 0, issue.date_closed
+        else:
+            return 'issue cant be closed for workflow conflicts', -1, None
 
 
 def update(issue):
@@ -303,11 +308,11 @@ def update(issue):
         try:
             update_issue(db_issue, new_issue)
         except InvalidDescription as e:
-            return e.msg, -1
+            return e.msg, -1, None
         except InvalidAttribute as e:
-            return e.msg, -1
+            return e.msg, -1, None
         except InvalidStatus as e:
-            return e.msg, -1
+            return e.msg, -1, None
 
         # Updating affected dataset list
         dsets_to_add, dsets_to_remove = compare_dsets(db.dao.get_issue_datasets_by_uid(db_issue.uid), issue['datasets']
@@ -332,5 +337,5 @@ def update(issue):
             logger.log_db('DECODING EXCEPTION')
         else:
             logger.log_db('ISSUE UPDATED')
-        return SUCCESS_MESSAGE, 0
+        return SUCCESS_MESSAGE, 0, db_issue.date_updated
 

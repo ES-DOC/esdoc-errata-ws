@@ -41,9 +41,9 @@ class CreateRequestHandler(HTTPRequestHandler):
 
         def _invoke_issue_handler():
             issue = self.json_body
-            self.message, self.status = create(issue)
+            self.message, self.status, creation_time = create(issue)
             if self.status == 0:
-                self.date_created = time.strftime('%Y/%m/%d %I:%M:%S %p')
+                self.date_created = creation_time
                 self.date_updated = self.date_created
                 self.workflow = self.json_body['workflow']
 

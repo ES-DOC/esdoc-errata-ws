@@ -40,8 +40,7 @@ class CloseRequestHandler(HTTPRequestHandler):
             self.json_body = json.loads(self.request.body)
 
         def _invoke_issue_handler():
-            self.message, self.status = close(self.json_body['id'])
-            self.date_closed = time.strftime('%Y/%m/%d %I:%M:%S %p')
+            self.message, self.status, self.date_closed = close(self.json_body['id'])
 
         def _set_output():
             self.output = {
@@ -49,7 +48,5 @@ class CloseRequestHandler(HTTPRequestHandler):
                 "status": self.status,
                 "date_closed": self.date_closed
             }
-        print('HERE WE GO')
-        print(schema)
         self.invoke(schema, [_decode_request, _invoke_issue_handler, _set_output])
 

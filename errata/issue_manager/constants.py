@@ -23,7 +23,7 @@ __JSON_SCHEMA_PATHS__ = {'create': os.path.join(os.getenv('ERRATA_HOME'), 'errat
                          # , 'retrieve': '{0}/schemas/retrieve.json'.format(os.path.dirname(os.path.abspath(__file__)))
                          }
 # List of keys that cannot be updated
-NON_CHANGEABLE_KEYS = ['title', 'project', 'institute', 'date_created', 'date_updated']
+NON_CHANGEABLE_KEYS = ['title', 'project', 'institute', 'date_created']
 
 # Ratio of similarity between descriptions of updated and database issue.
 RATIO = 20

@@ -41,9 +41,9 @@ class UpdateRequestHandler(HTTPRequestHandler):
 
         def _invoke_issue_handler():
             issue = self.json_body
-            self.message, self.status = update(issue)
+            self.message, self.status, update_time = update(issue)
             if self.status == 0:
-                self.date_updated = time.strftime('%Y/%m/%d %I:%M:%S %p')
+                self.date_updated = update_time
 
         def _set_output():
             self.output = {
