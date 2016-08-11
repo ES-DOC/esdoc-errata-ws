@@ -17,12 +17,11 @@ def log(handler, msg, is_error=False):
     """Logs an error response.
 
     """
-    print msg
     msg = "[{}]: --> {}".format(id(handler), msg)
-    print msg
     if is_error:
         logger.log_web_error(msg)
-    logger.log_web(msg)
+    else:
+        logger.log_web(msg)
 
 
 def log_error(handler, error):

@@ -18,17 +18,20 @@ from errata.utils.convertor import json_file_to_namedtuple
 
 
 # Default configuration file path.
-_CONFIG_FPATH = "errata-ws.conf"
+_CONFIG_FPATH = "ws.conf"
 
 # Configuration data.
 data = None
 
 
-def _get_config_fpath(prefix=""):
-    cfg_fpath = "{}{}".format(prefix, _CONFIG_FPATH)
+def _get_config_fpath():
+    """Returns configuration file path.
+
+    """
     dpath = os.path.dirname(os.path.abspath(__file__))
     while dpath != '/':
-        fpath = os.path.join(dpath, cfg_fpath)
+        fpath = os.path.join(dpath, "ops")
+        fpath = os.path.join(fpath, _CONFIG_FPATH)
         if os.path.exists(fpath):
             return fpath
         dpath = os.path.dirname(dpath)
@@ -44,10 +47,7 @@ def _init():
     global data
 
     # Get configuration file path (falling back to template if necessary).
-    try:
-        fpath = _get_config_fpath()
-    except RuntimeError:
-        fpath = _get_config_fpath("template-")
+    fpath = _get_config_fpath()
 
     # Convert config file to a named tuple.
     data = json_file_to_namedtuple(fpath)

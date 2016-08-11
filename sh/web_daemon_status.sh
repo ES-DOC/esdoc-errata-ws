@@ -6,9 +6,7 @@ source $ERRATA_HOME/sh/init.sh
 # Main entry point.
 main()
 {
-    log "WEB-SERVICE : running ..."
-
-	python2.7 $ERRATA_HOME/jobs/run_web_service.py
+	supervisorctl -c $ERRATA_HOME/ops/supervisord.conf status all
 }
 
 # Invoke entry point.

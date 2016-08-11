@@ -22,5 +22,5 @@ tmp
 errata/TODO.txt
 errata.egg-info
 errata-ws.conf
-logs
-sh
+errata-supervisord.conf
+ops

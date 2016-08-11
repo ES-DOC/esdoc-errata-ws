@@ -7,52 +7,64 @@
    :synopsis: ES-DOC Errata - issue creation endpoint.
 
 .. module author:: Atef Bennasser <abenasser@ipsl.jussieu.fr>
-"""
 
-from errata.issue_manager.manager import create
-from errata.issue_manager.constants import __JSON_SCHEMA_PATHS__
-from errata.utils.http import HTTPRequestHandler
+
+"""
 import json
-import time
-with open(__JSON_SCHEMA_PATHS__['create']) as f:
-    schema = f.read()
+
+from errata.issue_manager.constants import JSON_SCHEMAS
+from errata.issue_manager.manager import create
+from errata.utils.http import HTTPRequestHandler
+
 
 
 class CreateRequestHandler(HTTPRequestHandler):
     """issue handler.
 
     """
-    def __init__(self, application, request, **kwargs):
-        """Instance constructor.
-
-        """
-        super(CreateRequestHandler, self).__init__(application, request, **kwargs)
-        self.json_body = None
-        self.date_created = None
-        self.date_updated = None
-        self.workflow = None
-
     def post(self):
-        """
-        HTTP POST HANDLER
+        """HTTP POST handler.
+
         """
         def _decode_request():
+            """Decodes request.
+
+            """
             self.json_body = json.loads(self.request.body)
 
+
         def _invoke_issue_handler():
-            issue = self.json_body
-            self.message, self.status, creation_time = create(issue)
+            """Invokes issue handler utility function.
+
+            """
+            self.message, self.status, creation_time = create(self.json_body)
             if self.status == 0:
                 self.date_created = creation_time
                 self.date_updated = self.date_created
                 self.workflow = self.json_body['workflow']
+            else:
+                self.date_created = None
+                self.date_updated = None
+                self.workflow = None
+
 
         def _set_output():
+            """Sets response to be returned to client.
+
+            """
             self.output = {
-                "message": self.message,
-                "workflow": self.workflow,
                 "date_created": self.date_created,
                 "date_updated": self.date_updated,
+                "message": self.message,
                 "status": self.status,
+                "workflow": self.workflow
             }
-        self.invoke(schema=schema, taskset=[_decode_request, _invoke_issue_handler, _set_output])
+
+
+        # Invoke tasks.
+        self.invoke(JSON_SCHEMAS['create'], [
+            _decode_request,
+            _invoke_issue_handler,
+            _set_output
+            ])
+

@@ -10,43 +10,51 @@
 
 
 """
+import json
 
 from errata.issue_manager.manager import *
+from errata.issue_manager.constants import JSON_SCHEMAS
 from errata.utils.http import HTTPRequestHandler
-import time, json
-from errata.issue_manager.constants import __JSON_SCHEMA_PATHS__
 
-with open(__JSON_SCHEMA_PATHS__['close']) as f:
-    schema = f.read()
 
 
 class CloseRequestHandler(HTTPRequestHandler):
     """issue handler.
 
     """
-    def __init__(self, application, request, **kwargs):
-        """Instance constructor.
-
-        """
-        super(CloseRequestHandler, self).__init__(application, request, **kwargs)
-        self.uid = None
-        self.date_closed = None
-
     def post(self):
-        """
-        HTTP PUT HANDLER
+        """HTTP POST handler.
+
         """
         def _decode_request():
+            """Decodes request.
+
+            """
             self.json_body = json.loads(self.request.body)
 
+
         def _invoke_issue_handler():
+            """Invokes issue handler utility function.
+
+            """
             self.message, self.status, self.date_closed = close(self.json_body['id'])
 
+
         def _set_output():
+            """Sets response to be returned to client.
+
+            """
             self.output = {
                 "message": self.message,
                 "status": self.status,
                 "date_closed": self.date_closed
             }
-        self.invoke(schema, [_decode_request, _invoke_issue_handler, _set_output])
+
+
+        # Invoke tasks.
+        self.invoke(JSON_SCHEMAS['close'], [
+            _decode_request,
+            _invoke_issue_handler,
+            _set_output
+            ])
 

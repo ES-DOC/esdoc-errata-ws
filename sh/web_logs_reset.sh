@@ -6,9 +6,9 @@ source $ERRATA_HOME/sh/init.sh
 # Main entry point.
 main()
 {
-    log "WEB-SERVICE : running ..."
+	rm $ERRATA_HOME/ops/*.log
 
-	python2.7 $ERRATA_HOME/jobs/run_web_service.py
+	log "WEB : reset web-service logs"
 }
 
 # Invoke entry point.

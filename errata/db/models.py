@@ -92,28 +92,13 @@ class Issue(Entity):
     url = Column(Unicode(1023))
     materials = Column(Text)
 
-    def __repr__(self):
-        return "<Issue(id={0}, uid={1}, title={2}, description=={3})>".format(self.id, self.uid, self.title,
-                                                                              self.description)
-# NON_CHANGEABLE_KEYS = ['title', 'project', 'institute', 'date_created', 'date_updated']
 
-    def update_issue(self, other):
-        if self.description != other.description:
-            self.description = other.description
-        elif self.severity != other.severity:
-            self.severity = other.severity
-        elif self.workflow != other.workflow:
-            self.workflow = other.workflow
-        elif self.materials != other.materials:
-            self.materials = other.materials
-        elif self.state != other.state:
-            self.state = other.state
-        elif self.url != other.url:
-            self.url = other.url
-        elif self.date_updated != other.date_updated:
-            self.date_updated = other.date_updated
-        elif self.date_closed != other.date_closed:
-            self.date_closed = other.date_closed
+    def __repr__(self):
+        """Instance representation.
+
+        """
+        return "<Issue(id={}, uid={}, title={}, description=={})>".format(
+            self.id, self.uid, self.title, self.description)
 
 
 class IssueDataset(Entity):

@@ -1,12 +1,22 @@
-import logging
+# -*- coding: utf-8 -*-
+"""
+.. module:: handle_service.harvest.py
+   :license: GPL/CeCIL
+   :platform: Unix
+   :synopsis: Handle service harvester.
+
+.. moduleauthor:: Atef Bennasser <abennasser@ipsl.jussieu.fr>
+
+
+"""
 from time import time
 
 from b2handle.handleclient import EUDATHandleClient
 
-from crawler import crawler_v1
-# from utils import crawler, crawler_v1
-from utils import get_handle_by_handle_string
-# from entities import *
+from errata.handle_service.crawler import crawler_v1
+from errata.handle_service.utils import get_handle_by_handle_string
+from errata.utils import logger
+
 
 
 def harvest_errata_information(input_handle_string):
@@ -16,10 +26,10 @@ def harvest_errata_information(input_handle_string):
     :return: errata information, dset/file_id
     """
     tick = time()
-    logging.info("--CREATING HANDLE CLIENT--")
+    logger.log("--CREATING HANDLE CLIENT--")
     handle_client = EUDATHandleClient.instantiate_for_read_access()
-    logging.info("--HANDLE CLIENT CREATED--")
-    logging.info("----------------------------------BEGIN ISSUE TRACKING----------------------------------")
+    logger.log("--HANDLE CLIENT CREATED--")
+    logger.log("----------------------------------BEGIN ISSUE TRACKING----------------------------------")
     handle = get_handle_by_handle_string(input_handle_string, handle_client)
 
     # initialize the handleRegister instance
@@ -30,9 +40,9 @@ def harvest_errata_information(input_handle_string):
     is_latest = crawler_output[2]
     has_issues = crawler_output[3]
     incomplete_retracing = crawler_output[4]
-    logging.info("ELAPSED TIME TILL COMPLETION : " + str(time()-tick) + " SECONDS")
-    logging.info("-----------------------------------END ISSUE TRACKING-----------------------------------")
-    logging.info("LIST OF UIDS GENERATED IS...")
-    logging.info(list_of_uids)
-    return list_of_uids, dataset_or_file_id, is_latest, has_issues, incomplete_retracing
+    logger.log("ELAPSED TIME TILL COMPLETION : " + str(time()-tick) + " SECONDS")
+    logger.log("-----------------------------------END ISSUE TRACKING-----------------------------------")
+    logger.log("LIST OF UIDS GENERATED IS...")
+    logger.log(list_of_uids)
 
+    return list_of_uids, dataset_or_file_id, is_latest, has_issues, incomplete_retracing

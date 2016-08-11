@@ -6,9 +6,11 @@ source $ERRATA_HOME/sh/init.sh
 # Main entry point.
 main()
 {
-    log "WEB-SERVICE : running ..."
+    log "ERRATA-TESTS : running ..."
 
-	python2.7 $ERRATA_HOME/jobs/run_web_service.py
+    nosetests -v -s $ERRATA_HOME/tests
+
+    log "ERRATA-TESTS : complete ..."
 }
 
 # Invoke entry point.

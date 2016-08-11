@@ -56,6 +56,26 @@ def log(msg=None, module=_DEFAULT_MODULE, level=LOG_LEVEL_INFO):
     print(_get_formatted_message(msg, module, level))
 
 
+def log_warning(msg, module=_DEFAULT_MODULE):
+    """Logs a warning event.
+
+    :param str msg: A log message.
+    :param str level: Message level (e.g. INFO).
+
+    """
+    log(msg, module, LOG_LEVEL_WARNING)
+
+
+def warn(msg, module=_DEFAULT_MODULE):
+    """Logs a warning event.
+
+    :param str msg: A log message.
+    :param str level: Message level (e.g. INFO).
+
+    """
+    log_warning(msg, module)
+
+
 def log_error(err, module=_DEFAULT_MODULE):
     """Logs a runtime error.
 

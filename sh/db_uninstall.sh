@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Import utils.
-source $ERRATA_HOME/sh/utils.sh
+source $ERRATA_HOME/sh/init.sh
 
 # Create db users.
 _db_drop_users()

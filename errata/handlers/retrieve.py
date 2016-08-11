@@ -32,17 +32,6 @@ class RetrieveRequestHandler(HTTPRequestHandler):
     """Retrieve issue request handler.
 
     """
-    def __init__(self, application, request, **kwargs):
-        """Instance constructor.
-
-        """
-        super(RetrieveRequestHandler, self).__init__(application, request, **kwargs)
-
-        self.uid = None
-        self.issue = None
-        self.datasets = []
-
-
     def set_default_headers(self):
         """Set HTTP headers at the beginning of the request.
 

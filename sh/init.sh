@@ -24,41 +24,21 @@ log()
 	fi
 }
 
-# Outputs a line to split up logging.
-log_banner()
-{
-	echo "-------------------------------------------------------------------------------"
-}
-
-# Resets temporary folder.
-reset_tmp()
-{
-	rm -rf $ERRATA_DIR_TMP/*
-	mkdir -p $ERRATA_DIR_TMP
-}
-
-# Assigns the current working directory.
-set_working_dir()
-{
-	if [ "$1" ]; then
-		cd $1
-	else
-		cd $ERRATA_HOME
-	fi
-}
-
-# Removes all files of passed type in current working directory.
-remove_files()
-{
-	find . -name $1 -exec rm -rf {} \;
-}
-
 # ###############################################################
-# SECTION: INITIALIZE PATHS
+# SECTION: INITIALIZE VARS
 # ###############################################################
 
-# Define core directories.
-declare ERRATA_DIR_BASH=$ERRATA_HOME/sh
-declare ERRATA_DIR_WS_JOBS=$ERRATA_HOME/jobs
-declare ERRATA_DIR_TEST_DATA=$ERRATA_HOME/test-data
+# Set of ops sub-directories.
+declare -a ERRATA_OPS_DIRS=(
+	$ERRATA_HOME/ops
+)
 
+# ###############################################################
+# SECTION: Initialise file system
+# ###############################################################
+
+# Ensure ops paths exist.
+for ops_dir in "${ERRATA_OPS_DIRS[@]}"
+do
+	mkdir -p $ops_dir
+done

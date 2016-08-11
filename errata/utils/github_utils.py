@@ -4,25 +4,25 @@
    :synopsis: Useful functions to use with esgissue module.
 
 """
-
-# Module imports
+import argparse
+import collections
+import ConfigParser
 import os
 import re
-import sys
-import requests
-import logging
 import string
-import ConfigParser
+import sys
 import textwrap
-from collections import OrderedDict
-from argparse import HelpFormatter
-import datetime
-import argparse
 import uuid
-from github3 import GitHub
+from json import dump
+from json import load
+
+import requests
 from bs4 import BeautifulSoup
-from json import dump, load
+from github3 import GitHub
 from jsonschema import validate
+
+from errata.utils import logger
+
 
 
 __FILL_VALUE__ = unicode('Not documented')
@@ -32,18 +32,22 @@ __JSON_SCHEMA_PATHS__ = {'create': '{0}/templates/create.json'.format(os.path.di
                          'retrieve': '{0}/templates/retrieve.json'.format(os.path.dirname(os.path.abspath(__file__)))}
 
 
-class MultilineFormatter(HelpFormatter):
-    """
-    Custom formatter class for argument parser to use with the Python
+class MultilineFormatter(argparse.HelpFormatter):
+    """Custom formatter class for argument parser to use with the Python
     `argparse <https://docs.python.org/2/library/argparse.html>`_ module.
 
     """
     def __init__(self, prog):
-        # Overload the HelpFormatter class.
+        """Instance constructor.
+
+        """
         super(MultilineFormatter, self).__init__(prog, max_help_position=60, width=100)
 
+
     def _fill_text(self, text, width, indent):
-        # Rewrites the _fill_text method to support multiline description.
+        """Rewrites the _fill_text method to support multiline description.
+
+        """
         text = self._whitespace_matcher.sub(' ', text).strip()
         multiline_text = ''
         paragraphs = text.split('|n|n ')
@@ -57,8 +61,11 @@ class MultilineFormatter(HelpFormatter):
             multiline_text += '\n'
         return multiline_text
 
+
     def _split_lines(self, text, width):
-        # Rewrites the _split_lines method to support multiline helps.
+        """Rewrites the _split_lines method to support multiline helps.
+
+        """
         text = self._whitespace_matcher.sub(' ', text).strip()
         lines = text.split('|n ')
         multiline_text = []
@@ -68,47 +75,14 @@ class MultilineFormatter(HelpFormatter):
         return multiline_text
 
 
-def init_logging(logdir, level='INFO'):
-    """
-    Initiates the logging configuration (output, message formatting).
-    In the case of a logfile, the logfile name is unique and formatted as follows:
-    ``name-YYYYMMDD-HHMMSS-JOBID.log``
-
-    :param str logdir: The relative or absolute logfile directory. If ``None`` the standard output is used.
-    :param str level: The log level.
-
-    """
-    __LOG_LEVELS__ = {'CRITICAL': logging.CRITICAL,
-                      'ERROR': logging.ERROR,
-                      'WARNING': logging.WARNING,
-                      'INFO': logging.INFO,
-                      'DEBUG': logging.DEBUG,
-                      'NOTSET': logging.NOTSET}
-    logging.getLogger("requests").setLevel(logging.CRITICAL)  # Disables logging message from request library
-    logging.getLogger("github3").setLevel(logging.CRITICAL)  # Disables logging message from github3 library
-    logging.getLogger("esgfpid").setLevel(logging.CRITICAL)  # Disables logging message from esgfpid library
-    if logdir:
-        logfile = 'esgissue-{0}-{1}.log'.format(datetime.now().strftime("%Y%m%d-%H%M%S"),
-                                                os.getpid())
-        if not os.path.isdir(logdir):
-            os.makedirs(logdir)
-        logging.basicConfig(filename=os.path.join(logdir, logfile),
-                            level=__LOG_LEVELS__[level],
-                            format='%(asctime)s %(levelname)s %(message)s',
-                            datefmt='%Y/%m/%d %I:%M:%S %p')
-    else:
-        logging.basicConfig(level=__LOG_LEVELS__[level],
-                            format='%(asctime)s %(levelname)s %(message)s',
-                            datefmt='%Y/%m/%d %I:%M:%S %p')
-
-
-class MyOrderedDict(OrderedDict):
-    """
-    OrderedDict instance with prepend method to add key as first.
+class MyOrderedDict(collections.OrderedDict):
+    """OrderedDict instance with prepend method to add key as first.
 
     """
     def prepend(self, key, value, dict_setitem=dict.__setitem__):
+        """Adds a keyed value to first position within underlying dictionary.
 
+        """
         root = self._OrderedDict__root
         first = root[1]
 
@@ -232,10 +206,10 @@ def test_url(url):
     try:
         r = requests.head(url)
         if r.status_code != requests.codes.ok:
-            logging.debug('{0}: {1}'.format(r.status_code, url))
+            logger.log('{0}: {1}'.format(r.status_code, url))
         return r.status_code == requests.codes.ok
     except:
-        logging.exception('Result: FAILED // Bad HTTP request')
+        logger.log_error('Result: FAILED // Bad HTTP request')
         sys.exit(1)
 
 
@@ -250,7 +224,7 @@ def test_pattern(text):
     """
     pattern = "^[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+#[0-9]{8}$"
     if not re.match(re.compile(pattern), text):
-        logging.debug('{0} is malformed'.format(text))
+        logger.log('{0} is malformed'.format(text))
         return False
     else:
         return True
@@ -433,50 +407,56 @@ def github_connector(username, password, team, repo, cfg):
     """
     Instantiates the GitHub repository connector if granted for user.
 
-    :param username: The GitHub login
-    :param password: The GitHub password
-    :param team: The GitHub team to connect
-    :param repo: The GitHub repository to reach
+    :param str username: The GitHub login
+    :param str password: The GitHub password
+    :param str team: The GitHub team to connect
+    :param str repo: The GitHub repository to reach
+
     :returns: The GitHub repository connector and the GitHub user login
     :rtype: *tuple* of (*str*, *github3.repos.repo*)
+
     :raises Error: If the GitHub connection fails because of invalid inputs
 
     """
     gh_link = {'team': cfg.get('issues', 'gh_team'),
                'repo': cfg.get('issues', 'gh_repo').lower()}
-    logging.info('Connection to the GitHub repository "{team}/{repo}"'.format(**gh_link))
+    logger.log('Connection to the GitHub repository "{team}/{repo}"'.format(**gh_link))
     try:
         gh_user = GitHub(username, password)
         gh_repo = gh_user.repository(team, repo.lower())
-        logging.info('Result: SUCCESSFUL')
+        logger.log('Result: SUCCESSFUL')
         return username, gh_repo
     except:
-        logging.exception('Result: FAILED // Access denied')
+        logger.log_error('Result: FAILED // Access denied')
         sys.exit(1)
 
 
 def get_projects(config):
-    """
-    Gets project options from esg.ini file.
+    """Returns project options pulled from esg.ini file.
 
     :param dict config: The configuration file parser
+
     :returns: The project options
     :rtype: *list*
 
     """
     project_options = split_line(config.get('DEFAULT', 'project_options'), sep='\n')
+
     return [option[0].upper() for option in map(lambda x: split_line(x), project_options[1:])]
 
 
 def get_file_number(dir_path, extension):
-    """
-    returns the number of files with a specific extension in a directory
+    """Returns the number of files with a specific extension in a directory
+
     :param dir_path: directory
     :param extension: extension
+
     :return: number of files
+
     """
     number_of_files = len([name for name in os.listdir(dir_path) if os.path.isfile(os.path.join(dir_path, name)) and
                           name.lower().endswith(extension)])
+
     return number_of_files + 1
 
 
@@ -507,6 +487,7 @@ class GitHubIssue(object):
 
     :param GitHubObj gh: The GitHub repository connector (as a :func:`github3.repos.repo` class instance)
     :param int number: The issue number
+
     :returns: The issue context
     :rtype: *GitHubIssue*
 
@@ -517,6 +498,7 @@ class GitHubIssue(object):
         self.status = None
         self.assignee = None
         self.attributes, self.dsets = self.get_template(gh)
+
 
     def get(self, key):
         """
@@ -535,6 +517,7 @@ class GitHubIssue(object):
         else:
             raise Exception('{0} not found. Available keys are {1}'.format(key, self.attributes.keys()))
 
+
     def get_template(self, gh):
         """
         Loads an issue template from the GitHub repository.
@@ -551,6 +534,7 @@ class GitHubIssue(object):
         self.status = self.raw.state
         self.assignee = self.raw.assignee.login
         return self.format()
+
 
     def format(self):
         """
@@ -583,6 +567,7 @@ class GitHubIssue(object):
             issue[unicode('closed_at')] = self.raw.closed_at.isoformat()
         return issue, content['dsets']
 
+
     @staticmethod
     def issue_content_parser(content):
         """
@@ -610,6 +595,7 @@ class GitHubIssue(object):
                     html_dict[elt['id']] = parent.string
         return html_dict
 
+
     def validate(self, action, projects):
         """
         Validates GitHub issue template against predefined JSON schema
@@ -622,31 +608,37 @@ class GitHubIssue(object):
         :raises Error: If dataset ids are malformed
 
         """
-        logging.info('Validation of GitHub issue {0}'.format(self.attributes['number']))
+        logger.log('Validation of GitHub issue {0}'.format(self.attributes['number']))
+
         # Load JSON schema for issue template
-        with open(__JSON_SCHEMA_PATHS__[action]) as f:
-            schema = load(f)
+        with open(__JSON_SCHEMA_PATHS__[action]) as fstream:
+            schema = load(fstream)
+
         # Validate issue attributes against JSON issue schema
         try:
             validate(self.attributes, schema)
         except:
-            logging.exception('Result: FAILED // GitHub issue {0} has an invalid JSON schema'.format(self.number))
+            logger.log_error('Result: FAILED // GitHub issue {0} has an invalid JSON schema'.format(self.number))
             sys.exit(1)
+
         # Test if project is declared in esg.ini
         if not self.attributes['project'] in projects:
-            logging.error('Result: FAILED // Project should be one of {0}'.format(projects))
-            logging.debug('Local "{0}" -> "{1}"'.format('project', self.attributes['project']))
+            logger.log_error('Result: FAILED // Project should be one of {0}'.format(projects))
+            logger.log('Local "{0}" -> "{1}"'.format('project', self.attributes['project']))
             sys.exit(1)
+
         # Test landing page and materials URLs
         urls = filter(None, traverse(map(self.attributes.get, ['url', 'materials'])))
         if not all(map(test_url, urls)):
-            logging.error('Result: FAILED // URLs cannot be reached')
+            logger.log_error('Result: FAILED // URLs cannot be reached')
             sys.exit(1)
+
         # Validate the datasets list against the dataset id pattern
         if not all(map(test_pattern, self.dsets)):
-            logging.error('Result: FAILED // Dataset IDs have invalid format')
+            logger.log_error('Result: FAILED // Dataset IDs have invalid format')
             sys.exit(1)
-        logging.info('Result: SUCCESSFUL')
+        logger.log('Result: SUCCESSFUL')
+
 
     def retrieve(self, issue_f, dsets_f):
         """
@@ -656,21 +648,19 @@ class GitHubIssue(object):
         :param FileObj dsets_f: The TXT file to write in
 
         """
-        logging.info('Retrieve GitHub issue #{0} JSON template'.format(self.number))
+        logger.log('Retrieve GitHub issue #{0} JSON template'.format(self.number))
         try:
             with issue_f as json_file:
                 dump(self.attributes, json_file, indent=0)
-            logging.info('Result: SUCCESSFUL')
+            logger.log('Result: SUCCESSFUL')
         except:
-            logging.exception('Result: FAILED // JSON template {0} is not writable'.format(issue_f.name))
+            logger.log_error('Result: FAILED // JSON template {0} is not writable'.format(issue_f.name))
             sys.exit(1)
-        logging.info('Retrieve GitHub issue #{0} affected datasets list'.format(self.number))
+        logger.log('Retrieve GitHub issue #{0} affected datasets list'.format(self.number))
         try:
             with dsets_f as list_file:
                 list_file.write('\n'.join(self.dsets))
-            logging.info('Result: SUCCESSFUL')
+            logger.log('Result: SUCCESSFUL')
         except:
-            logging.exception('Result: FAILED // Dataset list {0} is not writable'.format(dsets_f.name))
+            logger.log_error('Result: FAILED // Dataset list {0} is not writable'.format(dsets_f.name))
             sys.exit(1)
-
-

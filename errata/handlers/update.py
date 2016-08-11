@@ -10,46 +10,54 @@
 
 
 """
-from errata.issue_manager.manager import *
-from errata.issue_manager.constants import __JSON_SCHEMA_PATHS__
-from errata.utils.http import HTTPRequestHandler
 import json
-import time
 
-with open(__JSON_SCHEMA_PATHS__['update']) as f:
-    schema = f.read()
+from errata.issue_manager.constants import JSON_SCHEMAS
+from errata.issue_manager.manager import *
+from errata.utils.http import HTTPRequestHandler
+
 
 
 class UpdateRequestHandler(HTTPRequestHandler):
     """issue handler.
 
     """
-    def __init__(self, application, request, **kwargs):
-        """Instance constructor.
-
-        """
-        super(UpdateRequestHandler, self).__init__(application, request, **kwargs)
-        self.json_body = None
-        self.date_updated = None
-
     def post(self):
-        """
-        HTTP POST HANDLER
+        """HTTP POST handler.
+
         """
         def _decode_request():
+            """Decodes request.
+
+            """
             self.json_body = json.loads(self.request.body)
 
+
         def _invoke_issue_handler():
-            issue = self.json_body
-            self.message, self.status, update_time = update(issue)
+            """Invokes issue handler utility function.
+
+            """
+            self.message, self.status, update_time = update(self.json_body)
             if self.status == 0:
                 self.date_updated = update_time
+            else:
+                self.date_updated = None
+
 
         def _set_output():
+            """Sets response to be returned to client.
+
+            """
             self.output = {
-                'message': self.message,
-                'status': self.status,
                 'date_updated': self.date_updated,
+                'message': self.message,
+                'status': self.status
             }
 
-        self.invoke(schema, [_decode_request, _invoke_issue_handler, _set_output])
+
+        # Invoke tasks.
+        self.invoke(JSON_SCHEMAS['update'], [
+            _decode_request,
+            _invoke_issue_handler,
+            _set_output
+            ])

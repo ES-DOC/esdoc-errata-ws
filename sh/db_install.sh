@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Import utils.
-source $ERRATA_HOME/sh/utils.sh
+source $ERRATA_HOME/sh/init.sh
 
 # Create db users.
 _db_create_users()
@@ -22,14 +22,14 @@ _db_create()
 _db_grant_permissions()
 {
 	log "Granting DB permissions"
-	psql -U esdoc_errata_db_admin -d esdoc_errata -q -f $ERRATA_DIR_BASH/db_grant_permissions.sql
+	psql -U esdoc_errata_db_admin -d esdoc_errata -q -f $ERRATA_HOME/sh/db_grant_permissions.sql
 }
 
 # Seed db.
 _db_setup()
 {
 	log "Creating DB objects"
-	python $ERRATA_DIR_WS_JOBS/run_db_setup.py
+	python $ERRATA_HOME/jobs/run_db_setup.py
 }
 
 # Main entry point.

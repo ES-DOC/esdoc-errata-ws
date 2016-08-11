@@ -8,195 +8,182 @@
 .. moduleauthor:: Guillaume Levavasseur <glipsl@ipsl.jussieu.fr>
 
 """
+import datetime as dt
+import difflib
+
+import sqlalchemy
+
+from errata import db
+from errata.constants import STATE_CLOSED
+from errata.constants import STATE_OPEN
+from errata.constants import WORKFLOW_NEW
+from errata.constants import WORKFLOW_RESOLVED
+from errata.constants import WORKFLOW_WONT_FIX
+from errata.db.models import Issue
+from errata.db.models import IssueDataset
+from errata.utils import logger
+
+from errata.issue_manager.constants import *
+from errata.issue_manager.exceptions import DuplicateDescriptionError
+from errata.issue_manager.exceptions import ImmutableAttributeError
+from errata.issue_manager.exceptions import InvalidStatusError
+
+
 
 # TODO : Convert close option as update to "Resolved" workflow value
 # TODO : Add delete action giving issue id, controlled by GitHub roles
 # TODO : Discuss Handle Service connection/authentication only by ES-DOC from Errata Service
 
-# Module imports
-import logging as log
-from errata.utils import logger
-from errata import db
-from errata.constants import STATE_CLOSED, STATE_OPEN, WORKFLOW_NEW, WORKFLOW_RESOLVED, WORKFLOW_WONT_FIX
-from errata.db.models import Issue, IssueDataset
-import sqlalchemy
-from uuid import uuid4
-import datetime as dt
-from custom_exceptions import *
-from constants import *
-from difflib import SequenceMatcher
 
 
-def _get_issue(obj):
-    """Maps a dictionary decoded from a file to an issue instance.
+def _decode_issue(obj):
+    """Decodes an issue instance from a dictionary.
 
     """
     issue = Issue()
-    if 'date_created' in obj.keys():
-        issue.date_created = obj['date_created']
-    if 'date_updated' in obj.keys():
-        issue.date_updated = obj['date_updated']
-    if 'date_closed' in obj.keys():
-        issue.date_closed = obj['date_closed']
+    issue.date_created = obj.get('date_created', issue.date_created)
+    issue.date_created = obj.get('date_created')
+    issue.date_closed = obj.get('date_closed')
     issue.description = obj['description']
     issue.institute = obj['institute'].lower()
-    if 'materials' in obj.keys():
-        issue.materials = ",".join(obj['materials'])
+    issue.materials = ",".join(obj.get('materials', []))
     issue.severity = obj['severity'].lower()
     issue.state = STATE_CLOSED if issue.date_closed else STATE_OPEN
     issue.project = obj['project'].lower()
     issue.title = obj['title']
-    if 'uid' in obj.keys():
-        issue.uid = obj['uid']
-    if 'id' in obj.keys():
-        issue.uid = obj['id']
-    if 'url' in obj.keys():
-        issue.url = obj['url']
+    issue.uid = obj.get('uid', issue.uid)
+    issue.uid = obj.get('id', issue.uid)
+    issue.url = obj.get('url')
     issue.workflow = obj['workflow'].lower()
     issue.datasets = obj['datasets']
+
     return issue
 
 
-def _get_datasets_from_issue(issue):
-    """Yields datasets for testing purposes.
+def _decode_datasets(issue, dsets=None):
+    """Decodes issue datasets.
 
     """
-    for dataset_id in issue.datasets:
-        dataset = IssueDataset()
-        dataset.issue_id = issue.id
-        dataset.dataset_id = dataset_id
-        yield dataset
-
-
-def _get_datasets(issue, dsets):
-    """Yields datasets for testing purposes.
-
-    """
+    dsets = dsets if dsets else issue.datasets
     for dataset_id in dsets:
         dataset = IssueDataset()
         dataset.issue_id = issue.id
         dataset.dataset_id = dataset_id
+
         yield dataset
 
 
-def _load_issue(db_instance):
-        """
-        Maps an issue instance to a dictionary
+def _encode_issue(issue):
+    """Encodes an issue instance to a dictionary.
 
-        """
-        issue = dict()
-        issue['date_created'] = db_instance.date_created
-        if db_instance.date_updated:
-            issue['date_updated'] = db_instance.date_updated
-        if db_instance.date_closed:
-            issue['date_closed'] = db_instance.date_closed
-        issue['description'] = db_instance.description
-        issue['institute'] = db_instance.institute.upper()
-        if db_instance.materials:
-            issue['materials'] = [m for m in db_instance.materials.split(',')]
-        issue['severity'] = db_instance.severity
-        issue['project'] = db_instance.project.upper()
-        issue['title'] = db_instance.title
-        issue['id'] = db_instance.id
-        issue['uid'] = db_instance.uid
-        if db_instance.url:
-            issue['url'] = db_instance.url
-        issue['workflow'] = db_instance.workflow
-        issue['state'] = db_instance.state
-        return issue
-
-
-def _load_dsets(db_instances_list):
     """
-    loads a list of dataset instances into a dictionary
-    :param db_instances_list: list of dataset instances
-    :return: list of dictionaries
-    """
-    list_of_dic = []
-    for dset in db_instances_list:
-        dset_dic = dict()
-        dset_dic['issue_id'] = dset.issue_id
-        dset_dic['dset_id'] = dset.dataset_id
-        list_of_dic.append(dset_dic)
-    return list_of_dic
+    obj = dict()
+    obj['date_created'] = issue.date_created
+    obj['description'] = issue.description
+    obj['id'] = issue.id
+    obj['institute'] = issue.institute.upper()
+    obj['project'] = issue.project.upper()
+    obj['severity'] = issue.severity
+    obj['state'] = issue.state
+    obj['title'] = issue.title
+    obj['uid'] = issue.uid
+    obj['workflow'] = issue.workflow
+
+    if issue.date_closed:
+        obj['date_closed'] = issue.date_closed
+    if issue.date_updated:
+        obj['date_updated'] = issue.date_updated
+    if issue.materials:
+        obj['materials'] = [m for m in issue.materials.split(',')]
+    if issue.url:
+        obj['url'] = issue.url
+
+    return obj
 
 
-def check_status(old_issue, new_issue):
+def _encode_datasets(datasets):
+    """Encodes a list of dataset instances to a list of dictionaries.
+
     """
-    checks the status change, the new status cannot replace a status that is different than new with a new value.
-    :param old_issue: old issue instance
-    :param new_issue: new issue instance
-    :return: Boolean
+    return [{
+        'dset_id': i.dataset_id,
+        'issue_id': i.issue_id
+    } for i in datasets]
+
+
+def _check_status(old_issue, new_issue):
+    """Checks the status change, the new status cannot replace a status that is different than new with a new value.
+
     """
     if old_issue.workflow != WORKFLOW_NEW and new_issue.workflow == WORKFLOW_NEW:
         return False
-    else:
-        return True
+
+    return True
 
 
-def check_ratio(old_description, new_description):
+def _check_ratio(old_description, new_description):
+    """Checks description change ratio.
+
     """
-    checks the change ratio in description
-    :param old_description:
-    :param new_description:
-    :return:
-    """
-    change_ratio = round(SequenceMatcher(None, new_description, old_description).ratio(), 3)*100
-    logger.log_web('The change between the descriptions has been detected to be about {}'.format(change_ratio))
+    # Determine change ratio.
+    change_ratio = round(difflib.SequenceMatcher(None, new_description, old_description).ratio(), 3) * 100
+    logger.log_web("Issue description change ratio = {}".format(change_ratio))
+
+    # False if ratio exceeds limit.
     if change_ratio < RATIO:
-        logger.log_web('Description has been changed more than the allowed amount of 80%. Aborting update.'
-                       'The detected change ratio in description is around {}'.format(change_ratio))
+        logger.log_web("Description has been changed more than the allowed amount of {}%. Aborting update.  The detected change ratio in description is around {}".format(100 - RATIO, change_ratio))
         return False
-    else:
-        return True
+
+    return True
 
 
-def update_issue(old_issue, new_issue):
+def _update_issue(old_issue, new_issue):
+    """Updates issue object instance.
+
     """
-    updates issue object instance
-    :param old_issue: old instance
-    :param new_issue: new instance
-    :return: updated instance
-    """
-    for k, v in old_issue.__dict__.iteritems():
-        if k in NON_CHANGEABLE_KEYS and str(old_issue.__dict__[k]).lower() != str(new_issue.__dict__[k]).lower():
-            logger.log_web('old issue creation date {}'.format(old_issue.__dict__['date_created']))
-            logger.log_web('old issue creation date {}'.format(new_issue.__dict__['date_created']))
-            logger.log_web('Warning: unacceptable change detected. Attempted to change the key {}.'.format(k))
+    for k, _ in old_issue.__dict__.iteritems():
+        if k in IMMUTABLE_KEYS and str(old_issue.__dict__[k]).lower() != str(new_issue.__dict__[k]).lower():
+            logger.log_web('Old issue creation date {}'.format(old_issue.__dict__['date_created']))
+            logger.log_web('New issue creation date {}'.format(new_issue.__dict__['date_created']))
+            logger.log_web_warning('unacceptable change detected. Attempted to change the key {}.'.format(k))
             logger.log_web('checking key {0}, with value {1} in db and {2} in request'.format(k,
                            str(old_issue.__dict__[k]), str(new_issue.__dict__[k])))
-            raise InvalidAttribute
+            raise ImmutableAttributeError()
+
     if old_issue.description != new_issue.description:
-        if check_ratio(old_issue.description, new_issue.description):
+        if _check_ratio(old_issue.description, new_issue.description):
             old_issue.description = new_issue.description
         else:
-            raise InvalidDescription
+            raise InvalidDescriptionChangeRatioError()
+
     elif old_issue.severity != new_issue.severity:
         old_issue.severity = new_issue.severity
+
     elif old_issue.workflow != new_issue.workflow:
-        if check_status(old_issue, new_issue):
+        if _check_status(old_issue, new_issue):
             old_issue.workflow = new_issue.workflow
         else:
-            raise InvalidStatus
+            raise InvalidStatusError()
+
     elif old_issue.materials != new_issue.materials:
         old_issue.materials = new_issue.materials
+
     elif old_issue.state != new_issue.state:
         old_issue.state = new_issue.state
+
     elif old_issue.url != new_issue.url:
         old_issue.url = new_issue.url
+
     elif old_issue.date_updated != new_issue.date_updated:
         old_issue.date_updated = new_issue.date_updated
+
     elif old_issue.date_closed != new_issue.date_closed:
         old_issue.date_closed = new_issue.date_closed
 
 
-def compare_dsets(old_dset, new_dset, issue):
-    """
-    compares the dataset lists and returns the list to be updated.
-    :param old_dset: DatasetIssue Instance
-    :param new_dset: list of dset id
-    :param issue: Issue instance
-    :return: dataset instances to be updated
+def _compare_dsets(old_dset, new_dset, issue):
+    """Compares the dataset lists and returns the list to be updated.
+
     """
     # initializing return.
     dset_to_remove = []
@@ -207,6 +194,7 @@ def compare_dsets(old_dset, new_dset, issue):
             dset_to_remove.append(x)
         else:
             logger.log_web('Appending dataset {} to kept list'.format(x.dataset_id))
+
     # Trimming old dataset list to only ids to facilitate test.
     old_dset_id = [x.dataset_id for x in old_dset]
     for x in new_dset:
@@ -215,8 +203,10 @@ def compare_dsets(old_dset, new_dset, issue):
             dset_to_add.append(x)
         else:
             logger.log_web('Dataset {} was found within existing datasets, skipping.'.format(x))
+
     # converting to dataset object instance
-    dset_to_add = _get_datasets(issue, dset_to_add)
+    dset_to_add = _decode_datasets(issue, dset_to_add)
+
     return dset_to_add, dset_to_remove
 
 
@@ -229,12 +219,12 @@ def create(issue):
 
         """
         # Convert dictionary into Issue instance
-        log.info('STARTED INJECTING A NEW ISSUE...')
-        issue = _get_issue(issue)
-        log.info('JSON CONVERTED INTO ISSUE INSTANCE...')
+        logger.log('STARTED INJECTING A NEW ISSUE...')
+        issue = _decode_issue(issue)
+        logger.log('JSON CONVERTED INTO ISSUE INSTANCE...')
         with db.session.create():
             # Adding attributes
-            log.info('ADDING ATTRIBUTES...')
+            logger.log('ADDING ATTRIBUTES...')
             # issue.uid = str(uuid4())
             # issue.workflow = WORKFLOW_NEW
             # Insert issue entry into database
@@ -257,7 +247,7 @@ def create(issue):
                     return 'successfully inserted', 0, issue.date_created
 
                 # Insert related datasets.
-                for dataset in _get_datasets_from_issue(issue):
+                for dataset in _decode_datasets(issue):
                     try:
                         db.session.insert(dataset)
                     except sqlalchemy.exc.IntegrityError:
@@ -297,27 +287,24 @@ def update(issue):
     :param issue: issue dictianary
     :return:
     """
-    new_issue = _get_issue(issue)
+    new_issue = _decode_issue(issue)
     with db.session.create():
         # Returns a single issue
         logger.log_web('Loading issue with id  {}'.format(new_issue.uid))
         db_issue = db.dao.get_issue(new_issue.uid)
         logger.log_web('database issue retrieved')
+
         # Workflow shouldn't revert to new if it is any other value
         logger.log_web('Comparing instances and updating..')
         try:
-            update_issue(db_issue, new_issue)
-        except InvalidDescription as e:
-            return e.msg, -1, None
-        except InvalidAttribute as e:
-            return e.msg, -1, None
-        except InvalidStatus as e:
+            _update_issue(db_issue, new_issue)
+        except (InvalidDescriptionChangeRatioError, ImmutableAttributeError, InvalidStatusError) as e:
             return e.msg, -1, None
 
         # Updating affected dataset list
-        dsets_to_add, dsets_to_remove = compare_dsets(db.dao.get_issue_datasets_by_uid(db_issue.uid), issue['datasets']
-                                                      , db_issue)
+        dsets_to_add, dsets_to_remove = _compare_dsets(db.dao.get_issue_datasets_by_uid(db_issue.uid), issue['datasets'], db_issue)
         logger.log_web('Got the datasets related to the issue.')
+
         try:
             db.session.update(db_issue)
             logger.log_db('issue updated.')
@@ -335,7 +322,9 @@ def update(issue):
 
         except UnicodeDecodeError:
             logger.log_db('DECODING EXCEPTION')
+
         else:
             logger.log_db('ISSUE UPDATED')
-        return SUCCESS_MESSAGE, 0, db_issue.date_updated
+
+        return "UPDATE SUCCEEDED.", 0, db_issue.date_updated
 

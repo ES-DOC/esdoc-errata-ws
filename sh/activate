@@ -7,6 +7,12 @@ chmod a+x $ERRATA_HOME/sh/*.sh
 
 # Web-service commands.
 alias errata-ws=$ERRATA_HOME/sh/web_run_service.sh
+alias errata-ws-config-init=$ERRATA_HOME/sh/web_config_init.sh
+alias errata-ws-config-update=$ERRATA_HOME/sh/web_config_update.sh
+alias errata-ws-daemon-init=$ERRATA_HOME/sh/web_daemon_init.sh
+alias errata-ws-daemon-kill=$ERRATA_HOME/sh/web_daemon_kill.sh
+alias errata-ws-daemon-status=$ERRATA_HOME/sh/web_daemon_status.sh
+alias errata-ws-logs-reset=$ERRATA_HOME/sh/web_logs_reset.sh
 
 # Database commands.
 alias errata-db-ingest=$ERRATA_HOME/sh/db_ingest.sh
@@ -16,7 +22,8 @@ alias errata-db-reset=$ERRATA_HOME/sh/db_reset.sh
 
 # Test related commands.
 alias errata-db-insert-test-issues=$ERRATA_HOME/sh/db_insert_test_issues.sh
-alias errata-db-create-large-for-testing=$ERRATA_HOME/sh/run_db_create_large_for_testing.sh
+alias errata-db-create-large-for-testing=$ERRATA_HOME/sh/db_create_large_for_testing.sh
+alias errata-tests=$ERRATA_HOME/sh/run_tests.sh
 
 # Virtual environment related commands.
 alias errata-venv-setup=$ERRATA_HOME/sh/venv_setup.sh

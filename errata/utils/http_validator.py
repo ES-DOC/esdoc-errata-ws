@@ -9,12 +9,19 @@
 
 
 """
+import json
 import uuid
-from errata.utils import logger
-from errata.issue_manager.utils import *
-from errata.issue_manager.custom_exceptions import *
-import json, jsonschema
+
 import cerberus
+import jsonschema
+
+from errata.issue_manager.utils import *
+from errata.issue_manager.exceptions import *
+from errata.issue_manager.exceptions import InvalidJSONSchemaError
+from errata.issue_manager.exceptions import UnreachableURLError
+from errata.issue_manager.exceptions import InvalidDatasetIdentiferError
+
+from errata.utils import logger
 
 
 
@@ -40,30 +47,29 @@ class _RequestBodyValidator(object):
         """Validates the request body.
 
         """
-        # with open(__JSON_SCHEMA_PATHS__['create']) as f:
-        #     schema = json.load(f)
-        schema = self.schema
         # Validate issue attributes against JSON issue schema
         request = json.loads(self.request.body)
         try:
-            jsonschema.validate(request, schema)
+            jsonschema.validate(request, self.schema)
         except jsonschema.exceptions.ValidationError as e:
-            print(repr(e))
-            self.errors = UnreachableURLs
-            raise InvalidJSONSchema
+            self.errors = InvalidJSONSchemaError
+            raise InvalidJSONSchemaError
+
         # Test landing page and materials URLs
         urls = filter(None, traverse(map(request.get, ['url', 'materials'])))
-        if not all(map(test_url, urls)):
-            self.errors = UnreachableURLs
-            raise UnreachableURLs
+        if not all([test_url(i) for i in urls]):
+            self.errors = UnreachableURLError
+            raise UnreachableURLError
+
         # Validate the datasets list against the dataset id pattern
         if 'datasets' in request.keys():
             if not all(map(test_pattern, request['datasets'])):
-                raise InvalidDatasetIDs
+                raise InvalidDatasetIdentiferError
+
         if 'uid' in request.keys():
-            logging.info('VALID ISSUE :: {}'.format(request['uid']))
-        else:
-            logging.info('VALID ISSUE :: {}'.format(request['id']))
+            logger.log('VALID ISSUE :: {}'.format(request['uid']))
+        elif 'id' in request.keys():
+            logger.log('VALID ISSUE :: {}'.format(request['id']))
 
         return []
 
@@ -107,19 +113,25 @@ def _log(handler, error):
     logger.log_web_security(msg)
 
 
-def is_request_valid(handler, schema, options={}):
+def is_request_valid(handler, schema, options=None):
     """Returns a flag indicating whether an HTTP request is considered to be valid.
 
     """
-    # Validate request.
+    # Set defaults.
+    if options is None:
+        options = dict()
+
+    # Validate request body.
     if isinstance(schema, str):
         validator = _RequestBodyValidator(handler.request, schema)
         validator.validate()
 
+    # Validate request parameters.
     else:
         validator = _RequestQueryParamsValidator(schema)
         validator.allow_unknown = options.get('allow_unknown', False)
         validator.validate(handler.request.query_arguments)
+
     # HTTP 400 if request is invalid.
     if validator.errors:
         _log(handler, "Invalid request :: {}".format(validator.errors))

@@ -9,23 +9,29 @@
 
 
 """
-
 import os
 
-# Rabbit MQ unsent messages directory
-__UNSENT_MESSAGES_DIR__ = "{0}/unsent_rabbit_messages".format(os.path.dirname(os.path.abspath(__file__)))
 
-# JSON issue schemas full path
-__JSON_SCHEMA_PATHS__ = {'create': os.path.join(os.getenv('ERRATA_HOME'), 'errata/issue_manager/schemas/create.json'),
-                         'update': os.path.join(os.getenv('ERRATA_HOME'), 'errata/issue_manager/schemas/update.json'),
-                         'close': os.path.join(os.getenv('ERRATA_HOME'), 'errata/issue_manager/schemas/close.json')
-                         # Retrieve & close methods don't require json validation for now.
-                         # , 'retrieve': '{0}/schemas/retrieve.json'.format(os.path.dirname(os.path.abspath(__file__)))
-                         }
+
 # List of keys that cannot be updated
-NON_CHANGEABLE_KEYS = ['title', 'project', 'institute', 'date_created']
+IMMUTABLE_KEYS = [
+	'title',
+	'project',
+	'institute',
+	'date_created'
+	]
+
+def _get_json_schema(name):
+	"""Returns a JSON schema.
+
+	"""
+	fpath = os.path.join(os.path.dirname(__file__), "schemas")
+	fpath = os.path.join(fpath, "{}.json".format(name))
+	with open(fpath, 'r') as fstream:
+		return fstream.read()
+
+# Map of actions to json schemas.
+JSON_SCHEMAS = {i: _get_json_schema(i) for i in ['create', 'retrieve', 'update']}
 
 # Ratio of similarity between descriptions of updated and database issue.
 RATIO = 20
-
-SUCCESS_MESSAGE = 'UPDATE SUCCEEDED.'

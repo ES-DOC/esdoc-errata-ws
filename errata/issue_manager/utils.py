@@ -4,32 +4,37 @@
    :synopsis: Useful functions to use with esgissue module.
 
 """
-
-# Module imports
+import ConfigParser
 import os
 import re
-import sys
-import requests
-import logging
 import string
-import ConfigParser
+import sys
 import textwrap
-from collections import OrderedDict
 from argparse import HelpFormatter
+from collections import OrderedDict
+
+import requests
+
+from errata.utils import logger
+
 
 
 class MultilineFormatter(HelpFormatter):
-    """
-    Custom formatter class for argument parser to use with the Python
+    """Custom formatter class for argument parser to use with the Python
     `argparse <https://docs.python.org/2/library/argparse.html>`_ module.
 
     """
     def __init__(self, prog):
-        # Overload the HelpFormatter class.
+        """Instance constructor.
+
+        """
         super(MultilineFormatter, self).__init__(prog, max_help_position=60, width=100)
 
+
     def _fill_text(self, text, width, indent):
-        # Rewrites the _fill_text method to support multiline description.
+        """Rewrites the _fill_text method to support multiline description.
+
+        """
         text = self._whitespace_matcher.sub(' ', text).strip()
         multiline_text = ''
         paragraphs = text.split('|n|n ')
@@ -43,8 +48,11 @@ class MultilineFormatter(HelpFormatter):
             multiline_text += '\n'
         return multiline_text
 
+
     def _split_lines(self, text, width):
-        # Rewrites the _split_lines method to support multiline helps.
+        """Rewrites the _split_lines method to support multiline helps.
+
+        """
         text = self._whitespace_matcher.sub(' ', text).strip()
         lines = text.split('|n ')
         multiline_text = []
@@ -52,63 +60,6 @@ class MultilineFormatter(HelpFormatter):
             multiline_text.append(textwrap.fill(line, width))
         multiline_text[-1] += '\n'
         return multiline_text
-
-
-def init_logging(logdir, level='INFO'):
-    """
-    Initiates the logging configuration (output, message formatting).
-    In the case of a logfile, the logfile name is unique and formatted as follows:
-    ``name-YYYYMMDD-HHMMSS-JOBID.log``
-
-    :param str logdir: The relative or absolute logfile directory. If ``None`` the standard output is used.
-    :param str level: The log level.
-
-    """
-    __LOG_LEVELS__ = {'CRITICAL': logging.CRITICAL,
-                      'ERROR': logging.ERROR,
-                      'WARNING': logging.WARNING,
-                      'INFO': logging.INFO,
-                      'DEBUG': logging.DEBUG,
-                      'NOTSET': logging.NOTSET}
-    logging.getLogger("requests").setLevel(logging.CRITICAL)  # Disables logging message from request library
-    logging.getLogger("github3").setLevel(logging.CRITICAL)  # Disables logging message from github3 library
-    logging.getLogger("esgfpid").setLevel(logging.CRITICAL)  # Disables logging message from esgfpid library
-    if logdir:
-        logfile = 'esgissue-{0}-{1}.log'.format(datetime.now().strftime("%Y%m%d-%H%M%S"),
-                                                os.getpid())
-        if not os.path.isdir(logdir):
-            os.makedirs(logdir)
-        logging.basicConfig(filename=os.path.join(logdir, logfile),
-                            level=__LOG_LEVELS__[level],
-                            format='%(asctime)s %(levelname)s %(message)s',
-                            datefmt='%Y/%m/%d %I:%M:%S %p')
-    else:
-        logging.basicConfig(level=__LOG_LEVELS__[level],
-                            format='%(asctime)s %(levelname)s %(message)s',
-                            datefmt='%Y/%m/%d %I:%M:%S %p')
-
-
-class MyOrderedDict(OrderedDict):
-    """
-    OrderedDict instance with prepend method to add key as first.
-
-    """
-    def prepend(self, key, value, dict_setitem=dict.__setitem__):
-
-        root = self._OrderedDict__root
-        first = root[1]
-
-        if key in self:
-            link = self._OrderedDict__map[key]
-            link_prev, link_next, _ = link
-            link_prev[1] = link_next
-            link_next[0] = link_prev
-            link[0] = root
-            link[1] = first
-            root[1] = first[0] = link
-        else:
-            root[1] = first[0] = self._OrderedDict__map[key] = [root, first, key]
-            dict_setitem(self, key, value)
 
 
 class DictDiff(object):
@@ -217,12 +168,13 @@ def test_url(url):
     """
     try:
         r = requests.head(url)
-        if r.status_code != requests.codes.ok:
-            logging.debug('{0}: {1}'.format(r.status_code, url))
-        return r.status_code == requests.codes.ok
     except:
-        logging.exception('Result: FAILED // Bad HTTP request')
+        logger.log_error('Result: FAILED // Bad HTTP request')
         sys.exit(1)
+    else:
+        if r.status_code != requests.codes.ok:
+            logger.log('{0}: {1}'.format(r.status_code, url))
+        return r.status_code == requests.codes.ok
 
 
 def test_pattern(text):
@@ -236,7 +188,7 @@ def test_pattern(text):
     """
     pattern = "^[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+#[0-9]{8}$"
     if not re.match(re.compile(pattern), text):
-        logging.debug('{0} is malformed'.format(text))
+        logger.log('{0} is malformed'.format(text))
         return False
     else:
         return True
@@ -269,5 +221,4 @@ def split_line(line, sep='|'):
     :returns:  A list of string fields
 
     """
-    fields = map(string.strip, line.split(sep))
-    return fields
+    return [string.strip(i) for i in line.split(sep)]

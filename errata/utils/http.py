@@ -35,6 +35,7 @@ class HTTPRequestHandler(tornado.web.RequestHandler):
         """
         return self.application.settings.get('debug', False)
 
+
     def decode_json_body(self, as_namedtuple=True):
         """Decodes request body JSON string.
 
@@ -48,7 +49,9 @@ class HTTPRequestHandler(tornado.web.RequestHandler):
             return None
 
         body = json.loads(self.request.body)
+
         return to_namedtuple(body) if as_namedtuple else body
+
 
     def invoke(
         self,
@@ -57,14 +60,17 @@ class HTTPRequestHandler(tornado.web.RequestHandler):
         error_taskset=[]
         ):
         """Invokes handler tasks.
+
         """
         # Log all requests.
         msg = "[{0}]: executing --> {1}"
         msg = msg.format(id(self), self)
         logger.log_web(msg)
+
         # Validate & process request.
         if schema is None or is_request_valid(handler=self, schema=schema):
             process_request(self, taskset, error_taskset)
+
 
     def validate(self, schema, options={}):
         """Validates request against schema.

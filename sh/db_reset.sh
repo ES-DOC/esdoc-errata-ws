@@ -1,14 +1,14 @@
 #!/bin/bash
 
 # Import utils.
-source $ERRATA_HOME/sh/utils.sh
+source $ERRATA_HOME/sh/init.sh
 
 # Main entry point.
 main()
 {
 	log "DB : resetting ..."
-	source $ERRATA_DIR_BASH/db_uninstall.sh
-	source $ERRATA_DIR_BASH/db_install.sh
+	source $ERRATA_HOME/sh/db_uninstall.sh
+	source $ERRATA_HOME/sh/db_install.sh
 	log "DB : reset"
 }
 
