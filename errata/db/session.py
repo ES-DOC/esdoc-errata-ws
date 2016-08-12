@@ -49,6 +49,8 @@ def init_logging():
     for sa_logger_type, level in _SA_LOGGERS:
         logging.getLogger(sa_logger_type).setLevel(level)
 
+init_logging()
+
 
 @contextlib.contextmanager
 def create(connection=None, commitable=False):
@@ -99,7 +101,7 @@ def _start(connection=None):
         logger.log_db("db engine instantiated: {}".format(id(sa_engine)))
 
     # Set session.
-    _sa_session = sessionmaker(bind=sa_engine)()
+    _sa_session = sessionmaker(bind=sa_engine,  expire_on_commit=False)()
 
 
 def _end():
@@ -140,6 +142,7 @@ def insert(instance, auto_commit=True):
         _sa_session.add(instance)
         if auto_commit:
             commit()
+
     return instance
 
 

@@ -25,7 +25,7 @@ _PARAM_TIMESTAMP = 'timestamp'
 _PARAM_WORKFLOW = 'workflow'
 
 # Query parameter validation schema.
-_REQUEST_VALIDATION_SCHEMA = {
+_REQUEST_PARAMS_SCHEMA = {
     _PARAM_INSTITUTE: {
         'required': True,
         'type': 'list', 'items': [{'type': 'string'}]
@@ -84,6 +84,13 @@ class SearchRequestHandler(HTTPRequestHandler):
         """HTTP GET handler.
 
         """
+        def _validate_request_params():
+            """Validates request parameters.
+
+            """
+            self.validate_request_params(self, _REQUEST_PARAMS_SCHEMA)
+
+
         def _decode_request():
             """Decodes request.
 
@@ -129,7 +136,11 @@ class SearchRequestHandler(HTTPRequestHandler):
 
 
         # Invoke tasks.
-        self.invoke(_REQUEST_VALIDATION_SCHEMA, [
+        self.invoke([
+            # ... validation tasks
+            lambda: self.validate_request_params(_REQUEST_PARAMS_SCHEMA),
+            lambda: self.validate_request_body(None),
+            # ... processing tasks
             _decode_request,
             _set_data,
             _set_output

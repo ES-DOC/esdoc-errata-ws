@@ -10,15 +10,18 @@
 
 
 """
-import json
+import sqlalchemy
 
-from errata.issue_manager.constants import JSON_SCHEMAS
-from errata.issue_manager.manager import create
+from errata import constants
+from errata import db
 from errata.utils.http import HTTPRequestHandler
+from errata.utils.misc import traverse
+from errata.utils.validation import validate_url
+from errata.utils.validation import validate_dataset_id
 
 
 
-class CreateRequestHandler(HTTPRequestHandler):
+class CreateIssueRequestHandler(HTTPRequestHandler):
     """issue handler.
 
     """
@@ -26,45 +29,80 @@ class CreateRequestHandler(HTTPRequestHandler):
         """HTTP POST handler.
 
         """
-        def _decode_request():
-            """Decodes request.
+        def _validate_issue_urls():
+            """Validates URL's associated with incoming request.
 
             """
-            self.json_body = json.loads(self.request.body)
+            for url in traverse([self.request.data.get((i)) for i in ['url', 'materials']]):
+                validate_url(url)
 
 
-        def _invoke_issue_handler():
-            """Invokes issue handler utility function.
-
-            """
-            self.message, self.status, creation_time = create(self.json_body)
-            if self.status == 0:
-                self.date_created = creation_time
-                self.date_updated = self.date_created
-                self.workflow = self.json_body['workflow']
-            else:
-                self.date_created = None
-                self.date_updated = None
-                self.workflow = None
-
-
-        def _set_output():
-            """Sets response to be returned to client.
+        def _validate_dataset_identifiers():
+            """Validates dataset identifiers associated with incoming request.
 
             """
-            self.output = {
-                "date_created": self.date_created,
-                "date_updated": self.date_updated,
-                "message": self.message,
-                "status": self.status,
-                "workflow": self.workflow
-            }
+            for dataset_id in self.request.data.get('datasets', []):
+                validate_dataset_id(dataset_id)
+
+
+        def _persist_issue():
+            """Persists issue data to dB.
+
+            """
+            # Map request data to relational data.
+            issue = db.models.Issue()
+            issue.date_closed = self.request.data.get('date_closed')
+            issue.date_created = self.request.data.get('date_created', issue.date_created)
+            issue.date_updated = self.request.data.get('date_updated')
+            issue.description = self.request.data['description']
+            issue.institute = self.request.data['institute'].lower()
+            issue.materials = ",".join(self.request.data.get('materials', []))
+            issue.project = self.request.data['project'].lower()
+            issue.severity = self.request.data['severity'].lower()
+            issue.state = constants.STATE_CLOSED if issue.date_closed else constants.STATE_OPEN
+            issue.title = self.request.data['title']
+            issue.uid = self.request.data['id']
+            issue.url = self.request.data.get('url')
+            issue.workflow = self.request.data['workflow'].lower()
+
+            # Persist to dB.
+            with db.session.create():
+                try:
+                    db.session.insert(issue)
+                except sqlalchemy.exc.IntegrityError:
+                    db.session.rollback()
+                    raise ValueError("Issue description/uid fields must be unique")
+                else:
+                    self.issue = issue
+
+
+        def _persist_datasets():
+            """Persists dataset data to database.
+
+            """
+            # Map request data to relational data.
+            datasets = []
+            for dataset_id in self.request.data.get('datasets', []):
+                dataset = db.models.IssueDataset()
+                dataset.dataset_id = dataset_id
+                dataset.issue_id = self.issue.id
+                datasets.append(dataset)
+
+            # Persist to dB.
+            with db.session.create():
+                for dataset in datasets:
+                    db.session.insert(dataset)
 
 
         # Invoke tasks.
-        self.invoke(JSON_SCHEMAS['create'], [
-            _decode_request,
-            _invoke_issue_handler,
-            _set_output
+        self.invoke([
+            # ... validation tasks
+            lambda: self.validate_request_json_headers,
+            lambda: self.validate_request_params(None),
+            lambda: self.validate_request_body(constants.JSON_SCHEMAS['create']),
+            _validate_issue_urls,
+            _validate_dataset_identifiers,
+            # ... processing tasks
+            _persist_issue,
+            _persist_datasets
             ])
-

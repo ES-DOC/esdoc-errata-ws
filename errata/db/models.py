@@ -83,6 +83,8 @@ class Issue(Entity):
     uid = Column(Unicode(63), nullable=False, unique=True, default=uuid.uuid4())
     title = Column(Unicode(255), nullable=False)
     description = Column(Text, nullable=False)
+    # description = Column(Text(collation='NOCASE'), index=True, nullable=False, unique=True)
+
     state = Column(_STATE_ENUM, nullable=False)
     severity = Column(_SEVERITY_ENUM, nullable=False)
     workflow = Column(_WORKFLOW_ENUM, nullable=False)
@@ -99,6 +101,11 @@ class Issue(Entity):
         """
         return "<Issue(id={}, uid={}, title={}, description=={})>".format(
             self.id, self.uid, self.title, self.description)
+
+
+from sqlalchemy import func, Index
+
+Index('idx_issue_description', func.lower(Issue.description))
 
 
 class IssueDataset(Entity):

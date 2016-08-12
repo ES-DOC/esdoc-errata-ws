@@ -61,8 +61,8 @@ def to_dict(data, key_convertor=None):
 
     # SqlAlchemy model instances.
     elif sa.inspect(data, False):
-        return  to_dict({c.name: getattr(data, c.name) for c in sa.inspect(data).mapper.columns},
-                        key_convertor)
+        return  {c.name if key_convertor is None else key_convertor(c.name): getattr(data, c.name)
+                 for c in sa.inspect(data).mapper.columns}
 
     else:
         return data

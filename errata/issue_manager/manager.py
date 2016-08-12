@@ -42,8 +42,8 @@ def _decode_issue(obj):
     """
     issue = Issue()
     issue.date_created = obj.get('date_created', issue.date_created)
-    issue.date_created = obj.get('date_created')
     issue.date_closed = obj.get('date_closed')
+    issue.date_created = obj.get('date_created')
     issue.description = obj['description']
     issue.institute = obj['institute'].lower()
     issue.materials = ",".join(obj.get('materials', []))
@@ -222,39 +222,35 @@ def create(issue):
         logger.log('STARTED INJECTING A NEW ISSUE...')
         issue = _decode_issue(issue)
         logger.log('JSON CONVERTED INTO ISSUE INSTANCE...')
+
         with db.session.create():
             # Adding attributes
             logger.log('ADDING ATTRIBUTES...')
             # issue.uid = str(uuid4())
             # issue.workflow = WORKFLOW_NEW
-            # Insert issue entry into database
-            # Check if description exists within db already. Duplication of description is not tolerated.
-            logger.log_db('checking issue description for duplicates.')
-            if db.dao.check_description(issue.description):
-                # Insert issues
-                logger.log_db('description checks out, proceeding to issue insertion.')
-                try:
-                    db.session.insert(issue)
-                except sqlalchemy.exc.IntegrityError:
-                    logger.log_db("issue skipped (already inserted) :: {}".format(issue.id))
-                    db.session.rollback()
-                    return "issue skipped (already inserted) :: {}".format(issue.id), -1, None
-                except UnicodeDecodeError:
-                    logger.log_db('DECODING EXCEPTION')
-                    return 'Decoding Exception', -1, None
-                else:
-                    logger.log_db("issue inserted :: {}".format(issue.id))
-                    return 'successfully inserted', 0, issue.date_created
 
-                # Insert related datasets.
-                for dataset in _decode_datasets(issue):
-                    try:
-                        db.session.insert(dataset)
-                    except sqlalchemy.exc.IntegrityError:
-                        db.session.rollback()
+            # Insert issue entry into database
+            # Insert issues
+            logger.log_db('description checks out, proceeding to issue insertion.')
+            try:
+                db.session.insert(issue)
+            except sqlalchemy.exc.IntegrityError:
+                logger.log_db("issue skipped (already inserted) :: {}".format(issue.id))
+                db.session.rollback()
+                return "issue skipped (already inserted) :: {}".format(issue.id), -1, None
+            except UnicodeDecodeError:
+                logger.log_db('DECODING EXCEPTION')
+                return 'Decoding Exception', -1, None
             else:
-                logger.log_db('an issue with a similar description has been already inserted to the errata db.')
-                return 'an issue with a similar description has been already inserted to the errata db', -1, None
+                logger.log_db("issue inserted :: {}".format(issue.id))
+                return 'successfully inserted', 0, issue.date_created
+
+            # Insert related datasets.
+            for dataset in _decode_datasets(issue):
+                try:
+                    db.session.insert(dataset)
+                except sqlalchemy.exc.IntegrityError:
+                    db.session.rollback()
 
 
 def close(uid):

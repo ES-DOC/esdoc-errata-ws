@@ -15,12 +15,7 @@ import uuid
 import cerberus
 import jsonschema
 
-from errata.issue_manager.utils import *
-from errata.issue_manager.exceptions import *
-from errata.issue_manager.exceptions import InvalidJSONSchemaError
-from errata.issue_manager.exceptions import UnreachableURLError
-from errata.issue_manager.exceptions import InvalidDatasetIdentiferError
-
+from errata import exceptions
 from errata.utils import logger
 
 
@@ -29,49 +24,50 @@ from errata.utils import logger
 _HTTP_RESPONSE_BAD_REQUEST = 400
 
 
-
-class _RequestBodyValidator(object):
-    """An HTTP request body validator.
+def _throw(handler, error):
+    """Throws a validation error.
 
     """
-    def __init__(self, request, schema):
-        """Instance initializer.
+    # Log.
+    msg = "[{0}]: --> security --> {1} --> Invalid request :: {2}"
+    msg = msg.format(id(handler), handler, error)
+    logger.log_web_security(msg)
 
-        """
-        self.request = request
-        self.schema = json.loads(schema)
-        self.errors = None
+    # Send 400 to client.
+    handler.clear()
+    handler.send_error(_HTTP_RESPONSE_BAD_REQUEST)
+
+    # Bubble up error.
+    raise error
 
 
-    def validate(self):
-        """Validates the request body.
+def validate_request_body(handler, schema):
+    """Validates request body against a JSON schema.
 
-        """
-        # Validate issue attributes against JSON issue schema
-        request = json.loads(self.request.body)
-        try:
-            jsonschema.validate(request, self.schema)
-        except jsonschema.exceptions.ValidationError as e:
-            self.errors = InvalidJSONSchemaError
-            raise InvalidJSONSchemaError
+    :param HttpHandler handler: Request handler being processed.
+    :param str schema: JSON schema to be used to validate request body.
 
-        # Test landing page and materials URLs
-        urls = filter(None, traverse(map(request.get, ['url', 'materials'])))
-        if not all([test_url(i) for i in urls]):
-            self.errors = UnreachableURLError
-            raise UnreachableURLError
+    :raises: exceptions.SecurityError, exceptions.InvalidJSONSchemaError
 
-        # Validate the datasets list against the dataset id pattern
-        if 'datasets' in request.keys():
-            if not all(map(test_pattern, request['datasets'])):
-                raise InvalidDatasetIdentiferError
+    """
+    # Null case.
+    if schema is None:
+        if handler.request.body:
+            _throw(handler, exceptions.SecurityError("Unexpected request body."))
+        return
 
-        if 'uid' in request.keys():
-            logger.log('VALID ISSUE :: {}'.format(request['uid']))
-        elif 'id' in request.keys():
-            logger.log('VALID ISSUE :: {}'.format(request['id']))
+    # Decode request data & schema.
+    data = json.loads(handler.request.body)
+    schema = json.loads(schema)
 
-        return []
+    # Validate request data against schema.
+    try:
+        jsonschema.validate(data, schema)
+    except jsonschema.exceptions.ValidationError as json_errors:
+        _throw(handler, exceptions.InvalidJSONSchemaError(json_errors))
+
+    # As data is valid append to request.
+    handler.request.data = data
 
 
 class _RequestQueryParamsValidator(cerberus.Validator):
@@ -104,38 +100,24 @@ class _RequestQueryParamsValidator(cerberus.Validator):
         super(_RequestQueryParamsValidator, self)._validate_allowed(allowed, field, value)
 
 
-def _log(handler, error):
-    """Logs a security related response.
+def validate_request_params(handler, schema, allow_unknown=False):
+    """Validates request query parameters against a cerberus schema.
+
+    :param HttpHandler handler: Request handler being processed.
+    :param str schema: Cerberus schema to be used to validate request query parameters.
+    :param bool allow_unknown: Flag indicating whether unknown url parameters are allowed.
+
+    :raises: exceptions.SecurityError
 
     """
-    msg = "[{0}]: --> security --> {1} --> {2}"
-    msg = msg.format(id(handler), handler, error)
-    logger.log_web_security(msg)
+    # Null case.
+    if schema is None:
+        if handler.request.query_arguments:
+            _throw(handler, exceptions.SecurityError("Unexpected request url parameters."))
+        return
 
+    validator = _RequestQueryParamsValidator(schema)
+    validator.allow_unknown = allow_unknown
+    validator.validate(handler.request.query_arguments)
 
-def is_request_valid(handler, schema, options=None):
-    """Returns a flag indicating whether an HTTP request is considered to be valid.
-
-    """
-    # Set defaults.
-    if options is None:
-        options = dict()
-
-    # Validate request body.
-    if isinstance(schema, str):
-        validator = _RequestBodyValidator(handler.request, schema)
-        validator.validate()
-
-    # Validate request parameters.
-    else:
-        validator = _RequestQueryParamsValidator(schema)
-        validator.allow_unknown = options.get('allow_unknown', False)
-        validator.validate(handler.request.query_arguments)
-
-    # HTTP 400 if request is invalid.
-    if validator.errors:
-        _log(handler, "Invalid request :: {}".format(validator.errors))
-        handler.clear()
-        handler.send_error(_HTTP_RESPONSE_BAD_REQUEST)
-
-    return validator.errors is None or len(validator.errors) == 0
+    print validator.errors

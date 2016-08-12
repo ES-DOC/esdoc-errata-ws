@@ -13,7 +13,6 @@ from errata.db.dao_validator import validate_get_issue
 from errata.db.dao_validator import validate_get_issues
 from errata.db.dao_validator import validate_get_issue_datasets
 from errata.db.dao_validator import validate_get_issue_datasets_by_uid
-
 from errata.db.models import Issue
 from errata.db.models import IssueDataset
 from errata.db.session import query
@@ -21,6 +20,7 @@ from errata.db.session import raw_query
 from errata.db.utils import text_filter
 from errata.db.utils import as_date_string
 from errata.utils.validation import validate
+
 
 
 @validate(validate_get_issue)
@@ -75,11 +75,6 @@ def get_issue_datasets_by_uid(issue_uid):
     return qry.all()
 
 
-# @validate()
-def get_dset_by_id(dset_id):
-    pass
-
-
 @validate(validate_get_issues)
 def get_issues(
     institute=None,
@@ -124,19 +119,3 @@ def get_issues(
         qry = qry.filter(Issue.workflow == workflow)
 
     return qry.all()
-
-
-def check_description(description):
-    """
-    Checks for the existence of a similar description in the db.
-    :param description: string
-    :return: boolean
-    """
-
-    qry = raw_query(Issue.description)
-    qry = qry.filter(Issue.description == description)
-    if not qry.all():
-        return True
-    else:
-        return False
-

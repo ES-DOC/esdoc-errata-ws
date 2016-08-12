@@ -67,4 +67,10 @@ class SearchSetupRequestHandler(HTTPRequestHandler):
 
 
         # Invoke tasks.
-        self.invoke(None, _set_output)
+        self.invoke([
+            # ... validation tasks
+            lambda: self.validate_request_params(None),
+            lambda: self.validate_request_body(None),
+            # ... processing tasks
+            _set_output
+            ])

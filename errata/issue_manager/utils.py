@@ -168,12 +168,10 @@ def test_url(url):
     """
     try:
         r = requests.head(url)
-    except:
+    except Exception as e:
         logger.log_error('Result: FAILED // Bad HTTP request')
-        sys.exit(1)
+        raise e
     else:
-        if r.status_code != requests.codes.ok:
-            logger.log('{0}: {1}'.format(r.status_code, url))
         return r.status_code == requests.codes.ok
 
 

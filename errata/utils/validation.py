@@ -10,9 +10,19 @@
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 """
+import re
 import uuid
 
 import arrow
+import requests
+
+from errata import exceptions
+from errata.utils import logger
+
+
+
+# Regular expression used to validate a dataset identifier.
+_DATASET_ID_REGEX = re.compile("^[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+#[0-9]{8}$")
 
 
 def validate(validator):
@@ -153,3 +163,29 @@ def validate_iterable(val, var):
         iter(val)
     except TypeError:
         _raise_value_error(val, var, iter)
+
+
+def validate_url(url):
+    """Validates that a URL will not return a 404.
+
+    :param str url: The url to validate.
+
+    """
+    try:
+        response = requests.head(url)
+    except Exception as error:
+        logger.log_error('Result: FAILED // Bad HTTP request')
+        raise error
+    else:
+        if response.status_code != requests.codes.ok:
+            raise exceptions.UnreachableURLError(url)
+
+
+def validate_dataset_id(dataset_id):
+    """Tests a dataset or file identifier via a regex pattern.
+
+    :param str dataset_id: dataset or file identifier.
+
+    """
+    if not re.match(_DATASET_ID_REGEX, dataset_id):
+        raise exceptions.InvalidDatasetIdentiferError(dataset_id)

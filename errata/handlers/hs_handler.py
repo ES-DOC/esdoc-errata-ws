@@ -20,7 +20,7 @@ _PARAM_TIMESTAMP = 'timestamp'
 _PARAM_DSETID = 'dsetid'
 _PARAM_VERSION = 'version'
 # Query parameter validation schema.
-_REQUEST_VALIDATION_SCHEMA = {
+_REQUEST_PARAMS_SCHEMA = {
     _PARAM_PIDS: {
         'required': True,
         # 'type': 'list', 'schema': {'type': 'string'}
@@ -89,7 +89,7 @@ class HandleServiceRequestHandler(HTTPRequestHandler):
             }
 
         # Invoke tasks.
-        self.invoke(_REQUEST_VALIDATION_SCHEMA, [
+        self.invoke(_REQUEST_PARAMS_SCHEMA, [
             _decode_request,
             _invoke_pid_handle_service,
             _set_output

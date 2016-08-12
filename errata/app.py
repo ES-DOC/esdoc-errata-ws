@@ -6,7 +6,9 @@
    :platform: Unix
    :synopsis: ES-DOC Errata - web-service entry point.
 
-.. module author:: Atef Bennasser <abenasser@ipsl.jussieu.fr>
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
+
+
 """
 import os
 
@@ -34,10 +36,10 @@ def _get_app_endpoints():
     """
     endpoints = {
         (r'/', handlers.HeartbeatRequestHandler),
-        (r'/1/issue/create', handlers.CreateRequestHandler),
-        (r'/1/issue/update', handlers.UpdateRequestHandler),
-        (r'/1/issue/close', handlers.CloseRequestHandler),
-        (r'/1/issue/retrieve', handlers.RetrieveRequestHandler),
+        (r'/1/issue/create', handlers.CreateIssueRequestHandler),
+        (r'/1/issue/update', handlers.UpdateIssueRequestHandler),
+        (r'/1/issue/close', handlers.CloseIssueRequestHandler),
+        (r'/1/issue/retrieve', handlers.RetrieveIssueRequestHandler),
         (r'/1/issue/search', handlers.SearchRequestHandler),
         (r'/1/issue/search/setup', handlers.SearchSetupRequestHandler),
         (r'/1/pid/resolve', handlers.HandleServiceRequestHandler),

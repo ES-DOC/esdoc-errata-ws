@@ -6,10 +6,12 @@
    :platform: Unix
    :synopsis: ES-DOC Errata - web-service constants.
 
-.. moduleauthor:: Atef Benasser <abenasser@ipsl.jussieu.fr>
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """
+import os
+
 # Issue workflow state - new.
 WORKFLOW_NEW = 'new'
 
@@ -135,3 +137,26 @@ INSTITUTE = {
 	INSTITUTE_DKRZ,
 	INSTITUTE_BADC
 }
+
+# List of keys that cannot be updated
+IMMUTABLE_KEYS = [
+	'title',
+	'project',
+	'institute',
+	'date_created'
+	]
+
+def _get_json_schema(name):
+	"""Returns a JSON schema.
+
+	"""
+	fpath = os.path.join(os.path.dirname(__file__), "schemas")
+	fpath = os.path.join(fpath, "{}.json".format(name))
+	with open(fpath, 'r') as fstream:
+		return fstream.read()
+
+# Map of actions to json schemas.
+JSON_SCHEMAS = {i: _get_json_schema(i) for i in ['create', 'retrieve', 'update']}
+
+# Ratio of similarity between descriptions of updated and database issue.
+RATIO = 20

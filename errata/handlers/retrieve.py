@@ -20,7 +20,7 @@ from errata.utils.http import HTTP_HEADER_Access_Control_Allow_Origin
 _PARAM_UID = 'uid'
 
 # Query parameter validation schema.
-_REQUEST_VALIDATION_SCHEMA = {
+_REQUEST_PARAMS_SCHEMA = {
     _PARAM_UID: {
         'required': True,
         'type': 'list', 'items': [{'type': 'uuid'}]
@@ -28,7 +28,7 @@ _REQUEST_VALIDATION_SCHEMA = {
 }
 
 
-class RetrieveRequestHandler(HTTPRequestHandler):
+class RetrieveIssueRequestHandler(HTTPRequestHandler):
     """Retrieve issue request handler.
 
     """
@@ -71,7 +71,7 @@ class RetrieveRequestHandler(HTTPRequestHandler):
 
 
         # Invoke tasks.
-        self.invoke(_REQUEST_VALIDATION_SCHEMA, [
+        self.invoke(_REQUEST_PARAMS_SCHEMA, [
             _decode_request,
             _set_data,
             _set_output

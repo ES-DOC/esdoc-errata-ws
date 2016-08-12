@@ -18,7 +18,7 @@ from errata.utils.http import HTTPRequestHandler
 
 
 
-class UpdateRequestHandler(HTTPRequestHandler):
+class UpdateIssueRequestHandler(HTTPRequestHandler):
     """issue handler.
 
     """
