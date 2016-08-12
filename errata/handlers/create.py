@@ -12,8 +12,8 @@
 """
 import sqlalchemy
 
-from errata import constants
 from errata import db
+from errata.utils import constants
 from errata.utils.http import HTTPRequestHandler
 from errata.utils.misc import traverse
 from errata.utils.validation import validate_url

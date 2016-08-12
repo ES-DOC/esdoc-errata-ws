@@ -11,7 +11,7 @@
 
 
 """
-from errata import constants
+from errata.utils import constants
 from errata.utils import validation as v
 
 

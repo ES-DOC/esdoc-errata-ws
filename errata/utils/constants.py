@@ -150,7 +150,7 @@ def _get_json_schema(name):
 	"""Returns a JSON schema.
 
 	"""
-	fpath = os.path.join(os.path.dirname(__file__), "schemas")
+	fpath = os.path.join(os.path.dirname(os.path.dirname(__file__)), "schemas")
 	fpath = os.path.join(fpath, "{}.json".format(name))
 	with open(fpath, 'r') as fstream:
 		return fstream.read()

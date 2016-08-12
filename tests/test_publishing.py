@@ -16,7 +16,7 @@ import uuid
 
 import requests
 
-from errata import constants
+from errata.utils import constants
 from errata.utils import utests as tu
 
 

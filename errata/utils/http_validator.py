@@ -15,7 +15,7 @@ import uuid
 import cerberus
 import jsonschema
 
-from errata import exceptions
+from errata.utils import exceptions
 from errata.utils import logger
 
 

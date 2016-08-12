@@ -16,7 +16,7 @@ import uuid
 import arrow
 import requests
 
-from errata import exceptions
+from errata.utils import exceptions
 from errata.utils import logger
 
 

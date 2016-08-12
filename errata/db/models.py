@@ -21,17 +21,17 @@ from sqlalchemy import Unicode
 from sqlalchemy import UniqueConstraint
 from sqlalchemy import Enum
 
-from errata.constants import WORKFLOW_NEW
-from errata.constants import WORKFLOW_ON_HOLD
-from errata.constants import WORKFLOW_RESOLVED
-from errata.constants import WORKFLOW_WONT_FIX
-from errata.constants import SEVERITY_LOW
-from errata.constants import SEVERITY_MEDIUM
-from errata.constants import SEVERITY_HIGH
-from errata.constants import SEVERITY_CRITICAL
-from errata.constants import STATE_CLOSED
-from errata.constants import STATE_OPEN
 from errata.db.utils import Entity
+from errata.utils.constants import WORKFLOW_NEW
+from errata.utils.constants import WORKFLOW_ON_HOLD
+from errata.utils.constants import WORKFLOW_RESOLVED
+from errata.utils.constants import WORKFLOW_WONT_FIX
+from errata.utils.constants import SEVERITY_LOW
+from errata.utils.constants import SEVERITY_MEDIUM
+from errata.utils.constants import SEVERITY_HIGH
+from errata.utils.constants import SEVERITY_CRITICAL
+from errata.utils.constants import STATE_CLOSED
+from errata.utils.constants import STATE_OPEN
 
 
 

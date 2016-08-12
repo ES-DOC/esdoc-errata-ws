@@ -9,7 +9,7 @@
 
 
 """
-from errata import constants
+from errata.utils import constants
 
 
 
