@@ -10,7 +10,7 @@
 
 
 """
-from errata import constants
+from errata.utils import constants
 from errata.utils.http import HTTPRequestHandler
 from errata.utils.http import HTTP_HEADER_Access_Control_Allow_Origin
 
@@ -31,6 +31,14 @@ class SearchSetupRequestHandler(HTTPRequestHandler):
         """HTTP GET handler.
 
         """
+        def _validate_request():
+            """Validates incoming request prior to processing.
+
+            """
+            self.validate_request_params(None)
+            self.validate_request_body(None)
+
+
         def _set_output():
             """Sets response to be returned to client.
 
@@ -68,9 +76,6 @@ class SearchSetupRequestHandler(HTTPRequestHandler):
 
         # Invoke tasks.
         self.invoke([
-            # ... validation tasks
-            lambda: self.validate_request_params(None),
-            lambda: self.validate_request_body(None),
-            # ... processing tasks
+            _validate_request,
             _set_output
             ])

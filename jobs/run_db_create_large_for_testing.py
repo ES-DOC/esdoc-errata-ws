@@ -21,11 +21,11 @@ import sqlalchemy
 
 import errata
 from errata import db
-from errata.constants import STATE_CLOSED
-from errata.constants import STATE_OPEN
 from errata.db.models import Issue
 from errata.db.models import IssueDataset
 from errata.utils import logger
+from errata.utils.constants import STATE_CLOSED
+from errata.utils.constants import STATE_OPEN
 
 
 # Define command line arguments.

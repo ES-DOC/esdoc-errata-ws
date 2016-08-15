@@ -10,6 +10,7 @@
 .. moduleauthor:: Earth System Documentation (ES-DOC) <dev@es-doc.org>
 
 """
+import datetime as dt
 import json
 import os
 import uuid
@@ -20,9 +21,6 @@ from errata.utils import constants
 from errata.utils import utests as tu
 
 
-
-# Test issue uid.
-_ISSUE_UID = unicode(uuid.uuid4())
 
 # Test issue.
 _ISSUE = {
@@ -36,9 +34,10 @@ _ISSUE = {
 	'severity': constants.SEVERITY_LOW,
 	'project': u"CMIP5",
 	'title': unicode(uuid.uuid4()),
-	'id': _ISSUE_UID,
+	'id': unicode(uuid.uuid4()),
 	'url': u"http://errata.ipsl.upmc.fr/issue/1",
 	'workflow': constants.WORKFLOW_NEW,
+	# 'workflow': constants.WORKFLOW_WONT_FIX,
 	'datasets': [
 		"cmip5.output1.IPSL.IPSL-CM5A-LR.1pctCO2.yr.ocnBgchem.Oyr.r2i1p1#20161010",
 		"cmip5.output1.IPSL.IPSL-CM5A-LR.1pctCO2.yr.ocnBgchem.Oyr.r1i1p1#20161010",
@@ -57,93 +56,124 @@ _ISSUE = {
 		]
 	}
 
-# Test issue - JSON representation.
-_ISSUE_JSON = json.dumps(_ISSUE)
-
 # Set of target urls.
 _URL = os.getenv("ERRATA_API")
-_URL_POST = "{}/1/issue/create".format(_URL)
-_URL_PUT = "{}/1/issue/update".format(_URL)
-_URL_GET = "{}/1/issue/retrieve".format(_URL)
-_URL_GET_PARAMS = "?id={}"
-_URL_CLOSE = "{}1/issue/close".format(_URL)
-_URL_CLOSE_PARAMS = "?id={}"
+_URL_CREATE = "{}/1/issue/create".format(_URL)
+_URL_UPDATE = "{}/1/issue/update".format(_URL)
+_URL_RETRIEVE = "{}/1/issue/retrieve?uid={}".format(_URL, _ISSUE['id'])
+_URL_CLOSE = "{}/1/issue/close?uid={}".format(_URL, _ISSUE['id'])
+
+# Set of target url request headers.
+_REQUEST_HEADERS = {
+	_URL_CREATE:  {'Content-Type': 'application/json'},
+	_URL_UPDATE:  {'Content-Type': 'application/json'}
+}
 
 
-def test_publish():
-	"""ERRATA :: WS :: Test publishing an issue.
+
+def assert_ws_response(
+	url,
+	response,
+	status_code=requests.codes.OK,
+	expected_content=None):
+	"""Asserts a response received from web-service.
 
 	"""
-	# Post issue to web-service.
-	response = requests.post(
-		_URL_POST,
-		data=_ISSUE_JSON,
-		headers={'Content-Type': 'application/json'}
-		)
+	# WS url.
+	assert response.url == url
 
-	assert response.status_code == requests.codes.OK
+	# WS response HTTP status code.
+	assert response.status_code == status_code
 
+	# WS response = unicode.
+	assert isinstance(response.text, unicode)
 
-# def _test_retrieve(encoding):
-# 	"""Tests retrieving a specific document encoding."""
-# 	params = _URL_GET_PARAMS.format(encoding, _ISSUE.meta.id, _ISSUE.meta.version)
-# 	url = "{}{}".format(_URL_GET, params)
-# 	response = requests.get(url)
-# 	assert response.status_code == requests.codes.OK
+	# WS response has no cookies.
+	assert len(response.cookies) == 0
 
-# 	if encoding != 'html':
-# 		doc = pyesdoc.decode(response.text, encoding)
-# 		assert doc.meta.id == _ISSUE.meta.id
-# 		assert doc.meta.version == _ISSUE.meta.version
-# 		if pyesdoc.encode(_ISSUE, encoding) != response.text:
-# 			pass
-# 			# assert pyesdoc.encode(_ISSUE, encoding) == response.text
+	# WS response encoding = utf-8.
+	assert response.encoding == u'utf-8'
 
+	# WS respponse headers.
+	assert len(response.headers) >= 5
+	for header in {
+		'Content-Length',
+		'Content-Type',
+		'Date',
+		'Server',
+		'Vary'
+		}:
+		assert header in response.headers
 
-# def test_retrieve():
-# 	"""ERRATA :: WS :: Test retrieving a previously published document.
+	# WS response history is empty (i.e. no intermediate servers).
+	assert len(response.history) == 0
+	assert response.is_permanent_redirect == False
+	assert response.is_redirect == False
+	assert len(response.links) == 0
 
-# 	"""
-# 	for encoding in pyesdoc.ENCODINGS_HTTP:
-# 		tu.init(_test_retrieve, 'retrieval', suffix=encoding)
-# 		yield _test_retrieve, encoding
+	# WS response content must be JSON.
+	content = response.json()
+	assert isinstance(content, dict)
 
+	# WS response processing status.
+	assert 'status' in content
+	assert content['status'] == 0 if status_code == requests.codes.OK else -1
 
-# def test_republish():
-# 	"""ERRATA :: WS :: Test republishing a document.
+	# WS response content.
+	if expected_content is not None:
+		assert content == expected_content
 
-# 	"""
-# 	_ISSUE.rationale = "to restate the bleeding obvious"
-# 	_ISSUE.meta.version += 1
-
-# 	data = pyesdoc.encode(_ISSUE, 'json')
-# 	headers = {'Content-Type': 'application/json'}
-# 	url = _URL_PUT
-# 	response = requests.put(url, data=data, headers=headers)
-# 	assert response.status_code == requests.codes.OK
-
-# 	params = _URL_GET_PARAMS.format('json', _ISSUE.meta.id, _ISSUE.meta.version)
-# 	url = "{}{}".format(_URL_GET, params)
-# 	response = requests.get(url)
-# 	assert response.status_code == requests.codes.OK
-
-# 	doc = pyesdoc.decode(response.text, 'json')
-# 	assert doc.meta.id == _ISSUE.meta.id
-# 	assert doc.meta.version == _ISSUE.meta.version
-# 	assert doc.rationale == "to restate the bleeding obvious"
+	return content
 
 
-# def test_unpublish():
-# 	"""ERRATA :: WS :: Test unpublishing a document.
+def test_create():
+	"""ERRATA :: WS :: Test creating an issue.
 
-# 	"""
-# 	params = _URL_DELETE_PARAMS.format(_ISSUE.meta.id, _ISSUE.meta.version)
-# 	url = "{}{}".format(_URL_DELETE, params)
-# 	response = requests.delete(url)
-# 	assert response.status_code == requests.codes.OK
+	"""
+	# Invoke WS endpoint.
+	url = _URL_CREATE
+	response = requests.post(url, data=json.dumps(_ISSUE), headers=_REQUEST_HEADERS[_URL_CREATE])
 
-# 	params = _URL_DELETE_PARAMS.format(_ISSUE.meta.id, _ISSUE.meta.version - 1)
-# 	url = "{}{}".format(_URL_DELETE, params)
-# 	response = requests.delete(url)
-# 	assert response.status_code == requests.codes.OK
+	# Assert WS response.
+	assert_ws_response(url, response, expected_content={'status': 0})
 
+
+def test_retrieve():
+	"""ERRATA :: WS :: Test retrieving an issue.
+
+	"""
+	# Invoke WS endpoint.
+	response = requests.get(_URL_RETRIEVE)
+
+	# Assert WS response.
+	content = assert_ws_response(_URL_RETRIEVE, response)
+
+	# Assert WS response content.
+	assert 'issue' in content
+	assert 'datasets' in content
+
+
+def test_close():
+	"""ERRATA :: WS :: Test closing an issue.
+
+	"""
+	# Invoke WS endpoint.
+	response = requests.post(_URL_CLOSE)
+
+	# Assert WS response.
+	assert_ws_response(_URL_CLOSE, response)
+
+
+def test_update():
+	"""ERRATA :: WS :: Test updating an issue.
+
+	"""
+	# Update test issue.
+	_ISSUE['severity'] = constants.SEVERITY_MEDIUM
+	_ISSUE['date_updated'] = unicode(dt.datetime.utcnow())
+
+	# Invoke WS endpoint.
+	response = requests.post(_URL_UPDATE, data=json.dumps(_ISSUE), headers=_REQUEST_HEADERS[_URL_UPDATE])
+
+	# Assert WS response.
+	assert_ws_response(_URL_UPDATE, response, expected_content={'status': 0})

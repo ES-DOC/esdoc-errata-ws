@@ -1,19 +1,20 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: handlers.hs_handler.py
+.. module:: handlers.update.py
    :license: GPL/CeCIL
    :platform: Unix
-   :synopsis: ES-DOC Errata - handle service search endpoint.
+   :synopsis: ES-DOC Errata - update issue endpoint.
 
 .. moduleauthor:: Atef Bennasser <abenasser@ipsl.jussieu.fr>
 
 
 """
-import json
+import difflib
 
-from errata.issue_manager.constants import JSON_SCHEMAS
-from errata.issue_manager.manager import *
+from errata import db
+from errata.utils import constants
+from errata.utils import exceptions
 from errata.utils.http import HTTPRequestHandler
 
 
@@ -26,38 +27,80 @@ class UpdateIssueRequestHandler(HTTPRequestHandler):
         """HTTP POST handler.
 
         """
-        def _decode_request():
-            """Decodes request.
+        def _validate_issue_exists():
+            """Validates that the issue has been previously posted to the web-service.
 
             """
-            self.json_body = json.loads(self.request.body)
+            with db.session.create():
+                self.issue = db.dao.get_issue(self.request.data['id'])
+            if self.issue is None:
+                raise exceptions.UnknownIssueError(self.request.data['id'])
 
 
-        def _invoke_issue_handler():
-            """Invokes issue handler utility function.
-
-            """
-            self.message, self.status, update_time = update(self.json_body)
-            if self.status == 0:
-                self.date_updated = update_time
-            else:
-                self.date_updated = None
-
-
-        def _set_output():
-            """Sets response to be returned to client.
+        def _validate_issue_immutable_attributes():
+            """Validates that issue attribute deemed to be immutable have not been changed.
 
             """
-            self.output = {
-                'date_updated': self.date_updated,
-                'message': self.message,
-                'status': self.status
-            }
+            for attr_name in constants.IMMUTABLE_ISSUE_ATTRIBUTES:
+                if unicode(self.request.data[attr_name]).lower() != unicode(getattr(self.issue, attr_name)).lower():
+                    raise exceptions.ImmutableIssueAttributeError(attr_name)
+            print "TODO: validate date_created immutability"
+
+
+        def _validate_issue_description_change_ratio():
+            """Validates that the degree of change in the issue's description is less than allowed ratio.
+
+            """
+            # Escape if no change.
+            if self.request.data['description'] == self.issue.description:
+                return
+
+            # Determine change ratio.
+            diff = difflib.SequenceMatcher(None, self.issue.description, self.request.data['description'])
+            diff_ratio = round(diff.ratio(), 3) * 100
+            if diff_ratio < constants.DESCRIPTION_CHANGE_RATIO:
+                raise exceptions.IssueDescriptionChangeRatioError(diff_ratio)
+
+
+        def _validate_issue_status():
+            """Validates that issue state allows it to be updated.
+
+            """
+            if self.issue.workflow != constants.WORKFLOW_NEW and \
+               self.request.data['workflow'] == constants.WORKFLOW_NEW:
+                raise exceptions.InvalidIssueStatusError()
+
+
+        def _validate_request():
+            """Validates incoming request prior to processing.
+
+            """
+            self.validate_request_json_headers()
+            self.validate_request_params(None)
+            self.validate_request_body(constants.JSON_SCHEMAS['update'])
+            _validate_issue_exists()
+            _validate_issue_immutable_attributes()
+            _validate_issue_description_change_ratio()
+            _validate_issue_status()
+
+
+        def _persist_issue():
+            """Persists issue data to dB.
+
+            """
+            pass
+
+
+        def _persist_datasets():
+            """Persists dataset data to database.
+
+            """
+            pass
 
 
         # Invoke tasks.
-        self.invoke(JSON_SCHEMAS['update'], [
-            _decode_request,
-            _invoke_issue_handler,
-            _set_output
+        self.invoke([
+            _validate_request,
+            _persist_issue,
+            _persist_datasets
             ])

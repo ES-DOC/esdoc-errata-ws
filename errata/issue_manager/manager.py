@@ -14,19 +14,18 @@ import difflib
 import sqlalchemy
 
 from errata import db
-from errata.constants import STATE_CLOSED
-from errata.constants import STATE_OPEN
-from errata.constants import WORKFLOW_NEW
-from errata.constants import WORKFLOW_RESOLVED
-from errata.constants import WORKFLOW_WONT_FIX
+from errata.utils.constants import STATE_CLOSED
+from errata.utils.constants import STATE_OPEN
+from errata.utils.constants import WORKFLOW_NEW
+from errata.utils.constants import WORKFLOW_RESOLVED
+from errata.utils.constants import WORKFLOW_WONT_FIX
 from errata.db.models import Issue
 from errata.db.models import IssueDataset
 from errata.utils import logger
 
-from errata.issue_manager.constants import *
-from errata.issue_manager.exceptions import DuplicateDescriptionError
-from errata.issue_manager.exceptions import ImmutableAttributeError
-from errata.issue_manager.exceptions import InvalidStatusError
+from errata.utils.exceptions import DuplicateIssueDescriptionError
+from errata.utils.exceptions import ImmutableIssueAttributeError
+from errata.utils.exceptions import InvalidIssueStatusError
 
 
 
@@ -148,13 +147,13 @@ def _update_issue(old_issue, new_issue):
             logger.log_web_warning('unacceptable change detected. Attempted to change the key {}.'.format(k))
             logger.log_web('checking key {0}, with value {1} in db and {2} in request'.format(k,
                            str(old_issue.__dict__[k]), str(new_issue.__dict__[k])))
-            raise ImmutableAttributeError()
+            raise ImmutableIssueAttributeError()
 
     if old_issue.description != new_issue.description:
         if _check_ratio(old_issue.description, new_issue.description):
             old_issue.description = new_issue.description
         else:
-            raise InvalidDescriptionChangeRatioError()
+            raise IssueDescriptionChangeRatioError()
 
     elif old_issue.severity != new_issue.severity:
         old_issue.severity = new_issue.severity
@@ -163,7 +162,7 @@ def _update_issue(old_issue, new_issue):
         if _check_status(old_issue, new_issue):
             old_issue.workflow = new_issue.workflow
         else:
-            raise InvalidStatusError()
+            raise InvalidIssueStatusError()
 
     elif old_issue.materials != new_issue.materials:
         old_issue.materials = new_issue.materials
@@ -294,7 +293,11 @@ def update(issue):
         logger.log_web('Comparing instances and updating..')
         try:
             _update_issue(db_issue, new_issue)
-        except (InvalidDescriptionChangeRatioError, ImmutableAttributeError, InvalidStatusError) as e:
+        except (
+            IssueDescriptionChangeRatioError,
+            ImmutableIssueAttributeError,
+            InvalidIssueStatusError
+            ) as e:
             return e.msg, -1, None
 
         # Updating affected dataset list

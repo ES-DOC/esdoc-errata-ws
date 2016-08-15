@@ -12,8 +12,8 @@
 import tornado
 
 from errata.utils import logger
+from errata.utils import http_invoker
 from errata.utils import http_validator
-from errata.utils.http_invoker import execute as process_request
 
 
 
@@ -42,12 +42,11 @@ class HTTPRequestHandler(tornado.web.RequestHandler):
         return self.application.settings.get('debug', False)
 
 
-    def invoke(
-        self,
-        taskset,
-        error_taskset=[]
-        ):
+    def invoke(self, taskset, error_taskset=None):
         """Invokes handler tasks.
+
+        :param list taskset: Set of request processing tasks.
+        :param list error_taskset: Set of error processing tasks.
 
         """
         # Log all requests.
@@ -56,7 +55,7 @@ class HTTPRequestHandler(tornado.web.RequestHandler):
         logger.log_web(msg)
 
         # Process request.
-        process_request(self, taskset, error_taskset)
+        http_invoker.execute(self, taskset, error_taskset or [])
 
 
     def validate_request_json_headers(self):

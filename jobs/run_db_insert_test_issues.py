@@ -18,10 +18,10 @@ import glob
 import sqlalchemy
 
 from errata import db
-from errata.constants import STATE_CLOSED
-from errata.constants import STATE_OPEN
 from errata.db.models import Issue, IssueDataset
 from errata.utils import logger
+from errata.utils.constants import STATE_CLOSED
+from errata.utils.constants import STATE_OPEN
 
 
 

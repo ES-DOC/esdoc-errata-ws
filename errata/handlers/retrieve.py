@@ -6,11 +6,12 @@
    :platform: Unix
    :synopsis: ES-DOC Errata - retrieve issue endpoint.
 
-.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
+.. moduleauthor:: Atef Bennasser <abenasser@ipsl.jussieu.fr>
 
 
 """
 from errata import db
+from errata.utils import convertor
 from errata.utils.http import HTTPRequestHandler
 from errata.utils.http import HTTP_HEADER_Access_Control_Allow_Origin
 
@@ -43,6 +44,14 @@ class RetrieveIssueRequestHandler(HTTPRequestHandler):
         """HTTP GET handler.
 
         """
+        def _validate_request():
+            """Validates incoming request prior to processing.
+
+            """
+            self.validate_request_params(_REQUEST_PARAMS_SCHEMA)
+            self.validate_request_body(None)
+
+
         def _decode_request():
             """Decodes request.
 
@@ -63,15 +72,15 @@ class RetrieveIssueRequestHandler(HTTPRequestHandler):
             """Sets response to be returned to client.
 
             """
-            self.output_encoding = 'json'
             self.output = {
-                'issue': self.issue,
-                'datasets': self.datasets
+                'issue': convertor.to_dict(self.issue),
+                'datasets': convertor.to_dict(self.datasets)
             }
 
 
         # Invoke tasks.
-        self.invoke(_REQUEST_PARAMS_SCHEMA, [
+        self.invoke([
+            _validate_request,
             _decode_request,
             _set_data,
             _set_output

@@ -84,11 +84,12 @@ class SearchRequestHandler(HTTPRequestHandler):
         """HTTP GET handler.
 
         """
-        def _validate_request_params():
-            """Validates request parameters.
+        def _validate_request():
+            """Validates incoming request prior to processing.
 
             """
-            self.validate_request_params(self, _REQUEST_PARAMS_SCHEMA)
+            self.validate_request_params(_REQUEST_PARAMS_SCHEMA)
+            self.validate_request_body(None)
 
 
         def _decode_request():
@@ -137,10 +138,7 @@ class SearchRequestHandler(HTTPRequestHandler):
 
         # Invoke tasks.
         self.invoke([
-            # ... validation tasks
-            lambda: self.validate_request_params(_REQUEST_PARAMS_SCHEMA),
-            lambda: self.validate_request_body(None),
-            # ... processing tasks
+            _validate_request,
             _decode_request,
             _set_data,
             _set_output

@@ -49,7 +49,7 @@ class InvalidDatasetIdentiferError(Exception):
             'INVALID DATASET ID: {}'.format(dataset_id))
 
 
-class DuplicateDescriptionError(Exception):
+class DuplicateIssueDescriptionError(Exception):
     """Raised if a submitted issue description already exists.
 
     """
@@ -57,10 +57,10 @@ class DuplicateDescriptionError(Exception):
         """Instance constructor.
 
         """
-        super(DuplicateDescriptionError, self).__init__('ISSUE DESCRIPTION ALREADY EXISTS')
+        super(DuplicateIssueDescriptionError, self).__init__('ISSUE DESCRIPTION ALREADY EXISTS')
 
 
-class InvalidStatusError(Exception):
+class InvalidIssueStatusError(Exception):
     """Raised if a submitted issue status is invalid.
 
     """
@@ -68,30 +68,45 @@ class InvalidStatusError(Exception):
         """Instance constructor.
 
         """
-        super(InvalidStatusError, self).__init__('ISSUE STATUS CHANGE NOT ALLOWED')
+        super(InvalidIssueStatusError, self).__init__('ISSUE STATUS CHANGE NOT ALLOWED')
 
 
-class ImmutableAttributeError(Exception):
+class ImmutableIssueAttributeError(Exception):
     """Raised if an immutable issue attribute is updated.
 
     """
-    def __init__(self):
+    def __init__(self, attr_name):
         """Instance constructor.
 
         """
-        super(ImmutableAttributeError, self).__init__('ISSUE ATTRIBUTE IS IMMUTABLE')
+        super(ImmutableIssueAttributeError, self).__init__(
+            'ISSUE ATTRIBUTE IS IMMUTABLE: {}'.format(attr_name))
 
 
-class InvalidDescriptionChangeRatioError(Exception):
+class IssueDescriptionChangeRatioError(Exception):
     """Raised if an issue description changes by more than the allowed ratio.
 
     """
-    def __init__(self):
+    def __init__(self, change_ratio):
         """Instance constructor.
 
         """
-        super(InvalidDescriptionChangeRatioError, self).__init__(
-            "ISSUE DESCRIPTION CANNOT CHANGE BY MORE THAN {}%".format(constants.RATIO)
+        super(IssueDescriptionChangeRatioError, self).__init__(
+            "ISSUE DESCRIPTION CANNOT CHANGE BY MORE THAN {}% (Actual change ratio was {}%)".format(
+                constants.DESCRIPTION_CHANGE_RATIO, 100 - change_ratio)
+            )
+
+
+class UnknownIssueError(Exception):
+    """Raised if an issue in the process of being updated does not exist within dB.
+
+    """
+    def __init__(self, uid):
+        """Instance constructor.
+
+        """
+        super(UnknownIssueError, self).__init__(
+            "ISSUE IS UNKNOWN: {}".format(uid)
             )
 
 

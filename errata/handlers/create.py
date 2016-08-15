@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: handlers.hs_handler.py
+.. module:: handlers.create.py
    :license: GPL/CeCIL
    :platform: Unix
-   :synopsis: ES-DOC Errata - issue creation endpoint.
+   :synopsis: ES-DOC Errata - create issue endpoint.
 
 .. module author:: Atef Bennasser <abenasser@ipsl.jussieu.fr>
 
@@ -43,6 +43,17 @@ class CreateIssueRequestHandler(HTTPRequestHandler):
             """
             for dataset_id in self.request.data.get('datasets', []):
                 validate_dataset_id(dataset_id)
+
+
+        def _validate_request():
+            """Validates incoming request prior to processing.
+
+            """
+            self.validate_request_json_headers()
+            self.validate_request_params(None)
+            self.validate_request_body(constants.JSON_SCHEMAS['create'])
+            _validate_issue_urls()
+            _validate_dataset_identifiers()
 
 
         def _persist_issue():
@@ -96,13 +107,7 @@ class CreateIssueRequestHandler(HTTPRequestHandler):
 
         # Invoke tasks.
         self.invoke([
-            # ... validation tasks
-            lambda: self.validate_request_json_headers,
-            lambda: self.validate_request_params(None),
-            lambda: self.validate_request_body(constants.JSON_SCHEMAS['create']),
-            _validate_issue_urls,
-            _validate_dataset_identifiers,
-            # ... processing tasks
+            _validate_request,
             _persist_issue,
             _persist_datasets
             ])

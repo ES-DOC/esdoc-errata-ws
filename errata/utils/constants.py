@@ -138,12 +138,12 @@ INSTITUTE = {
 	INSTITUTE_BADC
 }
 
-# List of keys that cannot be updated
-IMMUTABLE_KEYS = [
+# List of issue attributes that cannot be updated.
+IMMUTABLE_ISSUE_ATTRIBUTES = [
 	'title',
 	'project',
 	'institute',
-	'date_created'
+	# 'date_created'
 	]
 
 def _get_json_schema(name):
@@ -159,4 +159,4 @@ def _get_json_schema(name):
 JSON_SCHEMAS = {i: _get_json_schema(i) for i in ['create', 'retrieve', 'update']}
 
 # Ratio of similarity between descriptions of updated and database issue.
-RATIO = 20
+DESCRIPTION_CHANGE_RATIO = 20

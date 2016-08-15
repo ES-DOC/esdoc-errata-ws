@@ -1,20 +1,33 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: handlers.hs_handler.py
+.. module:: handlers.close.py
    :license: GPL/CeCIL
    :platform: Unix
-   :synopsis: ES-DOC Errata - handle service search endpoint.
+   :synopsis: ES-DOC Errata - close issue endpoint.
 
 .. moduleauthor:: Atef Bennasser <abenasser@ipsl.jussieu.fr>
 
 
 """
-import json
+import datetime as dt
 
-from errata.issue_manager.manager import *
-from errata.issue_manager.constants import JSON_SCHEMAS
+from errata import db
+from errata.utils import constants
 from errata.utils.http import HTTPRequestHandler
+
+
+
+# Query parameter names.
+_PARAM_UID = 'uid'
+
+# Query parameter validation schema.
+_REQUEST_PARAMS_SCHEMA = {
+    _PARAM_UID: {
+        'required': True,
+        'type': 'list', 'items': [{'type': 'uuid'}]
+    }
+}
 
 
 
@@ -26,35 +39,49 @@ class CloseIssueRequestHandler(HTTPRequestHandler):
         """HTTP POST handler.
 
         """
-        def _decode_request():
-            """Decodes request.
+        def _validate_issue_exists():
+            """Validates that issue exists within dB.
 
             """
-            self.json_body = json.loads(self.request.body)
+            with db.session.create():
+                self.issue = db.dao.get_issue(self.get_argument(_PARAM_UID))
+            if self.issue is None:
+                raise ValueError("Issue does not exist")
 
 
-        def _invoke_issue_handler():
-            """Invokes issue handler utility function.
-
-            """
-            self.message, self.status, self.date_closed = close(self.json_body['id'])
-
-
-        def _set_output():
-            """Sets response to be returned to client.
+        def _validate_issue_status():
+            """Validates that issue state allows it to be closed.
 
             """
-            self.output = {
-                "message": self.message,
-                "status": self.status,
-                "date_closed": self.date_closed
-            }
+            if self.issue.workflow in [
+                constants.WORKFLOW_WONT_FIX,
+                constants.WORKFLOW_RESOLVED
+                ]:
+                raise ValueError("Issue state is not closeable")
+
+
+        def _validate_request():
+            """Validates incoming request prior to processing.
+
+            """
+            self.validate_request_params(_REQUEST_PARAMS_SCHEMA)
+            self.validate_request_body(None)
+            _validate_issue_exists()
+            _validate_issue_status()
+
+
+        def _close_issue():
+            """Closes issue.
+
+            """
+            self.issue.state = constants.STATE_CLOSED
+            self.issue.date_closed = dt.datetime.utcnow()
+            with db.session.create():
+                db.session.update(self.issue)
 
 
         # Invoke tasks.
-        self.invoke(JSON_SCHEMAS['close'], [
-            _decode_request,
-            _invoke_issue_handler,
-            _set_output
+        self.invoke([
+            _validate_request,
+            _close_issue
             ])
-
