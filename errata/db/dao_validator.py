@@ -31,12 +31,17 @@ def validate_get_issue_datasets(issue_id):
 
 
 def validate_get_issue_datasets_by_uid(issue_uid):
-    """
-    Function input validator get datasets by uid of issue
-    :param issue_uid:
-    :return:
+    """Function input validator: get_issue_datasets_by_uid.
+
     """
     v.validate_str(issue_uid, "issue uid")
+
+
+def validate_delete_issue_datasets(issue_id):
+    """Function input validator: delete_issue_datasets.
+
+    """
+    v.validate_int(issue_id, "issue id")
 
 
 def validate_get_issues(

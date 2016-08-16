@@ -9,6 +9,7 @@
 
 
 """
+from errata.db.dao_validator import validate_delete_issue_datasets
 from errata.db.dao_validator import validate_get_issue
 from errata.db.dao_validator import validate_get_issues
 from errata.db.dao_validator import validate_get_issue_datasets
@@ -21,6 +22,19 @@ from errata.db.utils import text_filter
 from errata.db.utils import as_date_string
 from errata.utils.validation import validate
 
+
+
+@validate(validate_delete_issue_datasets)
+def delete_issue_datasets(issue_id):
+    """Deletes datasets associated with an issue.
+
+    :param int issue_id: Issue identifier.
+
+    """
+    qry = query(IssueDataset)
+    qry = qry.filter(IssueDataset.issue_id == issue_id)
+
+    qry.delete()
 
 
 @validate(validate_get_issue)
@@ -72,6 +86,7 @@ def get_issue_datasets_by_uid(issue_uid):
     qry = raw_query(IssueDataset)
     qry = qry.filter(IssueDataset.issue_id == issues.first().id)
     qry = qry.order_by(IssueDataset.dataset_id)
+
     return qry.all()
 
 

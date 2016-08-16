@@ -15,7 +15,6 @@ alias errata-ws-daemon-status=$ERRATA_HOME/sh/web_daemon_status.sh
 alias errata-ws-logs-reset=$ERRATA_HOME/sh/web_logs_reset.sh
 
 # Database commands.
-alias errata-db-ingest=$ERRATA_HOME/sh/db_ingest.sh
 alias errata-db-install=$ERRATA_HOME/sh/db_install.sh
 alias errata-db-uninstall=$ERRATA_HOME/sh/db_uninstall.sh
 alias errata-db-reset=$ERRATA_HOME/sh/db_reset.sh

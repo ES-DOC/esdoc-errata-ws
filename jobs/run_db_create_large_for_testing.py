@@ -24,6 +24,7 @@ from errata import db
 from errata.db.models import Issue
 from errata.db.models import IssueDataset
 from errata.utils import logger
+from errata.utils import constants
 from errata.utils.constants import STATE_CLOSED
 from errata.utils.constants import STATE_OPEN
 
@@ -90,14 +91,14 @@ def _yield_issue(input_dir, count):
         if random.randint(0, 1):
             issue.date_closed = issue.date_updated + dt.timedelta(days=2)
         issue.description = u"Test issue description - {}".format(unicode(uuid.uuid4()))
-        issue.institute = unicode(random.choice(list(errata.constants.INSTITUTE)))
+        issue.institute = unicode(random.choice(list(constants.INSTITUTE)))
         issue.materials = _get_materials(input_dir)
-        issue.severity = random.choice(errata.constants.SEVERITY)['key']
-        issue.state = random.choice(errata.constants.STATE)['key']
-        issue.project = unicode(random.choice(list(errata.constants.PROJECT)))
+        issue.severity = random.choice(constants.SEVERITY)['key']
+        issue.state = random.choice(constants.STATE)['key']
+        issue.project = unicode(random.choice(list(constants.PROJECT)))
         issue.title = u"Test issue title - {}".format(unicode(uuid.uuid4())[:50])
         issue.uid = unicode(uuid.uuid4())
-        issue.workflow = random.choice(errata.constants.WORKFLOW)['key']
+        issue.workflow = random.choice(constants.WORKFLOW)['key']
 
         yield issue
 

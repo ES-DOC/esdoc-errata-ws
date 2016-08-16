@@ -18,7 +18,8 @@ import glob
 import sqlalchemy
 
 from errata import db
-from errata.db.models import Issue, IssueDataset
+from errata.db.models import Issue
+from errata.db.models import IssueDataset
 from errata.utils import logger
 from errata.utils.constants import STATE_CLOSED
 from errata.utils.constants import STATE_OPEN

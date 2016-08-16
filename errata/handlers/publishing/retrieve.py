@@ -76,7 +76,7 @@ class RetrieveIssueRequestHandler(HTTPRequestHandler):
             obj = convertor.to_dict(self.issue)
             obj['id'] = obj['uid']
             del obj['uid']
-            obj['datasets'] = [i.dataset_id for i in self.datasets]
+            obj['datasets'] = sorted([i.dataset_id for i in self.datasets])
             obj['materials'] = self.issue.materials.split(",")
             obj['project'] = obj['project'].upper()
 

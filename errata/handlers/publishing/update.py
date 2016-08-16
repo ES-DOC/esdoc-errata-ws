@@ -84,23 +84,37 @@ class UpdateIssueRequestHandler(HTTPRequestHandler):
             _validate_issue_status()
 
 
-        def _persist_issue():
-            """Persists issue data to dB.
+        def _update_issue():
+            """Updates issue.
 
             """
-            pass
+            self.issue.date_closed = self.request.data.get('date_closed')
+            self.issue.date_updated = self.request.data.get('date_updated')
+            self.issue.description = self.request.data['description']
+            self.issue.materials = ",".join(self.request.data.get('materials', []))
+            self.issue.severity = self.request.data['severity'].lower()
+            self.issue.state = constants.STATE_CLOSED if self.issue.date_closed else constants.STATE_OPEN
+            self.issue.url = self.request.data.get('url')
+            self.issue.workflow = self.request.data['workflow'].lower()
 
 
-        def _persist_datasets():
-            """Persists dataset data to database.
+        def _persist():
+            """Persists dB state changes.
 
             """
-            pass
+            with db.session.create(commitable=True):
+                db.session.update(self.issue, False)
+                db.dao.delete_issue_datasets(self.issue.id)
+                for dataset_id in self.request.data.get('datasets', []):
+                    dataset = db.models.IssueDataset()
+                    dataset.dataset_id = dataset_id
+                    dataset.issue_id = self.issue.id
+                    db.session.insert(dataset, False)
 
 
         # Invoke tasks.
         self.invoke([
             _validate_request,
-            _persist_issue,
-            _persist_datasets
+            _update_issue,
+            _persist
             ])
