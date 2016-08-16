@@ -1,9 +1,9 @@
-from errata.handlers.heartbeat import HeartbeatRequestHandler
-from errata.handlers.search import SearchRequestHandler
-from errata.handlers.search_setup import SearchSetupRequestHandler
 from errata.handlers.hs_handler import HandleServiceRequestHandler
 
-from errata.handlers.close import CloseIssueRequestHandler
-from errata.handlers.create import CreateIssueRequestHandler
-from errata.handlers.retrieve import RetrieveIssueRequestHandler
-from errata.handlers.update import UpdateIssueRequestHandler
+from errata.handlers.ops import HeartbeatRequestHandler
+from errata.handlers.publishing  import CloseIssueRequestHandler
+from errata.handlers.publishing import CreateIssueRequestHandler
+from errata.handlers.publishing import RetrieveIssueRequestHandler
+from errata.handlers.publishing import UpdateIssueRequestHandler
+from errata.handlers.search import IssueSearchRequestHandler
+from errata.handlers.search import IssueSearchSetupRequestHandler

@@ -35,15 +35,14 @@ def _get_app_endpoints():
 
     """
     endpoints = {
-        (r'/', handlers.HeartbeatRequestHandler),
-        (r'/1/issue/create', handlers.CreateIssueRequestHandler),
-        (r'/1/issue/update', handlers.UpdateIssueRequestHandler),
-        (r'/1/issue/close', handlers.CloseIssueRequestHandler),
-        (r'/1/issue/retrieve', handlers.RetrieveIssueRequestHandler),
-        (r'/1/issue/search', handlers.SearchRequestHandler),
-        (r'/1/issue/search/setup', handlers.SearchSetupRequestHandler),
-        (r'/1/pid/resolve', handlers.HandleServiceRequestHandler),
-
+        (r'/', handlers.ops.HeartbeatRequestHandler),
+        (r'/1/issue/create', handlers.publishing.CreateIssueRequestHandler),
+        (r'/1/issue/update', handlers.publishing.UpdateIssueRequestHandler),
+        (r'/1/issue/close', handlers.publishing.CloseIssueRequestHandler),
+        (r'/1/issue/retrieve', handlers.publishing.RetrieveIssueRequestHandler),
+        (r'/1/issue/search', handlers.search.IssueSearchRequestHandler),
+        (r'/1/issue/search/setup', handlers.search.IssueSearchSetupRequestHandler),
+        (r'/1/pid/resolve', handlers.HandleServiceRequestHandler)
     }
 
     log("Endpoint to handler mappings:")

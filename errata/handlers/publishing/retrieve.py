@@ -72,9 +72,16 @@ class RetrieveIssueRequestHandler(HTTPRequestHandler):
             """Sets response to be returned to client.
 
             """
+            # Encode issue as a simple dictionary.
+            obj = convertor.to_dict(self.issue)
+            obj['id'] = obj['uid']
+            del obj['uid']
+            obj['datasets'] = [i.dataset_id for i in self.datasets]
+            obj['materials'] = self.issue.materials.split(",")
+            obj['project'] = obj['project'].upper()
+
             self.output = {
-                'issue': convertor.to_dict(self.issue),
-                'datasets': convertor.to_dict(self.datasets)
+                'issue': obj
             }
 
 

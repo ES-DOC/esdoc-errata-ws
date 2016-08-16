@@ -52,6 +52,7 @@
         },
         "project": {
             "enum": [
+                "TEST",
                 "CMIP5",
                 "CMIP6"
             ],

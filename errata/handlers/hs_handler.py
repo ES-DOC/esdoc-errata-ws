@@ -64,6 +64,14 @@ class HandleServiceRequestHandler(HTTPRequestHandler):
         """HTTP GET handler.
 
         """
+        def _validate_request():
+            """Validates incoming request prior to processing.
+
+            """
+            self.validate_request_params(_REQUEST_PARAMS_SCHEMA)
+            self.validate_request_body(None)
+
+
         def _decode_request():
             """Decodes request.
 
@@ -88,8 +96,10 @@ class HandleServiceRequestHandler(HTTPRequestHandler):
                 'timestamp': self.timestamp
             }
 
+
         # Invoke tasks.
-        self.invoke(_REQUEST_PARAMS_SCHEMA, [
+        self.invoke([
+            _validate_request,
             _decode_request,
             _invoke_pid_handle_service,
             _set_output

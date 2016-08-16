@@ -53,26 +53,10 @@ _REQUEST_PARAMS_SCHEMA = {
 }
 
 
-class SearchRequestHandler(HTTPRequestHandler):
+class IssueSearchRequestHandler(HTTPRequestHandler):
     """Search issue request handler.
 
     """
-    def __init__(self, application, request, **kwargs):
-        """Instance constructor.
-
-        """
-        super(SearchRequestHandler, self).__init__(application, request, **kwargs)
-
-        self.issues = []
-        self.institute = None
-        self.project = None
-        self.severity = None
-        self.state = None
-        self.timestamp = None
-        self.total = 0
-        self.workflow = None
-
-
     def set_default_headers(self):
         """Set HTTP headers at the beginning of the request.
 
@@ -92,21 +76,21 @@ class SearchRequestHandler(HTTPRequestHandler):
             self.validate_request_body(None)
 
 
-        def _decode_request():
-            """Decodes request.
+        def _set_criteria():
+            """Sets search criteria.
 
             """
-            self.timestamp = self.get_argument(_PARAM_TIMESTAMP)
-            if self.get_argument(_PARAM_INSTITUTE) != "*":
-                self.institute = self.get_argument(_PARAM_INSTITUTE)
-            if self.get_argument(_PARAM_PROJECT) != "*":
-                self.project = self.get_argument(_PARAM_PROJECT)
-            if self.get_argument(_PARAM_SEVERITY) != "*":
-                self.severity = self.get_argument(_PARAM_SEVERITY)
-            if self.get_argument(_PARAM_STATE) != "*":
-                self.state = self.get_argument(_PARAM_STATE)
-            if self.get_argument(_PARAM_WORKFLOW) != "*":
-                self.workflow = self.get_argument(_PARAM_WORKFLOW)
+            for param in  {
+                _PARAM_INSTITUTE,
+                _PARAM_PROJECT,
+                _PARAM_SEVERITY,
+                _PARAM_STATE,
+                _PARAM_WORKFLOW
+                }:
+                if self.get_argument(param) != "*":
+                    setattr(self, param, self.get_argument(param))
+                else:
+                    setattr(self, param, None)
 
 
         def _set_data():
@@ -131,7 +115,7 @@ class SearchRequestHandler(HTTPRequestHandler):
             self.output = {
                 'count': len(self.issues),
                 'results': self.issues,
-                'timestamp': self.timestamp,
+                'timestamp': self.get_argument(_PARAM_TIMESTAMP),
                 'total': self.total,
             }
 
@@ -139,7 +123,7 @@ class SearchRequestHandler(HTTPRequestHandler):
         # Invoke tasks.
         self.invoke([
             _validate_request,
-            _decode_request,
+            _set_criteria,
             _set_data,
             _set_output
             ])

@@ -16,7 +16,7 @@ from errata.utils.http import HTTP_HEADER_Access_Control_Allow_Origin
 
 
 
-class SearchSetupRequestHandler(HTTPRequestHandler):
+class IssueSearchSetupRequestHandler(HTTPRequestHandler):
     """Search issue request handler.
 
     """
@@ -59,6 +59,10 @@ class SearchSetupRequestHandler(HTTPRequestHandler):
                     }
                 ],
                 'project': [
+                    {
+                        'key': "test",
+                        'label': "TEST"
+                    },
                     {
                         'key': "cmip5",
                         'label': "CMIP5"

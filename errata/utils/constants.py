@@ -117,6 +117,7 @@ PROJECT_CMIP6 = "cmip6"
 
 # Project - all.
 PROJECT = {
+	"TEST",
 	PROJECT_CMIP5,
 	PROJECT_CMIP6
 }
