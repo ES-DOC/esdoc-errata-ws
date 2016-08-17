@@ -2,6 +2,10 @@
 export ERRATA_HOME="$( dirname "$( dirname "${BASH_SOURCE[0]}" )" )"
 declare DIR=$ERRATA_HOME
 
+# Extend python path.
+export PYTHONPATH=$PYTHONPATH:$ERRATA_HOME
+export PYTHONPATH=$PYTHONPATH:$ERRATA_B2HANDLE
+
 # Ensure shell scripts are executable.
 chmod a+x $ERRATA_HOME/sh/*.sh
 
