@@ -16,27 +16,17 @@ from errata.utils import logger
 
 
 
-# Name of standard db user.
-_DB_USER = "esdoc_errata_db_user"
-
-# Name of admin db user.
-_DB_ADMIN_USER = "esdoc_errata_db_admin"
-
-
 def _main():
     """Main entry point.
 
     """
-    # Db connection must be admin.
-    connection = config.db.replace(_DB_USER, _DB_ADMIN_USER)
-
-    logger.log_db("db setup begins : db = {0}".format(connection))
+    logger.log_db("db setup begins : db = {0}".format(config.db))
 
     # Run setup in context of a session.
-    with db.session.create(connection):
+    with db.session.create(config.db):
         db.setup.execute()
 
-    logger.log_db("db setup ends : db = {0}".format(connection))
+    logger.log_db("db setup ends : db = {0}".format(config.db))
 
 
 
