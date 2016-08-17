@@ -12,7 +12,7 @@ main()
     virtualenv $ERRATA_HOME/venv
     source $ERRATA_HOME/venv/bin/activate
     pip install --upgrade pip
-    pip install --upgrade --no-cache-dir -r $ERRATA_HOME/requirements.txt
+    pip install --upgrade --no-cache-dir -I -r $ERRATA_HOME/requirements.txt
     deactivate
 }
 

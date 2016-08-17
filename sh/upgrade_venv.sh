@@ -10,7 +10,7 @@ main()
 
     source $ERRATA_HOME/venv/bin/activate
     pip install --upgrade pip
-    pip install --upgrade -r $ERRATA_HOME/requirements.txt
+    pip install --upgrade --no-cache-dir -I -r $ERRATA_HOME/requirements.txt
     deactivate
 }
 
