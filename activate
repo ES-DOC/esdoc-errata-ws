@@ -28,3 +28,4 @@ alias errata-tests=$ERRATA_HOME/sh/run_tests.sh
 # Initialization related commands.
 alias errata-init-config=$ERRATA_HOME/sh/init_config.sh
 alias errata-init-venv=$ERRATA_HOME/sh/init_venv.sh
+alias errata-upgrade-venv=$ERRATA_HOME/sh/upgrade_venv.sh
