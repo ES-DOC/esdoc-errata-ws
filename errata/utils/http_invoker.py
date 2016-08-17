@@ -135,7 +135,6 @@ def _invoke(handler, task, err=None):
     """Invokes a task.
 
     """
-    # print task.__name__, ": begins"
     try:
         if err:
             task(handler, err)
@@ -146,7 +145,6 @@ def _invoke(handler, task, err=None):
             task(err)
         else:
             task()
-    # print task.__name__, ": completed"
 
 
 def execute(handler, tasks, error_tasks):

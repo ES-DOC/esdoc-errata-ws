@@ -78,7 +78,9 @@ class RetrieveIssueRequestHandler(HTTPRequestHandler):
             del obj['uid']
             obj['datasets'] = sorted([i.dataset_id for i in self.datasets])
             obj['materials'] = self.issue.materials.split(",")
-            obj['project'] = obj['project'].upper()
+
+            # TODO refactor when implemented.
+            obj['models'] = []
 
             self.output = {
                 'issue': obj

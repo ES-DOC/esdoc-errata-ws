@@ -14,6 +14,7 @@ import sqlalchemy
 
 from errata import db
 from errata.utils import constants
+from errata.utils import exceptions
 from errata.utils.http import HTTPRequestHandler
 from errata.utils.misc import traverse
 from errata.utils.validation import validate_url
@@ -34,7 +35,10 @@ class CreateIssueRequestHandler(HTTPRequestHandler):
 
             """
             for url in traverse([self.request.data.get((i)) for i in ['url', 'materials']]):
-                validate_url(url)
+                try:
+                    validate_url(url)
+                except exceptions.UnreachableURLError as error:
+                    self.throw(error)
 
 
         def _validate_dataset_identifiers():
@@ -42,7 +46,10 @@ class CreateIssueRequestHandler(HTTPRequestHandler):
 
             """
             for dataset_id in self.request.data.get('datasets', []):
-                validate_dataset_id(dataset_id)
+                try:
+                    validate_dataset_id(dataset_id)
+                except exceptions.InvalidDatasetIdentiferError as error:
+                    self.throw(error)
 
 
         def _validate_request():

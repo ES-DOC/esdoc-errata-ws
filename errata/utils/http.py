@@ -58,6 +58,18 @@ class HTTPRequestHandler(tornado.web.RequestHandler):
         http_invoker.execute(self, taskset, error_taskset or [])
 
 
+    def throw(self, error):
+        """Throws a trapped processing error.
+
+        """
+        # Send 400 to client.
+        self.clear()
+        self.send_error(400)
+
+        # Bubble up error.
+        raise error
+
+
     def validate_request_json_headers(self):
         """Validates request JSON headers.
 

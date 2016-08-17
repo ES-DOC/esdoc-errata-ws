@@ -44,34 +44,8 @@ class IssueSearchSetupRequestHandler(HTTPRequestHandler):
 
             """
             self.output = {
-                'institute': [
-                    {
-                        'key': "badc",
-                        'label': "BADC"
-                    },
-                    {
-                        'key': "dkrz",
-                        'label': "DKRZ"
-                    },
-                    {
-                        'key': "ipsl",
-                        'label': "IPSL"
-                    }
-                ],
-                'project': [
-                    {
-                        'key': "test",
-                        'label': "TEST"
-                    },
-                    {
-                        'key': "cmip5",
-                        'label': "CMIP5"
-                    },
-                    {
-                        'key': "cmip6",
-                        'label': "CMIP6"
-                    }
-                ],
+                'institute': constants.INSTITUTE,
+                'project': constants.PROJECT,
                 'severity': constants.SEVERITY,
                 'state': constants.STATE,
                 'workflow': constants.WORKFLOW

@@ -174,8 +174,7 @@ def validate_url(url):
     try:
         response = requests.head(url)
     except Exception as error:
-        logger.log_error('Result: FAILED // Bad HTTP request')
-        raise error
+        raise exceptions.UnreachableURLError(url)
     else:
         if response.status_code != requests.codes.ok:
             raise exceptions.UnreachableURLError(url)

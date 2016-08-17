@@ -88,7 +88,7 @@ class IssueSearchRequestHandler(HTTPRequestHandler):
                 _PARAM_WORKFLOW
                 }:
                 if self.get_argument(param) != "*":
-                    setattr(self, param, self.get_argument(param))
+                    setattr(self, param, self.get_argument(param).lower())
                 else:
                     setattr(self, param, None)
 

@@ -13,8 +13,10 @@
 import datetime as dt
 import json
 import os
+import random
 import uuid
 
+import nose
 import requests
 
 from errata.utils import constants
@@ -23,19 +25,6 @@ from errata.utils import constants
 
 # Test issue.
 _ISSUE = {
-    'description': unicode(uuid.uuid4()),
-    'institute': constants.INSTITUTE_IPSL,
-    'materials': [
-        "http://errata.ipsl.upmc.fr/static/images_errata/time.jpg",
-        "http://errata.ipsl.upmc.fr/static/images_errata/time5.jpg"
-    ],
-    'models': [],
-    'severity': constants.SEVERITY_LOW,
-    'project': u"TEST",
-    'title': unicode(uuid.uuid4()),
-    'id': unicode(uuid.uuid4()),
-    'url': u"http://errata.ipsl.upmc.fr/issue/1",
-    'workflow': constants.WORKFLOW_NEW,
     'datasets': [
         "cmip5.output1.IPSL.IPSL-CM5A-LR.1pctCO2.yr.ocnBgchem.Oyr.r2i1p1#20161010",
         "cmip5.output1.IPSL.IPSL-CM5A-LR.1pctCO2.yr.ocnBgchem.Oyr.r1i1p1#20161010",
@@ -51,7 +40,20 @@ _ISSUE = {
         "cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r7i1p1#20110901",
         "cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r8i1p1#20110901",
         "cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r9i1p1#20110901"
-        ]
+        ],
+    'description': unicode(uuid.uuid4()),
+    'id': unicode(uuid.uuid4()),
+    'institute': random.choice(constants.INSTITUTE)['key'],
+    'materials': [
+        "http://errata.ipsl.upmc.fr/static/images_errata/time.jpg",
+        "http://errata.ipsl.upmc.fr/static/images_errata/time5.jpg"
+    ],
+    'models': [],
+    'project': random.choice(constants.PROJECT)['key'],
+    'severity': random.choice(constants.SEVERITY)['key'],
+    'title': unicode(uuid.uuid4()),
+    'url': u"http://errata.ipsl.upmc.fr/issue/1",
+    'workflow': constants.WORKFLOW_NEW
     }
 
 # Set of target urls.
@@ -125,7 +127,7 @@ def _assert_ws_response(
 
 
 def test_create():
-    """ERRATA :: WS :: Test creating an issue.
+    """ERRATA :: WS :: Postive Test :: create issue.
 
     """
     # Invoke WS endpoint.
@@ -141,7 +143,7 @@ def test_create():
 
 
 def test_retrieve():
-    """ERRATA :: WS :: Test retrieving an issue.
+    """ERRATA :: WS :: Postive Test :: retrieve issue.
 
     """
     # Invoke WS endpoint.
@@ -152,15 +154,15 @@ def test_retrieve():
 
     # Assert WS response content.
     assert 'issue' in content
-    for attr in [i for i in _ISSUE.keys() if i != 'models']:
-        try:
+    for attr in _ISSUE.keys():
+        if attr in {'datasets', 'materials', 'models'}:
             assert sorted(content['issue'][attr]) == sorted(_ISSUE[attr])
-        except TypeError:
+        else:
             assert content['issue'][attr] == _ISSUE[attr]
 
 
 def test_close():
-    """ERRATA :: WS :: Test closing an issue.
+    """ERRATA :: WS :: Postive Test :: close issue.
 
     """
     # Invoke WS endpoint.
@@ -171,7 +173,7 @@ def test_close():
 
 
 def test_update():
-    """ERRATA :: WS :: Test updating an issue.
+    """ERRATA :: WS :: Postive Test :: update issue.
 
     """
     # Update test issue.

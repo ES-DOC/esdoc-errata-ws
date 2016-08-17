@@ -16,7 +16,6 @@ import cerberus
 import jsonschema
 
 from errata.utils import exceptions
-from errata.utils import logger
 
 
 
@@ -28,11 +27,6 @@ def _throw(handler, error):
     """Throws a validation error.
 
     """
-    # Log.
-    msg = "[{0}]: --> security --> {1} --> Invalid request :: {2}"
-    msg = msg.format(id(handler), handler, error)
-    logger.log_web_security(msg)
-
     # Send 400 to client.
     handler.clear()
     handler.send_error(_HTTP_RESPONSE_BAD_REQUEST)
@@ -56,9 +50,8 @@ def validate_request_body(handler, schema):
             _throw(handler, exceptions.SecurityError("Unexpected request body."))
         return
 
-    # Decode request data & schema.
+    # Decode request data.
     data = json.loads(handler.request.body)
-    schema = json.loads(schema)
 
     # Validate request data against schema.
     try:
@@ -119,5 +112,3 @@ def validate_request_params(handler, schema, allow_unknown=False):
     validator = _RequestQueryParamsValidator(schema)
     validator.allow_unknown = allow_unknown
     validator.validate(handler.request.query_arguments)
-
-    print validator.errors

@@ -10,19 +10,22 @@
 
 
 """
+import json
 import os
 
+
+
 # Issue workflow state - new.
-WORKFLOW_NEW = 'new'
+WORKFLOW_NEW = u'new'
 
 # Issue workflow state - on hold.
-WORKFLOW_ON_HOLD = 'onhold'
+WORKFLOW_ON_HOLD = u'onhold'
 
 # Issue workflow state - resolved.
-WORKFLOW_RESOLVED = 'resolved'
+WORKFLOW_RESOLVED = u'resolved'
 
 # Issue workflow state - won fix.
-WORKFLOW_WONT_FIX = 'wontfix'
+WORKFLOW_WONT_FIX = u'wontfix'
 
 # Issue workflow state set.
 WORKFLOW = [
@@ -49,10 +52,10 @@ WORKFLOW = [
 ]
 
 # Issue state - open.
-STATE_OPEN = "open"
+STATE_OPEN = u"open"
 
 # Issue state - closed.
-STATE_CLOSED = "closed"
+STATE_CLOSED = u"closed"
 
 # Issue states set.
 STATE = [
@@ -69,16 +72,16 @@ STATE = [
 ]
 
 # Issue severity - low.
-SEVERITY_LOW = "low"
+SEVERITY_LOW = u"low"
 
 # Issue severity - medium.
-SEVERITY_MEDIUM = "medium"
+SEVERITY_MEDIUM = u"medium"
 
 # Issue severity - high.
-SEVERITY_HIGH = "high"
+SEVERITY_HIGH = u"high"
 
 # Issue severity - critical.
-SEVERITY_CRITICAL = "critical"
+SEVERITY_CRITICAL = u"critical"
 
 # Issue severity level set.
 SEVERITY = [
@@ -110,34 +113,56 @@ SEVERITY = [
 
 # TODO - leverage pyessv
 # Project - cmip5.
-PROJECT_CMIP5 = "cmip5"
+PROJECT_CMIP5 = u"cmip5"
 
 # Project - cmip6.
-PROJECT_CMIP6 = "cmip6"
+PROJECT_CMIP6 = u"cmip6"
+
+# Project - test.
+PROJECT_TEST = u"test"
 
 # Project - all.
-PROJECT = {
-	"TEST",
-	PROJECT_CMIP5,
-	PROJECT_CMIP6
-}
+PROJECT = [
+	{
+	    'key': PROJECT_CMIP5,
+	    'label': u"CMIP5"
+	},
+	{
+	    'key': PROJECT_CMIP6,
+	    'label': u"CMIP6"
+	},
+	{
+	    'key': PROJECT_TEST,
+	    'label': u"TEST"
+	}
+]
+
 
 # TODO - leverage pyessv
-# Institute - IPSL.
-INSTITUTE_IPSL = "ipsl"
+# Institute - BADC.
+INSTITUTE_BADC = u"badc"
 
 # Institute - DKRZ.
-INSTITUTE_DKRZ = "dkrz"
+INSTITUTE_DKRZ = u"dkrz"
 
-# Institute - BADC.
-INSTITUTE_BADC = "badc"
+# Institute - IPSL.
+INSTITUTE_IPSL = u"ipsl"
 
 # Institute - all.
-INSTITUTE = {
-	INSTITUTE_IPSL,
-	INSTITUTE_DKRZ,
-	INSTITUTE_BADC
-}
+INSTITUTE = [
+	{
+	    'key': INSTITUTE_BADC,
+	    'label': u"BADC"
+	},
+	{
+	    'key': INSTITUTE_DKRZ,
+	    'label': u"DKRZ"
+	},
+	{
+	    'key': INSTITUTE_IPSL,
+	    'label': u"IPSL"
+	}
+]
 
 # List of issue attributes that cannot be updated.
 IMMUTABLE_ISSUE_ATTRIBUTES = [
@@ -154,10 +179,16 @@ def _get_json_schema(name):
 	fpath = os.path.join(os.path.dirname(os.path.dirname(__file__)), "schemas")
 	fpath = os.path.join(fpath, "{}.json".format(name))
 	with open(fpath, 'r') as fstream:
-		return fstream.read()
+		return json.loads(fstream.read())
 
 # Map of actions to json schemas.
-JSON_SCHEMAS = {i: _get_json_schema(i) for i in ['create', 'retrieve', 'update']}
+JSON_SCHEMAS = {i: _get_json_schema(i) for i in ['create', 'update']}
+
+# Extend CV's embedded within JSON schemas.
+JSON_SCHEMAS['create']['properties']['institute']['enum'] = [i['key'] for i in INSTITUTE]
+JSON_SCHEMAS['update']['properties']['institute']['enum'] = [i['key'] for i in INSTITUTE]
+JSON_SCHEMAS['create']['properties']['project']['enum'] = [i['key'] for i in PROJECT]
+JSON_SCHEMAS['update']['properties']['project']['enum'] = [i['key'] for i in PROJECT]
 
 # Ratio of similarity between descriptions of updated and database issue.
 DESCRIPTION_CHANGE_RATIO = 20

@@ -51,11 +51,6 @@
             "uniqueItems": true
         },
         "project": {
-            "enum": [
-                "TEST",
-                "CMIP5",
-                "CMIP6"
-            ],
             "minLength": 1,
             "type": "string"
         },
