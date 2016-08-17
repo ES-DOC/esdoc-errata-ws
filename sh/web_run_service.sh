@@ -8,7 +8,8 @@ main()
 {
     log "WEB-SERVICE : running ..."
 
-	$ERRATA_PYTHON $ERRATA_HOME/jobs/run_web_service.py
+    source $ERRATA_HOME/venv/bin/activate
+	python $ERRATA_HOME/jobs/run_web_service.py
 }
 
 # Invoke entry point.

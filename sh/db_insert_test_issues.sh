@@ -7,10 +7,12 @@ source $ERRATA_HOME/sh/init.sh
 main()
 {
     log "DB : inserting test issues ..."
+
+    source $ERRATA_HOME/venv/bin/activate
 	if [ "$1" ]; then
-		$ERRATA_PYTHON $ERRATA_HOME/jobs/run_db_insert_test_issues.py -d $1
+		python $ERRATA_HOME/jobs/run_db_insert_test_issues.py -d $1
 	else
-		$ERRATA_PYTHON $ERRATA_HOME/jobs/run_db_insert_test_issues.py -d $ERRATA_HOME/test-data
+		python $ERRATA_HOME/jobs/run_db_insert_test_issues.py -d $ERRATA_HOME/test-data
 	fi
 }
 

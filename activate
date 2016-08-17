@@ -1,9 +1,6 @@
 # Set home path
 export ERRATA_HOME="$( dirname "${BASH_SOURCE[0]}" )"
 
-# Set python version.
-export ERRATA_PYTHON=python2.7
-
 # Extend python path.
 export PYTHONPATH=$PYTHONPATH:$ERRATA_HOME
 
@@ -12,7 +9,6 @@ chmod a+x $ERRATA_HOME/sh/*.sh
 
 # Web-service commands.
 alias errata-ws=$ERRATA_HOME/sh/web_run_service.sh
-alias errata-ws-config-init=$ERRATA_HOME/sh/web_config_init.sh
 alias errata-ws-config-update=$ERRATA_HOME/sh/web_config_update.sh
 alias errata-ws-daemon-init=$ERRATA_HOME/sh/web_daemon_init.sh
 alias errata-ws-daemon-kill=$ERRATA_HOME/sh/web_daemon_kill.sh
@@ -29,5 +25,6 @@ alias errata-db-insert-test-issues=$ERRATA_HOME/sh/db_insert_test_issues.sh
 alias errata-db-create-large-for-testing=$ERRATA_HOME/sh/db_create_large_for_testing.sh
 alias errata-tests=$ERRATA_HOME/sh/run_tests.sh
 
-# Virtual environment related commands.
-alias errata-venv-setup=$ERRATA_HOME/sh/venv_setup.sh
+# Initialization related commands.
+alias errata-init-config=$ERRATA_HOME/sh/init_config.sh
+alias errata-init-venv=$ERRATA_HOME/sh/init_venv.sh
