@@ -1,6 +1,9 @@
 # Set home path
 export ERRATA_HOME="$( dirname "$( dirname "${BASH_SOURCE[0]}" )" )"
 
+# Set python version.
+export ERRATA_PYTHON=python2.7
+
 # Extend python path.
 export PYTHONPATH=$PYTHONPATH:$ERRATA_HOME
 export PYTHONPATH=$PYTHONPATH:$ERRATA_B2HANDLE

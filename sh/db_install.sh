@@ -29,7 +29,7 @@ _db_grant_permissions()
 _db_setup()
 {
 	log "Creating DB objects"
-	python $ERRATA_HOME/jobs/run_db_setup.py
+	$ERRATA_PYTHON $ERRATA_HOME/jobs/run_db_setup.py
 }
 
 # Main entry point.

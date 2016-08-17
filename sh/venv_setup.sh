@@ -8,7 +8,7 @@ main()
 {
     log "SH : installing requirements ..."
 
-    python2.7 pip install --upgrade -r $ERRATA_HOME/requirements.txt
+    pip install --upgrade -r $ERRATA_HOME/requirements.txt
 }
 
 # Invoke entry point.

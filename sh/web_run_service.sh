@@ -8,7 +8,7 @@ main()
 {
     log "WEB-SERVICE : running ..."
 
-	python2.7 $ERRATA_HOME/jobs/run_web_service.py
+	$ERRATA_PYTHON $ERRATA_HOME/jobs/run_web_service.py
 }
 
 # Invoke entry point.
