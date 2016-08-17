@@ -70,8 +70,8 @@ class CreateIssueRequestHandler(HTTPRequestHandler):
             # Map request data to relational data.
             issue = db.models.Issue()
             issue.date_closed = self.request.data.get('date_closed')
-            issue.date_created = self.request.data.get('date_created', issue.date_created)
-            issue.date_updated = self.request.data.get('date_updated')
+            issue.date_created = self.request.data['date_created']
+            issue.date_updated = self.request.data.get('date_updated', issue.date_created)
             issue.description = self.request.data['description']
             issue.institute = self.request.data['institute'].lower()
             issue.materials = ",".join(self.request.data.get('materials', []))
