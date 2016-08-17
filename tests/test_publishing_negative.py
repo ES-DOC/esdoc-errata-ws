@@ -111,9 +111,10 @@ def test_create_invalid():
         # ... non-array values are invalid;
         issue[attr] = "invalid-value"
         yield _do_test(issue, attr, "is not an array")
-        issue[attr] = 123
-        yield _do_test(issue, attr, "is invalid array [contains a non-string item]")
-        # ... all array items must be valid;
+        # ... arrays must contain only string values;
+        issue[attr] = [123]
+        yield _do_test(issue, attr, "is invalid array [contains non-string values]")
+        # ... all items must be considered valid;
         if attr != 'description':
             issue[attr] = ["an-invalid-item"]
             yield _do_test(issue, attr, "is invalid array [contains invalid item]")
