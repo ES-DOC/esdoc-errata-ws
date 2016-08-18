@@ -16,7 +16,6 @@ import os
 import random
 import uuid
 
-import nose
 import requests
 
 from errata.utils import constants
@@ -41,8 +40,8 @@ _ISSUE = {
         "cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r8i1p1#20110901",
         "cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r9i1p1#20110901"
         ],
+    'dateCreated': unicode(dt.datetime.utcnow()),
     'description': unicode(uuid.uuid4()),
-    'id': unicode(uuid.uuid4()),
     'institute': random.choice(constants.INSTITUTE)['key'],
     'materials': [
         "http://errata.ipsl.upmc.fr/static/images_errata/time.jpg",
@@ -52,6 +51,7 @@ _ISSUE = {
     'project': random.choice(constants.PROJECT)['key'],
     'severity': random.choice(constants.SEVERITY)['key'],
     'title': unicode(uuid.uuid4()),
+    'uid': unicode(uuid.uuid4()),
     'url': u"http://errata.ipsl.upmc.fr/issue/1",
     'workflow': constants.WORKFLOW_NEW
     }
@@ -60,8 +60,8 @@ _ISSUE = {
 _URL = os.getenv("ERRATA_API")
 _URL_CREATE = "{}/1/issue/create".format(_URL)
 _URL_UPDATE = "{}/1/issue/update".format(_URL)
-_URL_RETRIEVE = "{}/1/issue/retrieve?uid={}".format(_URL, _ISSUE['id'])
-_URL_CLOSE = "{}/1/issue/close?uid={}".format(_URL, _ISSUE['id'])
+_URL_RETRIEVE = "{}/1/issue/retrieve?uid={}".format(_URL, _ISSUE['uid'])
+_URL_CLOSE = "{}/1/issue/close?uid={}".format(_URL, _ISSUE['uid'])
 
 # Set of target url request headers.
 _REQUEST_HEADERS = {
@@ -75,7 +75,8 @@ def _assert_ws_response(
     url,
     response,
     status_code=requests.codes.OK,
-    expected_content=None):
+    expected_content=None
+    ):
     """Asserts a response received from web-service.
 
     """
@@ -158,7 +159,10 @@ def test_retrieve():
         if attr in {'datasets', 'materials', 'models'}:
             assert sorted(content['issue'][attr]) == sorted(_ISSUE[attr])
         else:
-            assert content['issue'][attr] == _ISSUE[attr]
+            try:
+                assert content['issue'][attr] == _ISSUE[attr]
+            except KeyError:
+                print content['issue']
 
 
 def test_close():
@@ -178,7 +182,7 @@ def test_update():
     """
     # Update test issue.
     _ISSUE['severity'] = constants.SEVERITY_MEDIUM
-    _ISSUE['date_updated'] = unicode(dt.datetime.utcnow())
+    _ISSUE['dateUpdated'] = unicode(dt.datetime.utcnow())
 
     # Invoke WS endpoint.
     response = requests.post(

@@ -32,9 +32,9 @@ class UpdateIssueRequestHandler(HTTPRequestHandler):
 
             """
             with db.session.create():
-                self.issue = db.dao.get_issue(self.request.data['id'])
+                self.issue = db.dao.get_issue(self.request.data['uid'])
             if self.issue is None:
-                raise exceptions.UnknownIssueError(self.request.data['id'])
+                raise exceptions.UnknownIssueError(self.request.data['uid'])
 
 
         def _validate_issue_immutable_attributes():
@@ -44,7 +44,7 @@ class UpdateIssueRequestHandler(HTTPRequestHandler):
             for attr_name in constants.IMMUTABLE_ISSUE_ATTRIBUTES:
                 if unicode(self.request.data[attr_name]).lower() != unicode(getattr(self.issue, attr_name)).lower():
                     raise exceptions.ImmutableIssueAttributeError(attr_name)
-            print "TODO: validate date_created immutability"
+            print "TODO: validate dateCreated immutability"
 
 
         def _validate_issue_description_change_ratio():
@@ -88,12 +88,13 @@ class UpdateIssueRequestHandler(HTTPRequestHandler):
             """Updates issue.
 
             """
-            self.issue.date_closed = self.request.data.get('date_closed')
-            self.issue.date_updated = self.request.data.get('date_updated')
+            self.issue.date_closed = self.request.data.get('dateClosed')
+            self.issue.date_updated = self.request.data['dateUpdated']
             self.issue.description = self.request.data['description']
             self.issue.materials = ",".join(self.request.data.get('materials', []))
             self.issue.severity = self.request.data['severity'].lower()
             self.issue.state = constants.STATE_CLOSED if self.issue.date_closed else constants.STATE_OPEN
+            self.issue.title = self.request.data['title']
             self.issue.url = self.request.data.get('url')
             self.issue.workflow = self.request.data['workflow'].lower()
 

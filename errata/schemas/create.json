@@ -10,12 +10,20 @@
             "type": "array",
             "uniqueItems": true
         },
+        "dateClosed": {
+            "type": "string",
+            "format": "date-time"
+        },
+        "dateCreated": {
+            "type": "string",
+            "format": "date-time"
+        },
+        "dateUpdated": {
+            "type": "string",
+            "format": "date-time"
+        },
         "description": {
             "minLength": 1,
-            "type": "string"
-        },
-        "id": {
-            "pattern": "^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$",
             "type": "string"
         },
         "institute": {
@@ -55,6 +63,10 @@
             "minLength": 1,
             "type": "string"
         },
+        "uid": {
+            "pattern": "^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$",
+            "type": "string"
+        },
         "url": {
             "minLength": 1,
             "type": "string"
@@ -70,12 +82,16 @@
         }
     },
     "required": [
-        "title",
+        "datasets",
+        "dateCreated",
         "description",
-        "severity",
-        "project",
+        "institute",
         "models",
-        "datasets"
+        "project",
+        "severity",
+        "title",
+        "uid",
+        "workflow"
     ],
     "title": "ESGF issue JSON schema",
     "type": "object"

@@ -169,7 +169,7 @@ IMMUTABLE_ISSUE_ATTRIBUTES = [
 	'title',
 	'project',
 	'institute',
-	# 'date_created'
+	# 'dateCreated'
 	]
 
 def _get_json_schema(name):

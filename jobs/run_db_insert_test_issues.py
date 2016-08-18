@@ -74,7 +74,7 @@ def _get_issue(obj):
     issue.state = STATE_CLOSED if issue.date_closed else STATE_OPEN
     issue.project = obj['project'].lower()
     issue.title = obj['title']
-    issue.uid = obj['id']
+    issue.uid = obj['uid']
     if 'url' in obj.keys():
         issue.url = obj['url']
     issue.workflow = obj['workflow'].lower()

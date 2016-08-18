@@ -74,13 +74,16 @@ class RetrieveIssueRequestHandler(HTTPRequestHandler):
             """
             # Encode issue as a simple dictionary.
             obj = convertor.to_dict(self.issue)
-            obj['id'] = obj['uid']
-            del obj['uid']
-            obj['datasets'] = sorted([i.dataset_id for i in self.datasets])
-            obj['materials'] = self.issue.materials.split(",")
 
-            # TODO refactor when implemented.
-            obj['models'] = []
+            # Remove db injected fields.
+            del obj['id']
+            del obj['row_create_date']
+            del obj['row_update_date']
+
+            # Format arrays.
+            obj['datasets'] = sorted([i.dataset_id for i in self.datasets])
+            obj['materials'] = sorted(self.issue.materials.split(","))
+            obj['models'] = []      # TODO refactor when implemented.
 
             self.output = {
                 'issue': obj

@@ -63,15 +63,15 @@ class CreateIssueRequestHandler(HTTPRequestHandler):
             _validate_dataset_identifiers()
 
 
-        def _persist_issue():
-            """Persists issue data to dB.
+        def _create_issue():
+            """Creates issue.
 
             """
             # Map request data to relational data.
             issue = db.models.Issue()
-            issue.date_closed = self.request.data.get('date_closed')
-            issue.date_created = self.request.data['date_created']
-            issue.date_updated = self.request.data.get('date_updated', issue.date_created)
+            issue.date_closed = self.request.data.get('dateClosed')
+            issue.date_created = self.request.data['dateCreated']
+            issue.date_updated = self.request.data.get('dateUpdated', issue.date_created)
             issue.description = self.request.data['description']
             issue.institute = self.request.data['institute'].lower()
             issue.materials = ",".join(self.request.data.get('materials', []))
@@ -79,19 +79,23 @@ class CreateIssueRequestHandler(HTTPRequestHandler):
             issue.severity = self.request.data['severity'].lower()
             issue.state = constants.STATE_CLOSED if issue.date_closed else constants.STATE_OPEN
             issue.title = self.request.data['title']
-            issue.uid = self.request.data['id']
+            issue.uid = self.request.data['uid']
             issue.url = self.request.data.get('url')
             issue.workflow = self.request.data['workflow'].lower()
 
-            # Persist to dB.
+            self.issue = issue
+
+
+        def _persist_issue():
+            """Persists issue data to dB.
+
+            """
             with db.session.create():
                 try:
-                    db.session.insert(issue)
+                    db.session.insert(self.issue)
                 except sqlalchemy.exc.IntegrityError:
                     db.session.rollback()
                     raise ValueError("Issue description/uid fields must be unique")
-                else:
-                    self.issue = issue
 
 
         def _persist_datasets():
@@ -100,7 +104,7 @@ class CreateIssueRequestHandler(HTTPRequestHandler):
             """
             # Map request data to relational data.
             datasets = []
-            for dataset_id in self.request.data.get('datasets', []):
+            for dataset_id in self.request.data['datasets']:
                 dataset = db.models.IssueDataset()
                 dataset.dataset_id = dataset_id
                 dataset.issue_id = self.issue.id
@@ -115,6 +119,7 @@ class CreateIssueRequestHandler(HTTPRequestHandler):
         # Invoke tasks.
         self.invoke([
             _validate_request,
+            _create_issue,
             _persist_issue,
             _persist_datasets
             ])
