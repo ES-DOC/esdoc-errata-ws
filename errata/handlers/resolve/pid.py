@@ -17,8 +17,7 @@ from errata.utils.http import HTTP_HEADER_Access_Control_Allow_Origin
 # Query parameter names.
 _PARAM_PIDS = 'pids'
 _PARAM_TIMESTAMP = 'timestamp'
-_PARAM_DSETID = 'dsetid'
-_PARAM_VERSION = 'version'
+
 # Query parameter validation schema.
 _REQUEST_PARAMS_SCHEMA = {
     _PARAM_PIDS: {
