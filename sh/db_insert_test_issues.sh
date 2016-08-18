@@ -10,9 +10,9 @@ main()
 
     source $ERRATA_HOME/venv/bin/activate
 	if [ "$1" ]; then
-		python $ERRATA_HOME/jobs/run_db_insert_test_issues.py -d $1
+		python $ERRATA_HOME/sh/db_insert_test_issues.py -d $1
 	else
-		python $ERRATA_HOME/jobs/run_db_insert_test_issues.py -d $ERRATA_HOME/test-data
+		python $ERRATA_HOME/sh/db_insert_test_issues.py -d $ERRATA_HOME/test-data
 	fi
 }
 

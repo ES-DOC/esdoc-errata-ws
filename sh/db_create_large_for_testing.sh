@@ -8,7 +8,7 @@ main()
 {
     log "DB : creating large database for testing ..."
     source $ERRATA_HOME/venv/bin/activate
-	python $ERRATA_HOME/jobs/run_db_create_large_for_testing.py -d $ERRATA_HOME/test-data -c $1
+	python $ERRATA_HOME/sh/db_create_large_for_testing.py -d $ERRATA_HOME/test-data -c $1
 }
 
 # Invoke entry point.

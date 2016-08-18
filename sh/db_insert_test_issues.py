@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+s# -*- coding: utf-8 -*-
 
 """
 .. module:: run_db_insert_test_issues.py
