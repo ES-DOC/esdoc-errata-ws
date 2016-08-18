@@ -13,7 +13,7 @@
 import datetime as dt
 import json
 import os
-
+import urllib
 import requests
 
 from errata.utils import constants
@@ -22,16 +22,12 @@ from errata.utils.constants import ISSUE
 
 # Set of target urls.
 _URL = os.getenv("ERRATA_API")
-_URL_CLOSE = "{}/1/issue/close?uid={}".format(_URL, ISSUE['uid'])
+_URL_CLOSE = "{}/1/issue/close?{}".format(
+    _URL, urllib.urlencode({'uid': ISSUE['uid']}))
 _URL_CREATE = "{}/1/issue/create".format(_URL)
-_URL_RETRIEVE = "{}/1/issue/retrieve?uid={}".format(_URL, ISSUE['uid'])
+_URL_RETRIEVE = "{}/1/issue/retrieve?{}".format(
+    _URL, urllib.urlencode({'uid': ISSUE['uid']}))
 _URL_UPDATE = "{}/1/issue/update".format(_URL)
-
-# Set of target url request headers.
-_REQUEST_HEADERS = {
-    _URL_CREATE:  {'Content-Type': 'application/json'},
-    _URL_UPDATE:  {'Content-Type': 'application/json'}
-}
 
 
 
@@ -44,7 +40,7 @@ def test_create():
     response = requests.post(
         url,
         data=json.dumps(ISSUE),
-        headers=_REQUEST_HEADERS[_URL_CREATE]
+        headers={'Content-Type': 'application/json'}
         )
 
     # Assert WS response.
@@ -96,7 +92,7 @@ def test_update():
     response = requests.post(
         _URL_UPDATE,
         data=json.dumps(ISSUE),
-        headers=_REQUEST_HEADERS[_URL_UPDATE]
+        headers={'Content-Type': 'application/json'}
         )
 
     # Assert WS response.
