@@ -1,36 +1,35 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: handlers.retrieve.py
+.. module:: handlers.resolve.issue_from_model.py
    :license: GPL/CeCIL
    :platform: Unix
-   :synopsis: ES-DOC Errata - retrieve issue endpoint.
+   :synopsis: ES-DOC Errata - resolve issues from model endpoint.
 
-.. moduleauthor:: Atef Bennasser <abenasser@ipsl.jussieu.fr>
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """
 from errata import db
-from errata.utils import convertor
 from errata.utils.http import HTTPRequestHandler
 from errata.utils.http import HTTP_HEADER_Access_Control_Allow_Origin
 
 
 
 # Query parameter names.
-_PARAM_UID = 'uid'
+_PARAM_MODEL_ID = 'model'
 
 # Query parameter validation schema.
 _REQUEST_PARAMS_SCHEMA = {
-    _PARAM_UID: {
+    _PARAM_MODEL_ID: {
         'required': True,
-        'type': 'list', 'items': [{'type': 'uuid'}]
-    }
+        'type': 'list', 'items': [{'type': 'string'}]
+    },
 }
 
 
-class RetrieveIssueRequestHandler(HTTPRequestHandler):
-    """Retrieve issue request handler.
+class ResolveIssueFromModelRequestHandler(HTTPRequestHandler):
+    """Search issue request handler.
 
     """
     def set_default_headers(self):
@@ -52,49 +51,28 @@ class RetrieveIssueRequestHandler(HTTPRequestHandler):
             self.validate_request_body(None)
 
 
-        def _decode_request():
-            """Decodes request.
-
-            """
-            self.uid = self.get_argument(_PARAM_UID)
-
-
         def _set_data():
             """Pulls data from db.
 
             """
             with db.session.create():
-                self.issue = db.dao.get_issue(self.uid)
-                self.datasets = db.dao.get_issue_datasets(self.issue.uid)
-                self.models = db.dao.get_issue_models(self.issue.uid)
+                self.issues = db.dao.get_model_issues(self.get_argument(_PARAM_MODEL_ID))
 
 
         def _set_output():
             """Sets response to be returned to client.
 
             """
-            # Encode issue as a simple dictionary.
-            obj = convertor.to_dict(self.issue)
-
-            # Remove db injected fields.
-            del obj['id']
-            del obj['row_create_date']
-            del obj['row_update_date']
-
-            # Set array fields.
-            obj['datasets'] = self.datasets
-            obj['materials'] = sorted(self.issue.materials.split(","))
-            obj['models'] = self.models
-
             self.output = {
-                'issue': obj
+                'count': len(self.issues),
+                'issueIdentifiers': self.issues,
+                'modelID': self.get_argument(_PARAM_MODEL_ID)
             }
 
 
         # Invoke tasks.
         self.invoke([
             _validate_request,
-            _decode_request,
             _set_data,
             _set_output
             ])

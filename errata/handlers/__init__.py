@@ -5,5 +5,7 @@ from errata.handlers.publishing  import CloseIssueRequestHandler
 from errata.handlers.publishing import CreateIssueRequestHandler
 from errata.handlers.publishing import RetrieveIssueRequestHandler
 from errata.handlers.publishing import UpdateIssueRequestHandler
+from errata.handlers.resolve import ResolveIssueFromDatasetRequestHandler
+from errata.handlers.resolve import ResolveIssueFromModelRequestHandler
 from errata.handlers.search import IssueSearchRequestHandler
 from errata.handlers.search import IssueSearchSetupRequestHandler

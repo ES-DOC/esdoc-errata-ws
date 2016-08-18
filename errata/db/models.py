@@ -123,3 +123,20 @@ class IssueDataset(Entity):
     issue_uid = Column(Unicode(63),
                        ForeignKey('{}.tbl_issue.uid'.format(_SCHEMA)), nullable=False)
     dataset_id = Column(Unicode(1023), nullable=False, index=True)
+
+
+class IssueModel(Entity):
+    """Associates an issue with a model.
+
+    """
+    # SQLAlchemy directives.
+    __tablename__ = 'tbl_issue_model'
+    __table_args__ = (
+        UniqueConstraint('issue_uid', 'model_id'),
+        {'schema': _SCHEMA}
+    )
+
+    # Column definitions.
+    issue_uid = Column(Unicode(63),
+                       ForeignKey('{}.tbl_issue.uid'.format(_SCHEMA)), nullable=False)
+    model_id = Column(Unicode(63), nullable=False, index=True)

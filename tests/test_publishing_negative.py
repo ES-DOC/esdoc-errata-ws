@@ -47,7 +47,9 @@ _ISSUE = {
         u"http://errata.ipsl.upmc.fr/static/images_errata/time.jpg",
         u"http://errata.ipsl.upmc.fr/static/images_errata/time5.jpg"
         ],
-    'models': [],
+    'models': [
+        u"IPSL-CM5A-LR"
+    ],
     'project': constants.PROJECT_TEST,
     'severity': constants.SEVERITY_LOW,
     'title': unicode(uuid.uuid4()),
@@ -116,8 +118,8 @@ def test_create_invalid():
         # ... arrays must contain only string values;
         issue[attr] = [123]
         yield _do_test(issue, attr, "is invalid array [contains non-string values]")
-        # ... all items must be considered valid;
-        if attr != 'description':
+        # ... datasets / materials are further validated against a regex;
+        if attr != 'models':
             issue[attr] = ["an-invalid-item"]
             yield _do_test(issue, attr, "is invalid array [contains invalid item]")
 

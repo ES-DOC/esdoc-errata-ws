@@ -37,29 +37,6 @@ class UnreachableURLError(Exception):
             'URL CANNOT BE REACHED: {}'.format(url))
 
 
-class InvalidDatasetIdentiferError(Exception):
-    """Raised if a submitted dataset identifier is invalid.
-
-    """
-    def __init__(self, dataset_id):
-        """Instance constructor.
-
-        """
-        super(InvalidDatasetIdentiferError, self).__init__(
-            'INVALID DATASET ID: {}'.format(dataset_id))
-
-
-class DuplicateIssueDescriptionError(Exception):
-    """Raised if a submitted issue description already exists.
-
-    """
-    def __init__(self):
-        """Instance constructor.
-
-        """
-        super(DuplicateIssueDescriptionError, self).__init__('ISSUE DESCRIPTION ALREADY EXISTS')
-
-
 class InvalidIssueStatusError(Exception):
     """Raised if a submitted issue status is invalid.
 

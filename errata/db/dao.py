@@ -10,11 +10,16 @@
 
 """
 from errata.db.dao_validator import validate_delete_issue_datasets
+from errata.db.dao_validator import validate_delete_issue_models
+from errata.db.dao_validator import validate_get_dataset_issues
 from errata.db.dao_validator import validate_get_issue
 from errata.db.dao_validator import validate_get_issues
 from errata.db.dao_validator import validate_get_issue_datasets
+from errata.db.dao_validator import validate_get_issue_models
+from errata.db.dao_validator import validate_get_model_issues
 from errata.db.models import Issue
 from errata.db.models import IssueDataset
+from errata.db.models import IssueModel
 from errata.db.session import query
 from errata.db.session import raw_query
 from errata.db.utils import text_filter
@@ -36,6 +41,35 @@ def delete_issue_datasets(uid):
     qry.delete()
 
 
+@validate(validate_delete_issue_models)
+def delete_issue_models(uid):
+    """Deletes models associated with an issue.
+
+    :param str uid: Issue unique identifier.
+
+    """
+    qry = query(IssueModel)
+    qry = qry.filter(IssueModel.issue_uid == uid)
+
+    qry.delete()
+
+
+@validate(validate_get_dataset_issues)
+def get_dataset_issues(dataset_id):
+    """Returns issues associated with a dataset.
+
+    :param str dataset_id: Dataset identifier.
+
+    :returns: Matching issues.
+    :rtype: list
+
+    """
+    qry = raw_query(IssueDataset.issue_uid)
+    qry = text_filter(qry, IssueDataset.dataset_id, dataset_id)
+
+    return sorted([i[0] for i in qry.all()])
+
+
 @validate(validate_get_issue)
 def get_issue(uid):
     """Returns an issue.
@@ -52,23 +86,6 @@ def get_issue(uid):
     return qry.first()
 
 
-@validate(validate_get_issue_datasets)
-def get_issue_datasets(uid):
-    """Returns datasets associated with an issue.
-
-    :param str uid: Issue unique identifier.
-
-    :returns: Matching issues.
-    :rtype: list
-
-    """
-
-    qry = raw_query(IssueDataset.dataset_id)
-    qry = qry.filter(IssueDataset.issue_uid == uid)
-
-    return sorted([i[0] for i in qry.all()])
-
-
 @validate(validate_get_issues)
 def get_issues(
     institute=None,
@@ -77,7 +94,7 @@ def get_issues(
     state=None,
     workflow=None
     ):
-    """Returns an issue.
+    """Returns issues that match the passed filters.
 
     :param str institute: Institute associated with the issue, e.g. ipsl.
     :param str project: Project associated with the issue, e.g. cmip6.
@@ -113,3 +130,51 @@ def get_issues(
         qry = qry.filter(Issue.workflow == workflow)
 
     return qry.all()
+
+
+@validate(validate_get_issue_datasets)
+def get_issue_datasets(uid):
+    """Returns datasets associated with an issue.
+
+    :param str uid: Issue unique identifier.
+
+    :returns: Matching issues.
+    :rtype: list
+
+    """
+    qry = raw_query(IssueDataset.dataset_id)
+    qry = qry.filter(IssueDataset.issue_uid == uid)
+
+    return sorted([i[0] for i in qry.all()])
+
+
+@validate(validate_get_issue_models)
+def get_issue_models(uid):
+    """Returns models associated with an issue.
+
+    :param str uid: Issue unique identifier.
+
+    :returns: Matching issues.
+    :rtype: list
+
+    """
+    qry = raw_query(IssueModel.model_id)
+    qry = qry.filter(IssueModel.issue_uid == uid)
+
+    return sorted([i[0] for i in qry.all()])
+
+
+@validate(validate_get_model_issues)
+def get_model_issues(model_id):
+    """Returns issues associated with a model.
+
+    :param str model_id: Model identifier.
+
+    :returns: Matching issues.
+    :rtype: list
+
+    """
+    qry = raw_query(IssueModel.issue_uid)
+    qry = text_filter(qry, IssueModel.model_id, model_id)
+
+    return sorted([i[0] for i in qry.all()])

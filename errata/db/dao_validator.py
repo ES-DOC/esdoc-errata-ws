@@ -16,6 +16,13 @@ from errata.utils import validation as v
 
 
 
+def validate_get_dataset_issues(dataset_id):
+    """Function input validator: get_dataset_issues.
+
+    """
+    v.validate_str(dataset_id, "Dataset identifier")
+
+
 def validate_get_issue(uid):
     """Function input validator: get_issue.
 
@@ -30,8 +37,29 @@ def validate_get_issue_datasets(uid):
     v.validate_uid(uid, 'Issue unique identifier')
 
 
+def validate_get_issue_models(uid):
+    """Function input validator: get_issue_models.
+
+    """
+    v.validate_uid(uid, 'Issue unique identifier')
+
+
+def validate_get_model_issues(model_id):
+    """Function input validator: get_model_issues.
+
+    """
+    v.validate_str(model_id, "Model identifier")
+
+
 def validate_delete_issue_datasets(uid):
     """Function input validator: delete_issue_datasets.
+
+    """
+    v.validate_uid(uid, 'Issue unique identifier')
+
+
+def validate_delete_issue_models(uid):
+    """Function input validator: delete_issue_models.
 
     """
     v.validate_uid(uid, 'Issue unique identifier')

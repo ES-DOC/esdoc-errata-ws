@@ -18,7 +18,6 @@ from errata.utils import exceptions
 from errata.utils.http import HTTPRequestHandler
 from errata.utils.misc import traverse
 from errata.utils.validation import validate_url
-from errata.utils.validation import validate_dataset_id
 
 
 
@@ -41,17 +40,6 @@ class CreateIssueRequestHandler(HTTPRequestHandler):
                     self.throw(error)
 
 
-        def _validate_dataset_identifiers():
-            """Validates dataset identifiers associated with incoming request.
-
-            """
-            for dataset_id in self.request.data.get('datasets', []):
-                try:
-                    validate_dataset_id(dataset_id)
-                except exceptions.InvalidDatasetIdentiferError as error:
-                    self.throw(error)
-
-
         def _validate_request():
             """Validates incoming request prior to processing.
 
@@ -60,10 +48,9 @@ class CreateIssueRequestHandler(HTTPRequestHandler):
             self.validate_request_params(None)
             self.validate_request_body(constants.JSON_SCHEMAS['create'])
             _validate_issue_urls()
-            _validate_dataset_identifiers()
 
 
-        def _create_issue():
+        def _set_issue():
             """Creates issue.
 
             """
@@ -86,10 +73,35 @@ class CreateIssueRequestHandler(HTTPRequestHandler):
             self.issue = issue
 
 
-        def _persist_issue():
-            """Persists issue data to dB.
+        def _set_datasets():
+            """Sets datasets to be persisted to database.
 
             """
+            self.datasets = []
+            for dataset_id in self.request.data['datasets']:
+                dataset = db.models.IssueDataset()
+                dataset.dataset_id = dataset_id
+                dataset.issue_uid = self.issue.uid
+                self.datasets.append(dataset)
+
+
+        def _set_models():
+            """Sets models to be persisted to database.
+
+            """
+            self.models = []
+            for model_id in self.request.data['models']:
+                model = db.models.IssueModel()
+                model.model_id = model_id
+                model.issue_uid = self.issue.uid
+                self.models.append(model)
+
+
+        def _persist():
+            """Persists data to dB.
+
+            """
+            # Persist issue data.
             with db.session.create():
                 try:
                     db.session.insert(self.issue)
@@ -97,29 +109,19 @@ class CreateIssueRequestHandler(HTTPRequestHandler):
                     db.session.rollback()
                     raise ValueError("Issue description/uid fields must be unique")
 
-
-        def _persist_datasets():
-            """Persists dataset data to database.
-
-            """
-            # Map request data to relational data.
-            datasets = []
-            for dataset_id in self.request.data['datasets']:
-                dataset = db.models.IssueDataset()
-                dataset.dataset_id = dataset_id
-                dataset.issue_uid = self.issue.uid
-                datasets.append(dataset)
-
-            # Persist to dB.
-            with db.session.create():
-                for dataset in datasets:
-                    db.session.insert(dataset)
+            # Persist datasets / models.
+            with db.session.create(commitable=True):
+                for dataset in self.datasets:
+                    db.session.insert(dataset, False)
+                for model in self.models:
+                    db.session.insert(model, False)
 
 
         # Invoke tasks.
         self.invoke([
             _validate_request,
-            _create_issue,
-            _persist_issue,
-            _persist_datasets
+            _set_issue,
+            _set_datasets,
+            _set_models,
+            _persist
             ])
