@@ -12,6 +12,7 @@
 """
 import json
 import os
+import urllib
 
 import nose
 import requests
@@ -22,16 +23,13 @@ from errata.utils.constants import ISSUE
 
 # Set of target urls.
 _URL = os.getenv("ERRATA_API")
+_URL_CLOSE = "{}/1/issue/close?{}".format(
+    _URL, urllib.urlencode({'uid': ISSUE['uid']}))
 _URL_CREATE = "{}/1/issue/create".format(_URL)
+_URL_RETRIEVE = "{}/1/issue/retrieve?{}".format(
+    _URL, urllib.urlencode({'uid': ISSUE['uid']}))
 _URL_UPDATE = "{}/1/issue/update".format(_URL)
-_URL_RETRIEVE = "{}/1/issue/retrieve?uid={}".format(_URL, ISSUE['uid'])
-_URL_CLOSE = "{}/1/issue/close?uid={}".format(_URL, ISSUE['uid'])
 
-# Set of target url request headers.
-_REQUEST_HEADERS = {
-    _URL_CREATE:  {'Content-Type': 'application/json'},
-    _URL_UPDATE:  {'Content-Type': 'application/json'}
-}
 
 
 def test_create_invalid():
@@ -48,7 +46,7 @@ def test_create_invalid():
             response = requests.post(
                 url,
                 data=json.dumps(issue),
-                headers=_REQUEST_HEADERS[_URL_CREATE]
+                headers={'Content-Type': 'application/json'}
                 )
 
             # Assert WS response.
