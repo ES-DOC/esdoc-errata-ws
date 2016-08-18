@@ -107,7 +107,7 @@ class CreateIssueRequestHandler(HTTPRequestHandler):
             for dataset_id in self.request.data['datasets']:
                 dataset = db.models.IssueDataset()
                 dataset.dataset_id = dataset_id
-                dataset.issue_id = self.issue.id
+                dataset.issue_uid = self.issue.uid
                 datasets.append(dataset)
 
             # Persist to dB.

@@ -65,7 +65,7 @@ class RetrieveIssueRequestHandler(HTTPRequestHandler):
             """
             with db.session.create():
                 self.issue = db.dao.get_issue(self.uid)
-                self.datasets = db.dao.get_issue_datasets(self.issue.id)
+                self.datasets = db.dao.get_issue_datasets(self.issue.uid)
 
 
         def _set_output():
@@ -80,8 +80,8 @@ class RetrieveIssueRequestHandler(HTTPRequestHandler):
             del obj['row_create_date']
             del obj['row_update_date']
 
-            # Format arrays.
-            obj['datasets'] = sorted([i.dataset_id for i in self.datasets])
+            # Set array fields.
+            obj['datasets'] = self.datasets
             obj['materials'] = sorted(self.issue.materials.split(","))
             obj['models'] = []      # TODO refactor when implemented.
 

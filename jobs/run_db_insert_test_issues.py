@@ -108,7 +108,7 @@ def _yield_datasets(input_dir, issue, issue_id):
     """
     for dataset_id in _get_datasets(input_dir, issue_id):
         dataset = IssueDataset()
-        dataset.issue_id = issue.id
+        dataset.issue_uid = issue.uid
         dataset.dataset_id = dataset_id
 
         yield dataset

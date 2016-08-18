@@ -105,11 +105,11 @@ class UpdateIssueRequestHandler(HTTPRequestHandler):
             """
             with db.session.create(commitable=True):
                 db.session.update(self.issue, False)
-                db.dao.delete_issue_datasets(self.issue.id)
+                db.dao.delete_issue_datasets(self.issue.uid)
                 for dataset_id in self.request.data.get('datasets', []):
                     dataset = db.models.IssueDataset()
                     dataset.dataset_id = dataset_id
-                    dataset.issue_id = self.issue.id
+                    dataset.issue_uid = self.issue.uid
                     db.session.insert(dataset, False)
 
 
