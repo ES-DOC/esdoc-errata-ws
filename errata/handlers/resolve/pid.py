@@ -49,8 +49,8 @@ def _get_errata_information(pid):
     return pid, sorted(data.values(), key=lambda i: i[3])
 
 
-class HandleServiceRequestHandler(HTTPRequestHandler):
-    """Retrieve issue request handler.
+class ResolvePIDRequestHandler(HTTPRequestHandler):
+    """Retrieve PID's request handler.
 
     """
     def set_default_headers(self):

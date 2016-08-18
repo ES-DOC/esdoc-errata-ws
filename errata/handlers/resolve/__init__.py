@@ -1,2 +1,3 @@
 from errata.handlers.resolve.issue_from_dataset import ResolveIssueFromDatasetRequestHandler
 from errata.handlers.resolve.issue_from_model import ResolveIssueFromModelRequestHandler
+from errata.handlers.resolve.pid import ResolvePIDRequestHandler

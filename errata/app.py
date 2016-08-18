@@ -44,7 +44,7 @@ def _get_app_endpoints():
         (r'/1/issue/search/setup', handlers.search.IssueSearchSetupRequestHandler),
         (r'/1/resolve/issue-from-dataset', handlers.resolve.ResolveIssueFromDatasetRequestHandler),
         (r'/1/resolve/issue-from-model', handlers.resolve.ResolveIssueFromModelRequestHandler),
-        (r'/1/pid/resolve', handlers.HandleServiceRequestHandler)
+        (r'/1/resolve/pid', handlers.resolve.ResolvePIDRequestHandler)
     }
 
     log("Endpoint to handler mappings:")
