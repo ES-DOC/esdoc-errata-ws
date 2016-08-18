@@ -13,7 +13,6 @@ from errata.db.dao_validator import validate_delete_issue_datasets
 from errata.db.dao_validator import validate_get_issue
 from errata.db.dao_validator import validate_get_issues
 from errata.db.dao_validator import validate_get_issue_datasets
-from errata.db.dao_validator import validate_get_issue_datasets_by_uid
 from errata.db.models import Issue
 from errata.db.models import IssueDataset
 from errata.db.session import query
@@ -25,14 +24,14 @@ from errata.utils.validation import validate
 
 
 @validate(validate_delete_issue_datasets)
-def delete_issue_datasets(issue_id):
+def delete_issue_datasets(uid):
     """Deletes datasets associated with an issue.
 
-    :param int issue_id: Issue identifier.
+    :param str uid: Issue unique identifier.
 
     """
     qry = query(IssueDataset)
-    qry = qry.filter(IssueDataset.issue_id == issue_id)
+    qry = qry.filter(IssueDataset.issue_uid == uid)
 
     qry.delete()
 
@@ -54,10 +53,10 @@ def get_issue(uid):
 
 
 @validate(validate_get_issue_datasets)
-def get_issue_datasets(issue_id):
+def get_issue_datasets(uid):
     """Returns datasets associated with an issue.
 
-    :param int issue_id: Issue identifier.
+    :param str uid: Issue unique identifier.
 
     :returns: Matching issues.
     :rtype: list
@@ -65,29 +64,9 @@ def get_issue_datasets(issue_id):
     """
 
     qry = raw_query(IssueDataset.dataset_id)
-    qry = qry.filter(IssueDataset.issue_id == issue_id)
-    qry = qry.order_by(IssueDataset.dataset_id)
+    qry = qry.filter(IssueDataset.issue_uid == uid)
 
-    return qry.all()
-
-
-@validate(validate_get_issue_datasets_by_uid)
-def get_issue_datasets_by_uid(issue_uid):
-    """Returns datasets associated with an issue.
-
-    :param string issue_uid: Issue uid.
-
-    :returns: Matching issues.
-    :rtype: list
-
-    """
-    issues = raw_query(Issue)
-    issues = issues.filter(Issue.uid == issue_uid)
-    qry = raw_query(IssueDataset)
-    qry = qry.filter(IssueDataset.issue_id == issues.first().id)
-    qry = qry.order_by(IssueDataset.dataset_id)
-
-    return qry.all()
+    return sorted([i[0] for i in qry.all()])
 
 
 @validate(validate_get_issues)

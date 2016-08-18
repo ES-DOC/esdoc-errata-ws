@@ -23,25 +23,18 @@ def validate_get_issue(uid):
     v.validate_uid(uid, 'Issue unique identifier')
 
 
-def validate_get_issue_datasets(issue_id):
+def validate_get_issue_datasets(uid):
     """Function input validator: get_issue_datasets.
 
     """
-    v.validate_int(issue_id, "Issue id")
+    v.validate_uid(uid, 'Issue unique identifier')
 
 
-def validate_get_issue_datasets_by_uid(issue_uid):
-    """Function input validator: get_issue_datasets_by_uid.
-
-    """
-    v.validate_str(issue_uid, "issue uid")
-
-
-def validate_delete_issue_datasets(issue_id):
+def validate_delete_issue_datasets(uid):
     """Function input validator: delete_issue_datasets.
 
     """
-    v.validate_int(issue_id, "issue id")
+    v.validate_uid(uid, 'Issue unique identifier')
 
 
 def validate_get_issues(

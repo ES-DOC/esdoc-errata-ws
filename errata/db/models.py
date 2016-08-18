@@ -12,14 +12,17 @@
 import datetime
 import uuid
 
+from sqlalchemy import func
 from sqlalchemy import Column
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
+from sqlalchemy import Index
 from sqlalchemy import Integer
 from sqlalchemy import Text
 from sqlalchemy import Unicode
 from sqlalchemy import UniqueConstraint
 from sqlalchemy import Enum
+
 
 from errata.db.utils import Entity
 from errata.utils.constants import WORKFLOW_NEW
@@ -83,8 +86,6 @@ class Issue(Entity):
     uid = Column(Unicode(63), nullable=False, unique=True, default=uuid.uuid4())
     title = Column(Unicode(255), nullable=False)
     description = Column(Text, nullable=False)
-    # description = Column(Text(collation='NOCASE'), index=True, nullable=False, unique=True)
-
     state = Column(_STATE_ENUM, nullable=False)
     severity = Column(_SEVERITY_ENUM, nullable=False)
     workflow = Column(_WORKFLOW_ENUM, nullable=False)
@@ -103,8 +104,7 @@ class Issue(Entity):
             self.id, self.uid, self.title, self.description)
 
 
-from sqlalchemy import func, Index
-
+# Set unique description (case insensitive) index.
 Index('idx_issue_description', func.lower(Issue.description))
 
 
@@ -115,11 +115,11 @@ class IssueDataset(Entity):
     # SQLAlchemy directives.
     __tablename__ = 'tbl_issue_dataset'
     __table_args__ = (
-        UniqueConstraint('issue_id', 'dataset_id'),
+        UniqueConstraint('issue_uid', 'dataset_id'),
         {'schema': _SCHEMA}
     )
 
     # Column definitions.
-    issue_id = Column(
-        Integer, ForeignKey('{}.tbl_issue.id'.format(_SCHEMA)), nullable=False)
+    issue_uid = Column(Unicode(63),
+                       ForeignKey('{}.tbl_issue.uid'.format(_SCHEMA)), nullable=False)
     dataset_id = Column(Unicode(1023), nullable=False, index=True)
