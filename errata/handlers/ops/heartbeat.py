@@ -12,6 +12,7 @@
 """
 import datetime as dt
 
+import errata
 from errata.utils.http import HTTPRequestHandler
 
 
@@ -29,7 +30,7 @@ class HeartbeatRequestHandler(HTTPRequestHandler):
 
             """
             self.output = {
-                "message": "ES-DOC ERRATA web service is operational @ {}".format(dt.datetime.now()),
+                "message": "ES-DOC ERRATA web service (v{}) is operational @ {}".format(errata.__version__, dt.datetime.now()),
                 "status": 0
             }
 
