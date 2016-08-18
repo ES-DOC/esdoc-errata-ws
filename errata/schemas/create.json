@@ -4,6 +4,7 @@
     "properties": {
         "datasets": {
             "items": {
+                "maxLength": 1023,
                 "minLength": 1,
                 "type": "string"
             },
@@ -27,11 +28,14 @@
             "type": "string"
         },
         "institute": {
+            "maxLength": 63,
             "minLength": 1,
             "type": "string"
         },
         "materials": {
             "items": {
+                "maxLength": 1023,
+                "minLength": 1,
                 "pattern": "\\.(jpg|gif|png|tiff)$",
                 "type": "string"
             },
@@ -40,6 +44,7 @@
         },
         "models": {
             "items": {
+                "maxLength": 63,
                 "minLength": 1,
                 "type": "string"
             },
@@ -47,7 +52,8 @@
             "uniqueItems": true
         },
         "project": {
-            "minLength": 1,
+            "maxLength": 63,
+            "minLength": 4,
             "type": "string"
         },
         "severity": {
@@ -60,6 +66,7 @@
             "type": "string"
         },
         "title": {
+            "maxLength": 255,
             "minLength": 1,
             "type": "string"
         },
@@ -68,6 +75,7 @@
             "type": "string"
         },
         "url": {
+            "maxLength": 1023,
             "minLength": 1,
             "type": "string"
         },
