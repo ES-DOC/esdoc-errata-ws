@@ -10,8 +10,11 @@
 
 
 """
+import datetime as dt
 import json
 import os
+import random
+import uuid
 
 
 
@@ -192,3 +195,38 @@ JSON_SCHEMAS['update']['properties']['project']['enum'] = [i['key'] for i in PRO
 
 # Ratio of similarity between descriptions of updated and database issue.
 DESCRIPTION_CHANGE_RATIO = 20
+
+# Test issue.
+ISSUE = {
+    'datasets': [
+        u"cmip5.output1.IPSL.IPSL-CM5A-LR.1pctCO2.yr.ocnBgchem.Oyr.r1i1p1#20161010",
+        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r10i1p1#20110922",
+        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r11i1p1#20110901",
+        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r12i1p1#20110901",
+        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r1i1p1#20110901",
+        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r1i1p1#20130322",
+        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r2i1p1#20110901",
+        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r3i1p1#20110901",
+        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r4i1p1#20110901",
+        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r6i1p1#20110901",
+        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r7i1p1#20110901",
+        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r8i1p1#20110901",
+        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r9i1p1#20110901"
+        ],
+    'dateCreated': unicode(dt.datetime.utcnow()),
+    'description': unicode(uuid.uuid4()),
+    'institute': random.choice(INSTITUTE)['key'],
+    'materials': [
+        u"http://errata.ipsl.upmc.fr/static/images_errata/time.jpg",
+        u"http://errata.ipsl.upmc.fr/static/images_errata/time5.jpg"
+    ],
+    'models': [
+        u"IPSL-CM5A-LR"
+    ],
+    'project': random.choice(PROJECT)['key'],
+    'severity': random.choice(SEVERITY)['key'],
+    'title': unicode(uuid.uuid4()),
+    'uid': unicode(uuid.uuid4()),
+    'url': u"http://errata.ipsl.upmc.fr/issue/1",
+    'workflow': WORKFLOW_NEW
+    }

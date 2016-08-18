@@ -10,60 +10,22 @@
 .. moduleauthor:: Earth System Documentation (ES-DOC) <dev@es-doc.org>
 
 """
-import datetime as dt
 import json
 import os
-import uuid
 
 import nose
 import requests
 
-from errata.utils import constants
+from errata.utils.constants import ISSUE
 
 
-
-# Test issue.
-_ISSUE = {
-    'datasets': [
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.1pctCO2.yr.ocnBgchem.Oyr.r2i1p1#20161010",
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.1pctCO2.yr.ocnBgchem.Oyr.r1i1p1#20161010",
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r10i1p1#20110922",
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r11i1p1#20110901",
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r12i1p1#20110901",
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r1i1p1#20110901",
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r1i1p1#20130322",
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r2i1p1#20110901",
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r3i1p1#20110901",
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r4i1p1#20110901",
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r6i1p1#20110901",
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r7i1p1#20110901",
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r8i1p1#20110901",
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r9i1p1#20110901"
-        ],
-    'dateCreated': unicode(dt.datetime.utcnow()),
-    'description': unicode(uuid.uuid4()),
-    'institute': constants.INSTITUTE_IPSL,
-    'materials': [
-        u"http://errata.ipsl.upmc.fr/static/images_errata/time.jpg",
-        u"http://errata.ipsl.upmc.fr/static/images_errata/time5.jpg"
-        ],
-    'models': [
-        u"IPSL-CM5A-LR"
-    ],
-    'project': constants.PROJECT_TEST,
-    'severity': constants.SEVERITY_LOW,
-    'title': unicode(uuid.uuid4()),
-    'uid': unicode(uuid.uuid4()),
-    'url': u"http://errata.ipsl.upmc.fr/issue/1",
-    'workflow': constants.WORKFLOW_NEW
-    }
 
 # Set of target urls.
 _URL = os.getenv("ERRATA_API")
 _URL_CREATE = "{}/1/issue/create".format(_URL)
 _URL_UPDATE = "{}/1/issue/update".format(_URL)
-_URL_RETRIEVE = "{}/1/issue/retrieve?uid={}".format(_URL, _ISSUE['uid'])
-_URL_CLOSE = "{}/1/issue/close?uid={}".format(_URL, _ISSUE['uid'])
+_URL_RETRIEVE = "{}/1/issue/retrieve?uid={}".format(_URL, ISSUE['uid'])
+_URL_CLOSE = "{}/1/issue/close?uid={}".format(_URL, ISSUE['uid'])
 
 # Set of target url request headers.
 _REQUEST_HEADERS = {
@@ -99,7 +61,7 @@ def test_create_invalid():
 
     # Test string properties:
     for attr in ['description', 'uid', 'institute', 'project', 'severity', 'url', 'workflow']:
-        issue = _ISSUE.copy()
+        issue = ISSUE.copy()
         # ... non-text values are invalid;
         issue[attr] = 123
         yield _do_test(issue, attr, "is not a string")
@@ -111,7 +73,7 @@ def test_create_invalid():
 
     # Test array properties:
     for attr in {'datasets', 'materials', 'models'}:
-        issue = _ISSUE.copy()
+        issue = ISSUE.copy()
         # ... non-array values are invalid;
         issue[attr] = "invalid-value"
         yield _do_test(issue, attr, "is not an array")

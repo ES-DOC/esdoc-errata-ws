@@ -13,56 +13,19 @@
 import datetime as dt
 import json
 import os
-import random
-import uuid
 
 import requests
 
 from errata.utils import constants
+from errata.utils.constants import ISSUE
 
-
-
-# Test issue.
-_ISSUE = {
-    'datasets': [
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.1pctCO2.yr.ocnBgchem.Oyr.r1i1p1#20161010",
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r10i1p1#20110922",
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r11i1p1#20110901",
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r12i1p1#20110901",
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r1i1p1#20110901",
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r1i1p1#20130322",
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r2i1p1#20110901",
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r3i1p1#20110901",
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r4i1p1#20110901",
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r6i1p1#20110901",
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r7i1p1#20110901",
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r8i1p1#20110901",
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r9i1p1#20110901"
-        ],
-    'dateCreated': unicode(dt.datetime.utcnow()),
-    'description': unicode(uuid.uuid4()),
-    'institute': random.choice(constants.INSTITUTE)['key'],
-    'materials': [
-        u"http://errata.ipsl.upmc.fr/static/images_errata/time.jpg",
-        u"http://errata.ipsl.upmc.fr/static/images_errata/time5.jpg"
-    ],
-    'models': [
-        u"IPSL-CM5A-LR"
-    ],
-    'project': random.choice(constants.PROJECT)['key'],
-    'severity': random.choice(constants.SEVERITY)['key'],
-    'title': unicode(uuid.uuid4()),
-    'uid': unicode(uuid.uuid4()),
-    'url': u"http://errata.ipsl.upmc.fr/issue/1",
-    'workflow': constants.WORKFLOW_NEW
-    }
 
 # Set of target urls.
 _URL = os.getenv("ERRATA_API")
+_URL_CLOSE = "{}/1/issue/close?uid={}".format(_URL, ISSUE['uid'])
 _URL_CREATE = "{}/1/issue/create".format(_URL)
+_URL_RETRIEVE = "{}/1/issue/retrieve?uid={}".format(_URL, ISSUE['uid'])
 _URL_UPDATE = "{}/1/issue/update".format(_URL)
-_URL_RETRIEVE = "{}/1/issue/retrieve?uid={}".format(_URL, _ISSUE['uid'])
-_URL_CLOSE = "{}/1/issue/close?uid={}".format(_URL, _ISSUE['uid'])
 
 # Set of target url request headers.
 _REQUEST_HEADERS = {
@@ -73,14 +36,14 @@ _REQUEST_HEADERS = {
 
 
 def test_create():
-    """ERRATA :: WS :: Postive Test :: create issue.
+    """ERRATA :: WS :: Postive Test :: Create issue.
 
     """
     # Invoke WS endpoint.
     url = _URL_CREATE
     response = requests.post(
         url,
-        data=json.dumps(_ISSUE),
+        data=json.dumps(ISSUE),
         headers=_REQUEST_HEADERS[_URL_CREATE]
         )
 
@@ -89,7 +52,7 @@ def test_create():
 
 
 def test_retrieve():
-    """ERRATA :: WS :: Postive Test :: retrieve issue.
+    """ERRATA :: WS :: Postive Test :: Retrieve issue.
 
     """
     # Invoke WS endpoint.
@@ -100,18 +63,18 @@ def test_retrieve():
 
     # Assert WS response content.
     assert 'issue' in content
-    for attr in _ISSUE.keys():
+    for attr in ISSUE.keys():
         if attr in {'datasets', 'materials', 'models'}:
-            assert sorted(content['issue'][attr]) == sorted(_ISSUE[attr])
+            assert sorted(content['issue'][attr]) == sorted(ISSUE[attr])
         else:
             try:
-                assert content['issue'][attr] == _ISSUE[attr]
+                assert content['issue'][attr] == ISSUE[attr]
             except KeyError:
                 print content['issue']
 
 
 def test_close():
-    """ERRATA :: WS :: Postive Test :: close issue.
+    """ERRATA :: WS :: Postive Test :: Close issue.
 
     """
     # Invoke WS endpoint.
@@ -122,17 +85,17 @@ def test_close():
 
 
 def test_update():
-    """ERRATA :: WS :: Postive Test :: update issue.
+    """ERRATA :: WS :: Postive Test :: Update issue.
 
     """
     # Update test issue.
-    _ISSUE['severity'] = constants.SEVERITY_MEDIUM
-    _ISSUE['dateUpdated'] = unicode(dt.datetime.utcnow())
+    ISSUE['severity'] = constants.SEVERITY_MEDIUM
+    ISSUE['dateUpdated'] = unicode(dt.datetime.utcnow())
 
     # Invoke WS endpoint.
     response = requests.post(
         _URL_UPDATE,
-        data=json.dumps(_ISSUE),
+        data=json.dumps(ISSUE),
         headers=_REQUEST_HEADERS[_URL_UPDATE]
         )
 
