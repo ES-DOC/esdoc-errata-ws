@@ -30,8 +30,9 @@ class HeartbeatRequestHandler(HTTPRequestHandler):
 
             """
             self.output = {
-                "message": "ES-DOC ERRATA web service (v{}) is operational @ {}".format(errata.__version__, dt.datetime.now()),
-                "status": 0
+                "message": "ES-DOC ERRATA web service is operational @ {}".format(dt.datetime.now()),
+                "status": 0,
+                "version": errata.__version__
             }
 
         # Invoke tasks.
