@@ -44,7 +44,7 @@ def test_create():
         )
 
     # Assert WS response.
-    _assert_ws_response(url, response, expected_content={'status': 0})
+    _assert_ws_response(url, response)
 
 
 def test_retrieve():
@@ -96,7 +96,7 @@ def test_update():
         )
 
     # Assert WS response.
-    _assert_ws_response(_URL_UPDATE, response, expected_content={'status': 0})
+    _assert_ws_response(_URL_UPDATE, response)
 
 
 def _assert_ws_response(
@@ -120,11 +120,14 @@ def _assert_ws_response(
     # WS response has no cookies.
     assert len(response.cookies) == 0
 
-    # WS response encoding = utf-8.
-    assert response.encoding == u'utf-8'
+    # WS response history is empty (i.e. no intermediate servers).
+    assert len(response.history) == 0
+    assert response.is_permanent_redirect == False
+    assert response.is_redirect == False
+    assert len(response.links) == 0
 
-    # WS respponse headers.
-    assert len(response.headers) >= 5
+    # Default WS respponse headers.
+    assert len(response.headers) >= 3
     for header in {
         'Content-Length',
         'Content-Type',
@@ -134,22 +137,14 @@ def _assert_ws_response(
         }:
         assert header in response.headers
 
-    # WS response history is empty (i.e. no intermediate servers).
-    assert len(response.history) == 0
-    assert response.is_permanent_redirect == False
-    assert response.is_redirect == False
-    assert len(response.links) == 0
+    # WS response content must be utf-8 encoded JSON.
+    if response.text:
+        assert response.encoding == u'utf-8'
+        content = response.json()
+        assert isinstance(content, dict)
 
-    # WS response content must be JSON.
-    content = response.json()
-    assert isinstance(content, dict)
+        # WS response content.
+        if expected_content is not None:
+            assert content == expected_content
 
-    # WS response processing status.
-    assert 'status' in content
-    assert content['status'] == 0 if status_code == requests.codes.OK else -1
-
-    # WS response content.
-    if expected_content is not None:
-        assert content == expected_content
-
-    return content
+        return content

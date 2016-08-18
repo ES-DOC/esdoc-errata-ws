@@ -26,6 +26,13 @@ def _can_return_debug_info(handler):
     return handler.application.settings.get('debug', False)
 
 
+def _write_null(handler, data):
+    """Writes HTTP response null data.
+
+    """
+    pass
+
+
 def _write_csv(handler, data):
     """Writes HTTP response CSV data.
 
@@ -68,6 +75,7 @@ def _write_xml(handler, data):
 
 # Map of response writers to encodings.
 _WRITERS = {
+    None: _write_null,
     'csv': _write_csv,
     'json': _write_json,
     'html': _write_html,
@@ -76,7 +84,7 @@ _WRITERS = {
 }
 
 
-def _write(handler, data, encoding='json'):
+def _write(handler, data, encoding):
     """Writes HTTP response data.
 
     """
@@ -111,10 +119,8 @@ def _write_success(handler):
     try:
         data = handler.output
     except AttributeError:
-        data = {} if encoding == 'json' else unicode()
-
-    if encoding == 'json' and 'status' not in data:
-        data['status'] = 0
+        data = unicode()
+        encoding = None
 
     _write(handler, data, encoding)
 

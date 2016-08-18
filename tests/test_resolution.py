@@ -127,10 +127,6 @@ def _assert_ws_response(
     content = response.json()
     assert isinstance(content, dict)
 
-    # WS response processing status.
-    assert 'status' in content
-    assert content['status'] == 0 if status_code == requests.codes.OK else -1
-
     # WS response content.
     if expected_content is not None:
         assert content == expected_content

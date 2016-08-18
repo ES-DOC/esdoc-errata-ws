@@ -50,7 +50,7 @@ def test_create_invalid():
                 )
 
             # Assert WS response.
-            _assert_ws_response(url, response, requests.codes.BAD_REQUEST)
+            _assert_ws_response(url, response)
 
         _do.description = "ERRATA :: WS :: Negative test :: Create Issue :: {} {}".format(attr, description)
 
@@ -95,7 +95,7 @@ def test_create_invalid_title():
 def _assert_ws_response(
     url,
     response,
-    expected_status_code=requests.codes.OK,
+    expected_status_code=requests.codes.BAD_REQUEST,
     expected_content=None):
     """Asserts a response received from web-service.
 
@@ -113,11 +113,7 @@ def _assert_ws_response(
     # WS response has no cookies.
     assert len(response.cookies) == 0
 
-    # WS response encoding = utf-8.
-    if response.status_code == requests.codes.OK:
-        assert response.encoding == u'utf-8'
-
-    # WS respponse headers.
+    # WS response headers.
     assert len(response.headers) >= 5
     for header in {
         'Content-Length',
@@ -133,20 +129,3 @@ def _assert_ws_response(
     assert response.is_permanent_redirect == False
     assert response.is_redirect == False
     assert len(response.links) == 0
-
-    # Verify WS response content:
-    if response.status_code == requests.codes.OK:
-        # ... must be JSON deserializable
-        content = response.json()
-        assert isinstance(content, dict)
-
-        # ... must contain service status
-        # WS response processing status.
-        assert 'status' in content
-        assert content['status'] == 0 if expected_status_code == requests.codes.OK else -1
-
-        # WS response content.
-        if expected_content is not None:
-            assert content == expected_content
-
-        return content
