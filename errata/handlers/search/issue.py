@@ -11,6 +11,7 @@
 
 """
 from errata import db
+from errata.utils import constants
 from errata.utils.http import HTTPRequestHandler
 from errata.utils.http import HTTP_HEADER_Access_Control_Allow_Origin
 
@@ -72,8 +73,8 @@ class IssueSearchRequestHandler(HTTPRequestHandler):
             """Validates incoming request prior to processing.
 
             """
-            self.validate_request_params(_REQUEST_PARAMS_SCHEMA)
-            self.validate_request_body(None)
+            self.validate_request_params1()
+            self.validate_request_body()
 
 
         def _set_criteria():

@@ -94,12 +94,19 @@ class HTTPRequestHandler(tornado.web.RequestHandler):
         http_validator.validate_request_params(self, schema, allow_unknown)
 
 
-    def validate_request_body(self, schema):
-        """Validates request body against a JSON schema.
+    def validate_request_params1(self):
+        """Validates request query parameters against a cerberus schema.
 
-        :param str schema: JSON schema to be used to validate request body.
+        :raises: exceptions.SecurityError
+
+        """
+        http_validator.validate_request_params1(self)
+
+
+    def validate_request_body(self):
+        """Validates request body against a JSON schema.
 
         :raises: exceptions.SecurityError, exceptions.InvalidJSONSchemaError
 
         """
-        http_validator.validate_request_body(self, schema)
+        http_validator.validate_request_body(self)

@@ -30,7 +30,7 @@ _db_setup()
 {
 	log "Creating DB objects"
     source $ERRATA_HOME/venv/bin/activate
-	python $ERRATA_HOME/jobs/run_db_setup.py
+	python $ERRATA_HOME/sh/db_setup.py
 }
 
 # Main entry point.

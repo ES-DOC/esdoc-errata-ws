@@ -76,8 +76,8 @@ class UpdateIssueRequestHandler(HTTPRequestHandler):
 
             """
             self.validate_request_json_headers()
-            self.validate_request_params(None)
-            self.validate_request_body(constants.JSON_SCHEMAS['update'])
+            self.validate_request_params1()
+            self.validate_request_body()
             _validate_issue_exists()
             _validate_issue_immutable_attributes()
             _validate_issue_description_change_ratio()

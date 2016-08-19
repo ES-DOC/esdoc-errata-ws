@@ -45,8 +45,8 @@ class CreateIssueRequestHandler(HTTPRequestHandler):
 
             """
             self.validate_request_json_headers()
-            self.validate_request_params(None)
-            self.validate_request_body(constants.JSON_SCHEMAS['create'])
+            self.validate_request_params1()
+            self.validate_request_body()
             _validate_issue_urls()
 
 

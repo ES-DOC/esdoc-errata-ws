@@ -65,7 +65,7 @@ class CloseIssueRequestHandler(HTTPRequestHandler):
 
             """
             self.validate_request_params(_REQUEST_PARAMS_SCHEMA)
-            self.validate_request_body(None)
+            self.validate_request_body()
             _validate_issue_exists()
             _validate_issue_status()
 

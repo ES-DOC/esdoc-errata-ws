@@ -49,7 +49,7 @@ class RetrieveIssueRequestHandler(HTTPRequestHandler):
 
             """
             self.validate_request_params(_REQUEST_PARAMS_SCHEMA)
-            self.validate_request_body(None)
+            self.validate_request_body()
 
 
         def _decode_request():

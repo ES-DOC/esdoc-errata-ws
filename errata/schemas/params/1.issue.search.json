@@ -1,0 +1,81 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "additionalProperties": false,
+    "properties": {
+        "institute": {
+            "items": {
+                "enum": [
+                    "*"
+                ],
+                "minItems": 1,
+                "maxItems": 1,
+                "type": "string"
+            },
+            "type": "array"
+        },
+        "project": {
+            "items": {
+                "enum": [
+                    "*"
+                ],
+                "minItems": 1,
+                "maxItems": 1,
+                "type": "string"
+            },
+            "type": "array"
+        },
+        "severity": {
+            "items": {
+                "enum": [
+                    "*"
+                ],
+                "minItems": 1,
+                "maxItems": 1,
+                "type": "string"
+            },
+            "type": "array"
+        },
+        "state": {
+            "items": {
+                "enum": [
+                    "*",
+                    "open",
+                    "closed"
+                ],
+                "minItems": 1,
+                "maxItems": 1,
+                "type": "string"
+            },
+            "type": "array"
+        },
+        "timestamp": {
+            "items": {
+                "minItems": 1,
+                "maxItems": 1,
+                "type": "string"
+            },
+            "type": "array"
+        },
+        "workflow": {
+            "items": {
+                "enum": [
+                    "*"
+                ],
+                "minItems": 1,
+                "maxItems": 1,
+                "type": "string"
+            },
+            "type": "array"
+        }
+    },
+    "required": [
+        "institute",
+        "project",
+        "severity",
+        "state",
+        "timestamp",
+        "workflow"
+    ],
+    "title": "ES-DOC errata JSON schema: endpoint = /1/issue/search",
+    "type": "object"
+}

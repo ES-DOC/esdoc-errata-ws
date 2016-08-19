@@ -15,6 +15,7 @@ import os
 import tornado.web
 
 from errata import handlers
+from errata import schemas
 from errata.utils import config
 from errata.utils.logger import log_web as log
 
@@ -34,7 +35,7 @@ def _get_app_endpoints():
     """Returns map of application endpoints to handlers.
 
     """
-    endpoints = {
+    return {
         (r'/', handlers.ops.HeartbeatRequestHandler),
         (r'/1/issue/create', handlers.publishing.CreateIssueRequestHandler),
         (r'/1/issue/update', handlers.publishing.UpdateIssueRequestHandler),
@@ -46,12 +47,6 @@ def _get_app_endpoints():
         (r'/1/resolve/issue-from-model', handlers.resolve.ResolveIssueFromModelRequestHandler),
         (r'/1/resolve/pid', handlers.resolve.ResolvePIDRequestHandler)
     }
-
-    log("Endpoint to handler mappings:")
-    for url, handler in sorted(endpoints, key=lambda i: i[0]):
-        log("{0} ---> {1}".format(url, str(handler).split(".")[-1][0:-2]))
-
-    return endpoints
 
 
 def _get_app_settings():
@@ -69,7 +64,15 @@ def _get_app():
     """Returns application instance.
 
     """
-    return tornado.web.Application(_get_app_endpoints(),
+    endpoints = _get_app_endpoints()
+    log("Endpoint to handler mappings:")
+    for url, handler in sorted(endpoints, key=lambda i: i[0]):
+        log("{0} ---> {1}".format(url, str(handler).split(".")[-1][0:-2]))
+
+
+    schemas.init([i[0] for i in endpoints])
+
+    return tornado.web.Application(endpoints,
                                    debug=True,
                                    **_get_app_settings())
 
@@ -78,13 +81,15 @@ def run():
     """Runs web service.
 
     """
+    # Initialize application.
     log("Initializing")
-
-    # Run web-service.
     app = _get_app()
+
+    # Open port.
     app.listen(config.port)
     log("Ready")
 
+    # Start processing requests.
     tornado.ioloop.IOLoop.instance().start()
 
 

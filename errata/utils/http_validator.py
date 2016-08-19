@@ -16,7 +16,7 @@ import cerberus
 import jsonschema
 
 from errata.utils import exceptions
-
+from errata.schemas import get_schema
 
 
 # Invalid request HTTP response code.
@@ -35,15 +35,41 @@ def _throw(handler, error):
     raise error
 
 
-def validate_request_body(handler, schema):
-    """Validates request body against a JSON schema.
+def validate_request_params1(handler):
+    """Validates request parameters against a JSON schema.
 
     :param HttpHandler handler: Request handler being processed.
-    :param str schema: JSON schema to be used to validate request body.
 
     :raises: exceptions.SecurityError, exceptions.InvalidJSONSchemaError
 
     """
+    # Map request to schema.
+    schema = get_schema('params', handler.request.path)
+
+    # Null case.
+    if schema is None:
+        if handler.request.query_arguments:
+            _throw(handler, exceptions.SecurityError("Unexpected request url parameters."))
+        return
+
+    # Validate request parameters against schema.
+    try:
+        jsonschema.validate(handler.request.query_arguments, schema)
+    except jsonschema.exceptions.ValidationError as json_errors:
+        _throw(handler, exceptions.InvalidJSONSchemaError(json_errors))
+
+
+def validate_request_body(handler):
+    """Validates request body against a JSON schema.
+
+    :param HttpHandler handler: Request handler being processed.
+
+    :raises: exceptions.SecurityError, exceptions.InvalidJSONSchemaError
+
+    """
+    # Map request to schema.
+    schema = get_schema('body', handler.request.path)
+
     # Null case.
     if schema is None:
         if handler.request.body:
@@ -83,14 +109,6 @@ class _RequestQueryParamsValidator(cerberus.Validator):
         except ValueError:
             self._error(field, cerberus.errors.ERROR_BAD_TYPE.format('uuid'))
 
-
-    def _validate_allowed_case_insensitive(self, allowed_values, field, value):
-        """Enables validation for `allowed_case_insensitive` schema attribute.
-
-        """
-        value = [i.lower() for i in value]
-        allowed = [i.lower() for i in allowed_values]
-        super(_RequestQueryParamsValidator, self)._validate_allowed(allowed, field, value)
 
 
 def validate_request_params(handler, schema, allow_unknown=False):
