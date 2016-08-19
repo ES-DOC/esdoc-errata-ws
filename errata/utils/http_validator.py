@@ -22,24 +22,46 @@ from errata.schemas import get_schema
 _HTTP_RESPONSE_BAD_REQUEST = 400
 
 
-def _throw(handler, error):
-    """Throws a validation error.
+def validate_request(handler):
+    """Validates request against mapped JSON schemas.
 
-    """
-    # Send 400 to client.
-    handler.clear()
-    handler.send_error(_HTTP_RESPONSE_BAD_REQUEST)
-
-    # Bubble up error.
-    raise error
-
-
-def validate_request_params(handler):
-    """Validates request parameters against a JSON schema.
-
-    :param HttpHandler handler: Request handler being processed.
+    :param utils.http.HTTPRequestHandler handler: An HTTP request handler.
 
     :raises: exceptions.SecurityError, exceptions.InvalidJSONSchemaError
+
+    """
+    _validate_request_headers(handler)
+    _validate_request_params(handler)
+    _validate_request_body(handler)
+
+
+def _validate(handler, data, schema):
+    """Validates data against a JSON schema.
+
+    """
+    try:
+        jsonschema.validate(data, schema)
+    except jsonschema.exceptions.ValidationError as json_errors:
+        _throw(handler, exceptions.InvalidJSONSchemaError(json_errors))
+
+
+def _validate_request_headers(handler):
+    """Validates request headers against a JSON schema.
+
+    """
+    # Map request to schema.
+    schema = get_schema('headers', handler.request.path)
+
+    # Null case - escape.
+    if schema is None:
+        return
+
+    # Validate request headers against schema.
+    _validate(handler, dict(handler.request.headers), schema)
+
+
+def _validate_request_params(handler):
+    """Validates request parameters against a JSON schema.
 
     """
     # Map request to schema.
@@ -52,18 +74,11 @@ def validate_request_params(handler):
         return
 
     # Validate request parameters against schema.
-    try:
-        jsonschema.validate(handler.request.query_arguments, schema)
-    except jsonschema.exceptions.ValidationError as json_errors:
-        _throw(handler, exceptions.InvalidJSONSchemaError(json_errors))
+    _validate(handler, handler.request.query_arguments, schema)
 
 
-def validate_request_body(handler):
+def _validate_request_body(handler):
     """Validates request body against a JSON schema.
-
-    :param HttpHandler handler: Request handler being processed.
-
-    :raises: exceptions.SecurityError, exceptions.InvalidJSONSchemaError
 
     """
     # Map request to schema.
@@ -79,10 +94,19 @@ def validate_request_body(handler):
     data = json.loads(handler.request.body)
 
     # Validate request data against schema.
-    try:
-        jsonschema.validate(data, schema)
-    except jsonschema.exceptions.ValidationError as json_errors:
-        _throw(handler, exceptions.InvalidJSONSchemaError(json_errors))
+    _validate(handler, data, schema)
 
     # As data is valid append to request.
     handler.request.data = data
+
+
+def _throw(handler, error):
+    """Throws a validation error.
+
+    """
+    # Send 400 to client.
+    handler.clear()
+    handler.send_error(_HTTP_RESPONSE_BAD_REQUEST)
+
+    # Bubble up error.
+    raise error

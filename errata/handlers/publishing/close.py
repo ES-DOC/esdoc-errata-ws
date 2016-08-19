@@ -51,16 +51,6 @@ class CloseIssueRequestHandler(HTTPRequestHandler):
                 raise ValueError("Issue state is not closeable")
 
 
-        def _validate_request():
-            """Validates incoming request prior to processing.
-
-            """
-            self.validate_request_params()
-            self.validate_request_body()
-            _validate_issue_exists()
-            _validate_issue_status()
-
-
         def _close_issue():
             """Closes issue.
 
@@ -73,6 +63,7 @@ class CloseIssueRequestHandler(HTTPRequestHandler):
 
         # Invoke tasks.
         self.invoke([
-            _validate_request,
+            _validate_issue_exists,
+            _validate_issue_status,
             _close_issue
             ])

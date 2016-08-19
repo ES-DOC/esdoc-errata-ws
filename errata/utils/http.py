@@ -68,33 +68,3 @@ class HTTPRequestHandler(tornado.web.RequestHandler):
 
         # Bubble up error.
         raise error
-
-
-    def validate_request_json_headers(self):
-        """Validates request JSON headers.
-
-        """
-        if _HTTP_HEADER_CONTENT_TYPE not in self.request.headers:
-            raise ValueError("Content-Type HTTP header is required")
-
-        header = self.request.headers[_HTTP_HEADER_CONTENT_TYPE]
-        if not header in _CONTENT_TYPE_JSON:
-            raise ValueError("Content-Type is unsupported")
-
-
-    def validate_request_params(self):
-        """Validates request query parameters against a JSON schema.
-
-        :raises: exceptions.SecurityError, exceptions.InvalidJSONSchemaError
-
-        """
-        http_validator.validate_request_params(self)
-
-
-    def validate_request_body(self):
-        """Validates request body against a JSON schema.
-
-        :raises: exceptions.SecurityError, exceptions.InvalidJSONSchemaError
-
-        """
-        http_validator.validate_request_body(self)

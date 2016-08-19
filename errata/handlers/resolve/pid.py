@@ -53,14 +53,6 @@ class ResolvePIDRequestHandler(HTTPRequestHandler):
         """HTTP GET handler.
 
         """
-        def _validate_request():
-            """Validates incoming request prior to processing.
-
-            """
-            self.validate_request_params()
-            self.validate_request_body()
-
-
         def _decode_request():
             """Decodes request.
 
@@ -88,7 +80,6 @@ class ResolvePIDRequestHandler(HTTPRequestHandler):
 
         # Invoke tasks.
         self.invoke([
-            _validate_request,
             _decode_request,
             _invoke_pid_handle_service,
             _set_output

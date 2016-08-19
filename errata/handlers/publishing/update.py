@@ -71,19 +71,6 @@ class UpdateIssueRequestHandler(HTTPRequestHandler):
                 raise exceptions.InvalidIssueStatusError()
 
 
-        def _validate_request():
-            """Validates incoming request prior to processing.
-
-            """
-            self.validate_request_json_headers()
-            self.validate_request_params()
-            self.validate_request_body()
-            _validate_issue_exists()
-            _validate_issue_immutable_attributes()
-            _validate_issue_description_change_ratio()
-            _validate_issue_status()
-
-
         def _update_issue():
             """Updates issue.
 
@@ -129,7 +116,10 @@ class UpdateIssueRequestHandler(HTTPRequestHandler):
 
         # Invoke tasks.
         self.invoke([
-            _validate_request,
+            _validate_issue_exists,
+            _validate_issue_immutable_attributes,
+            _validate_issue_description_change_ratio,
+            _validate_issue_status,
             _update_issue,
             _persist
             ])

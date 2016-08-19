@@ -40,16 +40,6 @@ class CreateIssueRequestHandler(HTTPRequestHandler):
                     self.throw(error)
 
 
-        def _validate_request():
-            """Validates incoming request prior to processing.
-
-            """
-            self.validate_request_json_headers()
-            self.validate_request_params()
-            self.validate_request_body()
-            _validate_issue_urls()
-
-
         def _set_issue():
             """Creates issue.
 
@@ -119,7 +109,7 @@ class CreateIssueRequestHandler(HTTPRequestHandler):
 
         # Invoke tasks.
         self.invoke([
-            _validate_request,
+            _validate_issue_urls,
             _set_issue,
             _set_datasets,
             _set_models,

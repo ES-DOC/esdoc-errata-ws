@@ -10,6 +10,7 @@
 
 """
 from errata.utils import http_logger as logger
+from errata.utils import http_validator
 from errata.utils.convertor import to_dict
 from errata.utils.convertor import to_camel_case
 
@@ -125,7 +126,7 @@ def _write_success(handler):
     _write(handler, data, encoding)
 
 
-def _get_tasks(tasks, defaults):
+def _get_tasks(pre_tasks, tasks, post_tasks):
     """Returns formatted & extended taskset.
 
     """
@@ -134,7 +135,7 @@ def _get_tasks(tasks, defaults):
     except TypeError:
         tasks = [tasks]
 
-    return tasks + defaults
+    return pre_tasks + tasks + post_tasks
 
 
 def _invoke(handler, task, err=None):
@@ -162,12 +163,21 @@ def execute(handler, tasks, error_tasks):
 
     """
     # Extend tasks.
-    tasks = _get_tasks(tasks, [logger.log_success, _write_success])
-    error_tasks = _get_tasks(error_tasks, [logger.log_error, write_error])
+    tasks = _get_tasks(
+        [http_validator.validate_request],
+        tasks,
+        [logger.log_success, _write_success]
+        )
+    error_tasks = _get_tasks(
+        [],
+        error_tasks,
+        [logger.log_error, write_error]
+        )
 
-    # Invoke normal processing tasks.
+    # Invoke tasks.
     for task in tasks:
         try:
+
             _invoke(handler, task)
         except Exception as err:
             # Invoke error processing tasks.

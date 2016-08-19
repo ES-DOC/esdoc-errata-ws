@@ -31,14 +31,6 @@ class IssueSearchSetupRequestHandler(HTTPRequestHandler):
         """HTTP GET handler.
 
         """
-        def _validate_request():
-            """Validates incoming request prior to processing.
-
-            """
-            self.validate_request_params()
-            self.validate_request_body()
-
-
         def _set_output():
             """Sets response to be returned to client.
 
@@ -53,7 +45,4 @@ class IssueSearchSetupRequestHandler(HTTPRequestHandler):
 
 
         # Invoke tasks.
-        self.invoke([
-            _validate_request,
-            _set_output
-            ])
+        self.invoke(_set_output)
