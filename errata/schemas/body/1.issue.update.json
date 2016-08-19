@@ -102,6 +102,6 @@
         "uid",
         "workflow"
     ],
-    "title": "ESGF issue JSON schema",
-    "type": "object"
+     "title": "ES-DOC errata JSON schema: endpoint = /1/issue/update",
+   "type": "object"
 }

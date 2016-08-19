@@ -21,15 +21,6 @@ from errata.utils.http import HTTPRequestHandler
 # Query parameter names.
 _PARAM_UID = 'uid'
 
-# Query parameter validation schema.
-_REQUEST_PARAMS_SCHEMA = {
-    _PARAM_UID: {
-        'required': True,
-        'type': 'list', 'items': [{'type': 'uuid'}]
-    }
-}
-
-
 
 class CloseIssueRequestHandler(HTTPRequestHandler):
     """issue handler.
@@ -64,7 +55,7 @@ class CloseIssueRequestHandler(HTTPRequestHandler):
             """Validates incoming request prior to processing.
 
             """
-            self.validate_request_params(_REQUEST_PARAMS_SCHEMA)
+            self.validate_request_params()
             self.validate_request_body()
             _validate_issue_exists()
             _validate_issue_status()

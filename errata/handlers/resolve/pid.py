@@ -14,21 +14,11 @@ from errata.handle_service.harvest import harvest_errata_information
 from errata.utils.http import HTTPRequestHandler
 from errata.utils.http import HTTP_HEADER_Access_Control_Allow_Origin
 
+
+
 # Query parameter names.
 _PARAM_PIDS = 'pids'
 _PARAM_TIMESTAMP = 'timestamp'
-
-# Query parameter validation schema.
-_REQUEST_PARAMS_SCHEMA = {
-    _PARAM_PIDS: {
-        'required': True,
-        # 'type': 'list', 'schema': {'type': 'string'}
-    },
-    _PARAM_TIMESTAMP: {
-        'required': True,
-        'type': 'list', 'items': [{'type': 'string'}]
-    }
-}
 
 
 def _get_errata_information(pid):
@@ -67,7 +57,7 @@ class ResolvePIDRequestHandler(HTTPRequestHandler):
             """Validates incoming request prior to processing.
 
             """
-            self.validate_request_params(_REQUEST_PARAMS_SCHEMA)
+            self.validate_request_params()
             self.validate_request_body()
 
 

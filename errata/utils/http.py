@@ -82,25 +82,13 @@ class HTTPRequestHandler(tornado.web.RequestHandler):
             raise ValueError("Content-Type is unsupported")
 
 
-    def validate_request_params(self, schema, allow_unknown=False):
-        """Validates request query parameters against a cerberus schema.
+    def validate_request_params(self):
+        """Validates request query parameters against a JSON schema.
 
-        :param str schema: Cerberus schema to be used to validate request query parameters.
-        :param bool allow_unknown: Flag indicating whether unknown url parameters are allowed.
-
-        :raises: exceptions.SecurityError
+        :raises: exceptions.SecurityError, exceptions.InvalidJSONSchemaError
 
         """
-        http_validator.validate_request_params(self, schema, allow_unknown)
-
-
-    def validate_request_params1(self):
-        """Validates request query parameters against a cerberus schema.
-
-        :raises: exceptions.SecurityError
-
-        """
-        http_validator.validate_request_params1(self)
+        http_validator.validate_request_params(self)
 
 
     def validate_request_body(self):

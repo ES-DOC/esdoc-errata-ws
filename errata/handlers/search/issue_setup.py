@@ -35,7 +35,7 @@ class IssueSearchSetupRequestHandler(HTTPRequestHandler):
             """Validates incoming request prior to processing.
 
             """
-            self.validate_request_params1()
+            self.validate_request_params()
             self.validate_request_body()
 
 

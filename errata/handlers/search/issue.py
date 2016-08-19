@@ -11,7 +11,6 @@
 
 """
 from errata import db
-from errata.utils import constants
 from errata.utils.http import HTTPRequestHandler
 from errata.utils.http import HTTP_HEADER_Access_Control_Allow_Origin
 
@@ -24,34 +23,6 @@ _PARAM_SEVERITY = 'severity'
 _PARAM_STATE = 'state'
 _PARAM_TIMESTAMP = 'timestamp'
 _PARAM_WORKFLOW = 'workflow'
-
-# Query parameter validation schema.
-_REQUEST_PARAMS_SCHEMA = {
-    _PARAM_INSTITUTE: {
-        'required': True,
-        'type': 'list', 'items': [{'type': 'string'}]
-    },
-    _PARAM_PROJECT: {
-        'required': True,
-        'type': 'list', 'items': [{'type': 'string'}]
-    },
-    _PARAM_SEVERITY: {
-        'required': True,
-        'type': 'list', 'items': [{'type': 'string'}]
-    },
-    _PARAM_STATE: {
-        'required': True,
-        'type': 'list', 'items': [{'type': 'string'}]
-    },
-    _PARAM_TIMESTAMP: {
-        'required': True,
-        'type': 'list', 'items': [{'type': 'string'}]
-    },
-    _PARAM_WORKFLOW: {
-        'required': True,
-        'type': 'list', 'items': [{'type': 'string'}]
-    }
-}
 
 
 class IssueSearchRequestHandler(HTTPRequestHandler):
@@ -73,7 +44,7 @@ class IssueSearchRequestHandler(HTTPRequestHandler):
             """Validates incoming request prior to processing.
 
             """
-            self.validate_request_params1()
+            self.validate_request_params()
             self.validate_request_body()
 
 

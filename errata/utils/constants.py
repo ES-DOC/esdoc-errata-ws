@@ -11,8 +11,6 @@
 
 """
 import datetime as dt
-import json
-import os
 import random
 import uuid
 
@@ -177,32 +175,6 @@ IMMUTABLE_ISSUE_ATTRIBUTES = [
 	'institute',
 	# 'dateCreated'
 	]
-
-def _get_json_schema(name):
-	"""Returns a JSON schema.
-
-	"""
-	fpath = os.path.join(os.path.dirname(os.path.dirname(__file__)), "schemas")
-	fpath = os.path.join(fpath, "{}.json".format(name))
-	with open(fpath, 'r') as fstream:
-		return json.loads(fstream.read())
-
-# Map of actions to json schemas.
-JSON_SCHEMAS = dict()
-# JSON_SCHEMAS = {i: _get_json_schema(i) for i in ['create', 'update', '1.issue.search.params']}
-
-# # Extend CV's embedded within JSON schemas:
-# for schema in JSON_SCHEMAS.values():
-# 	if schema == JSON_SCHEMAS['1.issue.search.params']:
-# 		schema['properties']['institute']['items']['enum'] += [i['key'] for i in INSTITUTE]
-# 		schema['properties']['project']['items']['enum'] += [i['key'] for i in PROJECT]
-# 		schema['properties']['severity']['items']['enum'] += [i['key'] for i in SEVERITY]
-# 		schema['properties']['workflow']['items']['enum'] += [i['key'] for i in WORKFLOW]
-# 	else:
-# 		schema['properties']['institute']['enum'] = [i['key'] for i in INSTITUTE]
-# 		schema['properties']['project']['enum'] = [i['key'] for i in PROJECT]
-# 		schema['properties']['severity']['enum'] = [i['key'] for i in SEVERITY]
-# 		schema['properties']['workflow']['enum'] = [i['key'] for i in WORKFLOW]
 
 # Ratio of similarity between descriptions of updated and database issue.
 DESCRIPTION_CHANGE_RATIO = 20

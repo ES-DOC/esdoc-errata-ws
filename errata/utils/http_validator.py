@@ -10,13 +10,12 @@
 
 """
 import json
-import uuid
 
-import cerberus
 import jsonschema
 
 from errata.utils import exceptions
 from errata.schemas import get_schema
+
 
 
 # Invalid request HTTP response code.
@@ -35,7 +34,7 @@ def _throw(handler, error):
     raise error
 
 
-def validate_request_params1(handler):
+def validate_request_params(handler):
     """Validates request parameters against a JSON schema.
 
     :param HttpHandler handler: Request handler being processed.
@@ -87,46 +86,3 @@ def validate_request_body(handler):
 
     # As data is valid append to request.
     handler.request.data = data
-
-
-class _RequestQueryParamsValidator(cerberus.Validator):
-    """An HTTP request query params validator that extends the cerberus library.
-
-    """
-    def __init__(self, schema):
-        """Instance initializer.
-
-        """
-        super(_RequestQueryParamsValidator, self).__init__(schema)
-
-
-    def _validate_type_uuid(self, field, value):
-        """Enables validation for `uuid` schema attribute.
-
-        """
-        try:
-            uuid.UUID(value)
-        except ValueError:
-            self._error(field, cerberus.errors.ERROR_BAD_TYPE.format('uuid'))
-
-
-
-def validate_request_params(handler, schema, allow_unknown=False):
-    """Validates request query parameters against a cerberus schema.
-
-    :param HttpHandler handler: Request handler being processed.
-    :param str schema: Cerberus schema to be used to validate request query parameters.
-    :param bool allow_unknown: Flag indicating whether unknown url parameters are allowed.
-
-    :raises: exceptions.SecurityError
-
-    """
-    # Null case.
-    if schema is None:
-        if handler.request.query_arguments:
-            _throw(handler, exceptions.SecurityError("Unexpected request url parameters."))
-        return
-
-    validator = _RequestQueryParamsValidator(schema)
-    validator.allow_unknown = allow_unknown
-    validator.validate(handler.request.query_arguments)
