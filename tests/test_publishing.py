@@ -80,6 +80,20 @@ def test_close():
     _assert_ws_response(_URL_CLOSE, response)
 
 
+def test_close_retrieve():
+    """ERRATA :: WS :: Postive Test :: Retrieve closed issue.
+
+    """
+    # Invoke WS endpoint.
+    response = requests.get(_URL_RETRIEVE)
+
+    # Assert WS response.
+    content = _assert_ws_response(_URL_RETRIEVE, response)
+
+    # Assert WS response content.
+    assert content['issue']['dateClosed'] is not None
+
+
 def test_update():
     """ERRATA :: WS :: Postive Test :: Update issue.
 
@@ -97,6 +111,21 @@ def test_update():
 
     # Assert WS response.
     _assert_ws_response(_URL_UPDATE, response)
+
+
+def test_update_retrieve():
+    """ERRATA :: WS :: Postive Test :: Retrieve updated issue.
+
+    """
+    # Invoke WS endpoint.
+    response = requests.get(_URL_RETRIEVE)
+
+    # Assert WS response.
+    content = _assert_ws_response(_URL_RETRIEVE, response)
+
+    # Assert WS response content.
+    assert content['issue']['severity'] == ISSUE['severity']
+    assert ISSUE['dateUpdated'] == content['issue']['dateUpdated']
 
 
 def _assert_ws_response(

@@ -58,19 +58,32 @@ def test_create_invalid():
 
 
     # Test string properties:
-    for attr in ['description', 'uid', 'institute', 'project', 'severity', 'url', 'workflow']:
+    for attr in [
+        'description',
+        'uid',
+        'institute',
+        'project',
+        'severity',
+        'title',
+        'url',
+        'workflow'
+        ]:
         issue = ISSUE.copy()
         # ... non-text values are invalid;
         issue[attr] = 123
         yield _do_test(issue, attr, "is not a string")
         # ... constrained values;
-        if attr != 'description':
+        if attr not in ['description', 'title']:
             issue[attr] = "invalid-value"
             yield _do_test(issue, attr, "is invalid string value")
 
 
     # Test array properties:
-    for attr in {'datasets', 'materials', 'models'}:
+    for attr in {
+        'datasets',
+        'materials',
+        'models'
+        }:
         issue = ISSUE.copy()
         # ... non-array values are invalid;
         issue[attr] = "invalid-value"

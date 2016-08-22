@@ -34,8 +34,7 @@ class CloseIssueRequestHandler(HTTPRequestHandler):
             """Validates that issue exists within dB.
 
             """
-            with db.session.create():
-                self.issue = db.dao.get_issue(self.get_argument(_PARAM_UID))
+            self.issue = db.dao.get_issue(self.get_argument(_PARAM_UID))
             if self.issue is None:
                 raise ValueError("Issue does not exist")
 
@@ -57,13 +56,12 @@ class CloseIssueRequestHandler(HTTPRequestHandler):
             """
             self.issue.state = constants.STATE_CLOSED
             self.issue.date_closed = dt.datetime.utcnow()
-            with db.session.create():
-                db.session.update(self.issue)
 
 
         # Invoke tasks.
-        self.invoke([
-            _validate_issue_exists,
-            _validate_issue_status,
-            _close_issue
-            ])
+        with db.session.create(commitable=True):
+            self.invoke([
+                _validate_issue_exists,
+                _validate_issue_status,
+                _close_issue
+                ])

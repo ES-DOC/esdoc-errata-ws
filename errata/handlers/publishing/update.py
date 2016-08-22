@@ -31,8 +31,7 @@ class UpdateIssueRequestHandler(HTTPRequestHandler):
             """Validates that the issue has been previously posted to the web-service.
 
             """
-            with db.session.create():
-                self.issue = db.dao.get_issue(self.request.data['uid'])
+            self.issue = db.dao.get_issue(self.request.data['uid'])
             if self.issue is None:
                 raise exceptions.UnknownIssueError(self.request.data['uid'])
 
@@ -71,10 +70,11 @@ class UpdateIssueRequestHandler(HTTPRequestHandler):
                 raise exceptions.InvalidIssueStatusError()
 
 
-        def _update_issue():
-            """Updates issue.
+        def _persist():
+            """Persists dB state changes.
 
             """
+            # ... update issue.
             self.issue.date_closed = self.request.data.get('dateClosed')
             self.issue.date_updated = self.request.data['dateUpdated']
             self.issue.description = self.request.data['description']
@@ -85,41 +85,31 @@ class UpdateIssueRequestHandler(HTTPRequestHandler):
             self.issue.url = self.request.data.get('url')
             self.issue.workflow = self.request.data['workflow'].lower()
 
+            # ... delete existing datasets / models.
+            db.dao.delete_issue_datasets(self.issue.uid)
+            db.dao.delete_issue_models(self.issue.uid)
 
-        def _persist():
-            """Persists dB state changes.
+            # ... insert datasets.
+            for dataset_id in self.request.data.get('datasets', []):
+                dataset = db.models.IssueDataset()
+                dataset.dataset_id = dataset_id
+                dataset.issue_uid = self.issue.uid
+                db.session.insert(dataset, False)
 
-            """
-            # Perist changes in a single commit.
-            with db.session.create(commitable=True):
-                # ... update issue.
-                db.session.update(self.issue, False)
-
-                # ... delete existing datasets / models.
-                db.dao.delete_issue_datasets(self.issue.uid)
-                db.dao.delete_issue_models(self.issue.uid)
-
-                # ... insert datasets.
-                for dataset_id in self.request.data.get('datasets', []):
-                    dataset = db.models.IssueDataset()
-                    dataset.dataset_id = dataset_id
-                    dataset.issue_uid = self.issue.uid
-                    db.session.insert(dataset, False)
-
-                # ... insert models.
-                for model_id in self.request.data.get('models', []):
-                    model = db.models.IssueModel()
-                    model.model_id = model_id
-                    model.issue_uid = self.issue.uid
-                    db.session.insert(model, False)
+            # ... insert models.
+            for model_id in self.request.data.get('models', []):
+                model = db.models.IssueModel()
+                model.model_id = model_id
+                model.issue_uid = self.issue.uid
+                db.session.insert(model, False)
 
 
         # Invoke tasks.
-        self.invoke([
-            _validate_issue_exists,
-            _validate_issue_immutable_attributes,
-            _validate_issue_description_change_ratio,
-            _validate_issue_status,
-            _update_issue,
-            _persist
-            ])
+        with db.session.create(commitable=True):
+            self.invoke([
+                _validate_issue_exists,
+                _validate_issue_immutable_attributes,
+                _validate_issue_description_change_ratio,
+                _validate_issue_status,
+                _persist
+                ])

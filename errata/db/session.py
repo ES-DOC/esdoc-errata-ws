@@ -101,7 +101,7 @@ def _start(connection=None):
         logger.log_db("db engine instantiated: {}".format(id(sa_engine)))
 
     # Set session.
-    _sa_session = sessionmaker(bind=sa_engine,  expire_on_commit=False)()
+    _sa_session = sessionmaker(bind=sa_engine, expire_on_commit=False)()
 
 
 def _end():
