@@ -15,7 +15,7 @@ import collections
 from errata.utils import constants
 
 
-
+# Schema extender functions mapped by schema type and endpoint.
 _EXTENDERS = collections.defaultdict(dict)
 
 
