@@ -143,7 +143,7 @@ def get_issue_datasets(uid):
 
     """
     qry = raw_query(IssueDataset.dataset_id)
-    qry = qry.filter(IssueDataset.issue_uid == uid)
+    qry = text_filter(qry, IssueDataset.issue_uid, uid)
 
     return sorted([i[0] for i in qry.all()])
 
@@ -159,7 +159,7 @@ def get_issue_models(uid):
 
     """
     qry = raw_query(IssueModel.model_id)
-    qry = qry.filter(IssueModel.issue_uid == uid)
+    qry = text_filter(qry, IssueModel.issue_uid, uid)
 
     return sorted([i[0] for i in qry.all()])
 

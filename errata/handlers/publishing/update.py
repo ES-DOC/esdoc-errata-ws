@@ -76,7 +76,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             """Persists dB state changes.
 
             """
-            # ... update issue.
+            # Update issue.
             issue = self.issue
             issue.date_closed = self.request.data.get('dateClosed')
             issue.date_updated = self.request.data['dateUpdated']
@@ -88,18 +88,18 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             issue.url = self.request.data.get('url')
             issue.workflow = self.request.data['workflow'].lower()
 
-            # ... delete existing datasets / models.
+            # Delete existing datasets / models.
             db.dao.delete_issue_datasets(issue.uid)
             db.dao.delete_issue_models(issue.uid)
 
-            # ... insert datasets.
+            # Insert datasets.
             for dataset_id in self.request.data.get('datasets', []):
                 dataset = db.models.IssueDataset()
                 dataset.dataset_id = dataset_id
                 dataset.issue_uid = issue.uid
                 db.session.insert(dataset, False)
 
-            # ... insert models.
+            # Insert models.
             for model_id in self.request.data.get('models', []):
                 model = db.models.IssueModel()
                 model.model_id = model_id
