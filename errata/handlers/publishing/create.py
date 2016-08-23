@@ -43,6 +43,8 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             """Creates issue.
 
             """
+            global issue
+
             # Map request data to relational data.
             issue = db.models.Issue()
             issue.date_closed = self.request.data.get('dateClosed')
@@ -59,52 +61,59 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             issue.url = self.request.data.get('url')
             issue.workflow = self.request.data['workflow'].lower()
 
-            self.issue = issue
-
 
         def _set_datasets():
             """Sets datasets to be persisted to database.
 
             """
-            self.datasets = []
+            global datasets, issue
+
+            datasets = []
             for dataset_id in self.request.data['datasets']:
                 dataset = db.models.IssueDataset()
                 dataset.dataset_id = dataset_id
-                dataset.issue_uid = self.issue.uid
-                self.datasets.append(dataset)
+                dataset.issue_uid = issue.uid
+                datasets.append(dataset)
 
 
         def _set_models():
             """Sets models to be persisted to database.
 
             """
-            self.models = []
+            global issue, models
+
+            models = []
             for model_id in self.request.data['models']:
                 model = db.models.IssueModel()
                 model.model_id = model_id
-                model.issue_uid = self.issue.uid
-                self.models.append(model)
+                model.issue_uid = issue.uid
+                models.append(model)
 
 
         def _persist():
             """Persists data to dB.
 
             """
+            global datasets, issue, models
+
             # Persist issue data.
             with db.session.create():
                 try:
-                    db.session.insert(self.issue)
+                    db.session.insert(issue)
                 except sqlalchemy.exc.IntegrityError:
                     db.session.rollback()
                     raise ValueError("Issue description/uid fields must be unique")
 
             # Persist datasets / models.
             with db.session.create(commitable=True):
-                for dataset in self.datasets:
+                for dataset in datasets:
                     db.session.insert(dataset, False)
-                for model in self.models:
+                for model in models:
                     db.session.insert(model, False)
 
+
+        # Initialize shared processing variables.
+        datasets = issue = models = None
 
         # Process request.
         process_request(self, [
