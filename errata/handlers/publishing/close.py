@@ -16,6 +16,7 @@ import tornado
 
 from errata import db
 from errata.utils import constants
+from errata.utils import exceptions
 from errata.utils.http import process_request
 
 
@@ -38,7 +39,7 @@ class CloseIssueRequestHandler(tornado.web.RequestHandler):
             """
             self.issue = db.dao.get_issue(self.get_argument(_PARAM_UID))
             if self.issue is None:
-                raise ValueError("Issue does not exist")
+                raise exceptions.UnknownIssueError(self.get_argument(_PARAM_UID))
 
 
         def _validate_issue_status():
@@ -49,7 +50,7 @@ class CloseIssueRequestHandler(tornado.web.RequestHandler):
                 constants.WORKFLOW_WONT_FIX,
                 constants.WORKFLOW_RESOLVED
                 ]:
-                raise ValueError("Issue state is not closeable")
+                raise exceptions.InvalidIssueStatusError()
 
 
         def _close_issue():

@@ -15,7 +15,6 @@ import tornado
 
 from errata import db
 from errata.utils import constants
-from errata.utils import exceptions
 from errata.utils.http import process_request
 from errata.utils.misc import traverse
 from errata.utils.validation import validate_url
