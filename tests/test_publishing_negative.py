@@ -72,7 +72,7 @@ def test_create_invalid():
         issue[attr] = 123
         yield _do_test(issue, attr, "is not a string")
         # ... constrained values;
-        if attr not in ['description', 'title']:
+        if attr not in ['description', 'title', 'url']:
             issue[attr] = "invalid-value"
             yield _do_test(issue, attr, "is invalid string value")
 

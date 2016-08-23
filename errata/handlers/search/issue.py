@@ -46,53 +46,45 @@ class IssueSearchRequestHandler(tornado.web.RequestHandler):
             """Sets search criteria.
 
             """
-            global institute, project, severity, state, workflow
-
-            if self.get_argument(_PARAM_INSTITUTE) != "*":
-                institute = self.get_argument(_PARAM_INSTITUTE).lower()
-            if self.get_argument(_PARAM_PROJECT) != "*":
-                project = self.get_argument(_PARAM_PROJECT).lower()
-            if self.get_argument(_PARAM_SEVERITY) != "*":
-                severity = self.get_argument(_PARAM_SEVERITY).lower()
-            if self.get_argument(_PARAM_STATE) != "*":
-                state = self.get_argument(_PARAM_STATE).lower()
-            if self.get_argument(_PARAM_WORKFLOW) != "*":
-                workflow = self.get_argument(_PARAM_WORKFLOW).lower()
+            for param in {
+                _PARAM_INSTITUTE,
+                _PARAM_PROJECT,
+                _PARAM_SEVERITY,
+                _PARAM_STATE,
+                _PARAM_WORKFLOW,
+            }:
+                if self.get_argument(param) != "*":
+                    setattr(self, param, self.get_argument(param).lower())
+                else:
+                    setattr(self, param, None)
 
 
         def _set_data():
             """Pulls data from db.
 
             """
-            global institute, issues, project, severity, state, total, workflow
-
             with db.session.create():
-                issues = db.dao.get_issues(
-                    institute=institute,
-                    project=project,
-                    state=state,
-                    workflow=workflow,
-                    severity=severity
+                self.issues = db.dao.get_issues(
+                    institute=self.institute,
+                    project=self.project,
+                    state=self.state,
+                    workflow=self.workflow,
+                    severity=self.severity
                     )
-                total = db.utils.get_count(db.models.Issue)
+                self.total = db.utils.get_count(db.models.Issue)
 
 
         def _set_output():
             """Sets response to be returned to client.
 
             """
-            global issues, total
-
             self.output = {
-                'count': len(issues),
-                'results': issues,
+                'count': len(self.issues),
+                'results': self.issues,
                 'timestamp': self.get_argument(_PARAM_TIMESTAMP),
-                'total': total,
+                'total': self.total,
             }
 
-
-        # Initialize shared processing variables.
-        institute = issues = project = severity = state = total = workflow = None
 
         # Process request.
         process_request(self, [
