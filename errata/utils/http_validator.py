@@ -18,10 +18,6 @@ from errata.schemas import get_schema
 
 
 
-# Invalid request HTTP response code.
-_HTTP_RESPONSE_BAD_REQUEST = 400
-
-
 def validate_request(handler):
     """Validates request against mapped JSON schemas.
 
@@ -42,7 +38,7 @@ def _validate(handler, data, schema):
     try:
         jsonschema.validate(data, schema)
     except jsonschema.exceptions.ValidationError as json_errors:
-        _throw(handler, exceptions.InvalidJSONSchemaError(json_errors))
+        raise exceptions.InvalidJSONSchemaError(json_errors)
 
 
 def _validate_request_headers(handler):
@@ -56,7 +52,7 @@ def _validate_request_headers(handler):
     if schema is None:
         return
 
-    # Validate request headers against schema.
+    # Validate request headers.
     _validate(handler, dict(handler.request.headers), schema)
 
 
@@ -70,11 +66,11 @@ def _validate_request_params(handler):
     # Null case.
     if schema is None:
         if handler.request.query_arguments:
-            _throw(handler, exceptions.SecurityError("Unexpected request url parameters."))
-        return
+            raise exceptions.SecurityError("Unexpected request url parameters.")
 
-    # Validate request parameters against schema.
-    _validate(handler, handler.request.query_arguments, schema)
+    # Validate request parameters.
+    else:
+        _validate(handler, handler.request.query_arguments, schema)
 
 
 def _validate_request_body(handler):
@@ -87,26 +83,15 @@ def _validate_request_body(handler):
     # Null case.
     if schema is None:
         if handler.request.body:
-            _throw(handler, exceptions.SecurityError("Unexpected request body."))
-        return
+            raise exceptions.SecurityError("Unexpected request body.")
 
-    # Decode request data.
-    data = json.loads(handler.request.body)
+    # Validate request data.
+    else:
+        # ... decode request data.
+        data = json.loads(handler.request.body)
 
-    # Validate request data against schema.
-    _validate(handler, data, schema)
+        # ... validate request data against schema.
+        _validate(handler, data, schema)
 
-    # As data is valid append to request.
-    handler.request.data = data
-
-
-def _throw(handler, error):
-    """Throws a validation error.
-
-    """
-    # Send 400 to client.
-    handler.clear()
-    handler.send_error(_HTTP_RESPONSE_BAD_REQUEST)
-
-    # Bubble up error.
-    raise error
+        # ... append valid data to request.
+        handler.request.data = data

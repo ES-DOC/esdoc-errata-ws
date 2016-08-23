@@ -42,15 +42,14 @@ def test_create_invalid():
         """
         def _do():
             # Invoke WS endpoint.
-            url = _URL_CREATE
             response = requests.post(
-                url,
+                _URL_CREATE,
                 data=json.dumps(issue),
                 headers={'Content-Type': 'application/json'}
                 )
 
             # Assert WS response.
-            _assert_ws_response(url, response)
+            _assert_ws_response(_URL_CREATE, response)
 
         _do.description = "ERRATA :: WS :: Negative test :: Create Issue :: {} {}".format(attr, description)
 

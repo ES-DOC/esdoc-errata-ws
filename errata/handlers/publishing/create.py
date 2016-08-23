@@ -33,11 +33,10 @@ class CreateIssueRequestHandler(HTTPRequestHandler):
             """Validates URL's associated with incoming request.
 
             """
+            return
+
             for url in traverse([self.request.data.get((i)) for i in ['url', 'materials']]):
-                try:
-                    validate_url(url)
-                except exceptions.UnreachableURLError as error:
-                    self.throw(error)
+                validate_url(url)
 
 
         def _set_issue():

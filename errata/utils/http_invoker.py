@@ -9,12 +9,16 @@
 
 
 """
-from errata.utils import http_logger as logger
+from errata.utils import exceptions
 from errata.utils import http_validator
+from errata.utils import logger
 from errata.utils.convertor import to_dict
 from errata.utils.convertor import to_camel_case
 
 
+
+# Request validation error HTTP response code.
+_HTTP_RESPONSE_INVALID_REQUEST_ERROR = 400
 
 # Processing error HTTP response code.
 _HTTP_RESPONSE_SERVER_ERROR = 500
@@ -25,6 +29,31 @@ def _can_return_debug_info(handler):
 
     """
     return handler.application.settings.get('debug', False)
+
+
+def _log(handler, msg, is_error=False):
+    """Logs an error response.
+
+    """
+    msg = "[{}]: --> {}".format(id(handler), msg)
+    if is_error:
+        logger.log_web_error(msg)
+    else:
+        logger.log_web(msg)
+
+
+def _log_error(handler, error):
+    """Logs an error response.
+
+    """
+    _log(handler, "error --> {} --> {}".format(handler, error), True)
+
+
+def _log_success(handler):
+    """Logs a successful response.
+
+    """
+    _log(handler, "success --> {}".format(handler))
 
 
 def _write_null(handler, data):
@@ -90,13 +119,13 @@ def _write(handler, data, encoding):
 
     """
     # Log begin.
-    logger.log(handler, "response writing begins --> {}".format(handler))
+    _log(handler, "response writing begins --> {}".format(handler))
 
     # Write.
     _WRITERS[encoding](handler, data)
 
     # Log end.
-    logger.log(handler, "response writing ends --> {}".format(handler))
+    _log(handler, "response writing ends --> {}".format(handler))
 
 
 def write_error(handler, error):
@@ -105,7 +134,11 @@ def write_error(handler, error):
     """
     handler.clear()
     reason = unicode(error) if _can_return_debug_info(handler) else None
-    handler.send_error(_HTTP_RESPONSE_SERVER_ERROR, reason=reason)
+    if isinstance(error, exceptions.RequestValidationException):
+        response_code = _HTTP_RESPONSE_INVALID_REQUEST_ERROR
+    else:
+        response_code = _HTTP_RESPONSE_SERVER_ERROR
+    handler.send_error(response_code, reason=reason.replace("\n", ""))
 
 
 def _write_success(handler):
@@ -166,12 +199,12 @@ def execute(handler, tasks, error_tasks):
     tasks = _get_tasks(
         [http_validator.validate_request],
         tasks,
-        [logger.log_success, _write_success]
+        [_log_success, _write_success]
         )
     error_tasks = _get_tasks(
         [],
         error_tasks,
-        [logger.log_error, write_error]
+        [_log_error, write_error]
         )
 
     # Invoke tasks.

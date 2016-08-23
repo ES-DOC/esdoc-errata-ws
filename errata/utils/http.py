@@ -13,35 +13,17 @@ import tornado
 
 from errata.utils import logger
 from errata.utils import http_invoker
-from errata.utils import http_validator
 
 
 
 # HTTP CORS header.
 HTTP_HEADER_Access_Control_Allow_Origin = "Access-Control-Allow-Origin"
 
-# Supported content types.
-_CONTENT_TYPE_JSON = [
-    "application/json",
-    "application/json; charset=UTF-8"
-]
-
-# HTTP header - Content-Type.
-_HTTP_HEADER_CONTENT_TYPE = "Content-Type"
-
 
 class HTTPRequestHandler(tornado.web.RequestHandler):
     """A web service request handler.
 
     """
-    @property
-    def _can_return_debug_info(self):
-        """Gets flag indicating whether the application can retrun debug information.
-
-        """
-        return self.application.settings.get('debug', False)
-
-
     def invoke(self, taskset, error_taskset=None):
         """Invokes handler tasks.
 
@@ -56,15 +38,3 @@ class HTTPRequestHandler(tornado.web.RequestHandler):
 
         # Process request.
         http_invoker.execute(self, taskset, error_taskset or [])
-
-
-    def throw(self, error):
-        """Throws a trapped processing error.
-
-        """
-        # Send 400 to client.
-        self.clear()
-        self.send_error(400)
-
-        # Bubble up error.
-        raise error
