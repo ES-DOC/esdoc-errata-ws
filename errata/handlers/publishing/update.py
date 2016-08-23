@@ -33,9 +33,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             """Validates that the issue has been previously posted to the web-service.
 
             """
-            global issue
-
-            issue = db.dao.get_issue(self.request.data['uid'])
+            issue = self.issue = db.dao.get_issue(self.request.data['uid'])
             if issue is None:
                 raise exceptions.UnknownIssueError(self.request.data['uid'])
 
@@ -44,10 +42,8 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             """Validates that issue attribute deemed to be immutable have not been changed.
 
             """
-            global issue
-
             for attr_name in constants.IMMUTABLE_ISSUE_ATTRIBUTES:
-                if unicode(self.request.data[attr_name]).lower() != unicode(getattr(issue, attr_name)).lower():
+                if unicode(self.request.data[attr_name]).lower() != unicode(getattr(self.issue, attr_name)).lower():
                     raise exceptions.ImmutableIssueAttributeError(attr_name)
             print "TODO: validate dateCreated immutability"
 
@@ -56,14 +52,12 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             """Validates that the degree of change in the issue's description is less than allowed ratio.
 
             """
-            global issue
-
             # Escape if no change.
-            if self.request.data['description'] == issue.description:
+            if self.request.data['description'] == self.issue.description:
                 return
 
             # Determine change ratio.
-            diff = difflib.SequenceMatcher(None, issue.description, self.request.data['description'])
+            diff = difflib.SequenceMatcher(None, self.issue.description, self.request.data['description'])
             diff_ratio = round(diff.ratio(), 3) * 100
             if diff_ratio < constants.DESCRIPTION_CHANGE_RATIO:
                 raise exceptions.IssueDescriptionChangeRatioError(diff_ratio)
@@ -73,9 +67,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             """Validates that issue state allows it to be updated.
 
             """
-            global issue
-
-            if issue.workflow != constants.WORKFLOW_NEW and \
+            if self.issue.workflow != constants.WORKFLOW_NEW and \
                self.request.data['workflow'] == constants.WORKFLOW_NEW:
                 raise exceptions.InvalidIssueStatusError()
 
@@ -84,9 +76,8 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             """Persists dB state changes.
 
             """
-            global issue
-
             # ... update issue.
+            issue = self.issue
             issue.date_closed = self.request.data.get('dateClosed')
             issue.date_updated = self.request.data['dateUpdated']
             issue.description = self.request.data['description']
@@ -115,9 +106,6 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
                 model.issue_uid = issue.uid
                 db.session.insert(model, False)
 
-
-        # Initialize shared processing variables.
-        issue = None
 
         # Process request.
         with db.session.create(commitable=True):

@@ -59,25 +59,18 @@ class ResolvePIDRequestHandler(tornado.web.RequestHandler):
             """Invoke remote PID handle service.
 
             """
-            global errata
-
-            errata = [_get_errata_information(i) for i in self.get_argument(_PARAM_PIDS).split(",")]
+            self.errata = [_get_errata_information(i) for i in self.get_argument(_PARAM_PIDS).split(",")]
 
 
         def _set_output():
             """Sets response to be returned to client.
 
             """
-            global errata
-
             self.output = {
-                'errata': errata,
+                'errata': self.errata,
                 'timestamp': self.get_argument(_PARAM_TIMESTAMP)
             }
 
-
-        # Initialize shared processing variables.
-        errata = None
 
         # Process request.
         process_request(self, [

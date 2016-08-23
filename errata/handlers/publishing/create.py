@@ -33,8 +33,6 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             """Validates URL's associated with incoming request.
 
             """
-            return
-
             for url in traverse([self.request.data.get((i)) for i in ['url', 'materials']]):
                 validate_url(url)
 
@@ -43,10 +41,8 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             """Creates issue.
 
             """
-            global issue
-
             # Map request data to relational data.
-            issue = db.models.Issue()
+            issue = self.issue = db.models.Issue()
             issue.date_closed = self.request.data.get('dateClosed')
             issue.date_created = self.request.data['dateCreated']
             issue.date_updated = self.request.data.get('dateUpdated', issue.date_created)
@@ -66,13 +62,11 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             """Sets datasets to be persisted to database.
 
             """
-            global datasets, issue
-
-            datasets = []
+            datasets = self.datasets = []
             for dataset_id in self.request.data['datasets']:
                 dataset = db.models.IssueDataset()
                 dataset.dataset_id = dataset_id
-                dataset.issue_uid = issue.uid
+                dataset.issue_uid = self.issue.uid
                 datasets.append(dataset)
 
 
@@ -80,13 +74,11 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             """Sets models to be persisted to database.
 
             """
-            global issue, models
-
-            models = []
+            models = self.models = []
             for model_id in self.request.data['models']:
                 model = db.models.IssueModel()
                 model.model_id = model_id
-                model.issue_uid = issue.uid
+                model.issue_uid = self.issue.uid
                 models.append(model)
 
 
@@ -94,26 +86,21 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             """Persists data to dB.
 
             """
-            global datasets, issue, models
-
             # Persist issue data.
             with db.session.create():
                 try:
-                    db.session.insert(issue)
+                    db.session.insert(self.issue)
                 except sqlalchemy.exc.IntegrityError:
                     db.session.rollback()
                     raise ValueError("Issue description/uid fields must be unique")
 
             # Persist datasets / models.
             with db.session.create(commitable=True):
-                for dataset in datasets:
+                for dataset in self.datasets:
                     db.session.insert(dataset, False)
-                for model in models:
+                for model in self.models:
                     db.session.insert(model, False)
 
-
-        # Initialize shared processing variables.
-        datasets = issue = models = None
 
         # Process request.
         process_request(self, [

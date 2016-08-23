@@ -37,10 +37,8 @@ class CloseIssueRequestHandler(tornado.web.RequestHandler):
             """Validates that issue exists within dB.
 
             """
-            global issue
-
-            issue = db.dao.get_issue(self.get_argument(_PARAM_UID))
-            if issue is None:
+            self.issue = db.dao.get_issue(self.get_argument(_PARAM_UID))
+            if self.issue is None:
                 raise exceptions.UnknownIssueError(self.get_argument(_PARAM_UID))
 
 
@@ -48,9 +46,7 @@ class CloseIssueRequestHandler(tornado.web.RequestHandler):
             """Validates that issue state allows it to be closed.
 
             """
-            global issue
-
-            if issue.workflow in [
+            if self.issue.workflow in [
                 constants.WORKFLOW_WONT_FIX,
                 constants.WORKFLOW_RESOLVED
                 ]:
@@ -61,14 +57,9 @@ class CloseIssueRequestHandler(tornado.web.RequestHandler):
             """Closes issue.
 
             """
-            global issue
+            self.issue.state = constants.STATE_CLOSED
+            self.issue.date_closed = dt.datetime.utcnow()
 
-            issue.state = constants.STATE_CLOSED
-            issue.date_closed = dt.datetime.utcnow()
-
-
-        # Initialize shared processing variables.
-        issue = None
 
         # Process request.
         with db.session.create(commitable=True):
