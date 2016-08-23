@@ -55,34 +55,32 @@ class ResolvePIDRequestHandler(tornado.web.RequestHandler):
         """HTTP GET handler.
 
         """
-        def _decode_request():
-            """Decodes request.
-
-            """
-            self.timestamp = self.get_argument(_PARAM_TIMESTAMP)
-            self.pids = self.get_argument(_PARAM_PIDS).split(",")
-
-
         def _invoke_pid_handle_service():
             """Invoke remote PID handle service.
 
             """
-            self.errata = [_get_errata_information(i) for i in self.pids]
+            global errata
+
+            errata = [_get_errata_information(i) for i in self.get_argument(_PARAM_PIDS).split(",")]
 
 
         def _set_output():
             """Sets response to be returned to client.
 
             """
+            global errata
+
             self.output = {
-                'errata': self.errata,
-                'timestamp': self.timestamp
+                'errata': errata,
+                'timestamp': self.get_argument(_PARAM_TIMESTAMP)
             }
 
 
+        # Initialize shared processing variables.
+        errata = None
+
         # Process request.
         process_request(self, [
-            _decode_request,
             _invoke_pid_handle_service,
             _set_output
             ])

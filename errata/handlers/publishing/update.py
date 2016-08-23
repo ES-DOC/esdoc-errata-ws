@@ -33,8 +33,10 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             """Validates that the issue has been previously posted to the web-service.
 
             """
-            self.issue = db.dao.get_issue(self.request.data['uid'])
-            if self.issue is None:
+            global issue
+
+            issue = db.dao.get_issue(self.request.data['uid'])
+            if issue is None:
                 raise exceptions.UnknownIssueError(self.request.data['uid'])
 
 
@@ -42,8 +44,10 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             """Validates that issue attribute deemed to be immutable have not been changed.
 
             """
+            global issue
+
             for attr_name in constants.IMMUTABLE_ISSUE_ATTRIBUTES:
-                if unicode(self.request.data[attr_name]).lower() != unicode(getattr(self.issue, attr_name)).lower():
+                if unicode(self.request.data[attr_name]).lower() != unicode(getattr(issue, attr_name)).lower():
                     raise exceptions.ImmutableIssueAttributeError(attr_name)
             print "TODO: validate dateCreated immutability"
 
@@ -52,12 +56,14 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             """Validates that the degree of change in the issue's description is less than allowed ratio.
 
             """
+            global issue
+
             # Escape if no change.
-            if self.request.data['description'] == self.issue.description:
+            if self.request.data['description'] == issue.description:
                 return
 
             # Determine change ratio.
-            diff = difflib.SequenceMatcher(None, self.issue.description, self.request.data['description'])
+            diff = difflib.SequenceMatcher(None, issue.description, self.request.data['description'])
             diff_ratio = round(diff.ratio(), 3) * 100
             if diff_ratio < constants.DESCRIPTION_CHANGE_RATIO:
                 raise exceptions.IssueDescriptionChangeRatioError(diff_ratio)
@@ -67,7 +73,9 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             """Validates that issue state allows it to be updated.
 
             """
-            if self.issue.workflow != constants.WORKFLOW_NEW and \
+            global issue
+
+            if issue.workflow != constants.WORKFLOW_NEW and \
                self.request.data['workflow'] == constants.WORKFLOW_NEW:
                 raise exceptions.InvalidIssueStatusError()
 
@@ -76,35 +84,40 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             """Persists dB state changes.
 
             """
+            global issue
+
             # ... update issue.
-            self.issue.date_closed = self.request.data.get('dateClosed')
-            self.issue.date_updated = self.request.data['dateUpdated']
-            self.issue.description = self.request.data['description']
-            self.issue.materials = ",".join(self.request.data.get('materials', []))
-            self.issue.severity = self.request.data['severity'].lower()
-            self.issue.state = constants.STATE_CLOSED if self.issue.date_closed else constants.STATE_OPEN
-            self.issue.title = self.request.data['title']
-            self.issue.url = self.request.data.get('url')
-            self.issue.workflow = self.request.data['workflow'].lower()
+            issue.date_closed = self.request.data.get('dateClosed')
+            issue.date_updated = self.request.data['dateUpdated']
+            issue.description = self.request.data['description']
+            issue.materials = ",".join(self.request.data.get('materials', []))
+            issue.severity = self.request.data['severity'].lower()
+            issue.state = constants.STATE_CLOSED if issue.date_closed else constants.STATE_OPEN
+            issue.title = self.request.data['title']
+            issue.url = self.request.data.get('url')
+            issue.workflow = self.request.data['workflow'].lower()
 
             # ... delete existing datasets / models.
-            db.dao.delete_issue_datasets(self.issue.uid)
-            db.dao.delete_issue_models(self.issue.uid)
+            db.dao.delete_issue_datasets(issue.uid)
+            db.dao.delete_issue_models(issue.uid)
 
             # ... insert datasets.
             for dataset_id in self.request.data.get('datasets', []):
                 dataset = db.models.IssueDataset()
                 dataset.dataset_id = dataset_id
-                dataset.issue_uid = self.issue.uid
+                dataset.issue_uid = issue.uid
                 db.session.insert(dataset, False)
 
             # ... insert models.
             for model_id in self.request.data.get('models', []):
                 model = db.models.IssueModel()
                 model.model_id = model_id
-                model.issue_uid = self.issue.uid
+                model.issue_uid = issue.uid
                 db.session.insert(model, False)
 
+
+        # Initialize shared processing variables.
+        issue = None
 
         # Process request.
         with db.session.create(commitable=True):

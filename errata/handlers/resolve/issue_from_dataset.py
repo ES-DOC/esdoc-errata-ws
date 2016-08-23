@@ -41,20 +41,27 @@ class ResolveIssueFromDatasetRequestHandler(tornado.web.RequestHandler):
             """Pulls data from db.
 
             """
+            global issues
+
             with db.session.create():
-                self.issues = db.dao.get_dataset_issues(self.get_argument(_PARAM_DATASET_ID))
+                issues = db.dao.get_dataset_issues(self.get_argument(_PARAM_DATASET_ID))
 
 
         def _set_output():
             """Sets response to be returned to client.
 
             """
+            global issues
+
             self.output = {
-                'count': len(self.issues),
-                'issueIdentifiers': self.issues,
+                'count': len(issues),
+                'issueIdentifiers': issues,
                 'datasetID': self.get_argument(_PARAM_DATASET_ID)
             }
 
+
+        # Initialize shared processing variables.
+        issues = None
 
         # Process request.
         process_request(self, [

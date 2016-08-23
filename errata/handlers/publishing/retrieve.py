@@ -43,25 +43,31 @@ class RetrieveIssueRequestHandler(tornado.web.RequestHandler):
             """Decodes request.
 
             """
-            self.uid = self.get_argument(_PARAM_UID)
+            global uid
+
+            uid = self.get_argument(_PARAM_UID)
 
 
         def _set_data():
             """Pulls data from db.
 
             """
+            global issue, uid, datasets, models
+
             with db.session.create():
-                self.issue = db.dao.get_issue(self.uid)
-                self.datasets = db.dao.get_issue_datasets(self.issue.uid)
-                self.models = db.dao.get_issue_models(self.issue.uid)
+                issue = db.dao.get_issue(uid)
+                datasets = db.dao.get_issue_datasets(issue.uid)
+                models = db.dao.get_issue_models(issue.uid)
 
 
         def _set_output():
             """Sets response to be returned to client.
 
             """
+            global issue, datasets, models
+
             # Encode issue as a simple dictionary.
-            obj = convertor.to_dict(self.issue)
+            obj = convertor.to_dict(issue)
 
             # Remove db injected fields.
             del obj['id']
@@ -69,14 +75,17 @@ class RetrieveIssueRequestHandler(tornado.web.RequestHandler):
             del obj['row_update_date']
 
             # Set array fields.
-            obj['datasets'] = self.datasets
-            obj['materials'] = sorted(self.issue.materials.split(","))
-            obj['models'] = self.models
+            obj['datasets'] = datasets
+            obj['materials'] = sorted(issue.materials.split(","))
+            obj['models'] = models
 
             self.output = {
                 'issue': obj
             }
 
+
+        # Initialize shared processing variables.
+        datasets = issue = models = uid = None
 
         # Process request.
         process_request(self, [
