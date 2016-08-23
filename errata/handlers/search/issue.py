@@ -10,9 +10,11 @@
 
 
 """
+import tornado
+
 from errata import db
-from errata.utils.http import HTTPRequestHandler
-from errata.utils.http import HTTP_HEADER_Access_Control_Allow_Origin
+from errata.utils import constants
+from errata.utils.http import process_request
 
 
 
@@ -25,7 +27,7 @@ _PARAM_TIMESTAMP = 'timestamp'
 _PARAM_WORKFLOW = 'workflow'
 
 
-class IssueSearchRequestHandler(HTTPRequestHandler):
+class IssueSearchRequestHandler(tornado.web.RequestHandler):
     """Search issue request handler.
 
     """
@@ -33,7 +35,7 @@ class IssueSearchRequestHandler(HTTPRequestHandler):
         """Set HTTP headers at the beginning of the request.
 
         """
-        self.set_header(HTTP_HEADER_Access_Control_Allow_Origin, "*")
+        self.set_header(constants.HTTP_HEADER_Access_Control_Allow_Origin, "*")
 
 
     def get(self):
@@ -84,8 +86,8 @@ class IssueSearchRequestHandler(HTTPRequestHandler):
             }
 
 
-        # Invoke tasks.
-        self.invoke([
+        # Process request.
+        process_request(self, [
             _set_criteria,
             _set_data,
             _set_output

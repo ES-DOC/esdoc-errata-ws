@@ -10,9 +10,11 @@
 
 
 """
+import tornado
+
 from errata.handle_service.harvest import harvest_errata_information
-from errata.utils.http import HTTPRequestHandler
-from errata.utils.http import HTTP_HEADER_Access_Control_Allow_Origin
+from errata.utils import constants
+from errata.utils.http import process_request
 
 
 
@@ -38,7 +40,7 @@ def _get_errata_information(pid):
     return pid, sorted(data.values(), key=lambda i: i[3])
 
 
-class ResolvePIDRequestHandler(HTTPRequestHandler):
+class ResolvePIDRequestHandler(tornado.web.RequestHandler):
     """Retrieve PID's request handler.
 
     """
@@ -46,7 +48,7 @@ class ResolvePIDRequestHandler(HTTPRequestHandler):
         """Set HTTP headers at the beginning of the request.
 
         """
-        self.set_header(HTTP_HEADER_Access_Control_Allow_Origin, "*")
+        self.set_header(constants.HTTP_HEADER_Access_Control_Allow_Origin, "*")
 
 
     def get(self):
@@ -78,8 +80,8 @@ class ResolvePIDRequestHandler(HTTPRequestHandler):
             }
 
 
-        # Invoke tasks.
-        self.invoke([
+        # Process request.
+        process_request(self, [
             _decode_request,
             _invoke_pid_handle_service,
             _set_output

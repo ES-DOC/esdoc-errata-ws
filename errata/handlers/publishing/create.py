@@ -11,17 +11,18 @@
 
 """
 import sqlalchemy
+import tornado
 
 from errata import db
 from errata.utils import constants
 from errata.utils import exceptions
-from errata.utils.http import HTTPRequestHandler
+from errata.utils.http import process_request
 from errata.utils.misc import traverse
 from errata.utils.validation import validate_url
 
 
 
-class CreateIssueRequestHandler(HTTPRequestHandler):
+class CreateIssueRequestHandler(tornado.web.RequestHandler):
     """issue handler.
 
     """
@@ -106,8 +107,8 @@ class CreateIssueRequestHandler(HTTPRequestHandler):
                     db.session.insert(model, False)
 
 
-        # Invoke tasks.
-        self.invoke([
+        # Process request.
+        process_request(self, [
             _validate_issue_urls,
             _set_issue,
             _set_datasets,

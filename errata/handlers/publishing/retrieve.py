@@ -10,10 +10,12 @@
 
 
 """
+import tornado
+
 from errata import db
+from errata.utils import constants
 from errata.utils import convertor
-from errata.utils.http import HTTPRequestHandler
-from errata.utils.http import HTTP_HEADER_Access_Control_Allow_Origin
+from errata.utils.http import process_request
 
 
 
@@ -22,7 +24,7 @@ _PARAM_UID = 'uid'
 
 
 
-class RetrieveIssueRequestHandler(HTTPRequestHandler):
+class RetrieveIssueRequestHandler(tornado.web.RequestHandler):
     """Retrieve issue request handler.
 
     """
@@ -30,7 +32,7 @@ class RetrieveIssueRequestHandler(HTTPRequestHandler):
         """Set HTTP headers at the beginning of the request.
 
         """
-        self.set_header(HTTP_HEADER_Access_Control_Allow_Origin, "*")
+        self.set_header(constants.HTTP_HEADER_Access_Control_Allow_Origin, "*")
 
 
     def get(self):
@@ -76,8 +78,8 @@ class RetrieveIssueRequestHandler(HTTPRequestHandler):
             }
 
 
-        # Invoke tasks.
-        self.invoke([
+        # Process request.
+        process_request(self, [
             _decode_request,
             _set_data,
             _set_output

@@ -12,9 +12,11 @@
 """
 import datetime as dt
 
+import tornado
+
 from errata import db
 from errata.utils import constants
-from errata.utils.http import HTTPRequestHandler
+from errata.utils.http import process_request
 
 
 
@@ -22,7 +24,7 @@ from errata.utils.http import HTTPRequestHandler
 _PARAM_UID = 'uid'
 
 
-class CloseIssueRequestHandler(HTTPRequestHandler):
+class CloseIssueRequestHandler(tornado.web.RequestHandler):
     """issue handler.
 
     """
@@ -58,9 +60,9 @@ class CloseIssueRequestHandler(HTTPRequestHandler):
             self.issue.date_closed = dt.datetime.utcnow()
 
 
-        # Invoke tasks.
+        # Process request.
         with db.session.create(commitable=True):
-            self.invoke([
+            process_request(self, [
                 _validate_issue_exists,
                 _validate_issue_status,
                 _close_issue

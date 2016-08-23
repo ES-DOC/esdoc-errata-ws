@@ -16,6 +16,9 @@ import uuid
 
 
 
+# HTTP CORS header.
+HTTP_HEADER_Access_Control_Allow_Origin = "Access-Control-Allow-Origin"
+
 # Default endpoint.
 DEFAULT_ENDPOINT = r'/1/ops/heartbeat'
 

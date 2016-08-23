@@ -10,13 +10,14 @@
 
 
 """
+import tornado
+
 from errata.utils import constants
-from errata.utils.http import HTTPRequestHandler
-from errata.utils.http import HTTP_HEADER_Access_Control_Allow_Origin
+from errata.utils.http import process_request
 
 
 
-class IssueSearchSetupRequestHandler(HTTPRequestHandler):
+class IssueSearchSetupRequestHandler(tornado.web.RequestHandler):
     """Search issue request handler.
 
     """
@@ -24,7 +25,7 @@ class IssueSearchSetupRequestHandler(HTTPRequestHandler):
         """Set HTTP headers at the beginning of the request.
 
         """
-        self.set_header(HTTP_HEADER_Access_Control_Allow_Origin, "*")
+        self.set_header(constants.HTTP_HEADER_Access_Control_Allow_Origin, "*")
 
 
     def get(self):
@@ -44,5 +45,5 @@ class IssueSearchSetupRequestHandler(HTTPRequestHandler):
             }
 
 
-        # Invoke tasks.
-        self.invoke(_set_output)
+        # Process request.
+        process_request(self, _set_output)

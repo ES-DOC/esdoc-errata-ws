@@ -12,14 +12,16 @@
 """
 import difflib
 
+import tornado
+
 from errata import db
 from errata.utils import constants
 from errata.utils import exceptions
-from errata.utils.http import HTTPRequestHandler
+from errata.utils.http import process_request
 
 
 
-class UpdateIssueRequestHandler(HTTPRequestHandler):
+class UpdateIssueRequestHandler(tornado.web.RequestHandler):
     """issue handler.
 
     """
@@ -104,9 +106,9 @@ class UpdateIssueRequestHandler(HTTPRequestHandler):
                 db.session.insert(model, False)
 
 
-        # Invoke tasks.
+        # Process request.
         with db.session.create(commitable=True):
-            self.invoke([
+            process_request(self, [
                 _validate_issue_exists,
                 _validate_issue_immutable_attributes,
                 _validate_issue_description_change_ratio,
