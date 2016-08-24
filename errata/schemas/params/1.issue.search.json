@@ -35,19 +35,19 @@
             },
             "type": "array"
         },
-        "timestamp": {
+        "status": {
             "items": {
+                "enum": [
+                    "*"
+                ],
                 "minItems": 1,
                 "maxItems": 1,
                 "type": "string"
             },
             "type": "array"
         },
-        "workflow": {
+        "timestamp": {
             "items": {
-                "enum": [
-                    "*"
-                ],
                 "minItems": 1,
                 "maxItems": 1,
                 "type": "string"
@@ -59,8 +59,8 @@
         "institute",
         "project",
         "severity",
-        "timestamp",
-        "workflow"
+        "status",
+        "timestamp"
     ],
     "title": "ES-DOC errata JSON schema: endpoint = /1/issue/search",
     "type": "object"

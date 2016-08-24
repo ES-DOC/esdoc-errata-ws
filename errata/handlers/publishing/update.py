@@ -63,12 +63,12 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
                 raise exceptions.IssueDescriptionChangeRatioError(diff_ratio)
 
 
-        def _validate_issue_workflow():
-            """Validates that issue workflow allows it to be updated.
+        def _validate_issue_status():
+            """Validates that issue status allows it to be updated.
 
             """
-            if self.issue.workflow != constants.WORKFLOW_NEW and \
-               self.request.data['workflow'] == constants.WORKFLOW_NEW:
+            if self.issue.status != constants.STATUS_NEW and \
+               self.request.data['status'] == constants.STATUS_NEW:
                 raise exceptions.InvalidIssueStatusError()
 
 
@@ -85,7 +85,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             issue.severity = self.request.data['severity'].lower()
             issue.title = self.request.data['title']
             issue.url = self.request.data.get('url')
-            issue.workflow = self.request.data['workflow'].lower()
+            issue.status = self.request.data['status'].lower()
 
             # Delete existing datasets / models.
             db.dao.delete_issue_datasets(issue.uid)
@@ -112,6 +112,6 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
                 _validate_issue_exists,
                 _validate_issue_immutable_attributes,
                 _validate_issue_description_change_ratio,
-                _validate_issue_workflow,
+                _validate_issue_status,
                 _persist
                 ])

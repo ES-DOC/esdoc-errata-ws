@@ -45,8 +45,8 @@ def _1_issue_search_params(schema):
 		[i['key'] for i in constants.PROJECT]
 	schema['properties']['severity']['items']['enum'] += \
 		[i['key'] for i in constants.SEVERITY]
-	schema['properties']['workflow']['items']['enum'] += \
-		[i['key'] for i in constants.WORKFLOW]
+	schema['properties']['status']['items']['enum'] += \
+		[i['key'] for i in constants.STATUS]
 
 
 def _1_issue_create_body(schema):
@@ -59,8 +59,8 @@ def _1_issue_create_body(schema):
 		[i['key'] for i in constants.PROJECT]
 	schema['properties']['severity']['enum'] = \
 		[i['key'] for i in constants.SEVERITY]
-	schema['properties']['workflow']['enum'] = \
-		[i['key'] for i in constants.WORKFLOW]
+	schema['properties']['status']['enum'] = \
+		[i['key'] for i in constants.STATUS]
 
 
 def _1_issue_update_body(schema):
@@ -73,8 +73,9 @@ def _1_issue_update_body(schema):
 		[i['key'] for i in constants.PROJECT]
 	schema['properties']['severity']['enum'] = \
 		[i['key'] for i in constants.SEVERITY]
-	schema['properties']['workflow']['enum'] = \
-		[i['key'] for i in constants.WORKFLOW]
+	schema['properties']['status']['enum'] = \
+		[i['key'] for i in constants.STATUS]
+
 
 # Map endpoints to extenders.
 _EXTENDERS['/1/issue/search']['params'] = _1_issue_search_params

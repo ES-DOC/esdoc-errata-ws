@@ -23,7 +23,7 @@ from errata.utils.constants import INSTITUTE
 from errata.utils.constants import ISSUE
 from errata.utils.constants import PROJECT
 from errata.utils.constants import SEVERITY
-from errata.utils.constants import WORKFLOW
+from errata.utils.constants import STATUS
 
 
 # Set of target urls.
@@ -31,7 +31,7 @@ _URL = os.getenv("ERRATA_API")
 _URL_CREATE = "{}/1/issue/create".format(_URL)
 _URL_SEARCH_SETUP = "{}/1/issue/search-setup".format(_URL)
 _URL_SEARCH = "{}/1/issue/search".format(_URL)
-_URL_SEARCH_PARAMS = "?timestamp={}&institute={}&project={}&severity={}&workflow={}"
+_URL_SEARCH_PARAMS = "?timestamp={}&institute={}&project={}&severity={}&status={}"
 
 
 def test_search_setup():
@@ -47,7 +47,7 @@ def test_search_setup():
     assert "institute" in response
     assert "project" in response
     assert "severity" in response
-    assert "workflow" in response
+    assert "status" in response
 
 
 
@@ -66,10 +66,10 @@ def test_search():
         issue['institute'] = random.choice(INSTITUTE)['key']
         issue['project'] = random.choice(PROJECT)['key']
         issue['severity'] = random.choice(SEVERITY)['key']
-        issue['workflow'] = random.choice(WORKFLOW)['key']
+        issue['status'] = random.choice(STATUS)['key']
 
         # ... update expected results;
-        expected[(issue['institute'], issue['project'], issue['severity'], issue['workflow'])] += 1
+        expected[(issue['institute'], issue['project'], issue['severity'], issue['status'])] += 1
 
         # .... publish issue.
         response = requests.post(
@@ -79,14 +79,14 @@ def test_search():
             )
 
     # Perform searches:
-    for institute, project, severity, workflow in expected:
+    for institute, project, severity, status in expected:
         # ... invoke WS;
         url = "{}{}".format(_URL_SEARCH, _URL_SEARCH_PARAMS.format(
             arrow.now().timestamp,
             institute,
             project,
             severity,
-            workflow
+            status
             ))
         response = requests.get(url)
 
@@ -94,7 +94,7 @@ def test_search():
         response = _assert_ws_response(url, response)
 
         # Assert search return at least expected total.
-        assert expected[institute, project, severity, workflow] <= response['total']
+        assert expected[institute, project, severity, status] <= response['total']
 
 
 def _assert_ws_response(

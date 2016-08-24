@@ -74,7 +74,7 @@ def _get_issue(obj):
     issue.uid = obj['uid']
     if 'url' in obj.keys():
         issue.url = obj['url']
-    issue.workflow = obj['workflow'].lower()
+    issue.status = obj['status'].lower()
 
     return issue
 

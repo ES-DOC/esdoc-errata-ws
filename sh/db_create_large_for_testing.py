@@ -95,7 +95,7 @@ def _yield_issue(input_dir, count):
         issue.project = random.choice(constants.PROJECT)['key']
         issue.title = u"Test issue title - {}".format(unicode(uuid.uuid4())[:50])
         issue.uid = unicode(uuid.uuid4())
-        issue.workflow = random.choice(constants.WORKFLOW)['key']
+        issue.status = random.choice(constants.STATUS)['key']
 
         yield issue
 

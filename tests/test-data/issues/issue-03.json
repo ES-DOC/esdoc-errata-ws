@@ -15,7 +15,7 @@
     "number": 10,
     "project": "CMIP6",
     "severity": "High",
-    "workflow": "Resolved",
+    "status": "Resolved",
     "title": "Incorrect pH computing",
     "url": "http://errata.ipsl.upmc.fr/issue/3"
 }

@@ -54,7 +54,7 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             issue.title = self.request.data['title']
             issue.uid = self.request.data['uid']
             issue.url = self.request.data.get('url')
-            issue.workflow = self.request.data['workflow'].lower()
+            issue.status = self.request.data['status'].lower()
 
 
         def _set_datasets():

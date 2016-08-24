@@ -63,9 +63,9 @@ def test_create_invalid():
         'institute',
         'project',
         'severity',
+        'status',
         'title',
-        'url',
-        'workflow'
+        'url'
         ]:
         issue = ISSUE.copy()
         # ... non-text values are invalid;

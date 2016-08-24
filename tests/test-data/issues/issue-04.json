@@ -14,7 +14,7 @@
     "number": 18,
     "project": "CMIP6",
     "severity": "Critical",
-    "workflow": "WontFix",
+    "status": "WontFix",
     "title": "TEST ISSUE",
     "url": "http://errata.ipsl.upmc.fr/issue/4"
 }

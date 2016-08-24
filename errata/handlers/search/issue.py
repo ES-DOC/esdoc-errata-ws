@@ -23,7 +23,7 @@ _PARAM_INSTITUTE = 'institute'
 _PARAM_PROJECT = 'project'
 _PARAM_SEVERITY = 'severity'
 _PARAM_TIMESTAMP = 'timestamp'
-_PARAM_WORKFLOW = 'workflow'
+_PARAM_STATUS = 'status'
 
 
 class IssueSearchRequestHandler(tornado.web.RequestHandler):
@@ -49,7 +49,7 @@ class IssueSearchRequestHandler(tornado.web.RequestHandler):
                 _PARAM_INSTITUTE,
                 _PARAM_PROJECT,
                 _PARAM_SEVERITY,
-                _PARAM_WORKFLOW,
+                _PARAM_STATUS,
             }:
                 if self.get_argument(param) != "*":
                     setattr(self, param, self.get_argument(param).lower())
@@ -65,7 +65,7 @@ class IssueSearchRequestHandler(tornado.web.RequestHandler):
                 self.issues = db.dao.get_issues(
                     institute=self.institute,
                     project=self.project,
-                    workflow=self.workflow,
+                    status=self.status,
                     severity=self.severity
                     )
                 self.total = db.utils.get_count(db.models.Issue)

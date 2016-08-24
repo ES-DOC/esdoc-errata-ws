@@ -91,7 +91,7 @@ def get_issues(
     institute=None,
     project=None,
     severity=None,
-    workflow=None
+    status=None
     ):
     """Returns issues that match the passed filters.
 
@@ -110,7 +110,7 @@ def get_issues(
         Issue.uid,
         Issue.title,
         Issue.severity,
-        Issue.workflow,
+        Issue.status,
         as_date_string(Issue.date_created),
         as_date_string(Issue.date_closed),
         as_date_string(Issue.date_updated)
@@ -122,8 +122,8 @@ def get_issues(
         qry = qry.filter(Issue.project == project)
     if severity:
         qry = qry.filter(Issue.severity == severity)
-    if workflow:
-        qry = qry.filter(Issue.workflow == workflow)
+    if status:
+        qry = qry.filter(Issue.status == status)
 
     return qry.all()
 

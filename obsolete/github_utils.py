@@ -547,7 +547,7 @@ class GitHubIssue(object):
         content = self.issue_content_parser(self.raw.body)
         labels = [tuple(label.name.split(': ')) for label in self.raw.labels]
         issue = MyOrderedDict()
-        # issue[unicode('workflow')] = self.state
+        # issue[unicode('status')] = self.status
         issue[unicode('institute')] = [label[1] for label in labels if 'Institute' in label][0]
         issue[unicode('number')] = self.raw.number
         issue[unicode('id')] = content['id']
@@ -560,7 +560,7 @@ class GitHubIssue(object):
             issue[unicode('url')] = content['url']
         if content['materials'] != __FILL_VALUE__:
             issue[unicode('materials')] = content['materials']
-        issue[unicode('workflow')] = [label[1] for label in labels if 'State' in label][0]
+        issue[unicode('status')] = [label[1] for label in labels if 'State' in label][0]
         issue[unicode('created_at')] = self.raw.created_at.isoformat()
         issue[unicode('last_updated_at')] = self.raw.updated_at.isoformat()
         if self.raw.is_closed():

@@ -15,7 +15,7 @@
     "number": 9,
     "project": "CMIP5",
     "severity": "Low",
-    "workflow": "New",
+    "status": "New",
     "title": "Wrong pH computing",
     "url": "http://errata.ipsl.upmc.fr/issue/2"
 }

@@ -16,5 +16,5 @@
     "severity": "High",
     "title": "Wrong pH computing",
     "url": "http://errata.ipsl.upmc.fr/issue/2",
-    "workflow": "New"
+    "status": "New"
 }
