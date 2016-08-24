@@ -31,7 +31,7 @@ _URL = os.getenv("ERRATA_API")
 _URL_CREATE = "{}/1/issue/create".format(_URL)
 _URL_SEARCH_SETUP = "{}/1/issue/search-setup".format(_URL)
 _URL_SEARCH = "{}/1/issue/search".format(_URL)
-_URL_SEARCH_PARAMS = "?timestamp={}&institute={}&project={}&state=*&severity={}&workflow={}"
+_URL_SEARCH_PARAMS = "?timestamp={}&institute={}&project={}&severity={}&workflow={}"
 
 
 def test_search_setup():
@@ -46,7 +46,6 @@ def test_search_setup():
 
     assert "institute" in response
     assert "project" in response
-    assert "state" in response
     assert "severity" in response
     assert "workflow" in response
 

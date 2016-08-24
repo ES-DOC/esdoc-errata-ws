@@ -33,8 +33,6 @@ from errata.utils.constants import SEVERITY_LOW
 from errata.utils.constants import SEVERITY_MEDIUM
 from errata.utils.constants import SEVERITY_HIGH
 from errata.utils.constants import SEVERITY_CRITICAL
-from errata.utils.constants import STATE_CLOSED
-from errata.utils.constants import STATE_OPEN
 
 
 
@@ -61,14 +59,6 @@ _SEVERITY_ENUM = Enum(
     name="IssueSeverityEnum"
     )
 
-# Issue state enumeration.
-_STATE_ENUM = Enum(
-    STATE_CLOSED,
-    STATE_OPEN,
-    schema=_SCHEMA,
-    name="IssueStateEnum"
-    )
-
 
 class Issue(Entity):
     """An issue raised by an institute post-publication.
@@ -86,7 +76,6 @@ class Issue(Entity):
     uid = Column(Unicode(63), nullable=False, unique=True, default=uuid.uuid4())
     title = Column(Unicode(255), nullable=False)
     description = Column(Text, nullable=False)
-    state = Column(_STATE_ENUM, nullable=False)
     severity = Column(_SEVERITY_ENUM, nullable=False)
     workflow = Column(_WORKFLOW_ENUM, nullable=False)
     date_created = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)

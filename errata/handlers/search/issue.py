@@ -22,7 +22,6 @@ from errata.utils.http import process_request
 _PARAM_INSTITUTE = 'institute'
 _PARAM_PROJECT = 'project'
 _PARAM_SEVERITY = 'severity'
-_PARAM_STATE = 'state'
 _PARAM_TIMESTAMP = 'timestamp'
 _PARAM_WORKFLOW = 'workflow'
 
@@ -50,7 +49,6 @@ class IssueSearchRequestHandler(tornado.web.RequestHandler):
                 _PARAM_INSTITUTE,
                 _PARAM_PROJECT,
                 _PARAM_SEVERITY,
-                _PARAM_STATE,
                 _PARAM_WORKFLOW,
             }:
                 if self.get_argument(param) != "*":
@@ -67,7 +65,6 @@ class IssueSearchRequestHandler(tornado.web.RequestHandler):
                 self.issues = db.dao.get_issues(
                     institute=self.institute,
                     project=self.project,
-                    state=self.state,
                     workflow=self.workflow,
                     severity=self.severity
                     )

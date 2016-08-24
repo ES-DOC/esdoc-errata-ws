@@ -69,7 +69,6 @@ def validate_get_issues(
     institute=None,
     project=None,
     severity=None,
-    state=None,
     workflow=None
     ):
     """Function input validator: get_issues.
@@ -85,11 +84,6 @@ def validate_get_issues(
         v.validate_str(severity, "Issue severity")
         v.validate_enum(
             [i['key'] for i in constants.SEVERITY], severity, "Issue severity")
-
-    if state is not None:
-        v.validate_str(state, "Issue state")
-        v.validate_enum(
-            [i['key'] for i in constants.STATE], state, "Issue state")
 
     if workflow is not None:
         v.validate_str(workflow, "Issue workflow")

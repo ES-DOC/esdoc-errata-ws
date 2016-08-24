@@ -21,8 +21,6 @@ from errata import db
 from errata.db.models import Issue
 from errata.db.models import IssueDataset
 from errata.utils import logger
-from errata.utils.constants import STATE_CLOSED
-from errata.utils.constants import STATE_OPEN
 
 
 
@@ -71,7 +69,6 @@ def _get_issue(obj):
     if 'materials' in obj.keys():
         issue.materials = ",".join(obj['materials'])
     issue.severity = obj['severity'].lower()
-    issue.state = STATE_CLOSED if issue.date_closed else STATE_OPEN
     issue.project = obj['project'].lower()
     issue.title = obj['title']
     issue.uid = obj['uid']

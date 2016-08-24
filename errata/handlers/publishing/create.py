@@ -51,7 +51,6 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             issue.materials = ",".join(self.request.data.get('materials', []))
             issue.project = self.request.data['project'].lower()
             issue.severity = self.request.data['severity'].lower()
-            issue.state = constants.STATE_CLOSED if issue.date_closed else constants.STATE_OPEN
             issue.title = self.request.data['title']
             issue.uid = self.request.data['uid']
             issue.url = self.request.data.get('url')

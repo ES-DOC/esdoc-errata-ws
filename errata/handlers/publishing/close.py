@@ -42,8 +42,8 @@ class CloseIssueRequestHandler(tornado.web.RequestHandler):
                 raise exceptions.UnknownIssueError(self.get_argument(_PARAM_UID))
 
 
-        def _validate_issue_status():
-            """Validates that issue state allows it to be closed.
+        def _validate_issue_workflow():
+            """Validates that issue workflow allows it to be closed.
 
             """
             if self.issue.workflow in [
@@ -57,7 +57,6 @@ class CloseIssueRequestHandler(tornado.web.RequestHandler):
             """Closes issue.
 
             """
-            self.issue.state = constants.STATE_CLOSED
             self.issue.date_closed = dt.datetime.utcnow()
 
 
@@ -65,6 +64,6 @@ class CloseIssueRequestHandler(tornado.web.RequestHandler):
         with db.session.create(commitable=True):
             process_request(self, [
                 _validate_issue_exists,
-                _validate_issue_status,
+                _validate_issue_workflow,
                 _close_issue
                 ])

@@ -63,8 +63,8 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
                 raise exceptions.IssueDescriptionChangeRatioError(diff_ratio)
 
 
-        def _validate_issue_status():
-            """Validates that issue state allows it to be updated.
+        def _validate_issue_workflow():
+            """Validates that issue workflow allows it to be updated.
 
             """
             if self.issue.workflow != constants.WORKFLOW_NEW and \
@@ -73,7 +73,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
 
 
         def _persist():
-            """Persists dB state changes.
+            """Persists dB changes.
 
             """
             # Update issue.
@@ -83,7 +83,6 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             issue.description = self.request.data['description']
             issue.materials = ",".join(self.request.data.get('materials', []))
             issue.severity = self.request.data['severity'].lower()
-            issue.state = constants.STATE_CLOSED if issue.date_closed else constants.STATE_OPEN
             issue.title = self.request.data['title']
             issue.url = self.request.data.get('url')
             issue.workflow = self.request.data['workflow'].lower()
@@ -113,6 +112,6 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
                 _validate_issue_exists,
                 _validate_issue_immutable_attributes,
                 _validate_issue_description_change_ratio,
-                _validate_issue_status,
+                _validate_issue_workflow,
                 _persist
                 ])

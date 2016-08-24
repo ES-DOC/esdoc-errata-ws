@@ -40,7 +40,6 @@ class IssueSearchSetupRequestHandler(tornado.web.RequestHandler):
                 'institute': constants.INSTITUTE,
                 'project': constants.PROJECT,
                 'severity': constants.SEVERITY,
-                'state': constants.STATE,
                 'workflow': constants.WORKFLOW
             }
 

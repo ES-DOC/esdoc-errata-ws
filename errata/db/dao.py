@@ -91,7 +91,6 @@ def get_issues(
     institute=None,
     project=None,
     severity=None,
-    state=None,
     workflow=None
     ):
     """Returns issues that match the passed filters.
@@ -99,8 +98,7 @@ def get_issues(
     :param str institute: Institute associated with the issue, e.g. ipsl.
     :param str project: Project associated with the issue, e.g. cmip6.
     :param str severity: Issue severity, e.g. low.
-    :param str state: Issue state, e.g. open.
-    :param str status: Issue workflow, e.g. hold.
+    :param str status: Issue status, e.g. hold.
 
     :returns: List of matching issues.
     :rtype: list
@@ -111,10 +109,10 @@ def get_issues(
         Issue.institute,
         Issue.uid,
         Issue.title,
-        Issue.state,
         Issue.severity,
         Issue.workflow,
         as_date_string(Issue.date_created),
+        as_date_string(Issue.date_closed),
         as_date_string(Issue.date_updated)
         )
 
@@ -124,8 +122,6 @@ def get_issues(
         qry = qry.filter(Issue.project == project)
     if severity:
         qry = qry.filter(Issue.severity == severity)
-    if state:
-        qry = qry.filter(Issue.state == state)
     if workflow:
         qry = qry.filter(Issue.workflow == workflow)
 

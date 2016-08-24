@@ -22,19 +22,19 @@ HTTP_HEADER_Access_Control_Allow_Origin = "Access-Control-Allow-Origin"
 # Default endpoint.
 DEFAULT_ENDPOINT = r'/1/ops/heartbeat'
 
-# Issue workflow state - new.
+# Issue workflow - new.
 WORKFLOW_NEW = u'new'
 
-# Issue workflow state - on hold.
+# Issue workflow - on hold.
 WORKFLOW_ON_HOLD = u'onhold'
 
-# Issue workflow state - resolved.
+# Issue workflow - resolved.
 WORKFLOW_RESOLVED = u'resolved'
 
-# Issue workflow state - won fix.
+# Issue workflow - won fix.
 WORKFLOW_WONT_FIX = u'wontfix'
 
-# Issue workflow state set.
+# Issue workflow set.
 WORKFLOW = [
 	{
 		'color': "#00ff00",
@@ -56,26 +56,6 @@ WORKFLOW = [
 		'label': 'Wont Fix',
 		'key': WORKFLOW_WONT_FIX
 	},
-]
-
-# Issue state - open.
-STATE_OPEN = u"open"
-
-# Issue state - closed.
-STATE_CLOSED = u"closed"
-
-# Issue states set.
-STATE = [
-	{
-		'color': "#00ff00",
-		'label': 'Open',
-		'key': STATE_OPEN
-	},
-	{
-		'color': "#ff9900",
-		'label': 'Closed',
-		'key': STATE_CLOSED
-	}
 ]
 
 # Issue severity - low.
