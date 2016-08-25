@@ -31,6 +31,9 @@ _ABBREVIATIONS = ("id", "uid", "uuid")
 # Default separator.
 _DEFAULT_SEPARATOR = "_"
 
+# Set of db coumns that are ignored when converting db entity instances.
+_IGNORED_DB_COLUMNS = {'id', 'row_create_date', 'row_update_date'}
+
 
 def to_dict(data, key_convertor=None):
     """Converts input data to a dictionary.
@@ -62,7 +65,7 @@ def to_dict(data, key_convertor=None):
     # SqlAlchemy model instances.
     elif sa.inspect(data, False):
         return  {c.name if key_convertor is None else key_convertor(c.name): getattr(data, c.name)
-                 for c in sa.inspect(data).mapper.columns if c.name not in ['id', 'row_create_date', 'row_update_date']}
+                 for c in sa.inspect(data).mapper.columns if c.name not in _IGNORED_DB_COLUMNS}
 
     else:
         return data
