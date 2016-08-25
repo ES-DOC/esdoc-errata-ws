@@ -35,7 +35,7 @@ class HandleNotFoundError(Exception):
             )
 
 
-class FileNotFoundInSuccessor(Exception):
+class FileNotFoundInHandle(Exception):
     """Raised if file is no longer traceable for whatever reason.
 
     """
@@ -43,6 +43,8 @@ class FileNotFoundInSuccessor(Exception):
         """Instance constructor.
 
         """
-        super(FileNotFoundInSuccessor, self).__init__(
-            'FILE WAS NOT FOUND IN SUCCESSOR'
+        self.message = 'File missing from previous dataset, this maybe due to filename change, errata information ' \
+                       'cannot be deduced any further'
+        super(FileNotFoundInHandle, self).__init__(
+            'FILE WAS NOT FOUND IN DATASET'
             )

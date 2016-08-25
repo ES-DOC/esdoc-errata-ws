@@ -13,10 +13,9 @@ from time import time
 
 from b2handle.handleclient import EUDATHandleClient
 
-from errata.handle_service.crawler import crawler_v1
+from errata.handle_service.crawler import crawler
 from errata.handle_service.utils import get_handle_by_handle_string
 from errata.utils import logger
-
 
 
 def harvest_errata_information(input_handle_string):
@@ -31,18 +30,25 @@ def harvest_errata_information(input_handle_string):
     logger.log("--HANDLE CLIENT CREATED--")
     logger.log("----------------------------------BEGIN ISSUE TRACKING----------------------------------")
     handle = get_handle_by_handle_string(input_handle_string, handle_client)
-
-    # initialize the handleRegister instance
-    crawler_output = crawler_v1(handle, input_handle_string, handle_client)
-    # crawler_output = crawler(handle, input_handle_string, handle_client)
-    list_of_uids = crawler_output[0]
-    dataset_or_file_id = crawler_output[1]
-    is_latest = crawler_output[2]
-    has_issues = crawler_output[3]
-    incomplete_retracing = crawler_output[4]
+    list_of_uids = crawler(handle, handle_client)
     logger.log("ELAPSED TIME TILL COMPLETION : " + str(time()-tick) + " SECONDS")
     logger.log("-----------------------------------END ISSUE TRACKING-----------------------------------")
     logger.log("LIST OF UIDS GENERATED IS...")
     logger.log(list_of_uids)
+    print(list_of_uids)
+    return list_of_uids
 
-    return list_of_uids, dataset_or_file_id, is_latest, has_issues, incomplete_retracing
+# Dataset A
+# harvest_errata_information('21.14100/aae01ba2-8436-378d-84ed-5a06b9fbee46')
+# Dataset B:
+# harvest_errata_information('21.14100/37043d8e-ac5e-3843-a019-c03017cc68aa')
+# Dataset C:
+# harvest_errata_information('21.14100/e0560a9d-2227-3175-b943-fc26c427a923')
+# Dataset D:
+# harvest_errata_information('21.14100/bc3d4e81-bfbd-3a3f-a99f-4a2ec64b5962')
+# temperature file
+# harvest_errata_information('21.14100/d9053480-0e0d-11e6-a148-3e1d05defe78')
+# rainfall file
+# harvest_errata_information('21.14100/28ju73be-0e10-11e6-a148-a7751ce7ec0c')
+# rainfall_1 file
+# harvest_errata_information('21.14100/0b79de23-d15a-4827-a656-274728605343')

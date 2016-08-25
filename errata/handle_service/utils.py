@@ -11,7 +11,7 @@
 """
 import random
 import uuid
-import difflib
+from difflib import SequenceMatcher
 
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
@@ -22,7 +22,6 @@ from errata.handle_service.constants import *
 from errata.handle_service import constants
 from errata.handle_service import exceptions
 from errata.utils import logger
-
 
 
 # Disable requests warnings.
@@ -68,6 +67,12 @@ def has_successor_and_predecessors(handle):
 
 
 def is_same_checksum(current_checksum, received_checksum):
+    """
+    Compares checksums
+    :param current_checksum:
+    :param received_checksum:
+    :return: Boolean
+    """
     if current_checksum != received_checksum:
         return False
     else:
@@ -136,78 +141,76 @@ def get_issue_information(direction):
         return None
 
 
-def get_parent_handle(file_handle, handle_client_instance):
-    """
-    Using a file handle, this function returns the handle of the containing dataset
-    :param file_handle: handle string of the file
-    :param handle_client_instance : EUDATClient instance
-    :returns: file handle
-    """
-    return get_handle_by_handle_string(file_handle[PARENT], handle_client_instance)
+# def find_file_within_dataset(dataset_handle_register, file_handle_register, direction):
+#     """
+#     Finds specific file, designated by its filename in a dataset designated by its handle.
+#     :param dataset_handle_register: handle of the dataset
+#     :param file_handle_register: handle of the file
+#     :param direction: up or down needed for errata extraction
+#     :returns: next_file_handle(same if it is found within dataset), errata_information(None if no change occurred)
+#     :except file not found in successor
+#     """
+#     # list containing the file_handle_strings
+#     list_of_children = dataset_handle_register.children
+#     logger.log("THE CURRENT DATASET CONTAINS " + str(len(list_of_children)) + " CHILDREN...")
+#     logger.log(list_of_children)
+#     logger.log("STARTING LOOP OVER CHILDREN...")
+#
+#     # Test added to improve performance
+#     # If file handle is automatically in the list we just bypass the filename test.
+#     if file_handle_register.handle not in list_of_children:
+#         logger.log('FILE NOT FOUND IN CHILDREN LIST, PROCEEDING TO FILENAME TESTING...')
+#         for fhs in list_of_children:
+#             logger.log("PROCESSING FILE " + file_handle_register.filename + " IN COMPARISON TO " + fhs[FILE_NAME])
+#             logger.log("STARTING RESEMBLANCE TEST.")
+#             ratio = difflib.SequenceMatcher(None, file_handle_register.filename, fhs[FILE_NAME]).ratio()
+#             if file_handle_register.filename == fhs[FILE_NAME]:
+#                 logger.log("FILE HAS BEEN FOUND WITHIN PREDECESSOR/SUCCESSOR COMPARING CHECKSUMS...")
+#                 if is_same_checksum(file_handle_register.checksum, fhs[CHECKSUM]):
+#                     logger.log("SIMILAR CHECKSUMS WERE FOUND, FILE IS INTACT SO FAR...")
+#                     return fhs, None
+#                 else:
+#                     # TODO REPLACE NONE WITH PROPER ERRATA INFO
+#                     logger.log("CHECKSUM DIFFERENCE HAS BEEN DETECTED, REPLACING FILE HANDLE AND RETRIEVING ISSUE...")
+#                     if direction == SUCCESSOR:
+#                         logger.log('FILE WAS CHANGED IN THE SUCCEDING DATASET, GETTING ISSUE FROM PREVIOUS HANDLE')
+#                         return fhs, dataset_handle_register.predecessor.errata
+#                     elif direction == PREDECESSOR:
+#                         logger.log('FILE WAS CHANGED IN THE PRECEDING DATASET, GETTING ISSUE FROM THIS HANDLE')
+#                         return fhs, dataset_handle_register.errata
+#
+#             elif 1 > ratio > 0.9:
+#                 logger.log('A CONTENDER TO THAT BARES A STRONG RESEMBLANCE TO THE FILE IN HANDS HAS BEEN DETECTED...')
+#             else:
+#                 pass
+#         logger.log_warning("FILE WAS NOT FOUND IN THIS PREDECESSOR/SUCCESSOR...")
+#         logger.log_warning("DEDUCING ERRATA INFORMATION ON AGGREGATION LEVEL OF FILES IS IMPOSSIBLE IN THIS CASE...")
+#         logger.log(dataset_handle_register.errata)
+#         return file_handle_register.handle, dataset_handle_register.errata
+#     else:
+#         logger.log('FILE UNCHANGED, MOVING ON...')
+#         return file_handle_register.handle, None
 
 
-def find_file_within_dataset(dataset_handle_register, file_handle_register, direction):
+def find_file_in_dataset(dataset_record, file_record):
     """
     Finds specific file, designated by its filename in a dataset designated by its handle.
-    :param dataset_handle_register: handle of the dataset
-    :param file_handle_register: handle of the file
-    :param direction: up or down needed for errata extraction
+    :param dataset_record: dataset record
+    :param file_record: file record
     :returns: next_file_handle(same if it is found within dataset), errata_information(None if no change occurred)
     :except file not found in successor
     """
-    # list containing the file_handle_strings
-    list_of_children = dataset_handle_register.children
-    logger.log("THE CURRENT DATASET CONTAINS " + str(len(list_of_children)) + " CHILDREN...")
-    logger.log(list_of_children)
-    logger.log("STARTING LOOP OVER CHILDREN...")
-
-    # Test added to improve performance
-    # If file handle is automatically in the list we just bypass the filename test.
-    if file_handle_register.handle not in list_of_children:
-        logger.log('FILE NOT FOUND IN CHILDREN LIST, PROCEEDING TO FILENAME TESTING...')
-        for fhs in list_of_children:
-            logger.log("PROCESSING FILE " + file_handle_register.filename + " IN COMPARISON TO " + fhs[FILE_NAME])
-            logger.log("STARTING RESEMBLANCE TEST.")
-            ratio = difflib.SequenceMatcher(None, file_handle_register.filename, fhs[FILE_NAME]).ratio()
-            if file_handle_register.filename == fhs[FILE_NAME]:
-                logger.log("FILE HAS BEEN FOUND WITHIN PREDECESSOR/SUCCESSOR COMPARING CHECKSUMS...")
-                if is_same_checksum(file_handle_register.checksum, fhs[CHECKSUM]):
-                    logger.log("SIMILAR CHECKSUMS WERE FOUND, FILE IS INTACT SO FAR...")
-                    return fhs, None
-                else:
-                    # TODO REPLACE NONE WITH PROPER ERRATA INFO
-                    logger.log("CHECKSUM DIFFERENCE HAS BEEN DETECTED, REPLACING FILE HANDLE AND RETRIEVING ISSUE...")
-                    if direction == SUCCESSOR:
-                        logger.log('FILE WAS CHANGED IN THE SUCCEDING DATASET, GETTING ISSUE FROM PREVIOUS HANDLE')
-                        return fhs, dataset_handle_register.predecessor.errata
-                    elif direction == PREDECESSOR:
-                        logger.log('FILE WAS CHANGED IN THE PRECEDING DATASET, GETTING ISSUE FROM THIS HANDLE')
-                        return fhs, dataset_handle_register.errata
-
-            elif 1 > ratio > 0.9:
-                logger.log('A CONTENDER TO THAT BARES A STRONG RESEMBLANCE TO THE FILE IN HANDS HAS BEEN DETECTED...')
-            else:
-                pass
-        logger.log_warning("FILE WAS NOT FOUND IN THIS PREDECESSOR/SUCCESSOR...")
-        logger.log_warning("DEDUCING ERRATA INFORMATION ON AGGREGATION LEVEL OF FILES IS IMPOSSIBLE IN THIS CASE...")
-        logger.log(dataset_handle_register.errata)
-        return file_handle_register.handle, dataset_handle_register.errata
-    else:
-        logger.log('FILE UNCHANGED, MOVING ON...')
-        return file_handle_register.handle, None
-
-
-def get_parent_handle(file_handle, handle_client_instance):
-    """Using a file handle, this function returns the handle of the containing dataset.
-
-    :param dict file_handle: A file level handle.
-    :param handle_client_instance : EUDATClient instance
-
-    :returns: A file handle.
-    :rtype: str
-
-    """
-    return get_handle_by_handle_string(file_handle[PARENT], handle_client_instance)
+    for child in dataset_record.children:
+        if file_record.filename == child[FILE_NAME]:
+            logger.log('File found by file name in dataset.')
+            return child
+        elif file_record.checksum == child[CHECKSUM]:
+            logger.log('File found by checksum in dataset.')
+            return child
+        elif SequenceMatcher(None, file_record.filename, child[FILE_NAME]).ratio() > 0.95:
+            logger.log('Found a really similar file, {} and {}'.format(file_record.filename, child[FILE_NAME]))
+            return child
+    raise exceptions.FileNotFoundInHandle
 
 
 def get_aggregation_level(handle):
@@ -273,38 +276,18 @@ def get_successor_or_predecessor(handle, key, handle_client_instance):
 
 def list_children_filenames(dataset_handle, handle_client_instance):
     """Lists children filenames from dataset.
-
-    :param _dataset_handle: dataset handle
+    :param dataset_handle: dataset handle
     :param handle_client_instance: EUDATClient instance
-
     :returns: list of children contained in dataset
     :rtype: list
 
     """
     result = []
-    for child in dataset_handle[constants.CHILDREN].split(';'):
+    # the replace has been added to remove possible prefix in handle strings retrieved from the handle server.
+    for child in map(lambda x: x.replace(constants.HDL_PREFIX, ''), dataset_handle[constants.CHILDREN].split(';')):
         child_handle = get_handle_by_handle_string(child, handle_client_instance)
         result.append(child_handle[constants.FILE_NAME])
-
     return result
-
-
-def list_children_handles(dataset_handle, handle_client_instance):
-    """Lists children from dataset.
-
-    :param dataset_handle: dataset handle
-    :param handle_client_instance: EUDATClient instance
-
-    :returns: list of child handle registers contained in dataset
-    :rtype: list
-
-    """
-    list_of_children = []
-    for child in dataset_handle[constants.CHILDREN].split(';'):
-        child_handle = get_handle_by_handle_string(child, handle_client_instance)
-        list_of_children.append(child_handle)
-
-    return list_of_children
 
 
 def get_issue_id(handle):
@@ -317,7 +300,7 @@ def get_issue_id(handle):
 
     """
     try:
-        return handle['ERRATA_IDS']
+        return handle[constants.ERRATA_IDS]
     except KeyError:
         return random.choice([
             "11221244-2194-4c1f-bdea-4887036a9e63",
