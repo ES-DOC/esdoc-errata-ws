@@ -23,25 +23,27 @@ def validate_get_dataset_issues(dataset_id):
     v.validate_str(dataset_id, "Dataset identifier")
 
 
-def validate_get_issue(uid):
+def validate_get_issue():
     """Function input validator: get_issue.
 
     """
     v.validate_uid(uid, 'Issue unique identifier')
 
 
-def validate_get_issue_datasets(uid):
+def validate_get_issue_datasets(uid=None):
     """Function input validator: get_issue_datasets.
 
     """
-    v.validate_uid(uid, 'Issue unique identifier')
+    if uid:
+        v.validate_uid(uid, 'Issue unique identifier')
 
 
-def validate_get_issue_models(uid):
+def validate_get_issue_models(uid=None):
     """Function input validator: get_issue_models.
 
     """
-    v.validate_uid(uid, 'Issue unique identifier')
+    if uid:
+        v.validate_uid(uid, 'Issue unique identifier')
 
 
 def validate_get_model_issues(model_id):

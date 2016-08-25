@@ -86,6 +86,16 @@ def get_issue(uid):
     return qry.first()
 
 
+def get_all_issues():
+    """Returns all issues.
+
+    :returns: All issues in dB.
+    :rtype: list
+
+    """
+    return query(Issue).all()
+
+
 @validate(validate_get_issues)
 def get_issues(
     institute=None,
@@ -129,7 +139,7 @@ def get_issues(
 
 
 @validate(validate_get_issue_datasets)
-def get_issue_datasets(uid):
+def get_issue_datasets(uid=None):
     """Returns datasets associated with an issue.
 
     :param str uid: Issue unique identifier.
@@ -138,14 +148,20 @@ def get_issue_datasets(uid):
     :rtype: list
 
     """
-    qry = raw_query(IssueDataset.dataset_id)
-    qry = text_filter(qry, IssueDataset.issue_uid, uid)
+    if uid:
+        qry = raw_query(IssueDataset.dataset_id)
+        qry = text_filter(qry, IssueDataset.issue_uid, uid)
+    else:
+        qry = raw_query(
+            IssueDataset.issue_uid,
+            IssueDataset.dataset_id
+            )
 
-    return sorted([i[0] for i in qry.all()])
+    return sorted([i[0] for i in qry.all()]) if uid else qry.all()
 
 
 @validate(validate_get_issue_models)
-def get_issue_models(uid):
+def get_issue_models(uid=None):
     """Returns models associated with an issue.
 
     :param str uid: Issue unique identifier.
@@ -154,10 +170,16 @@ def get_issue_models(uid):
     :rtype: list
 
     """
-    qry = raw_query(IssueModel.model_id)
-    qry = text_filter(qry, IssueModel.issue_uid, uid)
+    if uid:
+        qry = raw_query(IssueModel.model_id)
+        qry = text_filter(qry, IssueModel.issue_uid, uid)
+    else:
+        qry = raw_query(
+            IssueModel.issue_uid,
+            IssueModel.model_id
+            )
 
-    return sorted([i[0] for i in qry.all()])
+    return sorted([i[0] for i in qry.all()]) if uid else qry.all()
 
 
 @validate(validate_get_model_issues)

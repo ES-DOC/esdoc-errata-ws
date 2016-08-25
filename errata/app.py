@@ -41,6 +41,7 @@ def _get_app_endpoints():
         (r'/1/issue/update', handlers.publishing.UpdateIssueRequestHandler),
         (r'/1/issue/close', handlers.publishing.CloseIssueRequestHandler),
         (r'/1/issue/retrieve', handlers.publishing.RetrieveIssueRequestHandler),
+        (r'/1/issue/retrieve-all', handlers.publishing.RetrieveAllIssuesRequestHandler),
         (r'/1/issue/search', handlers.search.IssueSearchRequestHandler),
         (r'/1/issue/search-setup', handlers.search.IssueSearchSetupRequestHandler),
         (r'/1/resolve/issue-from-dataset', handlers.resolve.ResolveIssueFromDatasetRequestHandler),
