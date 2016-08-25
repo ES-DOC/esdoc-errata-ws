@@ -25,8 +25,6 @@ from errata.db.models import Issue
 from errata.db.models import IssueDataset
 from errata.utils import logger
 from errata.utils import constants
-from errata.utils.constants import STATE_CLOSED
-from errata.utils.constants import STATE_OPEN
 
 
 # Define command line arguments.
@@ -94,11 +92,10 @@ def _yield_issue(input_dir, count):
         issue.institute = random.choice(constants.INSTITUTE)['key']
         issue.materials = _get_materials(input_dir)
         issue.severity = random.choice(constants.SEVERITY)['key']
-        issue.state = random.choice(constants.STATE)['key']
         issue.project = random.choice(constants.PROJECT)['key']
         issue.title = u"Test issue title - {}".format(unicode(uuid.uuid4())[:50])
         issue.uid = unicode(uuid.uuid4())
-        issue.workflow = random.choice(constants.WORKFLOW)['key']
+        issue.status = random.choice(constants.STATUS)['key']
 
         yield issue
 

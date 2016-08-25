@@ -14,6 +14,7 @@ import datetime as dt
 import json
 import os
 import urllib
+
 import requests
 
 from errata.utils import constants
@@ -36,15 +37,14 @@ def test_create():
 
     """
     # Invoke WS endpoint.
-    url = _URL_CREATE
     response = requests.post(
-        url,
+        _URL_CREATE,
         data=json.dumps(ISSUE),
         headers={'Content-Type': 'application/json'}
         )
 
     # Assert WS response.
-    _assert_ws_response(url, response)
+    _assert_ws_response(_URL_CREATE, response)
 
 
 def test_retrieve():

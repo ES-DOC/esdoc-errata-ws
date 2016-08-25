@@ -11,17 +11,17 @@
 
 """
 import sqlalchemy
+import tornado
 
 from errata import db
 from errata.utils import constants
-from errata.utils import exceptions
-from errata.utils.http import HTTPRequestHandler
+from errata.utils.http import process_request
 from errata.utils.misc import traverse
 from errata.utils.validation import validate_url
 
 
 
-class CreateIssueRequestHandler(HTTPRequestHandler):
+class CreateIssueRequestHandler(tornado.web.RequestHandler):
     """issue handler.
 
     """
@@ -34,10 +34,7 @@ class CreateIssueRequestHandler(HTTPRequestHandler):
 
             """
             for url in traverse([self.request.data.get((i)) for i in ['url', 'materials']]):
-                try:
-                    validate_url(url)
-                except exceptions.UnreachableURLError as error:
-                    self.throw(error)
+                validate_url(url)
 
 
         def _set_issue():
@@ -45,7 +42,7 @@ class CreateIssueRequestHandler(HTTPRequestHandler):
 
             """
             # Map request data to relational data.
-            issue = db.models.Issue()
+            issue = self.issue = db.models.Issue()
             issue.date_closed = self.request.data.get('dateClosed')
             issue.date_created = self.request.data['dateCreated']
             issue.date_updated = self.request.data.get('dateUpdated', issue.date_created)
@@ -54,37 +51,34 @@ class CreateIssueRequestHandler(HTTPRequestHandler):
             issue.materials = ",".join(self.request.data.get('materials', []))
             issue.project = self.request.data['project'].lower()
             issue.severity = self.request.data['severity'].lower()
-            issue.state = constants.STATE_CLOSED if issue.date_closed else constants.STATE_OPEN
             issue.title = self.request.data['title']
             issue.uid = self.request.data['uid']
             issue.url = self.request.data.get('url')
-            issue.workflow = self.request.data['workflow'].lower()
-
-            self.issue = issue
+            issue.status = self.request.data['status'].lower()
 
 
         def _set_datasets():
             """Sets datasets to be persisted to database.
 
             """
-            self.datasets = []
+            datasets = self.datasets = []
             for dataset_id in self.request.data['datasets']:
                 dataset = db.models.IssueDataset()
                 dataset.dataset_id = dataset_id
                 dataset.issue_uid = self.issue.uid
-                self.datasets.append(dataset)
+                datasets.append(dataset)
 
 
         def _set_models():
             """Sets models to be persisted to database.
 
             """
-            self.models = []
+            models = self.models = []
             for model_id in self.request.data['models']:
                 model = db.models.IssueModel()
                 model.model_id = model_id
                 model.issue_uid = self.issue.uid
-                self.models.append(model)
+                models.append(model)
 
 
         def _persist():
@@ -107,8 +101,8 @@ class CreateIssueRequestHandler(HTTPRequestHandler):
                     db.session.insert(model, False)
 
 
-        # Invoke tasks.
-        self.invoke([
+        # Process request.
+        process_request(self, [
             _validate_issue_urls,
             _set_issue,
             _set_datasets,

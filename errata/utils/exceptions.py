@@ -13,7 +13,27 @@ from errata.utils import constants
 
 
 
-class InvalidJSONSchemaError(Exception):
+class RequestValidationException(Exception):
+    """Base class for request validation exceptions.
+
+    """
+    pass
+
+
+class SecurityError(RequestValidationException):
+    """Raised if a security issue arises.
+
+    """
+    def __init__(self, msg):
+        """Instance constructor.
+
+        """
+        super(SecurityError, self).__init__(
+            "SECURITY EXCEPTION :: {}".format(msg)
+            )
+
+
+class InvalidJSONSchemaError(RequestValidationException):
     """Raised if the submitted issue post data is invalid according to a JSON schema.
 
     """
@@ -25,7 +45,7 @@ class InvalidJSONSchemaError(Exception):
             'ISSUE HAS INVALID JSON SCHEMA: \n{}'.format(json_errors))
 
 
-class UnreachableURLError(Exception):
+class UnreachableURLError(RequestValidationException):
     """Raised if the submitted issue has unreachable (HTTP 404) urls.
 
     """
@@ -37,7 +57,7 @@ class UnreachableURLError(Exception):
             'URL CANNOT BE REACHED: {}'.format(url))
 
 
-class InvalidIssueStatusError(Exception):
+class InvalidIssueStatusError(RequestValidationException):
     """Raised if a submitted issue status is invalid.
 
     """
@@ -48,7 +68,7 @@ class InvalidIssueStatusError(Exception):
         super(InvalidIssueStatusError, self).__init__('ISSUE STATUS CHANGE NOT ALLOWED')
 
 
-class ImmutableIssueAttributeError(Exception):
+class ImmutableIssueAttributeError(RequestValidationException):
     """Raised if an immutable issue attribute is updated.
 
     """
@@ -60,7 +80,7 @@ class ImmutableIssueAttributeError(Exception):
             'ISSUE ATTRIBUTE IS IMMUTABLE: {}'.format(attr_name))
 
 
-class IssueDescriptionChangeRatioError(Exception):
+class IssueDescriptionChangeRatioError(RequestValidationException):
     """Raised if an issue description changes by more than the allowed ratio.
 
     """
@@ -74,7 +94,7 @@ class IssueDescriptionChangeRatioError(Exception):
             )
 
 
-class UnknownIssueError(Exception):
+class UnknownIssueError(RequestValidationException):
     """Raised if an issue in the process of being updated does not exist within dB.
 
     """
@@ -84,17 +104,4 @@ class UnknownIssueError(Exception):
         """
         super(UnknownIssueError, self).__init__(
             "ISSUE IS UNKNOWN: {}".format(uid)
-            )
-
-
-class SecurityError(Exception):
-    """Raised if a security issue arises.
-
-    """
-    def __init__(self, msg):
-        """Instance constructor.
-
-        """
-        super(SecurityError, self).__init__(
-            "SECURITY EXCEPTION :: {}".format(msg)
             )

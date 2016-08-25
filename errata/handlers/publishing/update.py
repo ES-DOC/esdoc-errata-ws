@@ -12,14 +12,16 @@
 """
 import difflib
 
+import tornado
+
 from errata import db
 from errata.utils import constants
 from errata.utils import exceptions
-from errata.utils.http import HTTPRequestHandler
+from errata.utils.http import process_request
 
 
 
-class UpdateIssueRequestHandler(HTTPRequestHandler):
+class UpdateIssueRequestHandler(tornado.web.RequestHandler):
     """issue handler.
 
     """
@@ -31,8 +33,8 @@ class UpdateIssueRequestHandler(HTTPRequestHandler):
             """Validates that the issue has been previously posted to the web-service.
 
             """
-            self.issue = db.dao.get_issue(self.request.data['uid'])
-            if self.issue is None:
+            issue = self.issue = db.dao.get_issue(self.request.data['uid'])
+            if issue is None:
                 raise exceptions.UnknownIssueError(self.request.data['uid'])
 
 
@@ -62,51 +64,51 @@ class UpdateIssueRequestHandler(HTTPRequestHandler):
 
 
         def _validate_issue_status():
-            """Validates that issue state allows it to be updated.
+            """Validates that issue status allows it to be updated.
 
             """
-            if self.issue.workflow != constants.WORKFLOW_NEW and \
-               self.request.data['workflow'] == constants.WORKFLOW_NEW:
+            if self.issue.status != constants.STATUS_NEW and \
+               self.request.data['status'] == constants.STATUS_NEW:
                 raise exceptions.InvalidIssueStatusError()
 
 
         def _persist():
-            """Persists dB state changes.
+            """Persists dB changes.
 
             """
-            # ... update issue.
-            self.issue.date_closed = self.request.data.get('dateClosed')
-            self.issue.date_updated = self.request.data['dateUpdated']
-            self.issue.description = self.request.data['description']
-            self.issue.materials = ",".join(self.request.data.get('materials', []))
-            self.issue.severity = self.request.data['severity'].lower()
-            self.issue.state = constants.STATE_CLOSED if self.issue.date_closed else constants.STATE_OPEN
-            self.issue.title = self.request.data['title']
-            self.issue.url = self.request.data.get('url')
-            self.issue.workflow = self.request.data['workflow'].lower()
+            # Update issue.
+            issue = self.issue
+            issue.date_closed = self.request.data.get('dateClosed')
+            issue.date_updated = self.request.data['dateUpdated']
+            issue.description = self.request.data['description']
+            issue.materials = ",".join(self.request.data.get('materials', []))
+            issue.severity = self.request.data['severity'].lower()
+            issue.title = self.request.data['title']
+            issue.url = self.request.data.get('url')
+            issue.status = self.request.data['status'].lower()
 
-            # ... delete existing datasets / models.
-            db.dao.delete_issue_datasets(self.issue.uid)
-            db.dao.delete_issue_models(self.issue.uid)
+            # Delete existing datasets / models.
+            db.dao.delete_issue_datasets(issue.uid)
+            db.dao.delete_issue_models(issue.uid)
 
-            # ... insert datasets.
+            # Insert datasets.
             for dataset_id in self.request.data.get('datasets', []):
                 dataset = db.models.IssueDataset()
                 dataset.dataset_id = dataset_id
-                dataset.issue_uid = self.issue.uid
+                dataset.issue_uid = issue.uid
                 db.session.insert(dataset, False)
 
-            # ... insert models.
+            # Insert models.
             for model_id in self.request.data.get('models', []):
                 model = db.models.IssueModel()
                 model.model_id = model_id
-                model.issue_uid = self.issue.uid
+                model.issue_uid = issue.uid
                 db.session.insert(model, False)
 
 
-        # Invoke tasks.
+        # Process request.
         with db.session.create(commitable=True):
-            self.invoke([
+            process_request(self, [
                 _validate_issue_exists,
                 _validate_issue_immutable_attributes,
                 _validate_issue_description_change_ratio,

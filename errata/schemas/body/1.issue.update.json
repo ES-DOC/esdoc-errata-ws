@@ -66,6 +66,15 @@
             ],
             "type": "string"
         },
+        "status": {
+            "enum": [
+                "new",
+                "on hold",
+                "wontfix",
+                "resolved"
+            ],
+            "type": "string"
+        },
         "title": {
             "maxLength": 255,
             "minLength": 1,
@@ -79,15 +88,6 @@
             "maxLength": 1023,
             "minLength": 1,
             "type": "string"
-        },
-        "workflow": {
-            "enum": [
-                "new",
-                "on hold",
-                "wontfix",
-                "resolved"
-            ],
-            "type": "string"
         }
     },
     "required": [
@@ -98,9 +98,9 @@
         "models",
         "project",
         "severity",
+        "status",
         "title",
-        "uid",
-        "workflow"
+        "uid"
     ],
      "title": "ES-DOC errata JSON schema: endpoint = /1/issue/update",
    "type": "object"

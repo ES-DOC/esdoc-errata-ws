@@ -15,7 +15,7 @@
     "number": 21,
     "project": "CMIP5",
     "severity": "Low",
-    "workflow": "New",
+    "status": "New",
     "title": "ISSUE WITH LONG TITLEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
     "url": "http://errata.ipsl.upmc.fr/issue/5"
 }

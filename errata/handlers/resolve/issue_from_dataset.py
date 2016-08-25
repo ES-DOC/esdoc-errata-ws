@@ -10,9 +10,11 @@
 
 
 """
+import tornado
+
 from errata import db
-from errata.utils.http import HTTPRequestHandler
-from errata.utils.http import HTTP_HEADER_Access_Control_Allow_Origin
+from errata.utils import constants
+from errata.utils.http import process_request
 
 
 
@@ -20,7 +22,7 @@ from errata.utils.http import HTTP_HEADER_Access_Control_Allow_Origin
 _PARAM_DATASET_ID = 'dataset'
 
 
-class ResolveIssueFromDatasetRequestHandler(HTTPRequestHandler):
+class ResolveIssueFromDatasetRequestHandler(tornado.web.RequestHandler):
     """Search issue request handler.
 
     """
@@ -28,7 +30,7 @@ class ResolveIssueFromDatasetRequestHandler(HTTPRequestHandler):
         """Set HTTP headers at the beginning of the request.
 
         """
-        self.set_header(HTTP_HEADER_Access_Control_Allow_Origin, "*")
+        self.set_header(constants.HTTP_HEADER_Access_Control_Allow_Origin, "*")
 
 
     def get(self):
@@ -39,8 +41,7 @@ class ResolveIssueFromDatasetRequestHandler(HTTPRequestHandler):
             """Pulls data from db.
 
             """
-            with db.session.create():
-                self.issues = db.dao.get_dataset_issues(self.get_argument(_PARAM_DATASET_ID))
+            self.issues = db.dao.get_dataset_issues(self.get_argument(_PARAM_DATASET_ID))
 
 
         def _set_output():
@@ -54,8 +55,9 @@ class ResolveIssueFromDatasetRequestHandler(HTTPRequestHandler):
             }
 
 
-        # Invoke tasks.
-        self.invoke([
-            _set_data,
-            _set_output
-            ])
+        # Process request.
+        with db.session.create():
+            process_request(self, [
+                _set_data,
+                _set_output
+                ])

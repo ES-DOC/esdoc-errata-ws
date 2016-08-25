@@ -42,15 +42,14 @@ def test_create_invalid():
         """
         def _do():
             # Invoke WS endpoint.
-            url = _URL_CREATE
             response = requests.post(
-                url,
+                _URL_CREATE,
                 data=json.dumps(issue),
                 headers={'Content-Type': 'application/json'}
                 )
 
             # Assert WS response.
-            _assert_ws_response(url, response)
+            _assert_ws_response(_URL_CREATE, response)
 
         _do.description = "ERRATA :: WS :: Negative test :: Create Issue :: {} {}".format(attr, description)
 
@@ -64,16 +63,16 @@ def test_create_invalid():
         'institute',
         'project',
         'severity',
+        'status',
         'title',
-        'url',
-        'workflow'
+        'url'
         ]:
         issue = ISSUE.copy()
         # ... non-text values are invalid;
         issue[attr] = 123
         yield _do_test(issue, attr, "is not a string")
         # ... constrained values;
-        if attr not in ['description', 'title']:
+        if attr not in ['description', 'title', 'url']:
             issue[attr] = "invalid-value"
             yield _do_test(issue, attr, "is invalid string value")
 

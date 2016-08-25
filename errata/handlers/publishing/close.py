@@ -12,9 +12,12 @@
 """
 import datetime as dt
 
+import tornado
+
 from errata import db
 from errata.utils import constants
-from errata.utils.http import HTTPRequestHandler
+from errata.utils import exceptions
+from errata.utils.http import process_request
 
 
 
@@ -22,7 +25,7 @@ from errata.utils.http import HTTPRequestHandler
 _PARAM_UID = 'uid'
 
 
-class CloseIssueRequestHandler(HTTPRequestHandler):
+class CloseIssueRequestHandler(tornado.web.RequestHandler):
     """issue handler.
 
     """
@@ -36,31 +39,30 @@ class CloseIssueRequestHandler(HTTPRequestHandler):
             """
             self.issue = db.dao.get_issue(self.get_argument(_PARAM_UID))
             if self.issue is None:
-                raise ValueError("Issue does not exist")
+                raise exceptions.UnknownIssueError(self.get_argument(_PARAM_UID))
 
 
         def _validate_issue_status():
-            """Validates that issue state allows it to be closed.
+            """Validates that issue status allows it to be closed.
 
             """
-            if self.issue.workflow in [
-                constants.WORKFLOW_WONT_FIX,
-                constants.WORKFLOW_RESOLVED
+            if self.issue.status in [
+                constants.STATUS_WONT_FIX,
+                constants.STATUS_RESOLVED
                 ]:
-                raise ValueError("Issue state is not closeable")
+                raise exceptions.InvalidIssueStatusError()
 
 
         def _close_issue():
             """Closes issue.
 
             """
-            self.issue.state = constants.STATE_CLOSED
             self.issue.date_closed = dt.datetime.utcnow()
 
 
-        # Invoke tasks.
+        # Process request.
         with db.session.create(commitable=True):
-            self.invoke([
+            process_request(self, [
                 _validate_issue_exists,
                 _validate_issue_status,
                 _close_issue

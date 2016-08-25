@@ -25,28 +25,26 @@ from sqlalchemy import Enum
 
 
 from errata.db.utils import Entity
-from errata.utils.constants import WORKFLOW_NEW
-from errata.utils.constants import WORKFLOW_ON_HOLD
-from errata.utils.constants import WORKFLOW_RESOLVED
-from errata.utils.constants import WORKFLOW_WONT_FIX
+from errata.utils.constants import STATUS_NEW
+from errata.utils.constants import STATUS_ON_HOLD
+from errata.utils.constants import STATUS_RESOLVED
+from errata.utils.constants import STATUS_WONT_FIX
 from errata.utils.constants import SEVERITY_LOW
 from errata.utils.constants import SEVERITY_MEDIUM
 from errata.utils.constants import SEVERITY_HIGH
 from errata.utils.constants import SEVERITY_CRITICAL
-from errata.utils.constants import STATE_CLOSED
-from errata.utils.constants import STATE_OPEN
 
 
 
 # Database schema.
 _SCHEMA = 'errata'
 
-# Issue workflow enumeration.
-_WORKFLOW_ENUM = Enum(
-    WORKFLOW_NEW,
-    WORKFLOW_ON_HOLD,
-    WORKFLOW_RESOLVED,
-    WORKFLOW_WONT_FIX,
+# Issue status enumeration.
+_STATUS_ENUM = Enum(
+    STATUS_NEW,
+    STATUS_ON_HOLD,
+    STATUS_RESOLVED,
+    STATUS_WONT_FIX,
     schema=_SCHEMA,
     name="IssueWorkflowEnum"
     )
@@ -59,14 +57,6 @@ _SEVERITY_ENUM = Enum(
     SEVERITY_CRITICAL,
     schema=_SCHEMA,
     name="IssueSeverityEnum"
-    )
-
-# Issue state enumeration.
-_STATE_ENUM = Enum(
-    STATE_CLOSED,
-    STATE_OPEN,
-    schema=_SCHEMA,
-    name="IssueStateEnum"
     )
 
 
@@ -86,9 +76,8 @@ class Issue(Entity):
     uid = Column(Unicode(63), nullable=False, unique=True, default=uuid.uuid4())
     title = Column(Unicode(255), nullable=False)
     description = Column(Text, nullable=False)
-    state = Column(_STATE_ENUM, nullable=False)
     severity = Column(_SEVERITY_ENUM, nullable=False)
-    workflow = Column(_WORKFLOW_ENUM, nullable=False)
+    status = Column(_STATUS_ENUM, nullable=False)
     date_created = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
     date_updated = Column(DateTime)
     date_closed = Column(DateTime)

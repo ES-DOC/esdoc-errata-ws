@@ -8,6 +8,7 @@ main()
 {
     log "SH : installing virtual environment ..."
 
+    pip install --upgrade pip
     pip install --upgrade virtualenv
     virtualenv $ERRATA_HOME/venv
     source $ERRATA_HOME/venv/bin/activate

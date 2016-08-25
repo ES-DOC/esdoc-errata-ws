@@ -16,63 +16,46 @@ import uuid
 
 
 
+# HTTP CORS header.
+HTTP_HEADER_Access_Control_Allow_Origin = "Access-Control-Allow-Origin"
+
 # Default endpoint.
 DEFAULT_ENDPOINT = r'/1/ops/heartbeat'
 
-# Issue workflow state - new.
-WORKFLOW_NEW = u'new'
+# Issue status - new.
+STATUS_NEW = u'new'
 
-# Issue workflow state - on hold.
-WORKFLOW_ON_HOLD = u'onhold'
+# Issue status - on hold.
+STATUS_ON_HOLD = u'onhold'
 
-# Issue workflow state - resolved.
-WORKFLOW_RESOLVED = u'resolved'
+# Issue status - resolved.
+STATUS_RESOLVED = u'resolved'
 
-# Issue workflow state - won fix.
-WORKFLOW_WONT_FIX = u'wontfix'
+# Issue status - won fix.
+STATUS_WONT_FIX = u'wontfix'
 
-# Issue workflow state set.
-WORKFLOW = [
+# Issue status set.
+STATUS = [
 	{
 		'color': "#00ff00",
 		'label': 'New',
-		'key': WORKFLOW_NEW
+		'key': STATUS_NEW
 	},
 	{
 		'color': "#ff9900",
 		'label': 'On Hold',
-		'key': WORKFLOW_ON_HOLD
+		'key': STATUS_ON_HOLD
 	},
 	{
 		'color': "#0c343d",
 		'label': 'Resolved',
-		'key': WORKFLOW_RESOLVED
+		'key': STATUS_RESOLVED
 	},
 	{
 		'color': "#38761d",
 		'label': 'Wont Fix',
-		'key': WORKFLOW_WONT_FIX
+		'key': STATUS_WONT_FIX
 	},
-]
-
-# Issue state - open.
-STATE_OPEN = u"open"
-
-# Issue state - closed.
-STATE_CLOSED = u"closed"
-
-# Issue states set.
-STATE = [
-	{
-		'color': "#00ff00",
-		'label': 'Open',
-		'key': STATE_OPEN
-	},
-	{
-		'color': "#ff9900",
-		'label': 'Closed',
-		'key': STATE_CLOSED
-	}
 ]
 
 # Issue severity - low.
@@ -211,5 +194,5 @@ ISSUE = {
     'title': unicode(uuid.uuid4()),
     'uid': unicode(uuid.uuid4()),
     'url': u"http://errata.ipsl.upmc.fr/issue/1",
-    'workflow': WORKFLOW_NEW
+    'status': STATUS_NEW
     }
