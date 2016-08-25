@@ -16,7 +16,6 @@ import os
 import random
 import uuid
 
-import arrow
 import requests
 
 from errata.utils.constants import INSTITUTE
@@ -31,7 +30,7 @@ _URL = os.getenv("ERRATA_API")
 _URL_CREATE = "{}/1/issue/create".format(_URL)
 _URL_SEARCH_SETUP = "{}/1/issue/search-setup".format(_URL)
 _URL_SEARCH = "{}/1/issue/search".format(_URL)
-_URL_SEARCH_PARAMS = "?timestamp={}&institute={}&project={}&severity={}&status={}"
+_URL_SEARCH_PARAMS = "?institute={}&project={}&severity={}&status={}"
 
 
 def test_search_setup():
@@ -82,7 +81,6 @@ def test_search():
     for institute, project, severity, status in expected:
         # ... invoke WS;
         url = "{}{}".format(_URL_SEARCH, _URL_SEARCH_PARAMS.format(
-            arrow.now().timestamp,
             institute,
             project,
             severity,

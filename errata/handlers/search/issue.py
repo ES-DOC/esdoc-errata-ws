@@ -22,7 +22,6 @@ from errata.utils.http import process_request
 _PARAM_INSTITUTE = 'institute'
 _PARAM_PROJECT = 'project'
 _PARAM_SEVERITY = 'severity'
-_PARAM_TIMESTAMP = 'timestamp'
 _PARAM_STATUS = 'status'
 
 
@@ -78,7 +77,6 @@ class IssueSearchRequestHandler(tornado.web.RequestHandler):
             self.output = {
                 'count': len(self.issues),
                 'results': self.issues,
-                'timestamp': self.get_argument(_PARAM_TIMESTAMP),
                 'total': self.total,
             }
 

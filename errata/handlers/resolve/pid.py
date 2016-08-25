@@ -20,7 +20,6 @@ from errata.utils.http import process_request
 
 # Query parameter names.
 _PARAM_PIDS = 'pids'
-_PARAM_TIMESTAMP = 'timestamp'
 
 
 def _get_errata_information(pid):
@@ -36,6 +35,8 @@ def _get_errata_information(pid):
 
     """
     data = harvest_errata_information(pid)
+
+    print data
 
     return pid, sorted(data.values(), key=lambda i: i[3])
 
@@ -67,8 +68,7 @@ class ResolvePIDRequestHandler(tornado.web.RequestHandler):
 
             """
             self.output = {
-                'errata': self.errata,
-                'timestamp': self.get_argument(_PARAM_TIMESTAMP)
+                'errata': self.errata
             }
 
 

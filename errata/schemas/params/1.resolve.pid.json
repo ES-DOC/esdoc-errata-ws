@@ -11,14 +11,6 @@
                 "type": "string"
             },
             "type": "array"
-        },
-        "timestamp": {
-            "items": {
-                "minItems": 1,
-                "maxItems": 1,
-                "type": "string"
-            },
-            "type": "array"
         }
     },
     "required": [
