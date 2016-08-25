@@ -52,20 +52,15 @@ class RetrieveAllIssuesRequestHandler(tornado.web.RequestHandler):
 
                 """
                 obj = convertor.to_dict(issue)
-
-                # Remove db injected fields.
-                del obj['id']
-                del obj['row_create_date']
-                del obj['row_update_date']
-
-                # Set array fields.
                 obj['datasets'] = sorted([i[1] for i in self.datasets if i[0] == issue.uid])
                 obj['materials'] = sorted(issue.materials.split(","))
                 obj['models'] = sorted([i[1] for i in self.models if i[0] == issue.uid])
 
                 return obj
 
+
             self.output = {
+                'count': len(self.issues),
                 'issues': [_encode(i) for i in self.issues]
             }
 

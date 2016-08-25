@@ -52,15 +52,7 @@ class RetrieveIssueRequestHandler(tornado.web.RequestHandler):
             """Sets response to be returned to client.
 
             """
-            # Encode issue as a simple dictionary.
             obj = convertor.to_dict(self.issue)
-
-            # Remove db injected fields.
-            del obj['id']
-            del obj['row_create_date']
-            del obj['row_update_date']
-
-            # Set array fields.
             obj['datasets'] = self.datasets
             obj['materials'] = sorted(self.issue.materials.split(","))
             obj['models'] = self.models

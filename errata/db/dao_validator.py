@@ -23,7 +23,7 @@ def validate_get_dataset_issues(dataset_id):
     v.validate_str(dataset_id, "Dataset identifier")
 
 
-def validate_get_issue():
+def validate_get_issue(uid):
     """Function input validator: get_issue.
 
     """
