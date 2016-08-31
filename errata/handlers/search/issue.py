@@ -50,10 +50,10 @@ class IssueSearchRequestHandler(tornado.web.RequestHandler):
                 _PARAM_SEVERITY,
                 _PARAM_STATUS,
             }:
-                if self.get_argument(param) != "*":
-                    setattr(self, param, self.get_argument(param).lower())
-                else:
+                if self.get_argument(param, None) in {None, "*"}:
                     setattr(self, param, None)
+                else:
+                    setattr(self, param, self.get_argument(param).lower())
 
 
         def _set_data():

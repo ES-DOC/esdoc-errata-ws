@@ -216,7 +216,6 @@ def process_request(handler, tasks, error_tasks=None):
     # ... normal processing;
     for task in tasks:
         try:
-
             _invoke(handler, task)
         except Exception as err:
             # ... error processing;
@@ -226,3 +225,4 @@ def process_request(handler, tasks, error_tasks=None):
             # ... error processing exceptions are suppressed
             except:
                 pass
+        break
