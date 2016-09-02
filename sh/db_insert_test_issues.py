@@ -19,7 +19,8 @@ import sqlalchemy
 
 from errata import db
 from errata.db.models import Issue
-from errata.db.models import IssueDataset
+from errata.db.models import IssueFacet
+from errata.utils import constants
 from errata.utils import logger
 
 
@@ -99,16 +100,17 @@ def _yield_issues(input_dir):
                   _get_issue_id(fpath)
 
 
-def _yield_datasets(input_dir, issue, issue_id):
-    """Yields datasets for testing purposes.
+def _yield_dataset_facets(input_dir, issue, issue_id):
+    """Yields dataset facets for testing purposes.
 
     """
-    for dataset_id in _get_datasets(input_dir, issue_id):
-        dataset = IssueDataset()
-        dataset.issue_uid = issue.uid
-        dataset.dataset_id = dataset_id
+    for identifier in _get_datasets(input_dir, issue_id):
+        facet = IssueFacet()
+        facet.issue_uid = issue.uid
+        facet.facet_id = identifier
+        facet.facet_type = constants.FACET_TYPE_DATASET
 
-        yield dataset
+        yield facet
 
 
 def _main(args):
@@ -134,11 +136,11 @@ def _main(args):
                 issues.append(issue)
                 logger.log_db("issue inserted :: {}".format(issue.uid))
 
-        # Insert related datasets.
+        # Insert search facets.
         for issue in issues:
-            for dataset in _yield_datasets(args.input_dir, issue, issue.file_id):
+            for facet in _yield_dataset_facets(args.input_dir, issue, issue.file_id):
                 try:
-                    db.session.insert(dataset)
+                    db.session.insert(facet)
                 except sqlalchemy.exc.IntegrityError:
                     db.session.rollback()
 

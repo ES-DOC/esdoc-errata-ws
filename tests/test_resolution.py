@@ -16,70 +16,65 @@ import urllib
 
 import requests
 
-from errata.utils.constants import ISSUE
+from errata.utils import constants
 
 
 
 # Set of target urls.
 _URL = os.getenv("ERRATA_API")
 _URL_CREATE = "{}/1/issue/create".format(_URL)
-_URL_RESOLVE_DATASET = "{}/1/resolve/issue-from-dataset?{}".format(
-    _URL, urllib.urlencode({'dataset': ISSUE['datasets'][0]}))
-_URL_RESOLVE_MODEL = "{}/1/resolve/issue-from-model?{}".format(
-    _URL, urllib.urlencode({'model': ISSUE['models'][0]}))
+_URL_RESOLVE = "{}/1/resolve/issue?{}"
+
+_URL_RESOLVE_DATASET = "{}/1/resolve/issue?facetType=dataset&{}".format(
+    _URL, urllib.urlencode({'facetID': constants.ISSUE['datasets'][0]}))
+_URL_RESOLVE_MODEL = "{}/1/resolve/issue?facetType=model&{}".format(
+    _URL, urllib.urlencode({'facetID': constants.ISSUE['models'][0]}))
+
+
+def test_resolve():
+    """ERRATA :: WS :: Postive Test :: Resolve issue(s) from facet id.
+
+    """
+    def _do(facet_type):
+        """Executes create issue unit test.
+
+        """
+        # Publish test issue.
+        _publish_issue()
+
+        # Invoke WS endpoint.
+        endpoint = _URL_RESOLVE.format(_URL, urllib.urlencode({
+            'facetType': facet_type,
+            'facetID': constants.ISSUE["{}s".format(facet_type)][0]
+        }))
+        response = requests.get(endpoint)
+
+        # Perform standard asserts.
+        content = _assert_ws_response(endpoint, response)
+
+        # Perform specific asserts.
+        assert constants.ISSUE['uid'] in content['issueIdentifiers']
+        assert content['facetID'] == constants.ISSUE["{}s".format(facet_type)][0]
+        assert content['facetType'] == facet_type
+        assert content['count'] >= 1
+        assert content['count'] == len(content['issueIdentifiers'])
+
+
+    for facet_type in constants.FACET_TYPE:
+        _do.description = "ERRATA :: WS :: Postive test :: Resolve Issue from {}".format(facet_type)
+
+        yield _do, facet_type
 
 
 def _publish_issue():
     """Publishes a test issue.
 
     """
-    # Invoke WS endpoint.
-    url = _URL_CREATE
-    response = requests.post(
-        url,
-        data=json.dumps(ISSUE),
+    requests.post(
+        _URL_CREATE,
+        data=json.dumps(constants.ISSUE),
         headers={'Content-Type': 'application/json'}
         )
-
-
-def test_resolve_dataset():
-    """ERRATA :: WS :: Postive Test :: Resolve issue(s) from dataset id.
-
-    """
-    # Publish test issue.
-    _publish_issue()
-
-    # Invoke WS endpoint.
-    response = requests.get(_URL_RESOLVE_DATASET)
-
-    # Perform standard asserts.
-    content = _assert_ws_response(_URL_RESOLVE_DATASET, response)
-
-    # Perform specific asserts.
-    assert ISSUE['uid'] in content['issueIdentifiers']
-    assert  ISSUE['datasets'][0] == content['datasetID']
-    assert  content['count'] >= 1
-    assert  content['count'] == len(content['issueIdentifiers'])
-
-
-def test_resolve_model():
-    """ERRATA :: WS :: Postive Test :: Resolve issue(s) from model id.
-
-    """
-    # Publish test issue.
-    _publish_issue()
-
-    # Invoke WS endpoint.
-    response = requests.get(_URL_RESOLVE_MODEL)
-
-    # Perform standard asserts.
-    content = _assert_ws_response(_URL_RESOLVE_MODEL, response)
-
-    # Perform specific asserts.
-    assert ISSUE['uid'] in content['issueIdentifiers']
-    assert  ISSUE['models'][0] == content['modelID']
-    assert  content['count'] >= 1
-    assert  content['count'] == len(content['issueIdentifiers'])
 
 
 def _assert_ws_response(

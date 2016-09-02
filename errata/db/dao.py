@@ -9,17 +9,13 @@
 
 
 """
-from errata.db.dao_validator import validate_delete_issue_datasets
-from errata.db.dao_validator import validate_delete_issue_models
-from errata.db.dao_validator import validate_get_dataset_issues
+from errata.db.dao_validator import validate_delete_facets
+from errata.db.dao_validator import validate_get_issues_by_facet
 from errata.db.dao_validator import validate_get_issue
 from errata.db.dao_validator import validate_get_issues
-from errata.db.dao_validator import validate_get_issue_datasets
-from errata.db.dao_validator import validate_get_issue_models
-from errata.db.dao_validator import validate_get_model_issues
+from errata.db.dao_validator import validate_get_facets
 from errata.db.models import Issue
-from errata.db.models import IssueDataset
-from errata.db.models import IssueModel
+from errata.db.models import IssueFacet
 from errata.db.session import query
 from errata.db.session import raw_query
 from errata.db.utils import text_filter
@@ -28,46 +24,39 @@ from errata.utils.validation import validate
 
 
 
-@validate(validate_delete_issue_datasets)
-def delete_issue_datasets(uid):
-    """Deletes datasets associated with an issue.
+@validate(validate_delete_facets)
+def delete_facets(issue_uid, facet_type=None):
+    """Deletes search facets associated with an issue.
 
-    :param str uid: Issue unique identifier.
+    :param str issue_uid: Issue unique identifier.
+    :param str facet_type: Type of issue facet, e.g. dataset.
 
     """
-    qry = query(IssueDataset)
-    qry = qry.filter(IssueDataset.issue_uid == uid)
+    qry = query(IssueFacet)
+    qry = qry.filter(IssueFacet.issue_uid == issue_uid)
+    if facet_type:
+        qry = qry.filter(IssueFacet.facet_type == facet_type)
 
     qry.delete()
 
 
-@validate(validate_delete_issue_models)
-def delete_issue_models(uid):
-    """Deletes models associated with an issue.
+@validate(validate_get_facets)
+def get_facets(issue_uid=None):
+    """Returns datasets associated with an issue.
 
-    :param str uid: Issue unique identifier.
-
-    """
-    qry = query(IssueModel)
-    qry = qry.filter(IssueModel.issue_uid == uid)
-
-    qry.delete()
-
-
-@validate(validate_get_dataset_issues)
-def get_dataset_issues(dataset_id):
-    """Returns issues associated with a dataset.
-
-    :param str dataset_id: Dataset identifier.
+    :param str issue_uid: Issue unique identifier.
 
     :returns: Matching issues.
     :rtype: list
 
     """
-    qry = raw_query(IssueDataset.issue_uid)
-    qry = text_filter(qry, IssueDataset.dataset_id, dataset_id)
+    qry = raw_query(IssueFacet.issue_uid,
+                    IssueFacet.facet_id,
+                    IssueFacet.facet_type)
+    if issue_uid:
+        qry = text_filter(qry, IssueFacet.issue_uid, issue_uid)
 
-    return sorted([i[0] for i in qry.all()])
+    return qry.all()
 
 
 @validate(validate_get_issue)
@@ -86,22 +75,13 @@ def get_issue(uid):
     return qry.first()
 
 
-def get_all_issues():
-    """Returns all issues.
-
-    :returns: All issues in dB.
-    :rtype: list
-
-    """
-    return query(Issue).all()
-
-
 @validate(validate_get_issues)
 def get_issues(
     institute=None,
     project=None,
     severity=None,
-    status=None
+    status=None,
+    subset=True
     ):
     """Returns issues that match the passed filters.
 
@@ -109,22 +89,26 @@ def get_issues(
     :param str project: Project associated with the issue, e.g. cmip6.
     :param str severity: Issue severity, e.g. low.
     :param str status: Issue status, e.g. hold.
+    :param bool subset: Flag indicating whether a subset is requested.
 
     :returns: List of matching issues.
     :rtype: list
 
     """
-    qry = raw_query(
-        Issue.project,
-        Issue.institute,
-        Issue.uid,
-        Issue.title,
-        Issue.severity,
-        Issue.status,
-        as_date_string(Issue.date_created),
-        as_date_string(Issue.date_closed),
-        as_date_string(Issue.date_updated)
-        )
+    if subset:
+        qry = raw_query(
+            Issue.project,
+            Issue.institute,
+            Issue.uid,
+            Issue.title,
+            Issue.severity,
+            Issue.status,
+            as_date_string(Issue.date_created),
+            as_date_string(Issue.date_closed),
+            as_date_string(Issue.date_updated)
+            )
+    else:
+        qry = query(Issue)
 
     if institute:
         qry = qry.filter(Issue.institute == institute)
@@ -138,61 +122,19 @@ def get_issues(
     return qry.all()
 
 
-@validate(validate_get_issue_datasets)
-def get_issue_datasets(uid=None):
-    """Returns datasets associated with an issue.
+@validate(validate_get_issues_by_facet)
+def get_issues_by_facet(facet_id, facet_type):
+    """Returns issues associated with a facet.
 
-    :param str uid: Issue unique identifier.
-
-    :returns: Matching issues.
-    :rtype: list
-
-    """
-    if uid:
-        qry = raw_query(IssueDataset.dataset_id)
-        qry = text_filter(qry, IssueDataset.issue_uid, uid)
-    else:
-        qry = raw_query(
-            IssueDataset.issue_uid,
-            IssueDataset.dataset_id
-            )
-
-    return sorted([i[0] for i in qry.all()]) if uid else qry.all()
-
-
-@validate(validate_get_issue_models)
-def get_issue_models(uid=None):
-    """Returns models associated with an issue.
-
-    :param str uid: Issue unique identifier.
+    :param str facet_id: A facet identifier.
+    :param str facet_type: Type of issue facet, e.g. dataset.
 
     :returns: Matching issues.
     :rtype: list
 
     """
-    if uid:
-        qry = raw_query(IssueModel.model_id)
-        qry = text_filter(qry, IssueModel.issue_uid, uid)
-    else:
-        qry = raw_query(
-            IssueModel.issue_uid,
-            IssueModel.model_id
-            )
-
-    return sorted([i[0] for i in qry.all()]) if uid else qry.all()
-
-
-@validate(validate_get_model_issues)
-def get_model_issues(model_id):
-    """Returns issues associated with a model.
-
-    :param str model_id: Model identifier.
-
-    :returns: Matching issues.
-    :rtype: list
-
-    """
-    qry = raw_query(IssueModel.issue_uid)
-    qry = text_filter(qry, IssueModel.model_id, model_id)
+    qry = raw_query(IssueFacet.issue_uid)
+    qry = text_filter(qry, IssueFacet.facet_id, facet_id)
+    qry = qry.filter(IssueFacet.facet_type == facet_type)
 
     return sorted([i[0] for i in qry.all()])

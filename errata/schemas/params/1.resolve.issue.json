@@ -1,0 +1,28 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "additionalProperties": false,
+    "properties": {
+        "facetID": {
+            "items": {
+                "minItems": 1,
+                "maxItems": 1,
+                "type": "string"
+            },
+            "type": "array"
+        },
+        "facetType": {
+            "items": {
+                "minItems": 1,
+                "maxItems": 1,
+                "type": "string"
+            },
+            "type": "array"
+        }
+    },
+    "required": [
+        "facetID",
+        "facetType"
+    ],
+    "title": "ES-DOC errata JSON schema: endpoint = /1/resolve/issue-from-facet",
+    "type": "object"
+}

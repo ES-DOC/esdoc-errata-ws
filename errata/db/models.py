@@ -24,6 +24,10 @@ from sqlalchemy import Enum
 
 
 from errata.db.utils import Entity
+from errata.utils.constants import FACET_TYPE_DATASET
+from errata.utils.constants import FACET_TYPE_EXPERIMENT
+from errata.utils.constants import FACET_TYPE_MODEL
+from errata.utils.constants import FACET_TYPE_VARIABLE
 from errata.utils.constants import STATUS_NEW
 from errata.utils.constants import STATUS_ON_HOLD
 from errata.utils.constants import STATUS_RESOLVED
@@ -56,6 +60,16 @@ _SEVERITY_ENUM = Enum(
     SEVERITY_CRITICAL,
     schema=_SCHEMA,
     name="IssueSeverityEnum"
+    )
+
+# Facet type enumeration.
+_FACET_TYPE_ENUM = Enum(
+    FACET_TYPE_DATASET,
+    FACET_TYPE_EXPERIMENT,
+    FACET_TYPE_MODEL,
+    FACET_TYPE_VARIABLE,
+    schema=_SCHEMA,
+    name="FacetTypeEnum"
     )
 
 
@@ -96,35 +110,19 @@ class Issue(Entity):
 Index('idx_issue_description', func.lower(Issue.description))
 
 
-class IssueDataset(Entity):
-    """Associates an issue with a dataset.
+class IssueFacet(Entity):
+    """Associates an issue with a searchable facet such as dataset id.
 
     """
     # SQLAlchemy directives.
-    __tablename__ = 'tbl_issue_dataset'
+    __tablename__ = 'tbl_issue_facet'
     __table_args__ = (
-        UniqueConstraint('issue_uid', 'dataset_id'),
+        UniqueConstraint('issue_uid', 'facet_id', 'facet_type'),
         {'schema': _SCHEMA}
     )
 
     # Column definitions.
     issue_uid = Column(Unicode(63),
                        ForeignKey('{}.tbl_issue.uid'.format(_SCHEMA)), nullable=False)
-    dataset_id = Column(Unicode(1023), nullable=False, index=True)
-
-
-class IssueModel(Entity):
-    """Associates an issue with a model.
-
-    """
-    # SQLAlchemy directives.
-    __tablename__ = 'tbl_issue_model'
-    __table_args__ = (
-        UniqueConstraint('issue_uid', 'model_id'),
-        {'schema': _SCHEMA}
-    )
-
-    # Column definitions.
-    issue_uid = Column(Unicode(63),
-                       ForeignKey('{}.tbl_issue.uid'.format(_SCHEMA)), nullable=False)
-    model_id = Column(Unicode(63), nullable=False, index=True)
+    facet_id = Column(Unicode(1023), nullable=False, index=True)
+    facet_type = Column(_FACET_TYPE_ENUM, nullable=False)

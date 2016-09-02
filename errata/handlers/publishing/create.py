@@ -41,8 +41,7 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             """Creates issue.
 
             """
-            # Map request data to relational data.
-            issue = self.issue = db.models.Issue()
+            self.issue = issue = db.models.Issue()
             issue.date_closed = self.request.data.get('dateClosed')
             issue.date_created = self.request.data['dateCreated']
             issue.date_updated = self.request.data.get('dateUpdated', issue.date_created)
@@ -57,35 +56,26 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             issue.status = self.request.data['status'].lower()
 
 
-        def _set_datasets():
-            """Sets datasets to be persisted to database.
+        def _set_facets():
+            """Sets search facets to be persisted to database.
 
             """
-            datasets = self.datasets = []
-            for dataset_id in self.request.data['datasets']:
-                dataset = db.models.IssueDataset()
-                dataset.dataset_id = dataset_id
-                dataset.issue_uid = self.issue.uid
-                datasets.append(dataset)
-
-
-        def _set_models():
-            """Sets models to be persisted to database.
-
-            """
-            models = self.models = []
-            for model_id in self.request.data['models']:
-                model = db.models.IssueModel()
-                model.model_id = model_id
-                model.issue_uid = self.issue.uid
-                models.append(model)
+            self.facets = facets = []
+            for facet_type in constants.FACET_TYPE:
+                facet_ids = self.request.data.get('{}s'.format(facet_type), [])
+                for facet_id in facet_ids:
+                    facet = db.models.IssueFacet()
+                    facet.facet_id = facet_id
+                    facet.facet_type = facet_type
+                    facet.issue_uid = self.issue.uid
+                    facets.append(facet)
 
 
         def _persist():
             """Persists data to dB.
 
             """
-            # Persist issue data.
+            # Persist issue.
             with db.session.create():
                 try:
                     db.session.insert(self.issue)
@@ -93,19 +83,16 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
                     db.session.rollback()
                     raise ValueError("Issue description/uid fields must be unique")
 
-            # Persist datasets / models.
+            # Persist facets.
             with db.session.create(commitable=True):
-                for dataset in self.datasets:
-                    db.session.insert(dataset, False)
-                for model in self.models:
-                    db.session.insert(model, False)
+                for facet in self.facets:
+                    db.session.insert(facet, False)
 
 
         # Process request.
         process_request(self, [
             _validate_issue_urls,
             _set_issue,
-            _set_datasets,
-            _set_models,
+            _set_facets,
             _persist
             ])

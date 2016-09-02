@@ -87,24 +87,18 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             issue.url = self.request.data.get('url')
             issue.status = self.request.data['status'].lower()
 
-            # Delete existing datasets / models.
-            db.dao.delete_issue_datasets(issue.uid)
-            db.dao.delete_issue_models(issue.uid)
+            # Delete existing facets.
+            db.dao.delete_facets(issue.uid)
 
-            # Insert datasets.
-            for dataset_id in self.request.data.get('datasets', []):
-                dataset = db.models.IssueDataset()
-                dataset.dataset_id = dataset_id
-                dataset.issue_uid = issue.uid
-                db.session.insert(dataset, False)
-
-            # Insert models.
-            for model_id in self.request.data.get('models', []):
-                model = db.models.IssueModel()
-                model.model_id = model_id
-                model.issue_uid = issue.uid
-                db.session.insert(model, False)
-
+            # Insert facets.
+            for facet_type in constants.FACET_TYPE:
+                facet_ids = self.request.data.get('{}s'.format(facet_type), [])
+                for facet_id in facet_ids:
+                    facet = db.models.IssueFacet()
+                    facet.facet_id = facet_id
+                    facet.facet_type = facet_type
+                    facet.issue_uid = self.issue.uid
+                    db.session.insert(facet, False)
 
         # Process request.
         with db.session.create(commitable=True):

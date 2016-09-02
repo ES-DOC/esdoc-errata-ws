@@ -22,6 +22,26 @@ HTTP_HEADER_Access_Control_Allow_Origin = "Access-Control-Allow-Origin"
 # Default endpoint.
 DEFAULT_ENDPOINT = r'/1/ops/heartbeat'
 
+# Search facet type - dataset.
+FACET_TYPE_DATASET = 'dataset'
+
+# Search facet type - model.
+FACET_TYPE_EXPERIMENT = 'experiment'
+
+# Search facet type - model.
+FACET_TYPE_MODEL = 'model'
+
+# Search facet type - variable.
+FACET_TYPE_VARIABLE = 'variable'
+
+# Search facet type set.
+FACET_TYPE = {
+	FACET_TYPE_DATASET,
+	FACET_TYPE_EXPERIMENT,
+	FACET_TYPE_MODEL,
+	FACET_TYPE_VARIABLE
+}
+
 # Issue status - new.
 STATUS_NEW = u'new'
 
@@ -181,6 +201,10 @@ ISSUE = {
         ],
     'dateCreated': unicode(dt.datetime.utcnow()),
     'description': unicode(uuid.uuid4()),
+    'experiments': [
+    	u"1pctCO2",
+    	u"abrupt4xCO2"
+    ],
     'institute': random.choice(INSTITUTE)['key'],
     'materials': [
         u"http://errata.ipsl.upmc.fr/static/images_errata/time.jpg",
@@ -191,8 +215,13 @@ ISSUE = {
     ],
     'project': random.choice(PROJECT)['key'],
     'severity': random.choice(SEVERITY)['key'],
+    'status': STATUS_NEW,
     'title': unicode(uuid.uuid4()),
     'uid': unicode(uuid.uuid4()),
     'url': u"http://errata.ipsl.upmc.fr/issue/1",
-    'status': STATUS_NEW
+    'variables': [
+    	u"bsi",
+    	u"dcalc",
+    	u"pp"
+    ]
     }

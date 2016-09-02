@@ -28,6 +28,15 @@
             "minLength": 1,
             "type": "string"
         },
+        "experiments": {
+            "items": {
+                "maxLength": 63,
+                "minLength": 1,
+                "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
+        },
         "institute": {
             "maxLength": 63,
             "minLength": 1,
@@ -88,6 +97,15 @@
             "maxLength": 1023,
             "minLength": 1,
             "type": "string"
+        },
+        "variables": {
+            "items": {
+                "maxLength": 63,
+                "minLength": 1,
+                "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
         }
     },
     "required": [

@@ -38,9 +38,8 @@ class RetrieveAllIssuesRequestHandler(tornado.web.RequestHandler):
             """Pulls data from db.
 
             """
-            self.issues = db.dao.get_all_issues()
-            self.datasets = db.dao.get_issue_datasets()
-            self.models = db.dao.get_issue_models()
+            self.issues = db.dao.get_issues(subset=False)
+            self.facets = db.dao.get_facets()
 
 
         def _set_output():
@@ -52,9 +51,9 @@ class RetrieveAllIssuesRequestHandler(tornado.web.RequestHandler):
 
                 """
                 obj = convertor.to_dict(issue)
-                obj['datasets'] = sorted([i[1] for i in self.datasets if i[0] == issue.uid])
                 obj['materials'] = sorted(issue.materials.split(","))
-                obj['models'] = sorted([i[1] for i in self.models if i[0] == issue.uid])
+                for facet_type in constants.FACET_TYPE:
+                    obj['{}s'.format(facet_type)] = [i[1] for i in self.facets if i[0] == issue.uid and i[2] == facet_type]
 
                 return obj
 

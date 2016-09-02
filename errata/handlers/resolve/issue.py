@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: handlers.resolve.issue_from_model.py
+.. module:: handlers.resolve.issue_from_dataset.py
    :license: GPL/CeCIL
    :platform: Unix
-   :synopsis: ES-DOC Errata - resolve issues from model endpoint.
+   :synopsis: ES-DOC Errata - resolve issues from dataset endpoint.
 
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
@@ -19,11 +19,11 @@ from errata.utils.http import process_request
 
 
 # Query parameter names.
-_PARAM_MODEL_ID = 'model'
+_PARAM_FACET_TYPE = 'facetType'
+_PARAM_FACET_ID = 'facetID'
 
 
-
-class ResolveIssueFromModelRequestHandler(tornado.web.RequestHandler):
+class ResolveIssueRequestHandler(tornado.web.RequestHandler):
     """Search issue request handler.
 
     """
@@ -42,7 +42,8 @@ class ResolveIssueFromModelRequestHandler(tornado.web.RequestHandler):
             """Pulls data from db.
 
             """
-            self.issues = db.dao.get_model_issues(self.get_argument(_PARAM_MODEL_ID))
+            self.issues = db.dao.get_issues_by_facet(
+                self.get_argument(_PARAM_FACET_ID), self.get_argument(_PARAM_FACET_TYPE))
 
 
         def _set_output():
@@ -52,7 +53,8 @@ class ResolveIssueFromModelRequestHandler(tornado.web.RequestHandler):
             self.output = {
                 'count': len(self.issues),
                 'issueIdentifiers': self.issues,
-                'modelID': self.get_argument(_PARAM_MODEL_ID)
+                'facetID': self.get_argument(_PARAM_FACET_ID),
+                'facetType': self.get_argument(_PARAM_FACET_TYPE)
             }
 
 

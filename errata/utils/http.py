@@ -225,4 +225,4 @@ def process_request(handler, tasks, error_tasks=None):
             # ... error processing exceptions are suppressed
             except:
                 pass
-        break
+            break

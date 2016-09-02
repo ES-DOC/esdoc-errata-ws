@@ -44,8 +44,7 @@ class RetrieveIssueRequestHandler(tornado.web.RequestHandler):
 
             """
             self.issue = db.dao.get_issue(self.get_argument(_PARAM_UID))
-            self.datasets = db.dao.get_issue_datasets(self.get_argument(_PARAM_UID))
-            self.models = db.dao.get_issue_models(self.get_argument(_PARAM_UID))
+            self.facets = db.dao.get_facets(self.get_argument(_PARAM_UID))
 
 
         def _set_output():
@@ -53,9 +52,9 @@ class RetrieveIssueRequestHandler(tornado.web.RequestHandler):
 
             """
             obj = convertor.to_dict(self.issue)
-            obj['datasets'] = self.datasets
             obj['materials'] = sorted(self.issue.materials.split(","))
-            obj['models'] = self.models
+            for facet_type in constants.FACET_TYPE:
+                obj['{}s'.format(facet_type)] = [i[1] for i in self.facets if i[2] == facet_type]
 
             self.output = {
                 'issue': obj
