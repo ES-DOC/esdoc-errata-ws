@@ -1,6 +1,5 @@
 # Set home path
-export ERRATA_HOME=$(dirname ${BASH_SOURCE[0]})
-echo $ERRATA_HOME
+export ERRATA_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Extend python path.
 export PYTHONPATH=$PYTHONPATH:$ERRATA_HOME
