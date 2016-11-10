@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-.. module:: utils.http_invoker.py
+.. module:: utils.http.py
    :license: GPL/CeCIL
    :platform: Unix
-   :synopsis: HTTP request handler task invoker.
+   :synopsis: HTTP utility functions, particulary process_request.
 
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
@@ -157,6 +157,13 @@ def _write_success(handler):
         encoding = None
 
     _write(handler, data, encoding)
+
+    try:
+        handler.output
+    except AttributeError:
+        pass
+    else:
+        del handler.output
 
 
 def _get_tasks(pre_tasks, tasks, post_tasks):
