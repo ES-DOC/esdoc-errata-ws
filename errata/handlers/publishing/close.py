@@ -18,6 +18,7 @@ from errata import db
 from errata.utils import constants
 from errata.utils import exceptions
 from errata.utils.http import process_request
+from errata.utils.misc import authenticate
 
 
 
@@ -33,6 +34,9 @@ class CloseIssueRequestHandler(tornado.web.RequestHandler):
         """HTTP POST handler.
 
         """
+        def _authenticate():
+            authenticate(self.request)
+
         def _validate_issue_exists():
             """Validates that issue exists within dB.
 
@@ -48,7 +52,7 @@ class CloseIssueRequestHandler(tornado.web.RequestHandler):
             """
             if self.issue.status in [
                 constants.STATUS_WONT_FIX,
-                constants.STATUS_RESOLVED
+                constants.STATUS_NEW
                 ]:
                 raise exceptions.InvalidIssueStatusError()
 
@@ -63,6 +67,7 @@ class CloseIssueRequestHandler(tornado.web.RequestHandler):
         # Process request.
         with db.session.create(commitable=True):
             process_request(self, [
+                _authenticate,
                 _validate_issue_exists,
                 _validate_issue_status,
                 _close_issue

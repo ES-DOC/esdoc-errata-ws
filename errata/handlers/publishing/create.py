@@ -16,9 +16,12 @@ import tornado
 from errata import db
 from errata.utils import constants
 from errata.utils.http import process_request
-from errata.utils.misc import traverse
+from errata.utils.misc import traverse, authenticate
 from errata.utils.validation import validate_url
-
+import base64
+import requests
+from errata.utils import exceptions
+import json
 
 
 class CreateIssueRequestHandler(tornado.web.RequestHandler):
@@ -29,13 +32,15 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
         """HTTP POST handler.
 
         """
+        def _authenticate():
+            authenticate(self)
+
         def _validate_issue_urls():
             """Validates URL's associated with incoming request.
 
             """
             for url in traverse([self.request.data.get((i)) for i in ['url', 'materials']]):
                 validate_url(url)
-
 
         def _set_issue():
             """Creates issue.
@@ -55,7 +60,6 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             issue.url = self.request.data.get('url')
             issue.status = self.request.data['status'].lower()
 
-
         def _set_facets():
             """Sets search facets to be persisted to database.
 
@@ -69,7 +73,6 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
                     facet.facet_type = facet_type
                     facet.issue_uid = self.issue.uid
                     facets.append(facet)
-
 
         def _persist():
             """Persists data to dB.
@@ -88,9 +91,9 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
                 for facet in self.facets:
                     db.session.insert(facet, False)
 
-
         # Process request.
         process_request(self, [
+            _authenticate,
             _validate_issue_urls,
             _set_issue,
             _set_facets,
