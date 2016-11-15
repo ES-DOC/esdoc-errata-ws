@@ -30,7 +30,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
 
         """
         def _authenticate():
-            authenticate(self.request)
+            authenticate(self)
 
 
         def _validate_issue_exists():
@@ -107,6 +107,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
         # Process request.
         with db.session.create(commitable=True):
             process_request(self, [
+                _authenticate,
                 _validate_issue_exists,
                 _validate_issue_immutable_attributes,
                 _validate_issue_description_change_ratio,

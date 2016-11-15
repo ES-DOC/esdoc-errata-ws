@@ -35,7 +35,7 @@ class CloseIssueRequestHandler(tornado.web.RequestHandler):
 
         """
         def _authenticate():
-            authenticate(self.request)
+            authenticate(self)
 
         def _validate_issue_exists():
             """Validates that issue exists within dB.
