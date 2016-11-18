@@ -16,12 +16,8 @@ import tornado
 from errata import db
 from errata.utils import constants
 from errata.utils.http import process_request
-from errata.utils.misc import traverse, authenticate
+from errata.utils.misc import traverse
 from errata.utils.validation import validate_url
-import base64
-import requests
-from errata.utils import exceptions
-import json
 
 
 class CreateIssueRequestHandler(tornado.web.RequestHandler):
@@ -32,9 +28,6 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
         """HTTP POST handler.
 
         """
-        def _authenticate():
-            authenticate(self)
-
         def _validate_issue_urls():
             """Validates URL's associated with incoming request.
 
@@ -93,7 +86,6 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
 
         # Process request.
         process_request(self, [
-            _authenticate,
             _validate_issue_urls,
             _set_issue,
             _set_facets,

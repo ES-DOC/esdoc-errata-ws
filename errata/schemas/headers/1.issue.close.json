@@ -4,18 +4,10 @@
     "properties": {
         "Authenticate": {
             "type": "string"
-        },
-        "Content-Type": {
-            "enum": [
-                "application/json",
-                "application/json; charset=UTF-8"
-            ],
-            "type": "string"
         }
     },
     "required": [
-        "Authenticate",
-        "Content-Type"
+        "Authenticate"
     ],
     "title": "ES-DOC errata JSON schema: endpoint = /1/issue/create",
     "type": "object"

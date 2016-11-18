@@ -18,7 +18,7 @@ from errata import db
 from errata.utils import constants
 from errata.utils import exceptions
 from errata.utils.http import process_request
-from errata.utils.misc import authenticate
+
 
 
 class UpdateIssueRequestHandler(tornado.web.RequestHandler):
@@ -29,10 +29,6 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
         """HTTP POST handler.
 
         """
-        def _authenticate():
-            authenticate(self)
-
-
         def _validate_issue_exists():
             """Validates that the issue has been previously posted to the web-service.
 
@@ -107,7 +103,6 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
         # Process request.
         with db.session.create(commitable=True):
             process_request(self, [
-                _authenticate,
                 _validate_issue_exists,
                 _validate_issue_immutable_attributes,
                 _validate_issue_description_change_ratio,

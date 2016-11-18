@@ -10,7 +10,8 @@
 
 """
 from errata.utils import exceptions
-from errata.utils import http_validator
+from errata.utils.http_security import secure_request
+from errata.utils.http_validator import validate_request
 from errata.utils import logger
 from errata.utils.convertor import to_dict
 from errata.utils.convertor import to_camel_case
@@ -209,7 +210,7 @@ def process_request(handler, tasks, error_tasks=None):
 
     # Extend tasksets.
     tasks = _get_tasks(
-        [http_validator.validate_request],
+        [secure_request, validate_request],
         tasks,
         [_log_success, _write_success]
         )
