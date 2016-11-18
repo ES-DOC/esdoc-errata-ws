@@ -2,12 +2,12 @@
     "$schema": "http://json-schema.org/schema#",
     "additionalProperties": true,
     "properties": {
-        "Authenticate": {
+        "Authorization": {
             "type": "string"
         }
     },
     "required": [
-        "Authenticate"
+        "Authorization"
     ],
     "title": "ES-DOC errata JSON schema: endpoint = /1/issue/create",
     "type": "object"

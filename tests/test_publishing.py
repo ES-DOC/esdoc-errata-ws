@@ -40,7 +40,8 @@ def test_create():
     response = requests.post(
         _URL_CREATE,
         data=json.dumps(ISSUE),
-        headers={'Content-Type': 'application/json'}
+        headers={'Content-Type': 'application/json'},
+        auth=_get_ws_credentials()
         )
 
     # Assert WS response.
@@ -74,7 +75,7 @@ def test_close():
 
     """
     # Invoke WS endpoint.
-    response = requests.post(_URL_CLOSE)
+    response = requests.post(_URL_CLOSE, auth=_get_ws_credentials())
 
     # Assert WS response.
     _assert_ws_response(_URL_CLOSE, response)
@@ -106,7 +107,8 @@ def test_update():
     response = requests.post(
         _URL_UPDATE,
         data=json.dumps(ISSUE),
-        headers={'Content-Type': 'application/json'}
+        headers={'Content-Type': 'application/json'},
+        auth=_get_ws_credentials()
         )
 
     # Assert WS response.
@@ -126,6 +128,14 @@ def test_update_retrieve():
     # Assert WS response content.
     assert content['issue']['severity'] == ISSUE['severity']
     assert ISSUE['dateUpdated'] == content['issue']['dateUpdated']
+
+
+def _get_ws_credentials():
+    """Returns credentials to be passed to web-service.
+
+    """
+    return os.getenv('ERRATA_GITHUB_USER_NAME'), \
+           os.getenv('ERRATA_GITHUB_ACCESS_TOKEN')
 
 
 def _assert_ws_response(

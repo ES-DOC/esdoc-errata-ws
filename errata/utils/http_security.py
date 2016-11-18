@@ -25,13 +25,12 @@ _SECURED_ENDPOINTS = {
     '/1/issue/search',
 }
 
-# TODO: push to config
-
+# TODO: review what to push to config / env-var.
 # GitHub API - user details.
 _GH_API_USER = 'https://api.github.com/user'
 
 # ESDOC GitHub organization identifier.
-_ESDOC_GH_ORG_ID = '1415530'
+_ESDOC_GH_ORG_ID = 1415530
 
 # ESDOC GitHub team: errata-publication
 _ESDOC_GH_TEAM_ERRATA_PUBLICATION = 'errata-publication'

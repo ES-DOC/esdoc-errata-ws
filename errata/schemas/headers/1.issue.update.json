@@ -2,7 +2,7 @@
     "$schema": "http://json-schema.org/schema#",
     "additionalProperties": true,
     "properties": {
-        "Authenticate": {
+        "Authorization": {
             "type": "string"
         },
         "Content-Type": {
@@ -14,7 +14,7 @@
         }
     },
     "required": [
-        "Authenticate",
+        "Authorization",
         "Content-Type"
     ],
     "title": "ES-DOC errata JSON schema: endpoint = /1/issue/update",
