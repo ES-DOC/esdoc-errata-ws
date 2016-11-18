@@ -133,12 +133,19 @@ def write_error(handler, error):
     """Writes processing error to response stream.
 
     """
+    # Reset handler output.
     handler.clear()
+
+    # Set reason code (exception shielding when not in PROD).
     reason = unicode(error) if _can_return_debug_info(handler) else None
-    if isinstance(error, exceptions.RequestValidationException):
-        response_code = _HTTP_RESPONSE_INVALID_REQUEST_ERROR
+
+    # Set resoponse code.
+    if isinstance(error, exceptions.WebServiceError):
+        response_code = error.response_code
     else:
         response_code = _HTTP_RESPONSE_SERVER_ERROR
+
+    # Return error.
     handler.send_error(response_code, reason=reason.replace("\n", ""))
 
 

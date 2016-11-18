@@ -25,49 +25,53 @@ _SECURED_ENDPOINTS = {
     '/1/issue/search',
 }
 
-# Set of recognized organization identifiers.
 # TODO: push to config
-_ORGS_IDS = [23123271]
+
+# GitHub API - user details.
+_GH_API_USER = 'https://api.github.com/user'
+
+# ESDOC GitHub organization identifier.
+_ESDOC_GH_ORG_ID = '1415530'
+
+# ESDOC GitHub team: errata-publication
+_ESDOC_GH_TEAM_ERRATA_PUBLICATION = 'errata-publication'
+
+# Whitelist of trusted organizations.
+_GH_ORGS_WHITELIST = set([
+    23123271,
+    _ESDOC_GH_ORG_ID
+    ])
 
 
 def _authenticate(handler):
     """Authenticate request against github oauth api.
 
     """
-    # Set credentials to be passed to GitHub OAuth application.
-    # TODO validate 'Authorization' header exists
+    # Extract credentials from request header.
     credentials = handler.request.headers['Authorization']
     credentials = credentials.replace('Basic ', '')
-    credentials = base64.b64decode(credentials).split(':')
+    credentials = tuple(base64.b64decode(credentials).split(':'))
 
-    # 401 if credentials unrecognized.
-    r = requests.get('https://api.github.com/user', auth=(credentials[0], credentials[1]))
+    # Authenticate against GitHub API.
+    r = requests.get(_GH_API_USER, auth=credentials)
     if r.status_code != 200:
-        set_http_return(handler, 401, "Credentials unrecognized.")
-        raise exceptions.SecurityError("Credentials unrecognized.")
+        raise exceptions.RequestAuthenticationError()
 
-    return json.loads(r.text.encode('ascii', 'ignore'))
+    # Authentication succcessful therefore return GH user information.
+    return json.loads(r.text)
 
 
 def _authorize(handler, user):
     """Authorize request against set of recognized organizations.
 
     """
-    # Load set of organizations that user is a member of.
-    write_access = requests.get(user["organizations_url"])
-    orgs_dic = json.loads(write_access.text.encode('ascii', 'ignore'))
+    # Load user GitHub organization membership.
+    r = requests.get(user["organizations_url"])
+    membership = set(i['id'] for i in json.loads(r.text))
 
-    # 403 if not a member of a recognized organization.
-    is_authorized = bool([i for i in orgs_dic if i in _ORGS_IDS])
-    if not is_authorized:
-        set_http_return(handler, 403, "Insufficient privileges.")
-        raise exceptions.SecurityError("Insufficient privileges.")
-
-
-def set_http_return(request_handler, http_code, msg):
-    request_handler.clear()
-    request_handler.set_status(http_code)
-    request_handler.finish(msg)
+    # Authorization failure if user is not a member of any recognized organization.
+    if not bool(_GH_ORGS_WHITELIST.intersection(membership)):
+        raise exceptions.RequestAuthorizationError()
 
 
 def secure_request(handler):
@@ -82,6 +86,5 @@ def secure_request(handler):
     if not handler.request.path in _SECURED_ENDPOINTS:
         return
 
-    return
-
+    # Authenticates then authorizes.
     _authorize(handler, _authenticate(handler))
