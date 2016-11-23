@@ -47,7 +47,7 @@ class CloseIssueRequestHandler(tornado.web.RequestHandler):
 
             """
             if self.issue.status in [
-                constants.STATUS_WONT_FIX,
+                constants.STATUS_ON_HOLD,
                 constants.STATUS_NEW
                 ]:
                 raise exceptions.InvalidIssueStatusError()
