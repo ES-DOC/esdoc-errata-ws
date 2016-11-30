@@ -2,6 +2,10 @@
     "$schema": "http://json-schema.org/schema#",
     "additionalProperties": false,
     "properties": {
+        "createdBy": {
+            "minLength": 1,
+            "type": "string"
+        },
         "datasets": {
             "items": {
                 "maxLength": 1023,
@@ -109,6 +113,7 @@
         }
     },
     "required": [
+        "createdBy",
         "datasets",
         "dateCreated",
         "description",

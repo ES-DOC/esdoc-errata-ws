@@ -1,5 +1,6 @@
 {
     "closed_at": "2016-04-15T09:53:43+00:00",
+    "created_by": "test-script",
     "created_at": "2016-04-13T09:53:42+00:00",
     "description": "Ocean (PISCES) the hydrogen ion (H+) concentration instead of pH. pH variable has to be computed as follows: pH = -log10[H+].",
     "id": "11221244-2194-4c1f-bdea-4887036a9e63",

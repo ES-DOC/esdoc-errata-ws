@@ -103,9 +103,12 @@ def get_issues(
             Issue.title,
             Issue.severity,
             Issue.status,
-            as_date_string(Issue.date_created),
-            as_date_string(Issue.date_closed),
-            as_date_string(Issue.date_updated)
+            as_date_string(Issue.created_at),
+            as_date_string(Issue.closed_at),
+            as_date_string(Issue.updated_at),
+            Issue.created_by,
+            Issue.updated_by,
+            Issue.closed_by
             )
     else:
         qry = query(Issue)

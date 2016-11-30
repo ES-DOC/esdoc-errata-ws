@@ -22,10 +22,8 @@ _SECURED_ENDPOINTS = {
     '/1/issue/close',
     '/1/issue/create',
     '/1/issue/update',
-    '/1/issue/search',
 }
 
-# TODO: review what to push to config / env-var.
 # GitHub API - user details.
 _GH_API_USER = 'https://api.github.com/user'
 
@@ -37,7 +35,6 @@ _ESDOC_GH_TEAM_ERRATA_PUBLICATION = 'errata-publication'
 
 # Whitelist of trusted organizations.
 _GH_ORGS_WHITELIST = set([
-    23123271,
     _ESDOC_GH_ORG_ID
     ])
 
@@ -53,10 +50,12 @@ def _authenticate(handler):
 
     # Authenticate against GitHub API.
     r = requests.get(_GH_API_USER, auth=credentials)
+
+    # Fail: throw exception.
     if r.status_code != 200:
         raise exceptions.RequestAuthenticationError()
 
-    # Authentication succcessful therefore return GH user information.
+    # Success: therefore return GH user information.
     return json.loads(r.text)
 
 
@@ -64,6 +63,9 @@ def _authorize(handler, user):
     """Authorize request against set of recognized organizations.
 
     """
+    # TODO apply scope check: read:org
+
+
     # Load user GitHub organization membership.
     r = requests.get(user["organizations_url"])
     membership = set(i['id'] for i in json.loads(r.text))
@@ -76,14 +78,24 @@ def _authorize(handler, user):
 def secure_request(handler):
     """Enforces request level security policy (if necesaary).
 
+    Policy is as follows:
+    1.  Authenticate via GitHub user API.
+    2.  Authorize by confirming user is public member of GitHub oranization whitelist.
+
+    Alternative policy is to authenticate as now then
+    check if user is public member of ES-DOC GH org &
+    then if member of ES-DOC GH errata-publishers team
+
     :param utils.http.HTTPRequestHandler handler: An HTTP request handler.
 
     :raises: exceptions.SecurityError
 
     """
     # Escape if not required.
-    if not handler.request.path in _SECURED_ENDPOINTS:
+    if not handler.request.path.split("?")[0] in _SECURED_ENDPOINTS:
         return
 
+
+    print 666, handler.request.path
     # Authenticates then authorizes.
     _authorize(handler, _authenticate(handler))

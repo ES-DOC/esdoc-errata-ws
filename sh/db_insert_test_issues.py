@@ -59,23 +59,21 @@ def _get_issue(obj):
 
     """
     issue = Issue()
-    issue.date_created = obj['created_at']
-    if 'last_updated_at' in obj.keys():
-        issue.date_updated = obj['last_updated_at']
-    if 'closed_at' in obj.keys():
-        issue.date_closed = obj['closed_at']
-    issue.date_updated = obj['last_updated_at']
+    issue.created_at = obj['created_at']
+    issue.created_by = obj['created_by']
+    issue.closed_at = obj.get('closed_at')
+    issue.closed_by = obj.get('closed_by')
     issue.description = obj['description']
     issue.institute = obj['institute'].lower()
-    if 'materials' in obj.keys():
-        issue.materials = ",".join(obj['materials'])
-    issue.severity = obj['severity'].lower()
+    issue.materials = ",".join(obj.get('materials', [])
     issue.project = obj['project'].lower()
+    issue.severity = obj['severity'].lower()
+    issue.status = obj['status'].lower()
     issue.title = obj['title']
     issue.uid = obj['uid']
-    if 'url' in obj.keys():
-        issue.url = obj['url']
-    issue.status = obj['status'].lower()
+    issue.updated_at = obj['updated_at']
+    issue.updated_by = obj['updated_by']
+    issue.url = obj.get('url')
 
     return issue
 

@@ -14,6 +14,8 @@ import datetime as dt
 import random
 import uuid
 
+from errata.utils.constants_json import *
+
 
 
 # HTTP CORS header.
@@ -144,7 +146,6 @@ PROJECT = [
 	}
 ]
 
-
 # TODO - leverage pyessv
 # Institute - BADC.
 INSTITUTE_BADC = u"badc"
@@ -184,7 +185,7 @@ DESCRIPTION_CHANGE_RATIO = 20
 
 # Test issue.
 ISSUE = {
-    'datasets': [
+    JF_DATASETS: [
         u"cmip5.output1.IPSL.IPSL-CM5A-LR.1pctCO2.yr.ocnBgchem.Oyr.r1i1p1#20161010",
         u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r10i1p1#20110922",
         u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r11i1p1#20110901",
@@ -199,30 +200,29 @@ ISSUE = {
         u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r8i1p1#20110901",
         u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r9i1p1#20110901"
         ],
-    'dateCreated': unicode(dt.datetime.utcnow()),
-    'description': unicode(uuid.uuid4()),
-    'experiments': [
+    JF_CREATED_AT: unicode(dt.datetime.utcnow()),
+    JF_DESCRIPTION: unicode(uuid.uuid4()),
+    JF_EXPERIMENTS: [
     	u"1pctCO2",
     	u"abrupt4xCO2"
-    ],
-    'institute': random.choice(INSTITUTE)['key'],
-    'materials': [
+    	],
+    JF_INSTITUTE: random.choice(INSTITUTE)['key'],
+    JF_MATERIALS: [
         u"http://errata.ipsl.upmc.fr/static/images_errata/time.jpg",
         u"http://errata.ipsl.upmc.fr/static/images_errata/time5.jpg"
-    ],
-    'models': [
+    	],
+    JF_MODELS: [
         u"IPSL-CM5A-LR"
-    ],
-    'project': random.choice(PROJECT)['key'],
-    'severity': random.choice(SEVERITY)['key'],
-    'status': STATUS_NEW,
-    'title': unicode(uuid.uuid4()),
-    'uid': unicode(uuid.uuid4()),
-    'url': u"http://errata.ipsl.upmc.fr/issue/1",
-    'variables': [
+    	],
+    JF_PROJECT: random.choice(PROJECT)['key'],
+    JF_SEVERITY: random.choice(SEVERITY)['key'],
+    JF_STATUS: STATUS_NEW,
+    JF_TITLE: unicode(uuid.uuid4()),
+    JF_UID: unicode(uuid.uuid4()),
+    JF_URL: u"http://errata.ipsl.upmc.fr/issue/1",
+    JF_VARIABLES: [
     	u"bsi",
     	u"dcalc",
     	u"pp"
-    ]
+    	]
     }
-

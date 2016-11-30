@@ -15,6 +15,7 @@ import tornado
 
 from errata import db
 from errata.utils import constants
+from errata.utils.constants_json import *
 from errata.utils.http import process_request
 from errata.utils.misc import traverse
 from errata.utils.validation import validate_url
@@ -32,26 +33,31 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             """Validates URL's associated with incoming request.
 
             """
-            for url in traverse([self.request.data.get((i)) for i in ['url', 'materials']]):
+            urls = traverse([self.request.data.get((i)) for i in [JF_URL, JF_MATERIALS]])
+            for url in urls:
                 validate_url(url)
 
         def _set_issue():
             """Creates issue.
 
             """
+            obj = self.request.data
             self.issue = issue = db.models.Issue()
-            issue.date_closed = self.request.data.get('dateClosed')
-            issue.date_created = self.request.data['dateCreated']
-            issue.date_updated = self.request.data.get('dateUpdated', issue.date_created)
-            issue.description = self.request.data['description']
-            issue.institute = self.request.data['institute'].lower()
-            issue.materials = ",".join(self.request.data.get('materials', []))
-            issue.project = self.request.data['project'].lower()
-            issue.severity = self.request.data['severity'].lower()
-            issue.title = self.request.data['title']
-            issue.uid = self.request.data['uid']
-            issue.url = self.request.data.get('url')
-            issue.status = self.request.data['status'].lower()
+            issue.closed_at = obj.get(JF_CLOSED_AT)
+            issue.closed_by = obj.get(JF_CLOSED_BY)
+            issue.created_at = obj[JF_CREATED_AT]
+            issue.created_by = obj[JF_CREATED_BY]
+            issue.description = obj[JF_DESCRIPTION]
+            issue.institute = obj[JF_INSTITUTE].lower()
+            issue.materials = ",".join(obj.get(JF_MATERIALS, []))
+            issue.project = obj[JF_PROJECT].lower()
+            issue.severity = obj[JF_SEVERITY].lower()
+            issue.title = obj[JF_TITLE]
+            issue.uid = obj[JF_UID]
+            issue.updated_at = obj.get(JF_UPDATED_AT, issue.created_at)
+            issue.updated_by = obj.get(JF_UPDATED_BY, issue.created_by)
+            issue.url = obj.get(JF_URL)
+            issue.status = obj[JF_STATUS].lower()
 
         def _set_facets():
             """Sets search facets to be persisted to database.

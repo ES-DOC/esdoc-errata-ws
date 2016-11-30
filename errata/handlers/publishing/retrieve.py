@@ -54,7 +54,8 @@ class RetrieveIssueRequestHandler(tornado.web.RequestHandler):
             obj = convertor.to_dict(self.issue)
             obj['materials'] = sorted(self.issue.materials.split(","))
             for facet_type in constants.FACET_TYPE:
-                obj['{}s'.format(facet_type)] = [i[1] for i in self.facets if i[2] == facet_type]
+                values = [i[1] for i in self.facets if i[2] == facet_type]
+                obj['{}s'.format(facet_type)] = values
 
             self.output = {
                 'issue': obj

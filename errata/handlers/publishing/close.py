@@ -57,7 +57,9 @@ class CloseIssueRequestHandler(tornado.web.RequestHandler):
             """Closes issue.
 
             """
-            self.issue.date_closed = dt.datetime.utcnow()
+            self.issue.closed_at = dt.datetime.utcnow()
+            # TODO set closed by from user credentials
+            # self.issue.closed_by = self.credentials.uname
 
 
         # Process request.
