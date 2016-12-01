@@ -2,6 +2,11 @@
     "$schema": "http://json-schema.org/schema#",
     "additionalProperties": false,
     "properties": {
+        "createdBy": {
+            "minLength": 1,
+            "maxLength": 127,
+            "type": "string"
+        },
         "datasets": {
             "items": {
                 "maxLength": 1023,
@@ -78,7 +83,7 @@
         "status": {
             "enum": [
                 "new",
-                "on hold",
+                "onhold",
                 "wontfix",
                 "resolved"
             ],
@@ -95,6 +100,7 @@
         },
         "updatedBy": {
             "minLength": 1,
+            "maxLength": 127,
             "type": "string"
         },
         "url": {

@@ -1,4 +1,4 @@
-s# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 """
 .. module:: run_db_insert_test_issues.py
@@ -59,9 +59,9 @@ def _get_issue(obj):
 
     """
     issue = Issue()
-    issue.created_at = obj['created_at']
+    issue.date_created = obj['date_created']
     issue.created_by = obj['created_by']
-    issue.closed_at = obj.get('closed_at')
+    issue.date_closed = obj.get('date_closed')
     issue.closed_by = obj.get('closed_by')
     issue.description = obj['description']
     issue.institute = obj['institute'].lower()

@@ -80,13 +80,13 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             obj = self.request.data
             # Update issue.
             issue = self.issue
-            issue.closed_at = obj.get(JF_CLOSED_AT)
+            issue.date_closed = obj.get(JF_DATE_CLOSED)
             issue.closed_by = obj.get(JF_CLOSED_BY)
             issue.description = obj[JF_DESCRIPTION]
             issue.materials = ",".join(obj.get(JF_MATERIALS, []))
             issue.severity = obj[JF_SEVERITY].lower()
             issue.title = obj[JF_TITLE]
-            issue.updated_at = obj[JF_UPDATED_AT]
+            issue.date_updated = obj[JF_DATE_UPDATED]
             issue.updated_by = obj[JF_UPDATED_BY]
             issue.url = obj.get(JF_URL)
             issue.status = obj[JF_STATUS].lower()

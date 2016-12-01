@@ -4,6 +4,7 @@
     "properties": {
         "createdBy": {
             "minLength": 1,
+            "maxLength": 127,
             "type": "string"
         },
         "datasets": {
@@ -82,7 +83,7 @@
         "status": {
             "enum": [
                 "new",
-                "on hold",
+                "onhold",
                 "wontfix",
                 "resolved"
             ],

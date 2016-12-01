@@ -84,10 +84,10 @@ def _yield_issue(input_dir, count):
     """
     for _ in xrange(count):
         issue = Issue()
-        issue.created_at = _NOW - dt.timedelta(days=random.randint(30, 60))
+        issue.date_created = _NOW - dt.timedelta(days=random.randint(30, 60))
         issue.created_by = "test-script"
         if random.randint(0, 1):
-            issue.closed_at = issue.created_at + dt.timedelta(days=4)
+            issue.date_closed = issue.date_created + dt.timedelta(days=4)
             issue.closed_by = "test-script"
         issue.description = u"Test issue description - {}".format(unicode(uuid.uuid4()))
         issue.institute = random.choice(constants.INSTITUTE)['key']
@@ -97,7 +97,7 @@ def _yield_issue(input_dir, count):
         issue.status = random.choice(constants.STATUS)['key']
         issue.title = u"Test issue title - {}".format(unicode(uuid.uuid4())[:50])
         issue.uid = unicode(uuid.uuid4())
-        issue.updated_at = issue.created_at + dt.timedelta(days=2)
+        issue.updated_at = issue.date_created + dt.timedelta(days=2)
         issue.updated_by = "test-script"
         # issue.url = "TODO"
 

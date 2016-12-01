@@ -23,6 +23,8 @@ from errata.utils.http import process_request
 
 # Query parameter names.
 _PARAM_UID = 'uid'
+_PARAM_CLOSED_BY = 'closedBy'
+_PARAM_STATUS = 'status'
 
 
 class CloseIssueRequestHandler(tornado.web.RequestHandler):
@@ -57,9 +59,10 @@ class CloseIssueRequestHandler(tornado.web.RequestHandler):
             """Closes issue.
 
             """
-            self.issue.closed_at = dt.datetime.utcnow()
-            # TODO set closed by from user credentials
-            # self.issue.closed_by = self.credentials.uname
+            # TODO: get date_closed from closedAt field
+            self.issue.date_closed = dt.datetime.utcnow()
+            self.issue.closed_by = self.get_argument(_PARAM_CLOSED_BY)
+            self.issue.status = self.get_argument(_PARAM_STATUS)
 
 
         # Process request.

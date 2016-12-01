@@ -200,7 +200,8 @@ ISSUE = {
         u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r8i1p1#20110901",
         u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r9i1p1#20110901"
         ],
-    JF_CREATED_AT: unicode(dt.datetime.utcnow()),
+    JF_DATE_CREATED: unicode(dt.datetime.utcnow()),
+    JF_CREATED_BY: "test-script",
     JF_DESCRIPTION: unicode(uuid.uuid4()),
     JF_EXPERIMENTS: [
     	u"1pctCO2",

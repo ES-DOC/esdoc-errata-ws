@@ -121,24 +121,31 @@ def get_issues(
             Issue.title,
             Issue.severity,
             Issue.status,
-            as_date_string(Issue.created_at),
-            as_date_string(Issue.closed_at),
-            as_date_string(Issue.updated_at),
-            Issue.created_by,
-            Issue.updated_by,
-            Issue.closed_by
+            as_date_string(Issue.date_created),
+            as_date_string(Issue.date_closed),
+            as_date_string(Issue.date_updated)
             )
     else:
         qry = query(Issue)
+    # qry = qry.join(IssueFacet, Issue.uid == IssueFacet.issue_uid)
 
+    # if experiment:
+    #     qry = qry.filter(IssueFacet.facet_type == 'experiment')
+    #     qry = text_filter(qry, IssueFacet.facet_id, experiment)
     if institute:
-        qry = qry.filter(Issue.institute == institute)
+        qry = text_filter(qry, Issue.institute, institute)
+    # if model:
+    #     qry = qry.filter(IssueFacet.facet_type == 'model')
+    #     qry = text_filter(qry, IssueFacet.facet_id, model)
     if project:
-        qry = qry.filter(Issue.project == project)
+        qry = text_filter(qry, Issue.project, project)
     if severity:
-        qry = qry.filter(Issue.severity == severity)
+        qry = text_filter(qry, Issue.severity, severity)
     if status:
-        qry = qry.filter(Issue.status == status)
+        qry = text_filter(qry, Issue.status, status)
+    # if variable:
+    #     qry = qry.filter(IssueFacet.facet_type == 'variable')
+    #     qry = text_filter(qry, IssueFacet.facet_id, variable)
 
     return qry.all()
 

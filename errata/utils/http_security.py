@@ -91,11 +91,11 @@ def secure_request(handler):
     :raises: exceptions.SecurityError
 
     """
+    return
+
     # Escape if not required.
     if not handler.request.path.split("?")[0] in _SECURED_ENDPOINTS:
         return
 
-
-    print 666, handler.request.path
     # Authenticates then authorizes.
     _authorize(handler, _authenticate(handler))

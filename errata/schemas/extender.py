@@ -49,6 +49,14 @@ def _1_issue_search_params(schema):
 		[i['key'] for i in constants.STATUS]
 
 
+def _1_issue_close_params(schema):
+	"""Extends a JSON schema used to validate an HTTP operatino.
+
+	"""
+	schema['properties']['status']['items']['enum'] += \
+		[i['key'] for i in constants.STATUS]
+
+
 def _1_issue_create_body(schema):
 	"""Extends a JSON schema used to validate an HTTP operatino.
 
@@ -79,5 +87,6 @@ def _1_issue_update_body(schema):
 
 # Map endpoints to extenders.
 _EXTENDERS['/1/issue/search']['params'] = _1_issue_search_params
+_EXTENDERS['/1/issue/close']['params'] = _1_issue_close_params
 _EXTENDERS['/1/issue/create']['body'] = _1_issue_create_body
 _EXTENDERS['/1/issue/update']['body'] = _1_issue_update_body

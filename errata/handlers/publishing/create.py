@@ -43,9 +43,9 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             """
             obj = self.request.data
             self.issue = issue = db.models.Issue()
-            issue.closed_at = obj.get(JF_CLOSED_AT)
+            issue.date_closed = obj.get(JF_DATE_CLOSED)
             issue.closed_by = obj.get(JF_CLOSED_BY)
-            issue.created_at = obj[JF_CREATED_AT]
+            issue.date_created = obj[JF_DATE_CREATED]
             issue.created_by = obj[JF_CREATED_BY]
             issue.description = obj[JF_DESCRIPTION]
             issue.institute = obj[JF_INSTITUTE].lower()
@@ -54,7 +54,7 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             issue.severity = obj[JF_SEVERITY].lower()
             issue.title = obj[JF_TITLE]
             issue.uid = obj[JF_UID]
-            issue.updated_at = obj.get(JF_UPDATED_AT, issue.created_at)
+            issue.date_updated = obj.get(JF_DATE_UPDATED, issue.date_created)
             issue.updated_by = obj.get(JF_UPDATED_BY, issue.created_by)
             issue.url = obj.get(JF_URL)
             issue.status = obj[JF_STATUS].lower()
