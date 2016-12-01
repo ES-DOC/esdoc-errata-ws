@@ -41,31 +41,36 @@ def validate_get_issue(uid):
 
 
 def validate_get_issues(
+    experiment=None,
     institute=None,
+    model=None,
     project=None,
     severity=None,
     status=None,
-    subset=False
+    variable=None,
+    subset=True
     ):
     """Function input validator: get_issues.
 
     """
+    if experiment is not None:
+        v.validate_str(experiment, "Experiment name")
     if institute is not None:
         v.validate_str(institute, "Institute code")
-
+    if model is not None:
+        v.validate_str(model, "Model name")
     if project is not None:
         v.validate_str(project, "Project code")
-
     if severity is not None:
         v.validate_str(severity, "Issue severity")
         v.validate_enum(
             [i['key'] for i in constants.SEVERITY], severity, "Issue severity")
-
     if status is not None:
         v.validate_str(status, "Issue status")
         v.validate_enum(
             [i['key'] for i in constants.STATUS], status, "Issue status")
-
+    if variable is not None:
+        v.validate_str(variable, "Variable name")
     v.validate_bool(subset, "Issue subset")
 
 

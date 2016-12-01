@@ -89,18 +89,24 @@ def get_issue(uid):
 
 @validate(validate_get_issues)
 def get_issues(
+    experiment=None,
     institute=None,
+    model=None,
     project=None,
     severity=None,
     status=None,
+    variable=None,
     subset=True
     ):
     """Returns issues that match the passed filters.
 
+    :param str experiment: Experiment associated with the issue, e.g. decadal1970.
     :param str institute: Institute associated with the issue, e.g. ipsl.
+    :param str model: Model associated with the issue, e.g. ipsl-cm6a-lr.
     :param str project: Project associated with the issue, e.g. cmip6.
     :param str severity: Issue severity, e.g. low.
     :param str status: Issue status, e.g. hold.
+    :param str variable: Variable associated with the issue, e.g. tos.
     :param bool subset: Flag indicating whether a subset is requested.
 
     :returns: List of matching issues.
