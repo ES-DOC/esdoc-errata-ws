@@ -2,6 +2,14 @@
     "$schema": "http://json-schema.org/schema#",
     "additionalProperties": false,
     "properties": {
+        "experiment": {
+            "items": {
+                "minItems": 1,
+                "maxItems": 1,
+                "type": "string"
+            },
+            "type": "array"
+        },
         "institute": {
             "items": {
                 "enum": [
@@ -9,6 +17,14 @@
                 ],
                 "maxItems": 1,
                 "minItems": 1,
+                "type": "string"
+            },
+            "type": "array"
+        },
+        "model": {
+            "items": {
+                "minItems": 1,
+                "maxItems": 1,
                 "type": "string"
             },
             "type": "array"
@@ -45,13 +61,24 @@
                 "type": "string"
             },
             "type": "array"
+        },
+        "variable": {
+            "items": {
+                "minItems": 1,
+                "maxItems": 1,
+                "type": "string"
+            },
+            "type": "array"
         }
     },
     "required": [
+        "experiment",
         "institute",
+        "model",
         "project",
         "severity",
-        "status"
+        "status",
+        "variable"
     ],
     "title": "ES-DOC errata JSON schema: endpoint = /1/issue/search",
     "type": "object"

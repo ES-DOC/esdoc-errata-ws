@@ -20,6 +20,7 @@ from errata.db.session import query
 from errata.db.session import raw_query
 from errata.db.utils import text_filter
 from errata.db.utils import as_date_string
+from errata.utils import constants
 from errata.utils.validation import validate
 
 
@@ -42,7 +43,7 @@ def delete_facets(issue_uid, facet_type=None):
 
 @validate(validate_get_facets)
 def get_facets(issue_uid=None):
-    """Returns datasets associated with an issue.
+    """Returns facets associated with an issue.
 
     :param str issue_uid: Issue unique identifier.
 
@@ -50,13 +51,24 @@ def get_facets(issue_uid=None):
     :rtype: list
 
     """
-    qry = raw_query(IssueFacet.issue_uid,
-                    IssueFacet.facet_id,
-                    IssueFacet.facet_type)
     if issue_uid:
+        qry = raw_query(
+            IssueFacet.issue_uid,
+            IssueFacet.facet_id,
+            IssueFacet.facet_type
+            )
         qry = text_filter(qry, IssueFacet.issue_uid, issue_uid)
 
-    return qry.all()
+        return qry.all()
+
+    else:
+        qry = raw_query(
+            IssueFacet.facet_id,
+            IssueFacet.facet_type
+            )
+        qry = qry.filter(IssueFacet.facet_type != constants.FACET_TYPE_DATASET)
+
+        return list(set(qry.all()))
 
 
 @validate(validate_get_issue)

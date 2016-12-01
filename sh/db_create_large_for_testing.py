@@ -104,15 +104,45 @@ def _yield_issue(input_dir, count):
         yield issue
 
 
-def _yield_datasets(input_dir, issue):
-    """Yields dataset facets for testing purposes.
+def _yield_issue_facets(input_dir, issue):
+    """Yields issue facets for testing purposes.
 
     """
+    experiments = set()
+    models = set()
+    variables = set()
     for identifier in _get_datasets(input_dir, issue.institute):
         facet = IssueFacet()
         facet.issue_uid = issue.uid
         facet.facet_id = identifier
         facet.facet_type = constants.FACET_TYPE_DATASET
+        yield facet
+
+        experiments.add(identifier.split(".")[4])
+        models.add(identifier.split(".")[3])
+        # variables.add(identifier.split(".")[3])
+
+    for identifier in experiments:
+        facet = IssueFacet()
+        facet.issue_uid = issue.uid
+        facet.facet_id = identifier
+        facet.facet_type = constants.FACET_TYPE_EXPERIMENT
+
+        yield facet
+
+    for identifier in models:
+        facet = IssueFacet()
+        facet.issue_uid = issue.uid
+        facet.facet_id = identifier
+        facet.facet_type = constants.FACET_TYPE_MODEL
+
+        yield facet
+
+    for identifier in variables:
+        facet = IssueFacet()
+        facet.issue_uid = issue.uid
+        facet.facet_id = identifier
+        facet.facet_type = constants.FACET_TYPE_VARIABLE
 
         yield facet
 
@@ -137,10 +167,10 @@ def _main(args):
                 logger.log_db("issue inserted :: {}".format(issue.uid))
 
         for issue in issues:
-            for facet in _yield_datasets(args.input_dir, issue):
+            for facet in _yield_issue_facets(args.input_dir, issue):
                 try:
                     db.session.insert(facet)
-                except sqlalchemy.exc.IntegrityError as err:
+                except sqlalchemy.exc.IntegrityError:
                     db.session.rollback()
 
 

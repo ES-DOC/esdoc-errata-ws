@@ -12,6 +12,7 @@
 """
 import tornado
 
+from errata import db
 from errata.utils import constants
 from errata.utils.http import process_request
 
@@ -36,12 +37,14 @@ class IssueSearchSetupRequestHandler(tornado.web.RequestHandler):
             """Sets response to be returned to client.
 
             """
-            self.output = {
-                'institute': constants.INSTITUTE,
-                'project': constants.PROJECT,
-                'severity': constants.SEVERITY,
-                'status': constants.STATUS
-            }
+            with db.session.create():
+                self.output = {
+                    'institute': constants.INSTITUTE,
+                    'project': constants.PROJECT,
+                    'severity': constants.SEVERITY,
+                    'status': constants.STATUS,
+                    'facet': db.dao.get_facets()
+                }
 
 
         # Process request.
