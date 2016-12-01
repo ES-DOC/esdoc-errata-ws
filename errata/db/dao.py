@@ -140,9 +140,9 @@ def get_issues(
     if project:
         qry = text_filter(qry, Issue.project, project)
     if severity:
-        qry = text_filter(qry, Issue.severity, severity)
+        qry = qry.filter(Issue.severity == severity)
     if status:
-        qry = text_filter(qry, Issue.status, status)
+        qry = qry.filter(Issue.status == status)
     # if variable:
     #     qry = qry.filter(IssueFacet.facet_type == 'variable')
     #     qry = text_filter(qry, IssueFacet.facet_id, variable)
