@@ -7,7 +7,6 @@
                 "minItems": 1,
                 "maxItems": 100,
                 "minLength": 10,
-                "maxLength": 100,
                 "type": "string"
             },
             "type": "array"

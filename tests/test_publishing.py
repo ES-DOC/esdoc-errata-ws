@@ -27,7 +27,6 @@ _URL = os.getenv("ERRATA_API")
 _URL_CLOSE = "{}/1/issue/close?{}".format(
     _URL, urllib.urlencode({
         'uid': ISSUE['uid'],
-        'closedBy': "test-script",
         'status': constants.STATUS_RESOLVED
         }))
 _URL_CREATE = "{}/1/issue/create".format(_URL)
@@ -66,6 +65,7 @@ def test_retrieve():
 
     # Assert WS response content.
     assert 'issue' in content
+    assert content['issue']['createdBy'] is not None
     for attr in ISSUE.keys():
         if attr in {'datasets', 'materials', 'models', 'variables', 'experiments'}:
             assert sorted(content['issue'][attr]) == sorted(ISSUE[attr])
@@ -83,8 +83,6 @@ def test_update():
     # Update test issue.
     ISSUE['status'] = constants.STATUS_RESOLVED
     ISSUE['dateUpdated'] = unicode(dt.datetime.utcnow())
-    ISSUE['updatedBy'] = "test-script"
-    # ISSUE['dateUpdated'] = unicode(dt.datetime.utcnow())
 
     # Invoke WS endpoint.
     response = requests.post(
@@ -111,7 +109,7 @@ def test_update_retrieve():
     # Assert WS response content.
     assert content['issue']['status'] == ISSUE['status']
     assert content['issue']['dateUpdated'] == ISSUE['dateUpdated']
-    assert content['issue']['updatedBy'] == ISSUE['updatedBy']
+    assert content['issue']['updatedBy'] is not None
 
 
 def test_close():
@@ -137,7 +135,7 @@ def test_close_retrieve():
 
     # Assert WS response content.
     assert content['issue']['dateClosed'] is not None
-    assert content['issue']['closedBy'] == 'test-script'
+    assert content['issue']['closedBy'] is not None
     assert content['issue']['status'] == constants.STATUS_RESOLVED
 
 
