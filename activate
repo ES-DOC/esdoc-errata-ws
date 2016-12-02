@@ -22,6 +22,7 @@ alias errata-db-uninstall=$ERRATA_HOME/sh/db_uninstall.sh
 alias errata-db-reset=$ERRATA_HOME/sh/db_reset.sh
 
 # Test related commands.
+alias errata-check-access-control=$ERRATA_HOME/sh/check_access_control.sh
 alias errata-db-insert-test-issues=$ERRATA_HOME/sh/db_insert_test_issues.sh
 alias errata-db-create-large-for-testing=$ERRATA_HOME/sh/db_create_large_for_testing.sh
 alias errata-tests=$ERRATA_HOME/sh/run_tests.sh
