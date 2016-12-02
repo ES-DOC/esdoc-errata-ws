@@ -87,6 +87,6 @@ def secure_request(handler):
     credentials = handler.request.headers['Authorization']
     credentials = credentials.replace('Basic ', '')
     credentials = base64.b64decode(credentials).split(':')
-    oauth_token = credentials[1]
+    oauth_token = credentials[-1]
 
     return _authorize(_authenticate(oauth_token), _ESDOC_GH_TEAM_ERRATA_PUBLICATION)
