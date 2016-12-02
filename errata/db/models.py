@@ -91,10 +91,13 @@ class Issue(Entity):
     description = Column(Text, nullable=False)
     severity = Column(_SEVERITY_ENUM, nullable=False)
     status = Column(_STATUS_ENUM, nullable=False)
+    url = Column(Unicode(1023))
     date_created = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
     date_updated = Column(DateTime)
     date_closed = Column(DateTime)
-    url = Column(Unicode(1023))
+    created_by = Column(Unicode(511))
+    updated_by = Column(Unicode(511))
+    closed_by = Column(Unicode(511))
     materials = Column(Text)
 
 

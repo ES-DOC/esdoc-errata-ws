@@ -2,6 +2,11 @@
     "$schema": "http://json-schema.org/schema#",
     "additionalProperties": false,
     "properties": {
+        "createdBy": {
+            "minLength": 1,
+            "maxLength": 127,
+            "type": "string"
+        },
         "datasets": {
             "items": {
                 "maxLength": 1023,
@@ -78,7 +83,7 @@
         "status": {
             "enum": [
                 "new",
-                "on hold",
+                "onhold",
                 "wontfix",
                 "resolved"
             ],
@@ -91,6 +96,11 @@
         },
         "uid": {
             "pattern": "^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$",
+            "type": "string"
+        },
+        "updatedBy": {
+            "minLength": 1,
+            "maxLength": 127,
             "type": "string"
         },
         "url": {
@@ -118,7 +128,8 @@
         "severity",
         "status",
         "title",
-        "uid"
+        "uid",
+        "updatedBy"
     ],
      "title": "ES-DOC errata JSON schema: endpoint = /1/issue/update",
    "type": "object"

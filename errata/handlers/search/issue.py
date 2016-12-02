@@ -19,10 +19,23 @@ from errata.utils.http import process_request
 
 
 # Query parameter names.
+_PARAM_EXPERIMENT = 'experiment'
 _PARAM_INSTITUTE = 'institute'
+_PARAM_MODEL = 'model'
 _PARAM_PROJECT = 'project'
 _PARAM_SEVERITY = 'severity'
 _PARAM_STATUS = 'status'
+_PARAM_VARIABLE = 'variable'
+
+_PARAMS = {
+    _PARAM_EXPERIMENT,
+    _PARAM_INSTITUTE,
+    _PARAM_MODEL,
+    _PARAM_PROJECT,
+    _PARAM_SEVERITY,
+    _PARAM_STATUS,
+    _PARAM_VARIABLE
+}
 
 
 class IssueSearchRequestHandler(tornado.web.RequestHandler):
@@ -44,12 +57,7 @@ class IssueSearchRequestHandler(tornado.web.RequestHandler):
             """Sets search criteria.
 
             """
-            for param in {
-                _PARAM_INSTITUTE,
-                _PARAM_PROJECT,
-                _PARAM_SEVERITY,
-                _PARAM_STATUS,
-            }:
+            for param in _PARAMS:
                 if self.get_argument(param, None) in {None, "*"}:
                     setattr(self, param, None)
                 else:
@@ -62,10 +70,13 @@ class IssueSearchRequestHandler(tornado.web.RequestHandler):
             """
             with db.session.create():
                 self.issues = db.dao.get_issues(
+                    experiment=self.experiment,
                     institute=self.institute,
+                    model=self.model,
                     project=self.project,
+                    severity=self.severity,
                     status=self.status,
-                    severity=self.severity
+                    variable=self.variable
                     )
                 self.total = db.utils.get_count(db.models.Issue)
 

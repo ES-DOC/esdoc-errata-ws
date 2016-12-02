@@ -17,6 +17,7 @@ import tornado
 from errata import db
 from errata.utils import constants
 from errata.utils import exceptions
+from errata.utils.constants_json import *
 from errata.utils.http import process_request
 
 
@@ -33,9 +34,9 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             """Validates that the issue has been previously posted to the web-service.
 
             """
-            issue = self.issue = db.dao.get_issue(self.request.data['uid'])
+            issue = self.issue = db.dao.get_issue(self.request.data[JF_UID])
             if issue is None:
-                raise exceptions.UnknownIssueError(self.request.data['uid'])
+                raise exceptions.UnknownIssueError(self.request.data[JF_UID])
 
 
         def _validate_issue_immutable_attributes():
@@ -53,11 +54,11 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
 
             """
             # Escape if no change.
-            if self.request.data['description'] == self.issue.description:
+            if self.request.data[JF_DESCRIPTION] == self.issue.description:
                 return
 
             # Determine change ratio.
-            diff = difflib.SequenceMatcher(None, self.issue.description, self.request.data['description'])
+            diff = difflib.SequenceMatcher(None, self.issue.description, self.request.data[JF_DESCRIPTION])
             diff_ratio = round(diff.ratio(), 3) * 100
             if diff_ratio < constants.DESCRIPTION_CHANGE_RATIO:
                 raise exceptions.IssueDescriptionChangeRatioError(diff_ratio)
@@ -68,7 +69,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
 
             """
             if self.issue.status != constants.STATUS_NEW and \
-               self.request.data['status'] == constants.STATUS_NEW:
+               self.request.data[JF_STATUS] == constants.STATUS_NEW:
                 raise exceptions.InvalidIssueStatusError()
 
 
@@ -76,16 +77,19 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             """Persists dB changes.
 
             """
+            obj = self.request.data
             # Update issue.
             issue = self.issue
-            issue.date_closed = self.request.data.get('dateClosed')
-            issue.date_updated = self.request.data['dateUpdated']
-            issue.description = self.request.data['description']
-            issue.materials = ",".join(self.request.data.get('materials', []))
-            issue.severity = self.request.data['severity'].lower()
-            issue.title = self.request.data['title']
-            issue.url = self.request.data.get('url')
-            issue.status = self.request.data['status'].lower()
+            issue.date_closed = obj.get(JF_DATE_CLOSED)
+            issue.closed_by = obj.get(JF_CLOSED_BY)
+            issue.description = obj[JF_DESCRIPTION]
+            issue.materials = ",".join(obj.get(JF_MATERIALS, []))
+            issue.severity = obj[JF_SEVERITY].lower()
+            issue.title = obj[JF_TITLE]
+            issue.date_updated = obj[JF_DATE_UPDATED]
+            issue.updated_by = obj[JF_UPDATED_BY]
+            issue.url = obj.get(JF_URL)
+            issue.status = obj[JF_STATUS].lower()
 
             # Delete existing facets.
             db.dao.delete_facets(issue.uid)

@@ -139,10 +139,10 @@ def write_error(handler, error):
     # Set reason code (exception shielding when not in PROD).
     reason = unicode(error) if _can_return_debug_info(handler) else None
 
-    # Set resoponse code.
-    if isinstance(error, exceptions.WebServiceError):
+    # Set response code.
+    try:
         response_code = error.response_code
-    else:
+    except AttributeError:
         response_code = _HTTP_RESPONSE_SERVER_ERROR
 
     # Return error.

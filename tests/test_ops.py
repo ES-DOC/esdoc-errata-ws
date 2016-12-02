@@ -65,7 +65,7 @@ def _assert_ws_response(
     # Default WS respponse headers.
     assert len(response.headers) >= 3
     for header in {
-        'Content-Length',
+        # 'Content-Length',
         'Content-Type',
         'Date',
         'Server',

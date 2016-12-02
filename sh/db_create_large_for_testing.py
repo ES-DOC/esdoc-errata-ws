@@ -85,30 +85,64 @@ def _yield_issue(input_dir, count):
     for _ in xrange(count):
         issue = Issue()
         issue.date_created = _NOW - dt.timedelta(days=random.randint(30, 60))
-        issue.date_updated = issue.date_created + dt.timedelta(days=2)
+        issue.created_by = "test-script"
         if random.randint(0, 1):
-            issue.date_closed = issue.date_updated + dt.timedelta(days=2)
+            issue.date_closed = issue.date_created + dt.timedelta(days=4)
+            issue.closed_by = "test-script"
         issue.description = u"Test issue description - {}".format(unicode(uuid.uuid4()))
         issue.institute = random.choice(constants.INSTITUTE)['key']
         issue.materials = _get_materials(input_dir)
-        issue.severity = random.choice(constants.SEVERITY)['key']
         issue.project = random.choice(constants.PROJECT)['key']
+        issue.severity = random.choice(constants.SEVERITY)['key']
+        issue.status = random.choice(constants.STATUS)['key']
         issue.title = u"Test issue title - {}".format(unicode(uuid.uuid4())[:50])
         issue.uid = unicode(uuid.uuid4())
-        issue.status = random.choice(constants.STATUS)['key']
+        issue.updated_at = issue.date_created + dt.timedelta(days=2)
+        issue.updated_by = "test-script"
+        # issue.url = "TODO"
 
         yield issue
 
 
-def _yield_datasets(input_dir, issue):
-    """Yields dataset facets for testing purposes.
+def _yield_issue_facets(input_dir, issue):
+    """Yields issue facets for testing purposes.
 
     """
+    experiments = set()
+    models = set()
+    variables = set()
     for identifier in _get_datasets(input_dir, issue.institute):
         facet = IssueFacet()
         facet.issue_uid = issue.uid
         facet.facet_id = identifier
         facet.facet_type = constants.FACET_TYPE_DATASET
+        yield facet
+
+        experiments.add(identifier.split(".")[4])
+        models.add(identifier.split(".")[3])
+        # variables.add(identifier.split(".")[3])
+
+    for identifier in experiments:
+        facet = IssueFacet()
+        facet.issue_uid = issue.uid
+        facet.facet_id = identifier
+        facet.facet_type = constants.FACET_TYPE_EXPERIMENT
+
+        yield facet
+
+    for identifier in models:
+        facet = IssueFacet()
+        facet.issue_uid = issue.uid
+        facet.facet_id = identifier
+        facet.facet_type = constants.FACET_TYPE_MODEL
+
+        yield facet
+
+    for identifier in variables:
+        facet = IssueFacet()
+        facet.issue_uid = issue.uid
+        facet.facet_id = identifier
+        facet.facet_type = constants.FACET_TYPE_VARIABLE
 
         yield facet
 
@@ -133,10 +167,10 @@ def _main(args):
                 logger.log_db("issue inserted :: {}".format(issue.uid))
 
         for issue in issues:
-            for facet in _yield_datasets(args.input_dir, issue):
+            for facet in _yield_issue_facets(args.input_dir, issue):
                 try:
                     db.session.insert(facet)
-                except sqlalchemy.exc.IntegrityError as err:
+                except sqlalchemy.exc.IntegrityError:
                     db.session.rollback()
 
 

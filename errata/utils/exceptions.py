@@ -47,11 +47,13 @@ class SecurityError(WebServiceError):
 
         """
         super(SecurityError, self).__init__(
-            "SECURITY EXCEPTION :: {}".format(msg), response_code
+            "SECURITY EXCEPTION :: {}".format(msg)
             )
+        self.response_code = response_code
 
 
-class RequestAuthenticationError(SecurityError):
+
+class AuthenticationError(SecurityError):
     """Raised when an authentication assertion fails.
 
     """
@@ -64,7 +66,7 @@ class RequestAuthenticationError(SecurityError):
             )
 
 
-class RequestAuthorizationError(SecurityError):
+class AuthorizationError(SecurityError):
     """Raised when an authorization assertion fails.
 
     """

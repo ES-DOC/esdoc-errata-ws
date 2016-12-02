@@ -2,6 +2,27 @@
     "$schema": "http://json-schema.org/schema#",
     "additionalProperties": false,
     "properties": {
+        "closedBy": {
+            "items": {
+                "minItems": 1,
+                "maxItems": 1,
+                "minLength": 1,
+                "maxLength": 127,
+                "type": "string"
+            },
+            "type": "array"
+        },
+        "status": {
+            "items": {
+                "enum": [
+                    "*"
+                ],
+                "maxItems": 1,
+                "minItems": 1,
+                "type": "string"
+            },
+            "type": "array"
+        },
         "uid": {
             "items": {
                 "minItems": 1,
@@ -12,6 +33,8 @@
         }
     },
     "required": [
+        "closedBy",
+        "status",
         "uid"
     ],
     "title": "ES-DOC errata JSON schema: endpoint = /1/issue/close",

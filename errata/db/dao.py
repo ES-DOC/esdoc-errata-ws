@@ -20,6 +20,7 @@ from errata.db.session import query
 from errata.db.session import raw_query
 from errata.db.utils import text_filter
 from errata.db.utils import as_date_string
+from errata.utils import constants
 from errata.utils.validation import validate
 
 
@@ -42,7 +43,7 @@ def delete_facets(issue_uid, facet_type=None):
 
 @validate(validate_get_facets)
 def get_facets(issue_uid=None):
-    """Returns datasets associated with an issue.
+    """Returns facets associated with an issue.
 
     :param str issue_uid: Issue unique identifier.
 
@@ -50,13 +51,24 @@ def get_facets(issue_uid=None):
     :rtype: list
 
     """
-    qry = raw_query(IssueFacet.issue_uid,
-                    IssueFacet.facet_id,
-                    IssueFacet.facet_type)
     if issue_uid:
+        qry = raw_query(
+            IssueFacet.issue_uid,
+            IssueFacet.facet_id,
+            IssueFacet.facet_type
+            )
         qry = text_filter(qry, IssueFacet.issue_uid, issue_uid)
 
-    return qry.all()
+        return qry.all()
+
+    else:
+        qry = raw_query(
+            IssueFacet.facet_id,
+            IssueFacet.facet_type
+            )
+        qry = qry.filter(IssueFacet.facet_type != constants.FACET_TYPE_DATASET)
+
+        return list(set(qry.all()))
 
 
 @validate(validate_get_issue)
@@ -77,18 +89,24 @@ def get_issue(uid):
 
 @validate(validate_get_issues)
 def get_issues(
+    experiment=None,
     institute=None,
+    model=None,
     project=None,
     severity=None,
     status=None,
+    variable=None,
     subset=True
     ):
     """Returns issues that match the passed filters.
 
+    :param str experiment: Experiment associated with the issue, e.g. decadal1970.
     :param str institute: Institute associated with the issue, e.g. ipsl.
+    :param str model: Model associated with the issue, e.g. ipsl-cm6a-lr.
     :param str project: Project associated with the issue, e.g. cmip6.
     :param str severity: Issue severity, e.g. low.
     :param str status: Issue status, e.g. hold.
+    :param str variable: Variable associated with the issue, e.g. tos.
     :param bool subset: Flag indicating whether a subset is requested.
 
     :returns: List of matching issues.
@@ -109,15 +127,25 @@ def get_issues(
             )
     else:
         qry = query(Issue)
+    # qry = qry.join(IssueFacet, Issue.uid == IssueFacet.issue_uid)
 
+    # if experiment:
+    #     qry = qry.filter(IssueFacet.facet_type == 'experiment')
+    #     qry = text_filter(qry, IssueFacet.facet_id, experiment)
     if institute:
-        qry = qry.filter(Issue.institute == institute)
+        qry = text_filter(qry, Issue.institute, institute)
+    # if model:
+    #     qry = qry.filter(IssueFacet.facet_type == 'model')
+    #     qry = text_filter(qry, IssueFacet.facet_id, model)
     if project:
-        qry = qry.filter(Issue.project == project)
+        qry = text_filter(qry, Issue.project, project)
     if severity:
         qry = qry.filter(Issue.severity == severity)
     if status:
         qry = qry.filter(Issue.status == status)
+    # if variable:
+    #     qry = qry.filter(IssueFacet.facet_type == 'variable')
+    #     qry = text_filter(qry, IssueFacet.facet_id, variable)
 
     return qry.all()
 

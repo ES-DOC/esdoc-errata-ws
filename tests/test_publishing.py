@@ -21,15 +21,21 @@ from errata.utils import constants
 from errata.utils.constants import ISSUE
 
 
+
 # Set of target urls.
 _URL = os.getenv("ERRATA_API")
 _URL_CLOSE = "{}/1/issue/close?{}".format(
-    _URL, urllib.urlencode({'uid': ISSUE['uid']}))
+    _URL, urllib.urlencode({
+        'uid': ISSUE['uid'],
+        'closedBy': "test-script",
+        'status': constants.STATUS_RESOLVED
+        }))
 _URL_CREATE = "{}/1/issue/create".format(_URL)
 _URL_RETRIEVE = "{}/1/issue/retrieve?{}".format(
-    _URL, urllib.urlencode({'uid': ISSUE['uid']}))
+    _URL, urllib.urlencode({
+        'uid': ISSUE['uid']
+        }))
 _URL_UPDATE = "{}/1/issue/update".format(_URL)
-
 
 
 def test_create():
@@ -61,13 +67,51 @@ def test_retrieve():
     # Assert WS response content.
     assert 'issue' in content
     for attr in ISSUE.keys():
-        if attr in {'datasets', 'materials', 'models'}:
+        if attr in {'datasets', 'materials', 'models', 'variables', 'experiments'}:
             assert sorted(content['issue'][attr]) == sorted(ISSUE[attr])
         else:
             try:
                 assert content['issue'][attr] == ISSUE[attr]
             except KeyError:
-                print content['issue']
+                print attr
+
+
+def test_update():
+    """ERRATA :: WS :: Postive Test :: Update issue.
+
+    """
+    # Update test issue.
+    ISSUE['status'] = constants.STATUS_RESOLVED
+    ISSUE['dateUpdated'] = unicode(dt.datetime.utcnow())
+    ISSUE['updatedBy'] = "test-script"
+    # ISSUE['dateUpdated'] = unicode(dt.datetime.utcnow())
+
+    # Invoke WS endpoint.
+    response = requests.post(
+        _URL_UPDATE,
+        data=json.dumps(ISSUE),
+        headers={'Content-Type': 'application/json'},
+        auth=_get_ws_credentials()
+        )
+
+    # Assert WS response.
+    _assert_ws_response(_URL_UPDATE, response)
+
+
+def test_update_retrieve():
+    """ERRATA :: WS :: Postive Test :: Retrieve updated issue.
+
+    """
+    # Invoke WS endpoint.
+    response = requests.get(_URL_RETRIEVE)
+
+    # Assert WS response.
+    content = _assert_ws_response(_URL_RETRIEVE, response)
+
+    # Assert WS response content.
+    assert content['issue']['status'] == ISSUE['status']
+    assert content['issue']['dateUpdated'] == ISSUE['dateUpdated']
+    assert content['issue']['updatedBy'] == ISSUE['updatedBy']
 
 
 def test_close():
@@ -93,41 +137,8 @@ def test_close_retrieve():
 
     # Assert WS response content.
     assert content['issue']['dateClosed'] is not None
-
-
-def test_update():
-    """ERRATA :: WS :: Postive Test :: Update issue.
-
-    """
-    # Update test issue.
-    ISSUE['severity'] = constants.SEVERITY_MEDIUM
-    ISSUE['dateUpdated'] = unicode(dt.datetime.utcnow())
-
-    # Invoke WS endpoint.
-    response = requests.post(
-        _URL_UPDATE,
-        data=json.dumps(ISSUE),
-        headers={'Content-Type': 'application/json'},
-        auth=_get_ws_credentials()
-        )
-
-    # Assert WS response.
-    _assert_ws_response(_URL_UPDATE, response)
-
-
-def test_update_retrieve():
-    """ERRATA :: WS :: Postive Test :: Retrieve updated issue.
-
-    """
-    # Invoke WS endpoint.
-    response = requests.get(_URL_RETRIEVE)
-
-    # Assert WS response.
-    content = _assert_ws_response(_URL_RETRIEVE, response)
-
-    # Assert WS response content.
-    assert content['issue']['severity'] == ISSUE['severity']
-    assert ISSUE['dateUpdated'] == content['issue']['dateUpdated']
+    assert content['issue']['closedBy'] == 'test-script'
+    assert content['issue']['status'] == constants.STATUS_RESOLVED
 
 
 def _get_ws_credentials():
@@ -151,7 +162,7 @@ def _assert_ws_response(
     assert response.url == url
 
     # WS response HTTP status code.
-    assert response.status_code == status_code
+    assert response.status_code == status_code, response.status_code
 
     # WS response = unicode.
     assert isinstance(response.text, unicode)
