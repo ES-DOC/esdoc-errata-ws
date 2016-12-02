@@ -67,7 +67,6 @@ def _authenticate(oauth_token):
     """Authenticate request against github oauth api.
 
     """
-    print oauth_token
     # Authenticate against GitHub API.
     url = _GH_API_TEAMS.format(oauth_token)
     r = requests.get(url, headers={
