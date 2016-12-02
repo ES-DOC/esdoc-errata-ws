@@ -39,6 +39,21 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
                 raise exceptions.UnknownIssueError(self.request.data[JF_UID])
 
 
+        def _validate_user_access():
+            """Validates user's institutional access rights.
+
+            """
+            # Super & insitutional users have access.
+            for team in sorted(self.user_teams):
+                if team == constants.ERRATA_GH_TEAM:
+                    return
+                if team.split("-")[-1] == self.issue.institute.lower():
+                    return
+
+            # User has no access rights to this particular issue.
+            raise exceptions.AuthorizationError()
+
+
         def _validate_issue_immutable_attributes():
             """Validates that issue attribute deemed to be immutable have not been changed.
 
@@ -81,13 +96,12 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             # Update issue.
             issue = self.issue
             issue.date_closed = obj.get(JF_DATE_CLOSED)
-            issue.closed_by = obj.get(JF_CLOSED_BY)
             issue.description = obj[JF_DESCRIPTION]
             issue.materials = ",".join(obj.get(JF_MATERIALS, []))
             issue.severity = obj[JF_SEVERITY].lower()
             issue.title = obj[JF_TITLE]
             issue.date_updated = obj[JF_DATE_UPDATED]
-            issue.updated_by = obj[JF_UPDATED_BY]
+            issue.updated_by = self.user_name
             issue.url = obj.get(JF_URL)
             issue.status = obj[JF_STATUS].lower()
 
@@ -108,6 +122,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
         with db.session.create(commitable=True):
             process_request(self, [
                 _validate_issue_exists,
+                _validate_user_access,
                 _validate_issue_immutable_attributes,
                 _validate_issue_description_change_ratio,
                 _validate_issue_status,

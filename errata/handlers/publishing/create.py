@@ -15,10 +15,12 @@ import tornado
 
 from errata import db
 from errata.utils import constants
+from errata.utils import exceptions
 from errata.utils.constants_json import *
 from errata.utils.http import process_request
 from errata.utils.misc import traverse
 from errata.utils.validation import validate_url
+
 
 
 class CreateIssueRequestHandler(tornado.web.RequestHandler):
@@ -29,6 +31,21 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
         """HTTP POST handler.
 
         """
+        def _validate_user_access():
+            """Validates user's institutional access rights.
+
+            """
+            # Super & insitutional users have access.
+            for team in sorted(self.user_teams):
+                if team == constants.ERRATA_GH_TEAM:
+                    return
+                if team.split("-")[-1] == self.request.data[JF_INSTITUTE].lower():
+                    return
+
+            # User has no access rights to this particular issue.
+            raise exceptions.AuthorizationError()
+
+
         def _validate_issue_urls():
             """Validates URL's associated with incoming request.
 
@@ -44,9 +61,8 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             obj = self.request.data
             self.issue = issue = db.models.Issue()
             issue.date_closed = obj.get(JF_DATE_CLOSED)
-            issue.closed_by = obj.get(JF_CLOSED_BY)
             issue.date_created = obj[JF_DATE_CREATED]
-            issue.created_by = obj[JF_CREATED_BY]
+            issue.created_by = self.user_name
             issue.description = obj[JF_DESCRIPTION]
             issue.institute = obj[JF_INSTITUTE].lower()
             issue.materials = ",".join(obj.get(JF_MATERIALS, []))
@@ -55,7 +71,7 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             issue.title = obj[JF_TITLE]
             issue.uid = obj[JF_UID]
             issue.date_updated = obj.get(JF_DATE_UPDATED, issue.date_created)
-            issue.updated_by = obj.get(JF_UPDATED_BY, issue.created_by)
+            issue.updated_by = self.user_name
             issue.url = obj.get(JF_URL)
             issue.status = obj[JF_STATUS].lower()
 
@@ -92,6 +108,7 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
 
         # Process request.
         process_request(self, [
+            _validate_user_access,
             _validate_issue_urls,
             _set_issue,
             _set_facets,

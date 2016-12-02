@@ -21,6 +21,9 @@ from errata.utils.constants_json import *
 # HTTP CORS header.
 HTTP_HEADER_Access_Control_Allow_Origin = "Access-Control-Allow-Origin"
 
+# ESDOC GitHub team: errata-publication.
+ERRATA_GH_TEAM = 'errata-publication'
+
 # Default endpoint.
 DEFAULT_ENDPOINT = r'/1/ops/heartbeat'
 
@@ -201,7 +204,6 @@ ISSUE = {
         u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r9i1p1#20110901"
         ],
     JF_DATE_CREATED: unicode(dt.datetime.utcnow()),
-    JF_CREATED_BY: "test-script",
     JF_DESCRIPTION: unicode(uuid.uuid4()),
     JF_EXPERIMENTS: [
     	u"1pctCO2",

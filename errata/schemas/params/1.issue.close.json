@@ -2,16 +2,6 @@
     "$schema": "http://json-schema.org/schema#",
     "additionalProperties": false,
     "properties": {
-        "closedBy": {
-            "items": {
-                "minItems": 1,
-                "maxItems": 1,
-                "minLength": 1,
-                "maxLength": 127,
-                "type": "string"
-            },
-            "type": "array"
-        },
         "status": {
             "items": {
                 "enum": [
@@ -33,7 +23,6 @@
         }
     },
     "required": [
-        "closedBy",
         "status",
         "uid"
     ],

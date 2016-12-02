@@ -98,11 +98,6 @@
             "pattern": "^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$",
             "type": "string"
         },
-        "updatedBy": {
-            "minLength": 1,
-            "maxLength": 127,
-            "type": "string"
-        },
         "url": {
             "maxLength": 1023,
             "minLength": 1,
@@ -128,8 +123,7 @@
         "severity",
         "status",
         "title",
-        "uid",
-        "updatedBy"
+        "uid"
     ],
      "title": "ES-DOC errata JSON schema: endpoint = /1/issue/update",
    "type": "object"

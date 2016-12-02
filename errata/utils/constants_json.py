@@ -11,8 +11,6 @@
 
 """
 # JSON field names.
-JF_CLOSED_BY = 'closedBy'
-JF_CREATED_BY = 'createdBy'
 JF_DATE_CLOSED = 'dateClosed'
 JF_DATE_CREATED = 'dateCreated'
 JF_DATE_UPDATED = 'dateUpdated'
@@ -27,6 +25,5 @@ JF_SEVERITY = 'severity'
 JF_STATUS = 'status'
 JF_TITLE = 'title'
 JF_UID = 'uid'
-JF_UPDATED_BY = 'updatedBy'
 JF_URL = 'url'
 JF_VARIABLES = 'variables'
