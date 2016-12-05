@@ -24,8 +24,8 @@ from errata import db
 from errata.db.models import Issue
 from errata.db.models import IssueFacet
 from errata.utils import logger
-from errata.utils.constants import *
-from errata.utils.constants_test import *
+from errata.utils import constants
+from errata.utils import constants_test
 
 
 
@@ -93,8 +93,8 @@ def _yield_issue(input_dir, count):
             issue.closed_by = "test-script"
         issue.description = u"Test issue description - {}".format(unicode(uuid.uuid4()))
         issue.institute = random.choice(constants.INSTITUTE)['key']
-        issue.materials = random.sample(constants.ISSUE_MATERIALS, 3)
-        issue.models = random.sample(constants.ISSUE_MODELS, 3)
+        issue.materials = random.sample(constants_test.ISSUE_MATERIALS, 3)
+        issue.models = random.sample(constants_test.ISSUE_MODELS, 3)
         issue.project = random.choice(constants.PROJECT)['key']
         issue.severity = random.choice(constants.SEVERITY)['key']
         issue.status = random.choice(constants.STATUS)['key']
@@ -102,7 +102,7 @@ def _yield_issue(input_dir, count):
         issue.uid = unicode(uuid.uuid4())
         issue.updated_at = issue.date_created + dt.timedelta(days=2)
         issue.updated_by = "test-script"
-        issue.variables = random.sample(constants.ISSUE_VARIABLES, 2)
+        issue.variables = random.sample(constants_test.ISSUE_VARIABLES, 2)
         issue.url = u"http://errata.ipsl.upmc.fr/issue/1"
 
         yield issue
