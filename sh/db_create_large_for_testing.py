@@ -93,7 +93,7 @@ def _yield_issue(input_dir, count):
             issue.closed_by = "test-script"
         issue.description = u"Test issue description - {}".format(unicode(uuid.uuid4()))
         issue.institute = random.choice(constants.INSTITUTE)['key']
-        issue.materials = random.sample(constants_test.ISSUE_MATERIALS, 3)
+        issue.materials = ",".join(random.sample(constants_test.ISSUE_MATERIALS, 3))
         issue.models = random.sample(constants_test.ISSUE_MODELS, 3)
         issue.project = random.choice(constants.PROJECT)['key']
         issue.severity = random.choice(constants.SEVERITY)['key']
@@ -104,6 +104,8 @@ def _yield_issue(input_dir, count):
         issue.updated_by = "test-script"
         issue.variables = random.sample(constants_test.ISSUE_VARIABLES, 2)
         issue.url = u"http://errata.ipsl.upmc.fr/issue/1"
+
+        print issue.materials
 
         yield issue
 
