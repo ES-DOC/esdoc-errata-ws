@@ -18,7 +18,7 @@ import urllib
 import requests
 
 from errata.utils import constants
-from errata.utils.constants import ISSUE
+from errata.utils.constants_test import ISSUE
 
 
 

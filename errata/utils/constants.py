@@ -10,14 +10,6 @@
 
 
 """
-import datetime as dt
-import random
-import uuid
-
-from errata.utils.constants_json import *
-
-
-
 # HTTP CORS header.
 HTTP_HEADER_Access_Control_Allow_Origin = "Access-Control-Allow-Origin"
 
@@ -26,6 +18,18 @@ ERRATA_GH_TEAM = 'errata-publication'
 
 # Default endpoint.
 DEFAULT_ENDPOINT = r'/1/ops/heartbeat'
+
+# Search facet type - project.
+FACET_TYPE_PROJECT = 'project'
+
+# Search facet type - institute.
+FACET_TYPE_INSTITUTE = 'institute'
+
+# Search facet type - severity.
+FACET_TYPE_SEVERITY = 'severity'
+
+# Search facet type - status.
+FACET_TYPE_STATUS = 'status'
 
 # Search facet type - dataset.
 FACET_TYPE_DATASET = 'dataset'
@@ -43,7 +47,11 @@ FACET_TYPE_VARIABLE = 'variable'
 FACET_TYPE = {
 	FACET_TYPE_DATASET,
 	FACET_TYPE_EXPERIMENT,
+	FACET_TYPE_INSTITUTE,
 	FACET_TYPE_MODEL,
+	FACET_TYPE_PROJECT,
+	FACET_TYPE_SEVERITY,
+	FACET_TYPE_STATUS,
 	FACET_TYPE_VARIABLE
 }
 
@@ -185,47 +193,3 @@ IMMUTABLE_ISSUE_ATTRIBUTES = [
 
 # Ratio of similarity between descriptions of updated and database issue.
 DESCRIPTION_CHANGE_RATIO = 20
-
-# Test issue.
-ISSUE = {
-    JF_DATASETS: [
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.1pctCO2.yr.ocnBgchem.Oyr.r1i1p1#20161010",
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r10i1p1#20110922",
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r11i1p1#20110901",
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r12i1p1#20110901",
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r1i1p1#20110901",
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r1i1p1#20130322",
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r2i1p1#20110901",
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r3i1p1#20110901",
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r4i1p1#20110901",
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r6i1p1#20110901",
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r7i1p1#20110901",
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r8i1p1#20110901",
-        u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r9i1p1#20110901"
-        ],
-    JF_DATE_CREATED: unicode(dt.datetime.utcnow()),
-    JF_DESCRIPTION: unicode(uuid.uuid4()),
-    JF_EXPERIMENTS: [
-    	u"1pctCO2",
-    	u"abrupt4xCO2"
-    	],
-    JF_INSTITUTE: random.choice(INSTITUTE)['key'],
-    JF_MATERIALS: [
-        u"http://errata.ipsl.upmc.fr/static/images_errata/time.jpg",
-        u"http://errata.ipsl.upmc.fr/static/images_errata/time5.jpg"
-    	],
-    JF_MODELS: [
-        u"IPSL-CM5A-LR"
-    	],
-    JF_PROJECT: random.choice(PROJECT)['key'],
-    JF_SEVERITY: random.choice(SEVERITY)['key'],
-    JF_STATUS: STATUS_NEW,
-    JF_TITLE: unicode(uuid.uuid4()),
-    JF_UID: unicode(uuid.uuid4()),
-    JF_URL: u"http://errata.ipsl.upmc.fr/issue/1",
-    JF_VARIABLES: [
-    	u"bsi",
-    	u"dcalc",
-    	u"pp"
-    	]
-    }

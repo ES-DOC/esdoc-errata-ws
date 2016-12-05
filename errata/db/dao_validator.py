@@ -47,8 +47,7 @@ def validate_get_issues(
     project=None,
     severity=None,
     status=None,
-    variable=None,
-    subset=True
+    variable=None
     ):
     """Function input validator: get_issues.
 
@@ -71,12 +70,11 @@ def validate_get_issues(
             [i['key'] for i in constants.STATUS], status, "Issue status")
     if variable is not None:
         v.validate_str(variable, "Variable name")
-    v.validate_bool(subset, "Issue subset")
 
 
-def validate_get_issues_by_facet(facet_id, facet_type):
+def validate_get_issues_by_facet(facet_value, facet_type):
     """Function input validator: get_issues_by_facet.
 
     """
-    v.validate_str(facet_id, "Facet identifier")
+    v.validate_str(facet_value, "Facet value")
     print "TODO: validate facet type in supported set"

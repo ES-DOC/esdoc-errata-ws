@@ -88,12 +88,11 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
                 raise exceptions.InvalidIssueStatusError()
 
 
-        def _persist():
-            """Persists dB changes.
+        def _persist_issue():
+            """Persists issue update.
 
             """
             obj = self.request.data
-            # Update issue.
             issue = self.issue
             issue.date_closed = obj.get(JF_DATE_CLOSED)
             issue.description = obj[JF_DESCRIPTION]
@@ -105,18 +104,32 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             issue.url = obj.get(JF_URL)
             issue.status = obj[JF_STATUS].lower()
 
-            # Delete existing facets.
-            db.dao.delete_facets(issue.uid)
 
-            # Insert facets.
+        def _persist_facets():
+            """Persists facets.
+
+            """
+            obj = self.request.data
+
+            # Delete existing facets.
+            db.dao.delete_facets(self.issue.uid)
+
+            # Insert new facets.
             for facet_type in constants.FACET_TYPE:
-                facet_ids = self.request.data.get('{}s'.format(facet_type), [])
-                for facet_id in facet_ids:
+                # Set facet values.
+                try:
+                    facet_values = obj.get('{}s'.format(facet_type), [])
+                except KeyError:
+                    facet_values = [obj.get('{}'.format(facet_type), None)]
+
+                # Insert new facets.
+                for facet_value in facet_values:
                     facet = db.models.IssueFacet()
-                    facet.facet_id = facet_id
+                    facet.facet_value = facet_value
                     facet.facet_type = facet_type
                     facet.issue_uid = self.issue.uid
                     db.session.insert(facet, False)
+
 
         # Process request.
         with db.session.create(commitable=True):
@@ -126,5 +139,6 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
                 _validate_issue_immutable_attributes,
                 _validate_issue_description_change_ratio,
                 _validate_issue_status,
-                _persist
+                _persist_issue,
+                _persist_facets
                 ])

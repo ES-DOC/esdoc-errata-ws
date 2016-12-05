@@ -26,7 +26,11 @@ from sqlalchemy import Enum
 from errata.db.utils import Entity
 from errata.utils.constants import FACET_TYPE_DATASET
 from errata.utils.constants import FACET_TYPE_EXPERIMENT
+from errata.utils.constants import FACET_TYPE_INSTITUTE
 from errata.utils.constants import FACET_TYPE_MODEL
+from errata.utils.constants import FACET_TYPE_PROJECT
+from errata.utils.constants import FACET_TYPE_SEVERITY
+from errata.utils.constants import FACET_TYPE_STATUS
 from errata.utils.constants import FACET_TYPE_VARIABLE
 from errata.utils.constants import STATUS_NEW
 from errata.utils.constants import STATUS_ON_HOLD
@@ -66,7 +70,11 @@ _SEVERITY_ENUM = Enum(
 _FACET_TYPE_ENUM = Enum(
     FACET_TYPE_DATASET,
     FACET_TYPE_EXPERIMENT,
+    FACET_TYPE_INSTITUTE,
     FACET_TYPE_MODEL,
+    FACET_TYPE_PROJECT,
+    FACET_TYPE_SEVERITY,
+    FACET_TYPE_STATUS,
     FACET_TYPE_VARIABLE,
     schema=_SCHEMA,
     name="FacetTypeEnum"
@@ -120,12 +128,12 @@ class IssueFacet(Entity):
     # SQLAlchemy directives.
     __tablename__ = 'tbl_issue_facet'
     __table_args__ = (
-        UniqueConstraint('issue_uid', 'facet_id', 'facet_type'),
+        UniqueConstraint('issue_uid', 'facet_value', 'facet_type'),
         {'schema': _SCHEMA}
     )
 
     # Column definitions.
     issue_uid = Column(Unicode(63),
                        ForeignKey('{}.tbl_issue.uid'.format(_SCHEMA)), nullable=False)
-    facet_id = Column(Unicode(1023), nullable=False, index=True)
+    facet_value = Column(Unicode(1023), nullable=False, index=True)
     facet_type = Column(_FACET_TYPE_ENUM, nullable=False)

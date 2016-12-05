@@ -54,6 +54,7 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             for url in urls:
                 validate_url(url)
 
+
         def _set_issue():
             """Creates issue.
 
@@ -75,19 +76,28 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             issue.url = obj.get(JF_URL)
             issue.status = obj[JF_STATUS].lower()
 
+
         def _set_facets():
             """Sets search facets to be persisted to database.
 
             """
+            obj = self.request.data
             self.facets = facets = []
             for facet_type in constants.FACET_TYPE:
-                facet_ids = self.request.data.get('{}s'.format(facet_type), [])
-                for facet_id in facet_ids:
+                # Set facet values.
+                try:
+                    facet_values = obj.get('{}s'.format(facet_type), [])
+                except KeyError:
+                    facet_values = [obj.get('{}'.format(facet_type), None)]
+
+                # Set facets to be persisted.
+                for facet_value in [i for i in facet_values if i and len(i)]:
                     facet = db.models.IssueFacet()
-                    facet.facet_id = facet_id
+                    facet.facet_value = facet_value
                     facet.facet_type = facet_type
                     facet.issue_uid = self.issue.uid
                     facets.append(facet)
+
 
         def _persist():
             """Persists data to dB.
@@ -105,6 +115,7 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             with db.session.create(commitable=True):
                 for facet in self.facets:
                     db.session.insert(facet, False)
+
 
         # Process request.
         process_request(self, [
