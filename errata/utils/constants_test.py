@@ -95,7 +95,7 @@ ISSUE = {
     JF_EXPERIMENTS: random.sample(ISSUE_EXPERIMENTS, 2),
     JF_INSTITUTE: random.choice(INSTITUTE)['key'],
     JF_MATERIALS: random.sample(ISSUE_MATERIALS, 3),
-    JF_MODELS: random.sample(JF_MODELS, 3),
+    JF_MODELS: random.sample(ISSUE_MODELS, 3),
     JF_PROJECT: random.choice(PROJECT)['key'],
     JF_SEVERITY: random.choice(SEVERITY)['key'],
     JF_STATUS: STATUS_NEW,
