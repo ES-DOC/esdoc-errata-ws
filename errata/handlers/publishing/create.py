@@ -54,12 +54,13 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             for url in urls:
                 validate_url(url)
 
+
         def _set_issue():
             """Creates issue.
 
             """
-            obj = self.request.data
             self.issue = issue = db.models.Issue()
+            obj = self.request.data
             issue.date_closed = obj.get(JF_DATE_CLOSED)
             issue.date_created = obj[JF_DATE_CREATED]
             issue.created_by = self.user_name
@@ -75,19 +76,29 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             issue.url = obj.get(JF_URL)
             issue.status = obj[JF_STATUS].lower()
 
+
         def _set_facets():
             """Sets search facets to be persisted to database.
 
             """
-            self.facets = facets = []
+            self.facets = facets =[]
+            obj = self.request.data
             for facet_type in constants.FACET_TYPE:
-                facet_ids = self.request.data.get('{}s'.format(facet_type), [])
-                for facet_id in facet_ids:
+                # Set facet values.
+                if facet_type in obj:
+                    facet_values = [obj[facet_type]]
+                else:
+                    facet_values = obj.get('{}s'.format(facet_type), [])
+                facet_values = set([i for i in facet_values if i and len(i) > 0])
+
+                # Set facets to be persisted.
+                for facet_value in facet_values:
                     facet = db.models.IssueFacet()
-                    facet.facet_id = facet_id
+                    facet.facet_value = facet_value
                     facet.facet_type = facet_type
                     facet.issue_uid = self.issue.uid
                     facets.append(facet)
+
 
         def _persist():
             """Persists data to dB.
@@ -105,6 +116,7 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             with db.session.create(commitable=True):
                 for facet in self.facets:
                     db.session.insert(facet, False)
+
 
         # Process request.
         process_request(self, [

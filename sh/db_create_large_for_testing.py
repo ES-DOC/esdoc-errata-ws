@@ -25,6 +25,8 @@ from errata.db.models import Issue
 from errata.db.models import IssueFacet
 from errata.utils import logger
 from errata.utils import constants
+from errata.utils import constants_test
+
 
 
 # Define command line arguments.
@@ -91,7 +93,8 @@ def _yield_issue(input_dir, count):
             issue.closed_by = "test-script"
         issue.description = u"Test issue description - {}".format(unicode(uuid.uuid4()))
         issue.institute = random.choice(constants.INSTITUTE)['key']
-        issue.materials = _get_materials(input_dir)
+        issue.materials = ",".join(random.sample(constants_test.ISSUE_MATERIALS, 3))
+        issue.models = random.sample(constants_test.ISSUE_MODELS, 3)
         issue.project = random.choice(constants.PROJECT)['key']
         issue.severity = random.choice(constants.SEVERITY)['key']
         issue.status = random.choice(constants.STATUS)['key']
@@ -99,7 +102,10 @@ def _yield_issue(input_dir, count):
         issue.uid = unicode(uuid.uuid4())
         issue.updated_at = issue.date_created + dt.timedelta(days=2)
         issue.updated_by = "test-script"
-        # issue.url = "TODO"
+        issue.variables = random.sample(constants_test.ISSUE_VARIABLES, 2)
+        issue.url = u"http://errata.ipsl.upmc.fr/issue/1"
+
+        print issue.materials
 
         yield issue
 
@@ -108,43 +114,30 @@ def _yield_issue_facets(input_dir, issue):
     """Yields issue facets for testing purposes.
 
     """
+    def _create_facet(facet_type, facet_value):
+        facet = IssueFacet()
+        facet.issue_uid = issue.uid
+        facet.facet_type = facet_type
+        facet.facet_value = facet_value
+        return facet
+
     experiments = set()
     models = set()
-    variables = set()
-    for identifier in _get_datasets(input_dir, issue.institute):
-        facet = IssueFacet()
-        facet.issue_uid = issue.uid
-        facet.facet_id = identifier
-        facet.facet_type = constants.FACET_TYPE_DATASET
-        yield facet
 
+    for identifier in _get_datasets(input_dir, issue.institute):
         experiments.add(identifier.split(".")[4])
         models.add(identifier.split(".")[3])
-        # variables.add(identifier.split(".")[3])
-
+        yield _create_facet(constants.FACET_TYPE_DATASET, identifier)
     for identifier in experiments:
-        facet = IssueFacet()
-        facet.issue_uid = issue.uid
-        facet.facet_id = identifier
-        facet.facet_type = constants.FACET_TYPE_EXPERIMENT
-
-        yield facet
-
+        yield _create_facet(constants.FACET_TYPE_EXPERIMENT, identifier)
     for identifier in models:
-        facet = IssueFacet()
-        facet.issue_uid = issue.uid
-        facet.facet_id = identifier
-        facet.facet_type = constants.FACET_TYPE_MODEL
-
-        yield facet
-
-    for identifier in variables:
-        facet = IssueFacet()
-        facet.issue_uid = issue.uid
-        facet.facet_id = identifier
-        facet.facet_type = constants.FACET_TYPE_VARIABLE
-
-        yield facet
+        yield _create_facet(constants.FACET_TYPE_MODEL, identifier)
+    for identifier in issue.variables:
+        yield _create_facet(constants.FACET_TYPE_VARIABLE, identifier)
+    yield _create_facet(constants.FACET_TYPE_PROJECT, issue.project)
+    yield _create_facet(constants.FACET_TYPE_INSTITUTE, issue.institute)
+    yield _create_facet(constants.FACET_TYPE_SEVERITY, issue.severity)
+    yield _create_facet(constants.FACET_TYPE_STATUS, issue.status)
 
 
 def _main(args):

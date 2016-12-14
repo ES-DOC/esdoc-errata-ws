@@ -19,6 +19,7 @@ from errata.db.models import IssueFacet
 from errata.db.session import query
 from errata.db.session import raw_query
 from errata.db.utils import text_filter
+from errata.db.utils import text_insensitive
 from errata.db.utils import as_date_string
 from errata.utils import constants
 from errata.utils.validation import validate
@@ -54,7 +55,7 @@ def get_facets(issue_uid=None):
     if issue_uid:
         qry = raw_query(
             IssueFacet.issue_uid,
-            IssueFacet.facet_id,
+            IssueFacet.facet_value,
             IssueFacet.facet_type
             )
         qry = text_filter(qry, IssueFacet.issue_uid, issue_uid)
@@ -63,7 +64,7 @@ def get_facets(issue_uid=None):
 
     else:
         qry = raw_query(
-            IssueFacet.facet_id,
+            IssueFacet.facet_value,
             IssueFacet.facet_type
             )
         qry = qry.filter(IssueFacet.facet_type != constants.FACET_TYPE_DATASET)
@@ -87,6 +88,15 @@ def get_issue(uid):
     return qry.first()
 
 
+def get_all_issues():
+    """Returns set of all issues.
+
+    """
+    qry = query(Issue)
+
+    return qry.all()
+
+
 @validate(validate_get_issues)
 def get_issues(
     experiment=None,
@@ -95,8 +105,7 @@ def get_issues(
     project=None,
     severity=None,
     status=None,
-    variable=None,
-    subset=True
+    variable=None
     ):
     """Returns issues that match the passed filters.
 
@@ -107,54 +116,45 @@ def get_issues(
     :param str severity: Issue severity, e.g. low.
     :param str status: Issue status, e.g. hold.
     :param str variable: Variable associated with the issue, e.g. tos.
-    :param bool subset: Flag indicating whether a subset is requested.
 
     :returns: List of matching issues.
     :rtype: list
 
     """
-    if subset:
-        qry = raw_query(
-            Issue.project,
-            Issue.institute,
-            Issue.uid,
-            Issue.title,
-            Issue.severity,
-            Issue.status,
-            as_date_string(Issue.date_created),
-            as_date_string(Issue.date_closed),
-            as_date_string(Issue.date_updated)
-            )
-    else:
-        qry = query(Issue)
-    # qry = qry.join(IssueFacet, Issue.uid == IssueFacet.issue_uid)
-
-    # if experiment:
-    #     qry = qry.filter(IssueFacet.facet_type == 'experiment')
-    #     qry = text_filter(qry, IssueFacet.facet_id, experiment)
-    if institute:
-        qry = text_filter(qry, Issue.institute, institute)
-    # if model:
-    #     qry = qry.filter(IssueFacet.facet_type == 'model')
-    #     qry = text_filter(qry, IssueFacet.facet_id, model)
-    if project:
-        qry = text_filter(qry, Issue.project, project)
-    if severity:
-        qry = qry.filter(Issue.severity == severity)
-    if status:
-        qry = qry.filter(Issue.status == status)
-    # if variable:
-    #     qry = qry.filter(IssueFacet.facet_type == 'variable')
-    #     qry = text_filter(qry, IssueFacet.facet_id, variable)
+    qry = raw_query(
+        Issue.project,
+        Issue.institute,
+        Issue.uid,
+        Issue.title,
+        Issue.severity,
+        Issue.status,
+        as_date_string(Issue.date_created),
+        as_date_string(Issue.date_closed),
+        as_date_string(Issue.date_updated)
+        )
+    for facet_value, facet_type in {
+        (experiment, constants.FACET_TYPE_EXPERIMENT),
+        (institute, constants.FACET_TYPE_INSTITUTE),
+        (model, constants.FACET_TYPE_MODEL),
+        (project, constants.FACET_TYPE_PROJECT),
+        (severity, constants.FACET_TYPE_SEVERITY),
+        (status, constants.FACET_TYPE_STATUS),
+        (variable, constants.FACET_TYPE_VARIABLE),
+    }:
+        if facet_value:
+            sub_qry = query(IssueFacet.issue_uid)
+            sub_qry = sub_qry.filter(IssueFacet.facet_type == facet_type)
+            sub_qry = text_filter(sub_qry, IssueFacet.facet_value, facet_value)
+            qry = qry.filter(Issue.uid.in_(sub_qry))
 
     return qry.all()
 
 
 @validate(validate_get_issues_by_facet)
-def get_issues_by_facet(facet_id, facet_type):
+def get_issues_by_facet(facet_value, facet_type):
     """Returns issues associated with a facet.
 
-    :param str facet_id: A facet identifier.
+    :param str facet_value: A facet value.
     :param str facet_type: Type of issue facet, e.g. dataset.
 
     :returns: Matching issues.
@@ -162,7 +162,7 @@ def get_issues_by_facet(facet_id, facet_type):
 
     """
     qry = raw_query(IssueFacet.issue_uid)
-    qry = text_filter(qry, IssueFacet.facet_id, facet_id)
+    qry = text_filter(qry, IssueFacet.facet_value, facet_value)
     qry = qry.filter(IssueFacet.facet_type == facet_type)
 
     return sorted([i[0] for i in qry.all()])
