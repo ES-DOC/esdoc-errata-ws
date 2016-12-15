@@ -25,8 +25,8 @@ _SECURED_ENDPOINTS = {
     '/1/issue/update',
 }
 
-# GitHub API - user team membership within ES-DOC.
-_GH_API_TEAMS = "https://api.github.com/orgs/ES-DOC/teams?access_token={}"
+# GitHub API - user team membership within ES-DOC-OPS.
+_GH_API_TEAMS = "https://api.github.com/orgs/ES-DOC-OPS/teams?access_token={}"
 
 # GitHub API - user team membership within GitHub.
 _GH_API_USER = "https://api.github.com/user?access_token={}"
