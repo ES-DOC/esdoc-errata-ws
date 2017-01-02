@@ -121,10 +121,10 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
                     facet_values = [obj[facet_type]]
                 else:
                     facet_values = obj.get('{}s'.format(facet_type), [])
-                facet_values = set([i for i in facet_values if i and len(i) > 0])
+                facet_values = [i for i in facet_values if i and len(i) > 0]
 
                 # Insert new facets.
-                for facet_value in facet_values:
+                for facet_value in set(facet_values):
                     facet = db.models.IssueFacet()
                     facet.facet_value = facet_value
                     facet.facet_type = facet_type
