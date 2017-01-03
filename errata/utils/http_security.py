@@ -14,6 +14,7 @@ import json
 import requests
 
 from errata.utils import exceptions
+from errata.utils import config
 from errata.utils import constants
 
 
@@ -87,6 +88,12 @@ def secure_request(handler):
     :raises: exceptions.AuthenticationError, exceptions.AuthorizationError
 
     """
+    # Escape if in dev mode & network state is down.
+    if config.mode == "dev" and config.network_state == "down":
+        handler.user_name = "tester"
+        handler.user_teams = [constants.ERRATA_GH_TEAM]
+        return
+
     # Escape if not required.
     if not handler.request.path.split("?")[0] in _SECURED_ENDPOINTS:
         return

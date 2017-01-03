@@ -14,6 +14,7 @@ import sqlalchemy
 import tornado
 
 from errata import db
+from errata.utils import config
 from errata.utils import constants
 from errata.utils import exceptions
 from errata.utils.constants_json import *
@@ -50,6 +51,9 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             """Validates URL's associated with incoming request.
 
             """
+            if config.mode == "dev" and config.network_state == "down":
+                return
+
             urls = traverse([self.request.data.get((i)) for i in [JF_URL, JF_MATERIALS]])
             for url in urls:
                 validate_url(url)
@@ -81,7 +85,7 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             """Sets search facets to be persisted to database.
 
             """
-            self.facets = facets =[]
+            self.facets = facets = []
             obj = self.request.data
             for facet_type in constants.FACET_TYPE:
                 # Set facet values.
@@ -89,10 +93,10 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
                     facet_values = [obj[facet_type]]
                 else:
                     facet_values = obj.get('{}s'.format(facet_type), [])
-                facet_values = set([i for i in facet_values if i and len(i) > 0])
+                facet_values = [i for i in facet_values if i and len(i) > 0]
 
                 # Set facets to be persisted.
-                for facet_value in facet_values:
+                for facet_value in set(facet_values):
                     facet = db.models.IssueFacet()
                     facet.facet_value = facet_value
                     facet.facet_type = facet_type
@@ -105,24 +109,19 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
 
             """
             # Persist issue.
-            with db.session.create():
-                try:
-                    db.session.insert(self.issue)
-                except sqlalchemy.exc.IntegrityError:
-                    db.session.rollback()
-                    raise ValueError("Issue description/uid fields must be unique")
+            db.session.insert(self.issue)
 
             # Persist facets.
-            with db.session.create(commitable=True):
-                for facet in self.facets:
-                    db.session.insert(facet, False)
+            for facet in self.facets:
+                db.session.insert(facet)
 
 
         # Process request.
-        process_request(self, [
-            _validate_user_access,
-            _validate_issue_urls,
-            _set_issue,
-            _set_facets,
-            _persist
-            ])
+        with db.session.create(commitable=True):
+            process_request(self, [
+                _validate_user_access,
+                _validate_issue_urls,
+                _set_issue,
+                _set_facets,
+                _persist
+                ])
