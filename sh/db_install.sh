@@ -1,36 +1,36 @@
 #!/bin/bash
 
 # Import utils.
-source $ERRATA_HOME/sh/init.sh
+source $ERRATA_WS_HOME/sh/utils.sh
 
 # Create db users.
 _db_create_users()
 {
 	log "Creating DB users"
-	createuser -U postgres -d -s esdoc_errata_db_admin
-	createuser -U esdoc_errata_db_admin -D -S -R esdoc_errata_db_user
+	createuser -U postgres -d -s $ERRATA_DB_ADMIN
+	createuser -U $ERRATA_DB_ADMIN -D -S -R $ERRATA_DB_USER
 }
 
 # Create db.
 _db_create()
 {
 	log "Creating DB"
-	createdb -U esdoc_errata_db_admin -e -O esdoc_errata_db_admin -T template0 esdoc_errata
+	createdb -U $ERRATA_DB_ADMIN -e -O $ERRATA_DB_ADMIN -T template0 $ERRATA_DB_NAME
 }
 
 # Grant db permissions.
 _db_grant_permissions()
 {
 	log "Granting DB permissions"
-	psql -U esdoc_errata_db_admin -d esdoc_errata -q -f $ERRATA_HOME/sh/db_grant_permissions.sql
+	psql -U $ERRATA_DB_ADMIN -d $ERRATA_DB_NAME -q -f $ERRATA_WS_HOME/sh/db_permissions.sql
 }
 
 # Seed db.
 _db_setup()
 {
 	log "Creating DB objects"
-    source $ERRATA_HOME/venv/bin/activate
-	python $ERRATA_HOME/sh/db_setup.py
+    source $ERRATA_WS_HOME/venv/bin/activate
+	python $ERRATA_WS_HOME/sh/db_setup.py
 }
 
 # Main entry point.

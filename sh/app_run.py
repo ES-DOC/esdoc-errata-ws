@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: run_web_service.py
+.. module:: app_run.py
    :license: GPL/CeCIL
    :platform: Unix, Windows
-   :synopsis: Runs the errata web-service.
+   :synopsis: Runs the web-service.
 
-.. moduleauthor:: Atef Benasser <abenasser@ipsl.jussieu.fr>
+.. moduleauthor:: Mark A. Greenslade
 
 """
 import sys
-import errata
+import errata as APP
+
 
 
 def _main():
@@ -19,24 +20,24 @@ def _main():
     """
     # Run web service.
     try:
-        errata.run()
+        APP.run()
 
     # Handle unexpected exceptions.
     except Exception as err:
-        # Simple log to stdout.
-        print err
-
         # Ensure that web-service is stopped.
         try:
-            errata.stop()
+            APP.stop()
         except:
             pass
 
         # Ensure that all active db transactions are cancelled.
         try:
-            errata.db.session.rollback()
+            APP.db.session.rollback()
         except:
             pass
+
+        # Simple log to stdout.
+        print err
 
     # Signal exit.
     finally:

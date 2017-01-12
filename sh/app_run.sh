@@ -6,11 +6,10 @@ source $ERRATA_WS_HOME/sh/utils.sh
 # Main entry point.
 main()
 {
-    log "ERRATA-TESTS : running ..."
+    log "running ..."
 
-    nosetests -v -s $ERRATA_WS_HOME/tests
-
-    log "ERRATA-TESTS : complete ..."
+    source $ERRATA_WS_HOME/sh/activate_venv.sh
+	python $ERRATA_WS_HOME/sh/app_run.py
 }
 
 # Invoke entry point.

@@ -1,15 +1,15 @@
 #!/bin/bash
 
 # Import utils.
-source $ERRATA_HOME/sh/init.sh
+source $ERRATA_WS_HOME/sh/utils.sh
 
 # Create db users.
 _db_drop_users()
 {
 	log "Deleting DB users"
 
-	dropuser -U esdoc_errata_db_admin esdoc_errata_db_user
-	dropuser -U postgres esdoc_errata_db_admin
+	dropuser -U $ERRATA_DB_ADMIN $ERRATA_DB_USER
+	dropuser -U postgres $ERRATA_DB_ADMIN
 }
 
 # Drop db.
@@ -17,7 +17,7 @@ _db_drop()
 {
 	log "Dropping DB"
 
-	dropdb -U esdoc_errata_db_admin esdoc_errata
+	dropdb -U $ERRATA_DB_ADMIN esdoc_errata
 }
 
 # Main entry point.

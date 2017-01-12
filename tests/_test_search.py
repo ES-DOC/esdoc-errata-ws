@@ -19,10 +19,10 @@ import uuid
 import requests
 
 from errata.utils.constants import INSTITUTE
-from errata.utils.constants import ISSUE
 from errata.utils.constants import PROJECT
 from errata.utils.constants import SEVERITY
 from errata.utils.constants import STATUS
+from errata.utils.constants_test import ISSUE
 
 
 # Set of target urls.
