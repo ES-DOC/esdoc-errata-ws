@@ -53,8 +53,9 @@ class RetrieveAllIssuesRequestHandler(tornado.web.RequestHandler):
                 obj = convertor.to_dict(issue)
                 obj['materials'] = sorted(issue.materials.split(","))
                 for facet_type in constants.FACET_TYPE:
-                    obj['{}s'.format(facet_type)] = [i[1] for i in self.facets if i[0] == issue.uid and i[2] == facet_type]
+                    obj['{}s'.format(facet_type)] = [i[0] for i in self.facets if i[2] == issue.uid and i[1] == facet_type]
 
+                print(obj)
                 return obj
 
 

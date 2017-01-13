@@ -157,6 +157,8 @@ PROJECT = [
 	}
 ]
 
+MULTIPLE_FACETS = [FACET_TYPE_EXPERIMENT, FACET_TYPE_MODEL, FACET_TYPE_VARIABLE]
+
 # TODO - leverage pyessv
 # Institute - BADC.
 INSTITUTE_BADC = u"badc"
@@ -193,3 +195,8 @@ IMMUTABLE_ISSUE_ATTRIBUTES = [
 
 # Ratio of similarity between descriptions of updated and database issue.
 DESCRIPTION_CHANGE_RATIO = 20
+
+# Misc
+
+DATASETS = 'datasets'
+UID = 'uid'

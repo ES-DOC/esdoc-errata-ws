@@ -28,7 +28,7 @@
             "minLength": 1,
             "type": "string"
         },
-        "experiments": {
+        "experiment": {
             "items": {
                 "maxLength": 63,
                 "minLength": 1,
@@ -52,7 +52,7 @@
             "type": "array",
             "uniqueItems": true
         },
-        "models": {
+        "model": {
             "items": {
                 "maxLength": 63,
                 "minLength": 1,
@@ -98,7 +98,7 @@
             "minLength": 1,
             "type": "string"
         },
-        "variables": {
+        "cmor_table": {
             "items": {
                 "maxLength": 63,
                 "minLength": 1,
@@ -113,7 +113,7 @@
         "dateCreated",
         "description",
         "institute",
-        "models",
+        "model",
         "project",
         "severity",
         "status",

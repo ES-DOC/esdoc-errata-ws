@@ -32,6 +32,7 @@ def _get_config_fpath():
     print dpath
     while dpath != '/':
         fpath = os.path.join(dpath, "ops/config")
+        print(fpath)
         fpath = os.path.join(fpath, _CONFIG_FPATH)
         if os.path.exists(fpath):
             return fpath
