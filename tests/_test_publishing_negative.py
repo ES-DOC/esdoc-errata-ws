@@ -17,7 +17,7 @@ import urllib
 import nose
 import requests
 
-from errata.utils.constants import ISSUE
+from errata.utils.constants_test import ISSUE
 
 
 

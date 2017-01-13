@@ -1,21 +1,21 @@
 #!/bin/bash
 
 # Import utils.
-source $ERRATA_HOME/sh/init.sh
+source $ERRATA_WS_HOME/sh/utils.sh
 
 # Grant db permissions.
 _db_grant_permissions()
 {
 	log "Granting DB permissions"
-	psql -U esdoc_errata_db_admin -d esdoc_errata -q -f $ERRATA_HOME/sh/db_grant_permissions.sql
+	psql -U $ERRATA_DB_ADMIN -d $ERRATA_DB_NAME -q -f $ERRATA_WS_HOME/sh/db_permissions.sql
 }
 
 # Seed db.
 _db_setup()
 {
 	log "Creating DB objects"
-    source $ERRATA_HOME/venv/bin/activate
-	python $ERRATA_HOME/sh/db_setup.py
+    source $ERRATA_WS_HOME/venv/bin/activate
+	python $ERRATA_WS_HOME/sh/db_setup.py
 }
 
 # Main entry point.

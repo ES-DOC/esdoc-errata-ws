@@ -1,0 +1,68 @@
+# ###############################################################
+# STANDARD-SECTION: SETUP
+# ###############################################################
+
+# Set home path
+export ERRATA_WS_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+export ERRATA_WS_HOME="$( cd "$( dirname "${ERRATA_WS_HOME[0]}" )" && pwd )"
+
+# Set pip
+export ERRATA_WS_PIP=pip
+
+# ###############################################################
+# STANDARD-SECTION: OPERATIONS
+# ###############################################################
+
+# Ensure shell scripts are executable.
+chmod a+x $ERRATA_WS_HOME/sh/*.sh
+
+# Ensure ops directories exist
+mkdir -p $ERRATA_WS_HOME/ops
+mkdir -p $ERRATA_WS_HOME/ops/config
+mkdir -p $ERRATA_WS_HOME/ops/daemon
+mkdir -p $ERRATA_WS_HOME/ops/libs
+mkdir -p $ERRATA_WS_HOME/ops/logs
+
+# ###############################################################
+# STANDARD-SECTION: DB PARAMS
+# ###############################################################
+
+export ERRATA_DB_NAME=esdoc_errata
+export ERRATA_DB_USER=esdoc_errata_db_user
+export ERRATA_DB_ADMIN=esdoc_errata_db_admin
+
+# ###############################################################
+# STANDARD-SECTION: ALIASES
+# ###############################################################
+
+# Install / update.
+alias errata-ws-install=$ERRATA_WS_HOME/sh/install.sh
+alias errata-ws-update=$ERRATA_WS_HOME/sh/update.sh
+
+# Logs commands.
+alias errata-ws-reset-logs=$ERRATA_WS_HOME/sh/reset_logs.sh
+
+# Web-service commands.
+alias errata-ws=$ERRATA_WS_HOME/sh/app_run.sh
+alias errata-ws-daemon=$ERRATA_WS_HOME/sh/daemon_start.sh
+alias errata-ws-daemon-stop=$ERRATA_WS_HOME/sh/daemon_stop.sh
+alias errata-ws-daemon-reload='errata-ws-daemon-stop && errata-ws-daemon-start'
+alias errata-ws-daemon-status=$ERRATA_WS_HOME/sh/daemon_status.sh
+
+# Database commands.
+alias errata-ws-db-setup=$ERRATA_WS_HOME/sh/db_setup.sh
+alias errata-ws-db-install=$ERRATA_WS_HOME/sh/db_install.sh
+alias errata-ws-db-uninstall=$ERRATA_WS_HOME/sh/db_uninstall.sh
+alias errata-ws-db-reset=$ERRATA_WS_HOME/sh/db_reset.sh
+alias errata-ws-db-vacuum=$ERRATA_WS_HOME/sh/db_vacuum.sh
+
+# Test related commands.
+alias esdoc-ws-tests=$ERRATA_WS_HOME/sh/run_tests.sh
+
+# ###############################################################
+# CUSTOM-SECTION
+# ###############################################################
+
+# Custom aliases.
+alias errata-ws-check-access-control=$ERRATA_WS_HOME/sh/custom/check_access_control.sh
+alias errata-ws-db-create-large-for-testing=$ERRATA_WS_HOME/sh/custom/db_create_large_for_testing.sh
