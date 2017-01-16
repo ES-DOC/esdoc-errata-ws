@@ -69,7 +69,7 @@ def _authorize(oauth_token, team):
 
     # Verify minimal OAuth scope(s).
     scopes = set(r.headers['X-OAuth-Scopes'].split(", "))
-    if _REQUIRED_OAUTH_SCOPES - scopes:
+    if _REQUIRED_OAUTH_SCOPES in scopes:
         raise exceptions.AuthorizationError()
 
     # Verify team membership.

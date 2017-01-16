@@ -94,7 +94,6 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             """Persists issue update.
 
             """
-            print('PERSISTING ISSUE')
             obj = self.request.data
             issue = self.issue
             issue.date_closed = obj.get(JF_DATE_CLOSED)
@@ -106,13 +105,11 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             issue.updated_by = self.user_name
             issue.url = obj.get(JF_URL)
             issue.status = obj[JF_STATUS].lower()
-            print('ISSUE PERSISTED')
 
         def _persist_facets():
             """Persists facets.
 
             """
-            print('PERSIST FACET')
             obj = self.request.data
 
             # Delete existing facets.
@@ -134,7 +131,6 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
                     facet.facet_type = facet_type
                     facet.issue_uid = self.issue.uid
                     db.session.insert(facet, False)
-            print('FACET PERSISTED.')
 
         def _update_pids():
             """
@@ -146,6 +142,8 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             if constants.DATASETS in obj and constants.UID in obj:
                 new_datasets = obj[constants.DATASETS]
                 uid = obj[constants.UID]
+            else:
+                raise exceptions.InvalidJSONSchemaError
             # Retrieving the old dataset list from database
             old_facets = db.dao.get_facets(self.issue.uid)
             old_datasets = []
@@ -158,7 +156,6 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
                 remove_errata_from_handle(dset, uid, connector)
             for dset in list(set(new_datasets)-set(old_datasets)):
                 add_errata_to_handle(dset, uid, connector)
-
             connector.finish_messaging_thread()
 
 
