@@ -24,7 +24,7 @@ _CONFIG_FPATH = "ws.conf"
 data = None
 
 
-def _get_config_fpath():
+def _get_config_fpath(config_path):
     """Returns configuration file path.
 
     """
@@ -32,12 +32,13 @@ def _get_config_fpath():
     print dpath
     while dpath != '/':
         fpath = os.path.join(dpath, "ops/config")
-        fpath = os.path.join(fpath, _CONFIG_FPATH)
+        print(fpath)
+        fpath = os.path.join(fpath, config_path)
         if os.path.exists(fpath):
             return fpath
         dpath = os.path.dirname(dpath)
 
-    err = "ESDOC-ERRATA configuration file ({0}) could not be found".format(_CONFIG_FPATH)
+    err = "ESDOC-ERRATA configuration file ({0}) could not be found".format(config_path)
     raise RuntimeError(err)
 
 
@@ -48,7 +49,7 @@ def _init():
     global data
 
     # Get configuration file path (falling back to template if necessary).
-    fpath = _get_config_fpath()
+    fpath = _get_config_fpath('ws.conf')
 
     # Convert config file to a named tuple.
     data = json_file_to_namedtuple(fpath)

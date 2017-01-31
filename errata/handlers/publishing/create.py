@@ -21,7 +21,7 @@ from errata.utils.constants_json import *
 from errata.utils.http import process_request
 from errata.utils.misc import traverse
 from errata.utils.validation import validate_url
-
+from errata.utils.pid_connector import create_connector, add_errata_to_handle
 
 
 class CreateIssueRequestHandler(tornado.web.RequestHandler):
@@ -42,7 +42,6 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
                     return
                 if team.split("-")[-1] == self.request.data[JF_INSTITUTE].lower():
                     return
-
             # User has no access rights to this particular issue.
             raise exceptions.AuthorizationError()
 
@@ -89,12 +88,14 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             obj = self.request.data
             for facet_type in constants.FACET_TYPE:
                 # Set facet values.
-                if facet_type in obj:
+                if facet_type in obj and facet_type not in constants.MULTIPLE_FACETS:
                     facet_values = [obj[facet_type]]
+                elif facet_type in constants.MULTIPLE_FACETS:
+                    facet_values = obj.get('{}'.format(facet_type), [])
+
                 else:
                     facet_values = obj.get('{}s'.format(facet_type), [])
                 facet_values = [i for i in facet_values if i and len(i) > 0]
-
                 # Set facets to be persisted.
                 for facet_value in set(facet_values):
                     facet = db.models.IssueFacet()
@@ -115,6 +116,22 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             for facet in self.facets:
                 db.session.insert(facet)
 
+        def _update_pid():
+            """
+            updates pid handles.
+
+            """
+            # Retrieving issue uid and affected dataset list.
+            obj = self.request.data
+            if constants.DATASETS in obj and constants.UID in obj:
+                datasets = obj[constants.DATASETS]
+                uid = obj[constants.UID]
+            # Creating connection to pid server and updating handles one by one.
+            connector = create_connector()
+            connector.start_messaging_thread()
+            for dataset in datasets:
+                add_errata_to_handle(dataset, [uid], connector)
+            connector.finish_messaging_thread()
 
         # Process request.
         with db.session.create(commitable=True):
@@ -123,5 +140,6 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
                 _validate_issue_urls,
                 _set_issue,
                 _set_facets,
-                _persist
+                _persist,
+                _update_pid
                 ])

@@ -65,9 +65,10 @@ def get_facets(issue_uid=None):
     else:
         qry = raw_query(
             IssueFacet.facet_value,
-            IssueFacet.facet_type
+            IssueFacet.facet_type,
+            IssueFacet.issue_uid
             )
-        qry = qry.filter(IssueFacet.facet_type != constants.FACET_TYPE_DATASET)
+        # qry = qry.filter(IssueFacet.facet_type != constants.FACET_TYPE_DATASET)
 
         return list(set(qry.all()))
 

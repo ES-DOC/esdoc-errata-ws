@@ -165,10 +165,11 @@ def validate_url(url):
     :param str url: The url to validate.
 
     """
-    try:
-        response = requests.head(url)
-    except Exception:
-        raise exceptions.UnreachableURLError(url)
-    else:
-        if response.status_code != requests.codes.OK:
+    if url is not None:
+        try:
+            response = requests.head(url)
+        except Exception:
             raise exceptions.UnreachableURLError(url)
+        else:
+            if response.status_code != requests.codes.OK:
+                raise exceptions.UnreachableURLError(url)

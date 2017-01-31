@@ -27,7 +27,7 @@ _SECURED_ENDPOINTS = {
 }
 
 # GitHub API - user team membership within ES-DOC-OPS.
-_GH_API_TEAMS = "https://api.github.com/orgs/ES-DOC-OPS/teams?access_token={}per_page=100"
+_GH_API_TEAMS = "https://api.github.com/orgs/ES-DOC-OPS/teams?access_token={}&per_page=100"
 
 # GitHub API - user team membership within GitHub.
 _GH_API_USER = "https://api.github.com/user?access_token={}"
@@ -44,11 +44,13 @@ def _authenticate(gh_login, oauth_token):
     url = _GH_API_USER.format(oauth_token)
     r = requests.get(url, headers={'Accept': 'application/json'})
     if r.status_code != 200:
+        print('CODE')
         raise exceptions.AuthenticationError()
 
     # Verify that GH login & token map to same GH account.
     user = json.loads(r.text)
     if gh_login != user['login']:
+        print('LOGIN')
         raise exceptions.AuthenticationError()
 
     # Return minimal user information.
@@ -67,7 +69,7 @@ def _authorize(oauth_token, team):
 
     # Verify minimal OAuth scope(s).
     scopes = set(r.headers['X-OAuth-Scopes'].split(", "))
-    if _REQUIRED_OAUTH_SCOPES - scopes:
+    if _REQUIRED_OAUTH_SCOPES in scopes:
         raise exceptions.AuthorizationError()
 
     # Verify team membership.
@@ -81,7 +83,7 @@ def _authorize(oauth_token, team):
 
 
 def secure_request(handler):
-    """Enforces request level security policy (if necesaary).
+    """Enforces request level security policy (if necessary).
 
     :param utils.http.HTTPRequestHandler handler: An HTTP request handler.
 
