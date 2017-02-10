@@ -8,8 +8,8 @@ main()
 {
     log "install starts ..."
 
-	source $ESDOC_WS_HOME/sh/install_config.sh
-	source $ESDOC_WS_HOME/sh/install_venv.sh
+	source $ERRATA_WS_HOME/sh/install_config.sh
+	source $ERRATA_WS_HOME/sh/install_venv.sh
 
     log "install complete"
 }
