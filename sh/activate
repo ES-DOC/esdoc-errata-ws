@@ -46,7 +46,7 @@ alias errata-ws-reset-logs=$ERRATA_WS_HOME/sh/reset_logs.sh
 alias errata-ws=$ERRATA_WS_HOME/sh/app_run.sh
 alias errata-ws-daemon=$ERRATA_WS_HOME/sh/daemon_start.sh
 alias errata-ws-daemon-stop=$ERRATA_WS_HOME/sh/daemon_stop.sh
-alias errata-ws-daemon-reload='errata-ws-daemon-stop && errata-ws-daemon-start'
+alias errata-ws-daemon-reload=$ERRATA_WS_HOME/sh/daemon_reload.sh
 alias errata-ws-daemon-status=$ERRATA_WS_HOME/sh/daemon_status.sh
 
 # Database commands.
