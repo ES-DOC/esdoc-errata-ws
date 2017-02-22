@@ -19,8 +19,9 @@ from errata.utils import constants
 from errata.utils import exceptions
 from errata.utils.constants_json import *
 from errata.utils.http import process_request
-from errata.utils.pid_connector import create_connector, add_errata_to_handle, remove_errata_from_handle
-
+from errata.utils.pid_connector import add_errata_to_handle
+from errata.utils.pid_connector import create_connector
+from errata.utils.pid_connector import remove_errata_from_handle
 
 
 
@@ -90,6 +91,38 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
                 raise exceptions.InvalidIssueStatusError()
 
 
+        def _update_pids():
+            """Updates handles at the pid server.
+
+            """
+            # Set existing datasets.
+            dsets_existing = set([i.facet_value for i in db.dao.get_issue_facets(self.issue.uid, constants.FACET_TYPE_DATASET)])
+
+            # Set actual datasets.
+            dsets_actual = set(self.request.data[JF_DATASETS])
+
+            # Set obsolete datasets.
+            dsets_obsolete = list(dsets_existing - dsets_actual)
+
+            # Set new datasets.
+            dsets_new = list(dsets_actual - dsets_existing)
+
+            # Establish PID service connection.
+            connector = create_connector()
+            connector.start_messaging_thread()
+
+            # Remove obsolete PID handle errata.
+            for dset in  list(dsets_existing - dsets_actual):
+                remove_errata_from_handle(dset, self.request.data[JF_UID], connector)
+
+            # Insert new PID handle errata.
+            for dset in list(dsets_actual - dsets_existing):
+                add_errata_to_handle(dset, self.request.data[JF_UID], connector)
+
+            # Kill PID service connection.
+            connector.finish_messaging_thread()
+
+
         def _persist_issue():
             """Persists issue update.
 
@@ -106,58 +139,33 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             issue.url = obj.get(JF_URL)
             issue.status = obj[JF_STATUS].lower()
 
-        def _persist_facets():
-            """Persists facets.
+
+        def _reset_facets():
+            """Delete existing facets.
 
             """
-            obj = self.request.data
-
-            # Delete existing facets.
             db.dao.delete_facets(self.issue.uid)
 
-            # Insert new facets.
-            for facet_type in constants.FACET_TYPE:
-                # Set facet values.
-                if facet_type in obj and facet_type not in constants.MULTIPLE_FACETS:
-                    facet_values = [obj[facet_type]]
-                else:
-                    facet_values = obj.get('{}s'.format(facet_type), [])
-                facet_values = [i for i in facet_values if i and len(i) > 0]
 
-                # Insert new facets.
-                for facet_value in set(facet_values):
-                    facet = db.models.IssueFacet()
-                    facet.facet_value = facet_value
-                    facet.facet_type = facet_type
-                    facet.issue_uid = self.issue.uid
-                    db.session.insert(facet, False)
-
-        def _update_pids():
-            """
-            updates handles at the pid server.
+        def _persist_facets():
+            """Insert new facets.
 
             """
-            # Retrieving the new dataset list and the issue uid from the request.
-            obj = self.request.data
-            if constants.DATASETS in obj and constants.UID in obj:
-                new_datasets = obj[constants.DATASETS]
-                uid = obj[constants.UID]
-            else:
-                raise exceptions.InvalidJSONSchemaError
-            # Retrieving the old dataset list from database
-            old_facets = db.dao.get_facets(self.issue.uid)
-            old_datasets = []
-            for facet in old_facets:
-                if facet.facet_type == constants.FACET_TYPE_DATASET:
-                    old_datasets.append(facet.facet_value)
-            connector = create_connector()
-            connector.start_messaging_thread()
-            for dset in list(set(old_datasets)-set(new_datasets)):
-                remove_errata_from_handle(dset, uid, connector)
-            for dset in list(set(new_datasets)-set(old_datasets)):
-                add_errata_to_handle(dset, uid, connector)
-            connector.finish_messaging_thread()
+            # Iterate facet types:
+            for ft in constants.FACET_TYPE:
+                # ... set facet values.
+                fv_list = self.request.data[FACET_TYPE_JSON_FIELD[ft]]
+                if not isinstance(fv_list, list):
+                    fv_list = [fv_list]
+                fv_list = [i for i in fv_list if i and len(i.strip()) > 0]
 
+                # ... persist facets.
+                for fv in set(fv_list):
+                    f = db.models.IssueFacet()
+                    f.facet_value = fv.strip()
+                    f.facet_type = ft
+                    f.issue_uid = self.issue.uid
+                    db.session.insert(f, False)
 
 
         # Process request.
@@ -170,5 +178,6 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
                 _validate_issue_status,
                 _update_pids,
                 _persist_issue,
+                _reset_facets,
                 _persist_facets
                 ])

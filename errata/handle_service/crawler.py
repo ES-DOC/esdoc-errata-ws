@@ -14,6 +14,7 @@ from errata.handle_service.entities import *
 from errata.utils import logger
 
 
+
 def crawler(input_handle, handle_client_instance):
     """Crawls up the tree on a dataset aggregation level. Can also manage on file level.
 

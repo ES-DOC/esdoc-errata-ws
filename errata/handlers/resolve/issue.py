@@ -43,7 +43,9 @@ class ResolveIssueRequestHandler(tornado.web.RequestHandler):
 
             """
             self.issues = db.dao.get_issues_by_facet(
-                self.get_argument(_PARAM_FACET_ID), self.get_argument(_PARAM_FACET_TYPE))
+                self.get_argument(_PARAM_FACET_ID),
+                self.get_argument(_PARAM_FACET_TYPE)
+                )
 
 
         def _set_output():

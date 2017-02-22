@@ -44,13 +44,11 @@ def _authenticate(gh_login, oauth_token):
     url = _GH_API_USER.format(oauth_token)
     r = requests.get(url, headers={'Accept': 'application/json'})
     if r.status_code != 200:
-        print('CODE')
         raise exceptions.AuthenticationError()
 
     # Verify that GH login & token map to same GH account.
     user = json.loads(r.text)
     if gh_login != user['login']:
-        print('LOGIN')
         raise exceptions.AuthenticationError()
 
     # Return minimal user information.

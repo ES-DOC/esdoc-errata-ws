@@ -2,6 +2,15 @@
     "$schema": "http://json-schema.org/schema#",
     "additionalProperties": false,
     "properties": {
+        "cmor_table": {
+            "items": {
+                "maxLength": 63,
+                "minLength": 1,
+                "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
+        },
         "datasets": {
             "items": {
                 "maxLength": 1023,
@@ -97,15 +106,6 @@
             "maxLength": 1023,
             "minLength": 1,
             "type": "string"
-        },
-        "cmor_table": {
-            "items": {
-                "maxLength": 63,
-                "minLength": 1,
-                "type": "string"
-            },
-            "type": "array",
-            "uniqueItems": true
         }
     },
     "required": [

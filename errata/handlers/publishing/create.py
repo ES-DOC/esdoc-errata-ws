@@ -21,7 +21,9 @@ from errata.utils.constants_json import *
 from errata.utils.http import process_request
 from errata.utils.misc import traverse
 from errata.utils.validation import validate_url
-from errata.utils.pid_connector import create_connector, add_errata_to_handle
+from errata.utils.pid_connector import add_errata_to_handle
+from errata.utils.pid_connector import create_connector
+
 
 
 class CreateIssueRequestHandler(tornado.web.RequestHandler):
@@ -84,25 +86,24 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             """Sets search facets to be persisted to database.
 
             """
-            self.facets = facets = []
-            obj = self.request.data
-            for facet_type in constants.FACET_TYPE:
-                # Set facet values.
-                if facet_type in obj and facet_type not in constants.MULTIPLE_FACETS:
-                    facet_values = [obj[facet_type]]
-                elif facet_type in constants.MULTIPLE_FACETS:
-                    facet_values = obj.get('{}'.format(facet_type), [])
+            # Initialise facets.
+            self.facets = []
 
-                else:
-                    facet_values = obj.get('{}s'.format(facet_type), [])
-                facet_values = [i for i in facet_values if i and len(i) > 0]
-                # Set facets to be persisted.
-                for facet_value in set(facet_values):
-                    facet = db.models.IssueFacet()
-                    facet.facet_value = facet_value
-                    facet.facet_type = facet_type
-                    facet.issue_uid = self.issue.uid
-                    facets.append(facet)
+            # Iterate facet types:
+            for ft in [i for i in constants.FACET_TYPE if i in self.request.data]:
+                # ... set facet values.
+                fv_list = self.request.data[FACET_TYPE_JSON_FIELD[ft]]
+                if not isinstance(fv_list, list):
+                    fv_list = [fv_list]
+                fv_list = [i for i in fv_list if i and len(i.strip()) > 0]
+
+                # ... set facets.
+                for fv in set(fv_list):
+                    f = db.models.IssueFacet()
+                    f.facet_value = fv.strip()
+                    f.facet_type = ft
+                    f.issue_uid = self.issue.uid
+                    self.facets.append(f)
 
 
         def _persist():
@@ -116,22 +117,22 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             for facet in self.facets:
                 db.session.insert(facet)
 
-        def _update_pid():
-            """
-            updates pid handles.
+
+        def _persist_pids():
+            """Persists pid handles.
 
             """
-            # Retrieving issue uid and affected dataset list.
-            obj = self.request.data
-            if constants.DATASETS in obj and constants.UID in obj:
-                datasets = obj[constants.DATASETS]
-                uid = obj[constants.UID]
-            # Creating connection to pid server and updating handles one by one.
+            # Establish PID service connection.
             connector = create_connector()
             connector.start_messaging_thread()
-            for dataset in datasets:
-                add_errata_to_handle(dataset, [uid], connector)
+
+            # Insert new PID handle errata.
+            for dset in self.request.data[JF_DATASETS]:
+                add_errata_to_handle(dset, [self.request.data[JF_UID]], connector)
+
+            # Kill PID service connection.
             connector.finish_messaging_thread()
+
 
         # Process request.
         with db.session.create(commitable=True):
@@ -141,5 +142,5 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
                 _set_issue,
                 _set_facets,
                 _persist,
-                _update_pid
+                _persist_pids
                 ])

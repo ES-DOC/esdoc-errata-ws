@@ -22,15 +22,15 @@ def validate_delete_facets(issue_uid, facet_type=None):
     """
     v.validate_uid(issue_uid, 'Issue unique identifier')
     if facet_type:
-        print "TODO: validate facet type in supported set"
+        v.validate_enum(constants.FACET_TYPE, facet_type, "facet_type")
 
 
-def validate_get_facets(issue_uid=None):
+def validate_get_facets(facet_type=None):
     """Function input validator: get_facets.
 
     """
-    if issue_uid:
-        v.validate_uid(issue_uid, 'Issue unique identifier')
+    if facet_type:
+        v.validate_enum(constants.FACET_TYPE, facet_type, "facet_type")
 
 
 def validate_get_issue(uid):
@@ -38,6 +38,15 @@ def validate_get_issue(uid):
 
     """
     v.validate_uid(uid, 'Issue unique identifier')
+
+
+def validate_get_issue_facets(uid, facet_type=None):
+    """Function input validator: get_issue.
+
+    """
+    v.validate_uid(uid, 'Issue unique identifier')
+    if facet_type:
+        v.validate_enum(constants.FACET_TYPE, facet_type, "facet_type")
 
 
 def validate_get_issues(
@@ -77,4 +86,4 @@ def validate_get_issues_by_facet(facet_value, facet_type):
 
     """
     v.validate_str(facet_value, "Facet value")
-    print "TODO: validate facet type in supported set"
+    v.validate_enum(constants.FACET_TYPE, facet_type, "facet_type")

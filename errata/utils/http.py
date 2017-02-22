@@ -9,7 +9,6 @@
 
 
 """
-from errata.utils import exceptions
 from errata.utils.http_security import secure_request
 from errata.utils.http_validator import validate_request
 from errata.utils import logger

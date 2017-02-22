@@ -19,26 +19,26 @@ ERRATA_GH_TEAM = 'errata-publication'
 # Default endpoint.
 DEFAULT_ENDPOINT = r'/1/ops/heartbeat'
 
-# Search facet type - project.
-FACET_TYPE_PROJECT = 'project'
+# Search facet type - dataset.
+FACET_TYPE_DATASET = 'dataset'
+
+# Search facet type - experiment.
+FACET_TYPE_EXPERIMENT = 'experiment'
 
 # Search facet type - institute.
 FACET_TYPE_INSTITUTE = 'institute'
+
+# Search facet type - model.
+FACET_TYPE_MODEL = 'model'
+
+# Search facet type - project.
+FACET_TYPE_PROJECT = 'project'
 
 # Search facet type - severity.
 FACET_TYPE_SEVERITY = 'severity'
 
 # Search facet type - status.
 FACET_TYPE_STATUS = 'status'
-
-# Search facet type - dataset.
-FACET_TYPE_DATASET = 'dataset'
-
-# Search facet type - model.
-FACET_TYPE_EXPERIMENT = 'experiment'
-
-# Search facet type - model.
-FACET_TYPE_MODEL = 'model'
 
 # Search facet type - variable.
 FACET_TYPE_VARIABLE = 'variable'
@@ -157,8 +157,6 @@ PROJECT = [
 	}
 ]
 
-MULTIPLE_FACETS = [FACET_TYPE_EXPERIMENT, FACET_TYPE_MODEL, FACET_TYPE_VARIABLE]
-
 # TODO - leverage pyessv
 # Institute - BADC.
 INSTITUTE_BADC = u"badc"
@@ -195,8 +193,3 @@ IMMUTABLE_ISSUE_ATTRIBUTES = [
 
 # Ratio of similarity between descriptions of updated and database issue.
 DESCRIPTION_CHANGE_RATIO = 20
-
-# Misc
-
-DATASETS = 'datasets'
-UID = 'uid'

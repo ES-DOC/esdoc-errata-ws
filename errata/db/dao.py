@@ -19,7 +19,6 @@ from errata.db.models import IssueFacet
 from errata.db.session import query
 from errata.db.session import raw_query
 from errata.db.utils import text_filter
-from errata.db.utils import text_insensitive
 from errata.db.utils import as_date_string
 from errata.utils import constants
 from errata.utils.validation import validate
@@ -43,34 +42,24 @@ def delete_facets(issue_uid, facet_type=None):
 
 
 @validate(validate_get_facets)
-def get_facets(issue_uid=None):
-    """Returns facets associated with an issue.
+def get_facets(facet_type=None):
+    """Returns set of facets.
 
-    :param str issue_uid: Issue unique identifier.
+    :param str facet_type: Type of facet to return.
 
-    :returns: Matching issues.
+    :returns: Matching facets.
     :rtype: list
 
     """
-    if issue_uid:
-        qry = raw_query(
-            IssueFacet.issue_uid,
-            IssueFacet.facet_value,
-            IssueFacet.facet_type
-            )
-        qry = text_filter(qry, IssueFacet.issue_uid, issue_uid)
+    qry = raw_query(
+        IssueFacet.facet_value,
+        IssueFacet.facet_type
+        )
+    if facet_type:
+        qry = qry.filter(IssueFacet.facet_type == facet_type)
+    qry = qry.distinct()
 
-        return qry.all()
-
-    else:
-        qry = raw_query(
-            IssueFacet.facet_value,
-            IssueFacet.facet_type,
-            IssueFacet.issue_uid
-            )
-        # qry = qry.filter(IssueFacet.facet_type != constants.FACET_TYPE_DATASET)
-
-        return list(set(qry.all()))
+    return qry.all()
 
 
 @validate(validate_get_issue)
@@ -87,6 +76,27 @@ def get_issue(uid):
     qry = text_filter(qry, Issue.uid, uid)
 
     return qry.first()
+
+
+def get_issue_facets(uid, facet_type=None):
+    """Returns facets associated with an issue.
+
+    :param str uid: Issue unique identifier.
+    :param str facet_type: Type of facet to return.
+
+    :returns: Matching issues.
+    :rtype: list
+
+    """
+    qry = raw_query(
+        IssueFacet.facet_value,
+        IssueFacet.facet_type
+        )
+    qry = text_filter(qry, IssueFacet.issue_uid, uid)
+    if facet_type:
+        qry = qry.filter(IssueFacet.facet_type == facet_type)
+
+    return qry.all()
 
 
 def get_all_issues():

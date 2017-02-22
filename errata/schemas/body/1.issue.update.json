@@ -2,9 +2,18 @@
     "$schema": "http://json-schema.org/schema#",
     "additionalProperties": false,
     "properties": {
+        "cmor_table": {
+            "items": {
+                "maxLength": 63,
+                "minLength": 1,
+                "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
+        },
         "createdBy": {
-            "minLength": 1,
             "maxLength": 127,
+            "minLength": 1,
             "type": "string"
         },
         "datasets": {
@@ -18,16 +27,16 @@
             "uniqueItems": true
         },
         "dateClosed": {
-            "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "type": "string"
         },
         "dateCreated": {
-            "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "type": "string"
         },
         "dateUpdated": {
-            "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "type": "string"
         },
         "description": {
             "minLength": 1,
@@ -102,15 +111,6 @@
             "maxLength": 1023,
             "minLength": 1,
             "type": "string"
-        },
-        "cmor_table": {
-            "items": {
-                "maxLength": 63,
-                "minLength": 1,
-                "type": "string"
-            },
-            "type": "array",
-            "uniqueItems": true
         }
     },
     "required": [
@@ -125,6 +125,6 @@
         "title",
         "uid"
     ],
-     "title": "ES-DOC errata JSON schema: endpoint = /1/issue/update",
-   "type": "object"
+    "title": "ES-DOC errata JSON schema: endpoint = /1/issue/update",
+    "type": "object"
 }

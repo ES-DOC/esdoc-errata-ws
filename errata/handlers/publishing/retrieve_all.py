@@ -15,6 +15,7 @@ import tornado
 from errata import db
 from errata.utils import constants
 from errata.utils import convertor
+from errata.utils.constants_json import FACET_TYPE_JSON_FIELD
 from errata.utils.http import process_request
 
 
@@ -52,10 +53,11 @@ class RetrieveAllIssuesRequestHandler(tornado.web.RequestHandler):
                 """
                 obj = convertor.to_dict(issue)
                 obj['materials'] = sorted(issue.materials.split(","))
-                for facet_type in constants.FACET_TYPE:
-                    obj['{}s'.format(facet_type)] = [i[0] for i in self.facets if i[2] == issue.uid and i[1] == facet_type]
+                for ft, jf in [(i, FACET_TYPE_JSON_FIELD[i]) for i in constants.FACET_TYPE]:
+                    if jf not in obj:
+                        fv_list = [i[0] for i in self.facets if i[2] == issue.uid and i[1] == ft]
+                        obj[jf] = sorted(set(fv_list))
 
-                print(obj)
                 return obj
 
 

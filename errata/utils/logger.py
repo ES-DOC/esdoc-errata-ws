@@ -119,6 +119,35 @@ def log_db_error(err):
     log_error(err, "DB")
 
 
+def log_pid(msg, level=LOG_LEVEL_INFO):
+    """Logs PID service related events.
+
+    :param str msg: PID service message for writing to log.
+    :param str level: Message level (e.g. INFO).
+
+    """
+    log(msg, "PID", level)
+
+
+def log_pid_warning(msg):
+    """Logs a PID service warning event.
+
+    :param str msg: A log message.
+    :param str level: Message level (e.g. INFO).
+
+    """
+    log_pid(msg, level=LOG_LEVEL_WARNING)
+
+
+def log_pid_error(err):
+    """Logs a PID service error event.
+
+    :param Exception err: Exception to be logged.
+
+    """
+    log_error(err, "PID")
+
+
 def log_web(msg, level=LOG_LEVEL_INFO):
     """Logs web related events.
 

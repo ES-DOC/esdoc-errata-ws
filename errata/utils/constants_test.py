@@ -21,17 +21,17 @@ from errata.utils.constants import STATUS_NEW
 from errata.utils.constants_json import JF_DATASETS
 from errata.utils.constants_json import JF_DATE_CREATED
 from errata.utils.constants_json import JF_DESCRIPTION
-from errata.utils.constants_json import JF_EXPERIMENTS
+from errata.utils.constants_json import JF_EXPERIMENT
 from errata.utils.constants_json import JF_INSTITUTE
 from errata.utils.constants_json import JF_MATERIALS
-from errata.utils.constants_json import JF_MODELS
+from errata.utils.constants_json import JF_MODEL
 from errata.utils.constants_json import JF_PROJECT
 from errata.utils.constants_json import JF_SEVERITY
 from errata.utils.constants_json import JF_STATUS
 from errata.utils.constants_json import JF_TITLE
 from errata.utils.constants_json import JF_UID
 from errata.utils.constants_json import JF_URL
-from errata.utils.constants_json import JF_VARIABLES
+from errata.utils.constants_json import JF_VARIABLE
 
 
 
@@ -92,15 +92,15 @@ ISSUE = {
     JF_DATASETS: random.sample(ISSUE_DATASETS, 10),
     JF_DATE_CREATED: unicode(dt.datetime.utcnow()),
     JF_DESCRIPTION: unicode(uuid.uuid4()),
-    JF_EXPERIMENTS: random.sample(ISSUE_EXPERIMENTS, 2),
+    JF_EXPERIMENT: random.sample(ISSUE_EXPERIMENTS, 2),
     JF_INSTITUTE: random.choice(INSTITUTE)['key'],
     JF_MATERIALS: random.sample(ISSUE_MATERIALS, 3),
-    JF_MODELS: random.sample(ISSUE_MODELS, 3),
+    JF_MODEL: random.sample(ISSUE_MODELS, 3),
     JF_PROJECT: random.choice(PROJECT)['key'],
     JF_SEVERITY: random.choice(SEVERITY)['key'],
     JF_STATUS: STATUS_NEW,
     JF_TITLE: unicode(uuid.uuid4()),
     JF_UID: unicode(uuid.uuid4()),
     JF_URL: u"http://errata.ipsl.upmc.fr/issue/1",
-    JF_VARIABLES: random.sample(ISSUE_VARIABLES, 2)
+    JF_VARIABLE: random.sample(ISSUE_VARIABLES, 2)
     }

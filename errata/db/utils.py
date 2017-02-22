@@ -48,13 +48,6 @@ class _BaseEntity(object):
 Entity = declarative_base(metadata=METADATA, cls=_BaseEntity)
 
 
-def text_insensitive(field, key):
-    """Applies a text based filter expression.
-
-    """
-    return sqlalchemy.func.upper(field) == unicode(key).strip().upper()
-
-
 def text_filter(qry, field, key):
     """Applies a text based filter expression.
 
