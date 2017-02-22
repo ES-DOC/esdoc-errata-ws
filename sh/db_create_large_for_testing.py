@@ -105,8 +105,6 @@ def _yield_issue(input_dir, count):
         issue.variables = random.sample(constants_test.ISSUE_VARIABLES, 2)
         issue.url = u"http://errata.ipsl.upmc.fr/issue/1"
 
-        print issue.materials
-
         yield issue
 
 

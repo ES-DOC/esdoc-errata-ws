@@ -24,9 +24,11 @@ _db_drop()
 main()
 {
 	log "DB : uninstalling ..."
+
 	_db_drop
 	_db_drop_users
-	log "DB : uninstalled"
+
+	log "DB : uninstall complete"
 }
 
 # Invoke entry point.

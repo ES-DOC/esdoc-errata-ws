@@ -28,9 +28,7 @@ _db_grant_permissions()
 # Seed db.
 _db_setup()
 {
-	log "Creating DB objects"
-    source $ERRATA_WS_HOME/venv/bin/activate
-	python $ERRATA_WS_HOME/sh/db_setup.py
+    source $ERRATA_WS_HOME/sh/db_setup.sh
 }
 
 # Main entry point.

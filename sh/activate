@@ -64,5 +64,5 @@ alias esdoc-ws-tests=$ERRATA_WS_HOME/sh/run_tests.sh
 # ###############################################################
 
 # Custom aliases.
-alias errata-ws-check-access-control=$ERRATA_WS_HOME/sh/custom/check_access_control.sh
-alias errata-ws-db-create-large-for-testing=$ERRATA_WS_HOME/sh/custom/db_create_large_for_testing.sh
+alias errata-ws-check-access-control=$ERRATA_WS_HOME/sh/check_access_control.sh
+alias errata-ws-db-create-large-for-testing=$ERRATA_WS_HOME/sh/db_create_large_for_testing.sh

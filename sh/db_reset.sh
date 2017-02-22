@@ -7,9 +7,11 @@ source $ERRATA_WS_HOME/sh/utils.sh
 main()
 {
 	log "DB : resetting ..."
+
 	source $ERRATA_WS_HOME/sh/db_uninstall.sh
 	source $ERRATA_WS_HOME/sh/db_install.sh
-	log "DB : reset"
+
+	log "DB : reset complete"
 }
 
 # Invoke entry point.
