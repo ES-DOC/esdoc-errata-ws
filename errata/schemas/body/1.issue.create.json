@@ -106,19 +106,32 @@
             "maxLength": 1023,
             "minLength": 1,
             "type": "string"
+        },
+        "variable": {
+            "items": {
+                "maxLength": 63,
+                "minLength": 1,
+                "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
         }
     },
     "required": [
         "datasets",
         "dateCreated",
         "description",
+        "experiment",
         "institute",
+        "materials",
         "model",
         "project",
         "severity",
         "status",
         "title",
-        "uid"
+        "uid",
+        "url",
+        "variable"
     ],
     "title": "ES-DOC errata JSON schema: endpoint = /1/issue/create",
     "type": "object"

@@ -49,6 +49,8 @@ def test_create():
         auth=_get_ws_credentials()
         )
 
+    print response.text
+
     # Assert WS response.
     _assert_ws_response(_URL_CREATE, response)
 
@@ -63,15 +65,23 @@ def test_retrieve():
     # Assert WS response.
     content = _assert_ws_response(_URL_RETRIEVE, response)
 
+    print ISSUE['uid']
+
     # Assert WS response content.
     assert 'issue' in content
     assert content['issue']['createdBy'] is not None
     for attr in ISSUE.keys():
-        if attr in {'datasets', 'materials', 'models', 'variables', 'experiments'}:
-            assert sorted(content['issue'][attr]) == sorted(ISSUE[attr])
+        if attr in {'datasets', 'materials', 'model', 'variable', 'experiment'}:
+            assert sorted(content['issue'][attr]) == sorted(ISSUE[attr]), \
+                   "{} :: {} :: {}".format(
+                        attr,
+                        sorted(content['issue'][attr]),
+                        sorted(ISSUE[attr])
+                        )
         else:
             try:
-                assert content['issue'][attr] == ISSUE[attr]
+                assert content['issue'][attr] == ISSUE[attr], \
+                       "{} :: {} :: {}".format(attr, content['issue'][attr], ISSUE[attr])
             except KeyError:
                 print attr
 

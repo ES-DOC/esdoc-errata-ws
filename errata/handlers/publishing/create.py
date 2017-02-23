@@ -10,7 +10,6 @@
 
 
 """
-import sqlalchemy
 import tornado
 
 from errata import db
@@ -90,7 +89,7 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             self.facets = []
 
             # Iterate facet types:
-            for ft in [i for i in constants.FACET_TYPE if i in self.request.data]:
+            for ft in [i for i in constants.FACET_TYPE if FACET_TYPE_JSON_FIELD[i] in self.request.data]:
                 # ... set facet values.
                 fv_list = self.request.data[FACET_TYPE_JSON_FIELD[ft]]
                 if not isinstance(fv_list, list):
@@ -142,5 +141,5 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
                 _set_issue,
                 _set_facets,
                 _persist,
-                _persist_pids
+                # _persist_pids
                 ])

@@ -57,7 +57,7 @@ alias errata-ws-db-reset=$ERRATA_WS_HOME/sh/db_reset.sh
 alias errata-ws-db-vacuum=$ERRATA_WS_HOME/sh/db_vacuum.sh
 
 # Test related commands.
-alias esdoc-ws-tests=$ERRATA_WS_HOME/sh/run_tests.sh
+alias errata-ws-tests=$ERRATA_WS_HOME/sh/run_tests.sh
 
 # ###############################################################
 # CUSTOM-SECTION

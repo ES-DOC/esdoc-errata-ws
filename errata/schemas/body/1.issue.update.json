@@ -111,6 +111,15 @@
             "maxLength": 1023,
             "minLength": 1,
             "type": "string"
+        },
+        "variable": {
+            "items": {
+                "maxLength": 63,
+                "minLength": 1,
+                "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
         }
     },
     "required": [
@@ -123,7 +132,8 @@
         "severity",
         "status",
         "title",
-        "uid"
+        "uid",
+        "variable"
     ],
     "title": "ES-DOC errata JSON schema: endpoint = /1/issue/update",
     "type": "object"

@@ -82,9 +82,12 @@ def to_namedtuple(obj, key_convertor=None):
 
     """
     obj = to_dict(obj, key_convertor)
-    kls = collections.namedtuple('_Class', obj.keys())
+    # Convert sub-dictionaries.
+    for k, v in obj.items():
+        if isinstance(v, dict):
+            obj[k] = to_namedtuple(v, key_convertor)
 
-    return kls(**obj)
+    return collections.namedtuple('_Class', obj.keys())(**obj)
 
 
 def to_json(data):

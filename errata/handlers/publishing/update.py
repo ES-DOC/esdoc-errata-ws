@@ -176,7 +176,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
                 _validate_issue_immutable_attributes,
                 _validate_issue_description_change_ratio,
                 _validate_issue_status,
-                _update_pids,
+                # _update_pids,
                 _persist_issue,
                 _reset_facets,
                 _persist_facets

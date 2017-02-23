@@ -35,7 +35,7 @@ def delete_facets(issue_uid, facet_type=None):
     """
     qry = query(IssueFacet)
     qry = qry.filter(IssueFacet.issue_uid == issue_uid)
-    if facet_type:
+    if facet_type is not None:
         qry = qry.filter(IssueFacet.facet_type == facet_type)
 
     qry.delete()
@@ -55,7 +55,7 @@ def get_facets(facet_type=None):
         IssueFacet.facet_value,
         IssueFacet.facet_type
         )
-    if facet_type:
+    if facet_type is not None:
         qry = qry.filter(IssueFacet.facet_type == facet_type)
     qry = qry.distinct()
 
@@ -93,7 +93,7 @@ def get_issue_facets(uid, facet_type=None):
         IssueFacet.facet_type
         )
     qry = text_filter(qry, IssueFacet.issue_uid, uid)
-    if facet_type:
+    if facet_type is not None:
         qry = qry.filter(IssueFacet.facet_type == facet_type)
 
     return qry.all()
@@ -152,7 +152,7 @@ def get_issues(
         (status, constants.FACET_TYPE_STATUS),
         (variable, constants.FACET_TYPE_VARIABLE),
     }:
-        if facet_value:
+        if facet_value is not None:
             sub_qry = query(IssueFacet.issue_uid)
             sub_qry = sub_qry.filter(IssueFacet.facet_type == facet_type)
             sub_qry = text_filter(sub_qry, IssueFacet.facet_value, facet_value)

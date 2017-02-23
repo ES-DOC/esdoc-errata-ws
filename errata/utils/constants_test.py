@@ -18,20 +18,7 @@ from errata.utils.constants import INSTITUTE
 from errata.utils.constants import PROJECT
 from errata.utils.constants import SEVERITY
 from errata.utils.constants import STATUS_NEW
-from errata.utils.constants_json import JF_DATASETS
-from errata.utils.constants_json import JF_DATE_CREATED
-from errata.utils.constants_json import JF_DESCRIPTION
-from errata.utils.constants_json import JF_EXPERIMENT
-from errata.utils.constants_json import JF_INSTITUTE
-from errata.utils.constants_json import JF_MATERIALS
-from errata.utils.constants_json import JF_MODEL
-from errata.utils.constants_json import JF_PROJECT
-from errata.utils.constants_json import JF_SEVERITY
-from errata.utils.constants_json import JF_STATUS
-from errata.utils.constants_json import JF_TITLE
-from errata.utils.constants_json import JF_UID
-from errata.utils.constants_json import JF_URL
-from errata.utils.constants_json import JF_VARIABLE
+from errata.utils.constants_json import *
 
 
 
