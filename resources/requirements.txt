@@ -4,6 +4,7 @@ nose
 psycopg2
 SQLAlchemy
 SQLAlchemy-Utils
+schedule
 tornado
 requests
 github3.py

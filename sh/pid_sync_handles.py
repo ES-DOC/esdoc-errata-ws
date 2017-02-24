@@ -13,6 +13,8 @@
 import logging
 import time
 
+import schedule
+
 from errata import db
 from errata.utils import config
 from errata.utils import constants
@@ -20,10 +22,13 @@ from errata.utils import logger
 from errata.utils import pid_connector as pid
 
 
+
 # Set logging levels.
 logging.getLogger("pika").setLevel(logging.CRITICAL)
 logging.getLogger("esgfpid").setLevel(logging.ERROR)
 
+# Interval in seconds between executions.
+_RETRY_INTERVAL = config.pid.sync_retry_interval_in_seconds
 
 # Map of task type to handlers.
 _TASK_HANDLERS = {
@@ -62,10 +67,10 @@ def _main():
 
     logger.log_pid("PID syncing: COMPLETE")
 
-    time.sleep(config.pid.sync_retry_interval_in_seconds)
-
 
 # Main entry point.
 if __name__ == '__main__':
+    schedule.every(_RETRY_INTERVAL).seconds.do(_main)
     while True:
-        _main()
+        schedule.run_pending()
+        time.sleep(1)
