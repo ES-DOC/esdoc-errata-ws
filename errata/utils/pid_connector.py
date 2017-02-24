@@ -9,11 +9,41 @@
 
 
 """
+import contextlib
+
 import esgfpid
 
 from errata.utils import config
 from errata.utils import logger
 
+
+@contextlib.contextmanager
+def get_session():
+    """Starts & manages a db session.
+
+    :param connection: DB connection information.
+    :type connection: str | sqlalchemy.Engine
+    :param bool commitable: Flag indicating whether to auto-commit.
+
+    """
+    connection = create_connector()
+    connection.start_messaging_thread()
+    logger.log_pid("PID service connection [{}] opened".format(id(connection)))
+
+    try:
+        yield connection
+    except Exception as err:
+        msg = "An unhandled exception occurred within the context of a PID service connection: {}."
+        msg = msg.format(err)
+        logger.log_pid_error(msg)
+        raise err
+    finally:
+        try:
+            connection.finish_messaging_thread()
+        except:
+            pass
+        else:
+            logger.log_pid("PID service connection [{}] closed".format(id(connection)))
 
 
 def create_connector():

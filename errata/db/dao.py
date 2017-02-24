@@ -17,6 +17,7 @@ from errata.db.dao_validator import validate_get_issues
 from errata.db.dao_validator import validate_get_issues_by_facet
 from errata.db.models import Issue
 from errata.db.models import IssueFacet
+from errata.db.models import PIDServiceTask
 from errata.db.session import query
 from errata.db.session import raw_query
 from errata.db.utils import text_filter
@@ -179,3 +180,14 @@ def get_issues_by_facet(facet_value, facet_type):
     qry = qry.filter(IssueFacet.facet_type == facet_type)
 
     return sorted([i[0] for i in qry.all()])
+
+
+def get_pid_service_tasks():
+    """Returns pid service tasks awaiting processing.
+
+    """
+    qry = query(PIDServiceTask)
+    qry = qry.filter(PIDServiceTask.status == constants.PID_TASK_STATE_QUEUED)
+    qry = qry.order_by(PIDServiceTask.timestamp.desc())
+
+    return qry.all()
