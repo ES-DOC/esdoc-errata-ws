@@ -131,7 +131,6 @@ SEVERITY = [
 	},
 ]
 
-# TODO - leverage pyessv
 # Project - cmip5.
 PROJECT_CMIP5 = u"cmip5"
 
@@ -193,3 +192,18 @@ IMMUTABLE_ISSUE_ATTRIBUTES = [
 
 # Ratio of similarity between descriptions of updated and database issue.
 DESCRIPTION_CHANGE_RATIO = 20
+
+# PID service task state: complete.
+PID_TASK_STATE_COMPLETE = "complete"
+
+# PID service task state: error.
+PID_TASK_STATE_ERROR = "error"
+
+# PID service task state: queued awaiting processing.
+PID_TASK_STATE_QUEUED = "queued"
+
+# PID service action: insert.
+PID_ACTION_INSERT = 'insert'
+
+# PID service action: delete.
+PID_ACTION_DELETE = 'delete'

@@ -10,10 +10,11 @@
 
 """
 from errata.db.dao_validator import validate_delete_facets
-from errata.db.dao_validator import validate_get_issues_by_facet
-from errata.db.dao_validator import validate_get_issue
-from errata.db.dao_validator import validate_get_issues
 from errata.db.dao_validator import validate_get_facets
+from errata.db.dao_validator import validate_get_issue
+from errata.db.dao_validator import validate_get_issue_facets
+from errata.db.dao_validator import validate_get_issues
+from errata.db.dao_validator import validate_get_issues_by_facet
 from errata.db.models import Issue
 from errata.db.models import IssueFacet
 from errata.db.session import query
@@ -78,6 +79,7 @@ def get_issue(uid):
     return qry.first()
 
 
+@validate(validate_get_issue_facets)
 def get_issue_facets(uid, facet_type=None):
     """Returns facets associated with an issue.
 

@@ -15,13 +15,14 @@ import difflib
 import tornado
 
 from errata import db
+
+from errata.db.dao import get_issue
+from errata.db.dao import get_issue_facets
+from errata.db.dao import delete_facets
 from errata.utils import constants
 from errata.utils import exceptions
 from errata.utils.constants_json import *
 from errata.utils.http import process_request
-from errata.utils.pid_connector import add_errata_to_handle
-from errata.utils.pid_connector import create_connector
-from errata.utils.pid_connector import remove_errata_from_handle
 
 
 
@@ -37,7 +38,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             """Validates that the issue has been previously posted to the web-service.
 
             """
-            issue = self.issue = db.dao.get_issue(self.request.data[JF_UID])
+            issue = self.issue = get_issue(self.request.data[JF_UID])
             if issue is None:
                 raise exceptions.UnknownIssueError(self.request.data[JF_UID])
 
@@ -91,36 +92,29 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
                 raise exceptions.InvalidIssueStatusError()
 
 
-        def _update_pids():
-            """Updates handles at the pid server.
+        def _persist_pid_tasks():
+            """Persists pid handles.
 
             """
             # Set existing datasets.
-            dsets_existing = set([i.facet_value for i in db.dao.get_issue_facets(self.issue.uid, constants.FACET_TYPE_DATASET)])
+            dsets_existing = get_issue_facets(self.issue.uid, constants.FACET_TYPE_DATASET)
+            dsets_existing = set([i.facet_value for i in dsets_existing])
 
             # Set actual datasets.
             dsets_actual = set(self.request.data[JF_DATASETS])
 
-            # Set obsolete datasets.
-            dsets_obsolete = list(dsets_existing - dsets_actual)
-
-            # Set new datasets.
-            dsets_new = list(dsets_actual - dsets_existing)
-
-            # Establish PID service connection.
-            connector = create_connector()
-            connector.start_messaging_thread()
-
             # Remove obsolete PID handle errata.
-            for dset in  list(dsets_existing - dsets_actual):
-                remove_errata_from_handle(dset, self.request.data[JF_UID], connector)
-
-            # Insert new PID handle errata.
-            for dset in list(dsets_actual - dsets_existing):
-                add_errata_to_handle(dset, self.request.data[JF_UID], connector)
-
-            # Kill PID service connection.
-            connector.finish_messaging_thread()
+            for action, dsets in (
+                (constants.PID_ACTION_DELETE, list(dsets_existing - dsets_actual)),
+                (constants.PID_ACTION_INSERT, list(dsets_actual - dsets_existing)),
+                ):
+                print 666, action, len(dsets)
+                for dset in dsets:
+                    task = db.models.PIDServiceTask()
+                    task.action = action
+                    task.issue_uid = self.issue.uid
+                    task.dataset_id = dset
+                    db.session.insert(task, False)
 
 
         def _persist_issue():
@@ -140,17 +134,13 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             issue.status = obj[JF_STATUS].lower()
 
 
-        def _reset_facets():
-            """Delete existing facets.
-
-            """
-            db.dao.delete_facets(self.issue.uid)
-
-
         def _persist_facets():
             """Insert new facets.
 
             """
+            # Reset existing.
+            delete_facets(self.issue.uid)
+
             # Iterate facet types:
             for ft in constants.FACET_TYPE:
                 # ... set facet values.
@@ -176,8 +166,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
                 _validate_issue_immutable_attributes,
                 _validate_issue_description_change_ratio,
                 _validate_issue_status,
-                # _update_pids,
+                _persist_pid_tasks,
                 _persist_issue,
-                _reset_facets,
                 _persist_facets
                 ])

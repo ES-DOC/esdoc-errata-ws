@@ -13,12 +13,14 @@
 import datetime as dt
 import json
 import os
+import random
 import urllib
 
 import requests
 
 from errata.utils import constants
 from errata.utils.constants_test import ISSUE
+from errata.utils.constants_test import ISSUE_DATASETS
 
 
 
@@ -93,6 +95,7 @@ def test_update():
     # Update test issue.
     ISSUE['status'] = constants.STATUS_RESOLVED
     ISSUE['dateUpdated'] = unicode(dt.datetime.utcnow())
+    ISSUE['datasets'] = random.sample(ISSUE_DATASETS, 5)
 
     # Invoke WS endpoint.
     response = requests.post(
@@ -120,6 +123,7 @@ def test_update_retrieve():
     assert content['issue']['status'] == ISSUE['status']
     assert content['issue']['dateUpdated'] == ISSUE['dateUpdated']
     assert content['issue']['updatedBy'] is not None
+    assert len(content['issue']['datasets']) == 5
 
 
 def test_close():

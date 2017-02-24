@@ -9,7 +9,7 @@
 
 
 """
-import datetime
+import datetime as dt
 import uuid
 
 from sqlalchemy import func
@@ -17,29 +17,14 @@ from sqlalchemy import Column
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
 from sqlalchemy import Index
+from sqlalchemy import Integer
 from sqlalchemy import Text
 from sqlalchemy import Unicode
 from sqlalchemy import UniqueConstraint
 from sqlalchemy import Enum
 
-
 from errata.db.utils import Entity
-from errata.utils.constants import FACET_TYPE_DATASET
-from errata.utils.constants import FACET_TYPE_EXPERIMENT
-from errata.utils.constants import FACET_TYPE_INSTITUTE
-from errata.utils.constants import FACET_TYPE_MODEL
-from errata.utils.constants import FACET_TYPE_PROJECT
-from errata.utils.constants import FACET_TYPE_SEVERITY
-from errata.utils.constants import FACET_TYPE_STATUS
-from errata.utils.constants import FACET_TYPE_VARIABLE
-from errata.utils.constants import STATUS_NEW
-from errata.utils.constants import STATUS_ON_HOLD
-from errata.utils.constants import STATUS_RESOLVED
-from errata.utils.constants import STATUS_WONT_FIX
-from errata.utils.constants import SEVERITY_LOW
-from errata.utils.constants import SEVERITY_MEDIUM
-from errata.utils.constants import SEVERITY_HIGH
-from errata.utils.constants import SEVERITY_CRITICAL
+from errata.utils.constants import *
 
 
 
@@ -80,6 +65,24 @@ _FACET_TYPE_ENUM = Enum(
     name="FacetTypeEnum"
     )
 
+# PID task states.
+_PID_TASK_STATE_ENUM = Enum(
+    PID_TASK_STATE_COMPLETE,
+    PID_TASK_STATE_ERROR,
+    PID_TASK_STATE_QUEUED,
+    schema=_SCHEMA,
+    name="PIDTaskStateEnum"
+    )
+
+
+# PID action types.
+_PID_ACTION_ENUM = Enum(
+    PID_ACTION_INSERT,
+    PID_ACTION_DELETE,
+    schema=_SCHEMA,
+    name="PIDActionEnum"
+    )
+
 
 class Issue(Entity):
     """An issue raised by an institute post-publication.
@@ -100,7 +103,7 @@ class Issue(Entity):
     severity = Column(_SEVERITY_ENUM, nullable=False)
     status = Column(_STATUS_ENUM, nullable=False)
     url = Column(Unicode(1023))
-    date_created = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
+    date_created = Column(DateTime, nullable=False, default=dt.datetime.utcnow)
     date_updated = Column(DateTime)
     date_closed = Column(DateTime)
     created_by = Column(Unicode(511))
@@ -137,3 +140,24 @@ class IssueFacet(Entity):
                        ForeignKey('{}.tbl_issue.uid'.format(_SCHEMA)), nullable=False)
     facet_value = Column(Unicode(1023), nullable=False, index=True)
     facet_type = Column(_FACET_TYPE_ENUM, nullable=False)
+
+
+class PIDServiceTask(Entity):
+    """Tasks to be dispatched to PID handler service.
+
+    """
+    # SQLAlchemy directives.
+    __tablename__ = 'tbl_pid_service_task'
+    __table_args__ = (
+        {'schema': _SCHEMA}
+    )
+
+    # Column definitions.
+    action = Column(_PID_ACTION_ENUM, nullable=False)
+    status = Column(_PID_TASK_STATE_ENUM, nullable=False, default=PID_TASK_STATE_QUEUED)
+    issue_uid = Column(Unicode(63),
+                       ForeignKey('{}.tbl_issue.uid'.format(_SCHEMA)), nullable=False)
+    dataset_id = Column(Unicode(1023), nullable=False)
+    error = Column(Unicode(1023))
+    try_count = Column(Integer, default=0)
+    timestamp = Column(DateTime, nullable=False, default=dt.datetime.utcnow)

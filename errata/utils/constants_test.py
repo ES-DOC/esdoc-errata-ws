@@ -76,7 +76,7 @@ ISSUE_VARIABLES = [
 
 # Test issue.
 ISSUE = {
-    JF_DATASETS: random.sample(ISSUE_DATASETS, 10),
+    JF_DATASETS: random.sample(ISSUE_DATASETS, 5),
     JF_DATE_CREATED: unicode(dt.datetime.utcnow()),
     JF_DESCRIPTION: unicode(uuid.uuid4()),
     JF_EXPERIMENT: random.sample(ISSUE_EXPERIMENTS, 2),

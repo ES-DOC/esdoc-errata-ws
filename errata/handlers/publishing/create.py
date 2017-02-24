@@ -20,8 +20,6 @@ from errata.utils.constants_json import *
 from errata.utils.http import process_request
 from errata.utils.misc import traverse
 from errata.utils.validation import validate_url
-from errata.utils.pid_connector import add_errata_to_handle
-from errata.utils.pid_connector import create_connector
 
 
 
@@ -105,32 +103,28 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
                     self.facets.append(f)
 
 
+        def _set_pid_tasks():
+            """Persists pid handles.
+
+            """
+            self.pid_tasks = []
+            for dset_id in self.request.data[JF_DATASETS]:
+                task = db.models.PIDServiceTask()
+                task.action = constants.PID_ACTION_INSERT
+                task.issue_uid = self.issue.uid
+                task.dataset_id = dset_id
+                self.pid_tasks.append(task)
+
+
         def _persist():
             """Persists data to dB.
 
             """
-            # Persist issue.
             db.session.insert(self.issue)
-
-            # Persist facets.
             for facet in self.facets:
                 db.session.insert(facet)
-
-
-        def _persist_pids():
-            """Persists pid handles.
-
-            """
-            # Establish PID service connection.
-            connector = create_connector()
-            connector.start_messaging_thread()
-
-            # Insert new PID handle errata.
-            for dset in self.request.data[JF_DATASETS]:
-                add_errata_to_handle(dset, [self.request.data[JF_UID]], connector)
-
-            # Kill PID service connection.
-            connector.finish_messaging_thread()
+            for pid_task in self.pid_tasks:
+                db.session.insert(pid_task)
 
 
         # Process request.
@@ -140,6 +134,6 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
                 _validate_issue_urls,
                 _set_issue,
                 _set_facets,
-                _persist,
-                # _persist_pids
+                _set_pid_tasks,
+                _persist
                 ])
