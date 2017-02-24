@@ -11,6 +11,7 @@ main()
 	cd $ERRATA_WS_HOME
 	git pull
     log "shell updated"
+	source $ERRATA_WS_HOME/sh/update_config.sh
 	source $ERRATA_WS_HOME/sh/update_venv.sh
 
     log "update complete"
