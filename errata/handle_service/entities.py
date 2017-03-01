@@ -110,9 +110,10 @@ class DatasetRecord(Record):
 
         """
         list_of_children = []
-        for child in map(lambda x: x.replace(HDL_PREFIX, ''), self.handle[CHILDREN].split(';')):
-            child_handle = get_handle_by_handle_string(child, handle_client_instance)
-            list_of_children.append(child_handle)
+        if CHILDREN in self.handle.keys():
+            for child in map(lambda x: x.replace(HDL_PREFIX, ''), self.handle[CHILDREN].split(';')):
+                child_handle = get_handle_by_handle_string(child, handle_client_instance)
+                list_of_children.append(child_handle)
         self.children = list_of_children
 
 
