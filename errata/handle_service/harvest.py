@@ -25,15 +25,15 @@ def harvest_errata_information(input_handle_string):
     :return: errata information, dset/file_id
     """
     tick = time()
-    logger.info("--CREATING HANDLE CLIENT--")
+    logger.log_pid("--CREATING HANDLE CLIENT--")
     handle_client = EUDATHandleClient.instantiate_for_read_access()
-    logger.info("--HANDLE CLIENT CREATED--")
-    logger.info("----------------------------------BEGIN ISSUE TRACKING----------------------------------")
+    logger.log_pid("--HANDLE CLIENT CREATED--")
+    logger.log_pid("----------------------------------BEGIN ISSUE TRACKING----------------------------------")
     handle = get_handle_by_handle_string(input_handle_string, handle_client)
     list_of_uids = crawler(handle, handle_client)
-    logger.info("ELAPSED TIME TILL COMPLETION : " + str(time()-tick) + " SECONDS")
-    logger.info("-----------------------------------END ISSUE TRACKING-----------------------------------")
-    logger.info("LIST OF UIDS GENERATED IS...")
+    logger.log_pid("ELAPSED TIME TILL COMPLETION : " + str(time()-tick) + " SECONDS")
+    logger.log_pid("-----------------------------------END ISSUE TRACKING-----------------------------------")
+    logger.log_pid("LIST OF UIDS GENERATED IS...")
     return list_of_uids
 
 # Dataset A
