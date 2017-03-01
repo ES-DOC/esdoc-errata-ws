@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/schema#",
-    "additionalProperties": false,
+    "additionalProperties": true,
     "properties": {
         "cmor_table": {
             "items": {
@@ -121,17 +121,12 @@
         "datasets",
         "dateCreated",
         "description",
-        "experiment",
         "institute",
-        "materials",
-        "model",
         "project",
         "severity",
         "status",
         "title",
-        "uid",
-        "url",
-        "variable"
+        "uid"
     ],
     "title": "ES-DOC errata JSON schema: endpoint = /1/issue/create",
     "type": "object"
