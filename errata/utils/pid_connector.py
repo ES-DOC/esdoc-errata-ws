@@ -5,7 +5,7 @@
    :platform: Unix
    :synopsis: Encapsualtes interactions with remote PID service.
 
-.. moduleauthor:: Atef Bennasser <abenasser@ipsl.jussieu.fr>
+.. moduleauthor:: Atef Ben Nasser <abenasser@ipsl.jussieu.fr>
 
 
 """
@@ -19,17 +19,11 @@ from errata.utils import logger
 
 @contextlib.contextmanager
 def get_session():
-    """Starts & manages a db session.
-
-    :param connection: DB connection information.
-    :type connection: str | sqlalchemy.Engine
-    :param bool commitable: Flag indicating whether to auto-commit.
-
+    """Starts & manages a pid-handle-server session.
     """
     connection = create_connector()
     connection.start_messaging_thread()
     logger.log_pid("PID service connection [{}] opened".format(id(connection)))
-
     try:
         yield connection
     except Exception as err:

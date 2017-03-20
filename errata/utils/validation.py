@@ -165,7 +165,7 @@ def validate_url(url):
     :param str url: The url to validate.
 
     """
-    if url is not None:
+    if url is not None and url is not '':
         try:
             response = requests.head(url)
         except Exception:

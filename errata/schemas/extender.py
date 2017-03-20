@@ -50,7 +50,7 @@ def _1_issue_search_params(schema):
 
 
 def _1_issue_close_params(schema):
-	"""Extends a JSON schema used to validate an HTTP operatino.
+	"""Extends a JSON schema used to validate an HTTP operation.
 
 	"""
 	schema['properties']['status']['items']['enum'] += \
@@ -58,12 +58,12 @@ def _1_issue_close_params(schema):
 
 
 def _1_issue_create_body(schema):
-	"""Extends a JSON schema used to validate an HTTP operatino.
+	"""Extends a JSON schema used to validate an HTTP operation.
 
 	"""
-	schema['properties']['institute']['enum'] = \
+	schema['properties']['institution_id']['enum'] = \
 		[i['key'] for i in constants.INSTITUTE]
-	schema['properties']['project']['enum'] = \
+	schema['properties']['mip_era']['enum'] = \
 		[i['key'] for i in constants.PROJECT]
 	schema['properties']['severity']['enum'] = \
 		[i['key'] for i in constants.SEVERITY]
@@ -72,12 +72,12 @@ def _1_issue_create_body(schema):
 
 
 def _1_issue_update_body(schema):
-	"""Extends a JSON schema used to validate an HTTP operatino.
+	"""Extends a JSON schema used to validate an HTTP operation.
 
 	"""
-	schema['properties']['institute']['enum'] = \
+	schema['properties']['institution_id']['enum'] = \
 		[i['key'] for i in constants.INSTITUTE]
-	schema['properties']['project']['enum'] = \
+	schema['properties']['mip_era']['enum'] = \
 		[i['key'] for i in constants.PROJECT]
 	schema['properties']['severity']['enum'] = \
 		[i['key'] for i in constants.SEVERITY]
@@ -86,7 +86,7 @@ def _1_issue_update_body(schema):
 
 
 # Map endpoints to extenders.
-_EXTENDERS['/1/issue/search']['params'] = _1_issue_search_params
-_EXTENDERS['/1/issue/close']['params'] = _1_issue_close_params
-_EXTENDERS['/1/issue/create']['body'] = _1_issue_create_body
-_EXTENDERS['/1/issue/update']['body'] = _1_issue_update_body
+# _EXTENDERS['/1/issue/search']['params'] = _1_issue_search_params
+# _EXTENDERS['/1/issue/close']['params'] = _1_issue_close_params
+# _EXTENDERS['/1/issue/create']['body'] = _1_issue_create_body
+# _EXTENDERS['/1/issue/update']['body'] = _1_issue_update_body

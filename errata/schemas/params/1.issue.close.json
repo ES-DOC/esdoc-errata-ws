@@ -5,7 +5,8 @@
         "status": {
             "items": {
                 "enum": [
-                    "*"
+                    "resolved",
+                    "wontfix"
                 ],
                 "maxItems": 1,
                 "minItems": 1,

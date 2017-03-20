@@ -185,8 +185,8 @@ INSTITUTE = [
 # List of issue attributes that cannot be updated.
 IMMUTABLE_ISSUE_ATTRIBUTES = [
 	'title',
-	'project',
-	'institute',
+	'mip_era',
+	'institution_id',
 	# 'dateCreated'
 	]
 

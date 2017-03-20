@@ -134,6 +134,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             issue.status = obj[JF_STATUS].lower()
 
 
+
         def _persist_facets():
             """Insert new facets.
 

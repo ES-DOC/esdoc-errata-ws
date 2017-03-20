@@ -12,9 +12,7 @@
         },
         "institute": {
             "items": {
-                "enum": [
-                    "*"
-                ],
+
                 "maxItems": 1,
                 "minItems": 1,
                 "type": "string"
@@ -31,9 +29,6 @@
         },
         "project": {
             "items": {
-                "enum": [
-                    "*"
-                ],
                 "maxItems": 1,
                 "minItems": 1,
                 "type": "string"
@@ -42,9 +37,7 @@
         },
         "severity": {
             "items": {
-                "enum": [
-                    "*"
-                ],
+
                 "maxItems": 1,
                 "minItems": 1,
                 "type": "string"
@@ -53,9 +46,7 @@
         },
         "status": {
             "items": {
-                "enum": [
-                    "*"
-                ],
+
                 "maxItems": 1,
                 "minItems": 1,
                 "type": "string"

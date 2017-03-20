@@ -135,6 +135,7 @@ def get_issues(
     :rtype: list
 
     """
+    print('Here launching query')
     qry = raw_query(
         Issue.project,
         Issue.institute,

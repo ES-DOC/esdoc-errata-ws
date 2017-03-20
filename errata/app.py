@@ -71,7 +71,6 @@ def _get_app():
 
 
     schemas.init([i[0] for i in endpoints])
-
     return tornado.web.Application(endpoints,
                                    debug=True,
                                    **_get_app_settings())

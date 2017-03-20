@@ -54,7 +54,8 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
 
             urls = traverse([self.request.data.get((i)) for i in [JF_URL, JF_MATERIALS]])
             for url in urls:
-                validate_url(url)
+                if url != '':
+                    validate_url(url)
 
 
         def _set_issue():

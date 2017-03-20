@@ -69,6 +69,7 @@ class IssueSearchRequestHandler(tornado.web.RequestHandler):
 
             """
             with db.session.create():
+                print('Here getting data')
                 self.issues = db.dao.get_issues(
                     experiment=self.experiment,
                     institute=self.institute,
@@ -79,7 +80,6 @@ class IssueSearchRequestHandler(tornado.web.RequestHandler):
                     variable=self.variable
                     )
                 self.total = db.utils.get_count(db.models.Issue)
-
 
         def _set_output():
             """Sets response to be returned to client.
