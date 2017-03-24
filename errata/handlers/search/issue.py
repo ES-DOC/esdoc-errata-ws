@@ -69,7 +69,6 @@ class IssueSearchRequestHandler(tornado.web.RequestHandler):
 
             """
             with db.session.create():
-                print('Here getting data')
                 self.issues = db.dao.get_issues(
                     experiment=self.experiment,
                     institute=self.institute,

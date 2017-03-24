@@ -55,9 +55,8 @@ class RetrieveAllIssuesRequestHandler(tornado.web.RequestHandler):
                 obj['materials'] = sorted(issue.materials.split(","))
                 for ft, jf in [(i, FACET_TYPE_JSON_FIELD[i]) for i in constants.FACET_TYPE]:
                     if jf not in obj:
-                        fv_list = [i[0] for i in self.facets if i[2] == issue.uid and i[1] == ft]
+                        fv_list = [i[0] for i in self.facets if i[1] == ft]
                         obj[jf] = sorted(set(fv_list))
-
                 return obj
 
 

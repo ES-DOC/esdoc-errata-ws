@@ -135,10 +135,9 @@ def get_issues(
     :rtype: list
 
     """
-    print('Here launching query')
     qry = raw_query(
-        Issue.project,
-        Issue.institute,
+        Issue.mip_era,
+        Issue.institution_id,
         Issue.uid,
         Issue.title,
         Issue.severity,
@@ -161,7 +160,6 @@ def get_issues(
             sub_qry = sub_qry.filter(IssueFacet.facet_type == facet_type)
             sub_qry = text_filter(sub_qry, IssueFacet.facet_value, facet_value)
             qry = qry.filter(Issue.uid.in_(sub_qry))
-
     return qry.all()
 
 
@@ -188,7 +186,9 @@ def get_pid_service_tasks():
 
     """
     qry = query(PIDServiceTask)
+    print(qry)
     qry = qry.filter(PIDServiceTask.status == constants.PID_TASK_STATE_QUEUED)
+    print(qry)
     qry = qry.order_by(PIDServiceTask.timestamp.desc())
-
+    print(qry.all())
     return qry.all()

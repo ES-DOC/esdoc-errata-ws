@@ -41,9 +41,10 @@ def _sync(pid_connection, task):
     """Synchronizes a task with remote PID handle service.
 
     """
+    logging.info('Syncing...')
     try:
         handler = _TASK_HANDLERS[task.action]
-        handler(task.dataset_id, task.issue_uid, pid_connection)
+        handler(task.dataset_id, [task.issue_uid], pid_connection)
     except Exception as err:
         logger.log_pid_error(err)
         task.status = constants.PID_TASK_STATE_ERROR
@@ -64,7 +65,6 @@ def _main():
         with db.session.create(commitable=True):
             for task in db.dao.get_pid_service_tasks():
                 _sync(pid_connection, task)
-
     logger.log_pid("PID syncing: COMPLETE")
 
 
