@@ -35,6 +35,7 @@ def _get_errata_information(pid):
 
     """
     data = harvest_errata_information(pid)
+
     return pid, sorted(data.values(), key=lambda i: i[3])
 
 

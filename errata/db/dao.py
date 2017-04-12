@@ -186,9 +186,7 @@ def get_pid_service_tasks():
 
     """
     qry = query(PIDServiceTask)
-    print(qry)
     qry = qry.filter(PIDServiceTask.status == constants.PID_TASK_STATE_QUEUED)
-    print(qry)
     qry = qry.order_by(PIDServiceTask.timestamp.desc())
-    print(qry.all())
+
     return qry.all()
