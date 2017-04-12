@@ -48,7 +48,7 @@ _ARGS.add_argument(
 # Global now.
 _NOW = dt.datetime.now()
 
-# Datasets identifiers keyed by institute.
+# Datasets identifiers keyed by institution id.
 _DATASETS = collections.defaultdict(list)
 
 # Material urls.
@@ -86,7 +86,7 @@ def _yield_issue(input_dir, count):
     """
     for _ in xrange(count):
         issue = Issue()
-        issue.mip_era = u'test-mip'
+        issue.mip_era = random.choice(constants.MIP_ERA)['key']
         issue.date_created = _NOW - dt.timedelta(days=random.randint(30, 60))
         issue.created_by = u"test-script"
         if random.randint(0, 1):
@@ -96,7 +96,6 @@ def _yield_issue(input_dir, count):
         issue.institution_id = random.choice(constants.INSTITUTION_ID)['key']
         issue.materials = ",".join(random.sample(constants_test.ISSUE_MATERIALS, 3))
         issue.models = random.sample(constants_test.ISSUE_MODELS, 3)
-        issue.project = random.choice(constants.MIP_ERA)['key']
         issue.severity = random.choice(constants.SEVERITY)['key']
         issue.status = random.choice(constants.STATUS)['key']
         issue.title = u"Test issue title - {}".format(unicode(uuid.uuid4())[:50])
@@ -133,7 +132,7 @@ def _yield_issue_facets(input_dir, issue):
         yield _create_facet(constants.FACET_TYPE_MODEL, identifier)
     for identifier in issue.variables:
         yield _create_facet(constants.FACET_TYPE_VARIABLE, identifier)
-    yield _create_facet(constants.FACET_TYPE_MIP_ERA, issue.project)
+    yield _create_facet(constants.FACET_TYPE_MIP_ERA, issue.mip_era)
     yield _create_facet(constants.FACET_TYPE_INSTITUTION_ID, issue.institution_id)
     yield _create_facet(constants.FACET_TYPE_SEVERITY, issue.severity)
     yield _create_facet(constants.FACET_TYPE_STATUS, issue.status)
