@@ -4,15 +4,14 @@
     "properties": {
         "experiment": {
             "items": {
-                "minItems": 1,
                 "maxItems": 1,
+                "minItems": 1,
                 "type": "string"
             },
             "type": "array"
         },
-        "institute": {
+        "institutionID": {
             "items": {
-
                 "maxItems": 1,
                 "minItems": 1,
                 "type": "string"
@@ -21,13 +20,13 @@
         },
         "model": {
             "items": {
-                "minItems": 1,
                 "maxItems": 1,
+                "minItems": 1,
                 "type": "string"
             },
             "type": "array"
         },
-        "project": {
+        "mipEra": {
             "items": {
                 "maxItems": 1,
                 "minItems": 1,
@@ -37,7 +36,6 @@
         },
         "severity": {
             "items": {
-
                 "maxItems": 1,
                 "minItems": 1,
                 "type": "string"
@@ -46,7 +44,6 @@
         },
         "status": {
             "items": {
-
                 "maxItems": 1,
                 "minItems": 1,
                 "type": "string"
@@ -55,8 +52,8 @@
         },
         "variable": {
             "items": {
-                "minItems": 1,
                 "maxItems": 1,
+                "minItems": 1,
                 "type": "string"
             },
             "type": "array"
@@ -64,9 +61,9 @@
     },
     "required": [
         "experiment",
-        "institute",
+        "institutionID",
+        "mipEra",
         "model",
-        "project",
         "severity",
         "status",
         "variable"

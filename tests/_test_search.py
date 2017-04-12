@@ -18,8 +18,8 @@ import uuid
 
 import requests
 
-from errata.utils.constants import INSTITUTE
-from errata.utils.constants import PROJECT
+from errata.utils.constants import INSTITUTION_ID
+from errata.utils.constants import MIP_ERA
 from errata.utils.constants import SEVERITY
 from errata.utils.constants import STATUS
 from errata.utils.constants_test import ISSUE
@@ -30,7 +30,7 @@ _URL = os.getenv("ERRATA_API")
 _URL_CREATE = "{}/1/issue/create".format(_URL)
 _URL_SEARCH_SETUP = "{}/1/issue/search-setup".format(_URL)
 _URL_SEARCH = "{}/1/issue/search".format(_URL)
-_URL_SEARCH_PARAMS = "?institute={}&project={}&severity={}&status={}"
+_URL_SEARCH_PARAMS = "?institution_id={}&mip_era={}&severity={}&status={}"
 
 
 def test_search_setup():
@@ -43,8 +43,8 @@ def test_search_setup():
     # Assert WS response.
     response = _assert_ws_response(_URL_SEARCH_SETUP, response)
 
-    assert "institute" in response
-    assert "project" in response
+    assert "institution_id" in response
+    assert "mip_era" in response
     assert "severity" in response
     assert "status" in response
 
@@ -62,13 +62,13 @@ def test_search():
         # ... create issue;
         issue = ISSUE.copy()
         issue['uid'] = unicode(uuid.uuid4())
-        issue['institute'] = random.choice(INSTITUTE)['key']
-        issue['project'] = random.choice(PROJECT)['key']
+        issue['institution_id'] = random.choice(INSTITUTION_ID)['key']
+        issue['mip_era'] = random.choice(MIP_ERA)['key']
         issue['severity'] = random.choice(SEVERITY)['key']
         issue['status'] = random.choice(STATUS)['key']
 
         # ... update expected results;
-        expected[(issue['institute'], issue['project'], issue['severity'], issue['status'])] += 1
+        expected[(issue['institution_id'], issue['mip_era'], issue['severity'], issue['status'])] += 1
 
         # .... publish issue.
         response = requests.post(
@@ -78,11 +78,11 @@ def test_search():
             )
 
     # Perform searches:
-    for institute, project, severity, status in expected:
+    for institution_id, mip_era, severity, status in expected:
         # ... invoke WS;
         url = "{}{}".format(_URL_SEARCH, _URL_SEARCH_PARAMS.format(
-            institute,
-            project,
+            institution_id,
+            mip_era,
             severity,
             status
             ))
@@ -92,7 +92,7 @@ def test_search():
         response = _assert_ws_response(url, response)
 
         # Assert search return at least expected total.
-        assert expected[institute, project, severity, status] <= response['total']
+        assert expected[institution_id, mip_era, severity, status] <= response['total']
 
 
 def _assert_ws_response(

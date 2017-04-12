@@ -25,14 +25,14 @@ FACET_TYPE_DATASET = 'dataset'
 # Search facet type - experiment.
 FACET_TYPE_EXPERIMENT = 'experiment'
 
-# Search facet type - institute.
-FACET_TYPE_INSTITUTE = 'institute'
+# Search facet type - institution ID.
+FACET_TYPE_INSTITUTION_ID = 'institute'
 
 # Search facet type - model.
 FACET_TYPE_MODEL = 'model'
 
-# Search facet type - project.
-FACET_TYPE_PROJECT = 'project'
+# Search facet type - mip-era.
+FACET_TYPE_MIP_ERA = 'mip_era'
 
 # Search facet type - severity.
 FACET_TYPE_SEVERITY = 'severity'
@@ -47,9 +47,9 @@ FACET_TYPE_VARIABLE = 'variable'
 FACET_TYPE = {
 	FACET_TYPE_DATASET,
 	FACET_TYPE_EXPERIMENT,
-	FACET_TYPE_INSTITUTE,
+	FACET_TYPE_INSTITUTION_ID,
 	FACET_TYPE_MODEL,
-	FACET_TYPE_PROJECT,
+	FACET_TYPE_MIP_ERA,
 	FACET_TYPE_SEVERITY,
 	FACET_TYPE_STATUS,
 	FACET_TYPE_VARIABLE
@@ -132,52 +132,52 @@ SEVERITY = [
 ]
 
 # Project - cmip5.
-PROJECT_CMIP5 = u"cmip5"
+MIP_ERA_CMIP5 = u"cmip5"
 
 # Project - cmip6.
-PROJECT_CMIP6 = u"cmip6"
+MIP_ERA_CMIP6 = u"cmip6"
 
 # Project - test.
-PROJECT_TEST = u"test"
+MIP_ERA_TEST = u"test"
 
 # Project - all.
-PROJECT = [
+MIP_ERA = [
 	{
-	    'key': PROJECT_CMIP5,
+	    'key': MIP_ERA_CMIP5,
 	    'label': u"CMIP5"
 	},
 	{
-	    'key': PROJECT_CMIP6,
+	    'key': MIP_ERA_CMIP6,
 	    'label': u"CMIP6"
 	},
 	{
-	    'key': PROJECT_TEST,
+	    'key': MIP_ERA_TEST,
 	    'label': u"TEST"
 	}
 ]
 
 # TODO - leverage pyessv
 # Institute - BADC.
-INSTITUTE_BADC = u"badc"
+INSTITUTION_ID_BADC = u"badc"
 
 # Institute - DKRZ.
-INSTITUTE_DKRZ = u"dkrz"
+INSTITUTION_ID_DKRZ = u"dkrz"
 
 # Institute - IPSL.
-INSTITUTE_IPSL = u"ipsl"
+INSTITUTION_ID_IPSL = u"ipsl"
 
 # Institute - all.
-INSTITUTE = [
+INSTITUTION_ID = [
 	{
-	    'key': INSTITUTE_BADC,
+	    'key': INSTITUTION_ID_BADC,
 	    'label': u"BADC"
 	},
 	{
-	    'key': INSTITUTE_DKRZ,
+	    'key': INSTITUTION_ID_DKRZ,
 	    'label': u"DKRZ"
 	},
 	{
-	    'key': INSTITUTE_IPSL,
+	    'key': INSTITUTION_ID_IPSL,
 	    'label': u"IPSL"
 	}
 ]

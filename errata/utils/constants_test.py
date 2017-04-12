@@ -14,8 +14,8 @@ import datetime as dt
 import random
 import uuid
 
-from errata.utils.constants import INSTITUTE
-from errata.utils.constants import PROJECT
+from errata.utils.constants import INSTITUTION_ID
+from errata.utils.constants import MIP_ERA
 from errata.utils.constants import SEVERITY
 from errata.utils.constants import STATUS_NEW
 from errata.utils.constants_json import *
@@ -80,10 +80,10 @@ ISSUE = {
     JF_DATE_CREATED: unicode(dt.datetime.utcnow()),
     JF_DESCRIPTION: unicode(uuid.uuid4()),
     JF_EXPERIMENT: random.sample(ISSUE_EXPERIMENTS, 2),
-    JF_INSTITUTE: random.choice(INSTITUTE)['key'],
+    JF_INSTITUTION_ID: random.choice(INSTITUTION_ID)['key'],
     JF_MATERIALS: random.sample(ISSUE_MATERIALS, 3),
     JF_MODEL: random.sample(ISSUE_MODELS, 3),
-    JF_PROJECT: random.choice(PROJECT)['key'],
+    JF_MIP_ERA: random.choice(MIP_ERA)['key'],
     JF_SEVERITY: random.choice(SEVERITY)['key'],
     JF_STATUS: STATUS_NEW,
     JF_TITLE: unicode(uuid.uuid4()),

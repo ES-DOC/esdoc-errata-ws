@@ -39,7 +39,7 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             for team in sorted(self.user_teams):
                 if team == constants.ERRATA_GH_TEAM:
                     return
-                if team.split("-")[-1] == self.request.data[JF_INSTITUTE].lower():
+                if team.split("-")[-1] == self.request.data[JF_INSTITUTION_ID].lower():
                     return
             # User has no access rights to this particular issue.
             raise exceptions.AuthorizationError()
@@ -68,9 +68,9 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             issue.date_created = obj[JF_DATE_CREATED]
             issue.created_by = self.user_name
             issue.description = obj[JF_DESCRIPTION]
-            issue.institution_id = obj[JF_INSTITUTE].lower()
+            issue.institution_id = obj[JF_INSTITUTION_ID].lower()
             issue.materials = ",".join(obj.get(JF_MATERIALS, []))
-            issue.mip_era = obj[JF_PROJECT].lower()
+            issue.mip_era = obj[JF_MIP_ERA].lower()
             issue.severity = obj[JF_SEVERITY].lower()
             issue.title = obj[JF_TITLE]
             issue.uid = obj[JF_UID]

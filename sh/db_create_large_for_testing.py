@@ -55,17 +55,17 @@ _DATASETS = collections.defaultdict(list)
 _MATERIALS = []
 
 
-def _get_datasets(input_dir, institute):
+def _get_datasets(input_dir, institution_id):
     """Returns test affected  datasets.
 
     """
-    institute = institute.upper()
-    if not _DATASETS[institute]:
+    institution_id = institution_id.upper()
+    if not _DATASETS[institution_id]:
         with open("{}/datasets-01.txt".format(input_dir), 'r') as fstream:
             for l in [l.strip() for l in fstream.readlines() if l.strip()]:
-                _DATASETS[institute].append(l.replace("IPSL", institute))
+                _DATASETS[institution_id].append(l.replace("IPSL", institution_id))
 
-    return random.sample(_DATASETS[institute], 50)
+    return random.sample(_DATASETS[institution_id], 50)
 
 
 def _get_materials(input_dir):
@@ -86,16 +86,17 @@ def _yield_issue(input_dir, count):
     """
     for _ in xrange(count):
         issue = Issue()
+        issue.mip_era = u'test-mip'
         issue.date_created = _NOW - dt.timedelta(days=random.randint(30, 60))
-        issue.created_by = "test-script"
+        issue.created_by = u"test-script"
         if random.randint(0, 1):
             issue.date_closed = issue.date_created + dt.timedelta(days=4)
             issue.closed_by = "test-script"
         issue.description = u"Test issue description - {}".format(unicode(uuid.uuid4()))
-        issue.institute = random.choice(constants.INSTITUTE)['key']
+        issue.institution_id = random.choice(constants.INSTITUTION_ID)['key']
         issue.materials = ",".join(random.sample(constants_test.ISSUE_MATERIALS, 3))
         issue.models = random.sample(constants_test.ISSUE_MODELS, 3)
-        issue.project = random.choice(constants.PROJECT)['key']
+        issue.project = random.choice(constants.MIP_ERA)['key']
         issue.severity = random.choice(constants.SEVERITY)['key']
         issue.status = random.choice(constants.STATUS)['key']
         issue.title = u"Test issue title - {}".format(unicode(uuid.uuid4())[:50])
@@ -122,7 +123,7 @@ def _yield_issue_facets(input_dir, issue):
     experiments = set()
     models = set()
 
-    for identifier in _get_datasets(input_dir, issue.institute):
+    for identifier in _get_datasets(input_dir, issue.institution_id):
         experiments.add(identifier.split(".")[4])
         models.add(identifier.split(".")[3])
         yield _create_facet(constants.FACET_TYPE_DATASET, identifier)
@@ -132,8 +133,8 @@ def _yield_issue_facets(input_dir, issue):
         yield _create_facet(constants.FACET_TYPE_MODEL, identifier)
     for identifier in issue.variables:
         yield _create_facet(constants.FACET_TYPE_VARIABLE, identifier)
-    yield _create_facet(constants.FACET_TYPE_PROJECT, issue.project)
-    yield _create_facet(constants.FACET_TYPE_INSTITUTE, issue.institute)
+    yield _create_facet(constants.FACET_TYPE_MIP_ERA, issue.project)
+    yield _create_facet(constants.FACET_TYPE_INSTITUTION_ID, issue.institution_id)
     yield _create_facet(constants.FACET_TYPE_SEVERITY, issue.severity)
     yield _create_facet(constants.FACET_TYPE_STATUS, issue.status)
 
@@ -150,7 +151,8 @@ def _main(args):
         for issue in _yield_issue(args.input_dir, args.count):
             try:
                 db.session.insert(issue)
-            except sqlalchemy.exc.IntegrityError:
+            except sqlalchemy.exc.IntegrityError as err:
+                print err
                 logger.log_db("issue skipped (already inserted) :: {}".format(issue.uid))
                 db.session.rollback()
             else:

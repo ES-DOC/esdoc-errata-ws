@@ -114,9 +114,9 @@ def get_all_issues():
 @validate(validate_get_issues)
 def get_issues(
     experiment=None,
-    institute=None,
+    institution_id=None,
+    mip_era=None,
     model=None,
-    project=None,
     severity=None,
     status=None,
     variable=None
@@ -124,9 +124,9 @@ def get_issues(
     """Returns issues that match the passed filters.
 
     :param str experiment: Experiment associated with the issue, e.g. decadal1970.
-    :param str institute: Institute associated with the issue, e.g. ipsl.
+    :param str institution_id: Institute associated with the issue, e.g. ipsl.
     :param str model: Model associated with the issue, e.g. ipsl-cm6a-lr.
-    :param str project: Project associated with the issue, e.g. cmip6.
+    :param str mip_era: MIP era associated with the issue, e.g. cmip6.
     :param str severity: Issue severity, e.g. low.
     :param str status: Issue status, e.g. hold.
     :param str variable: Variable associated with the issue, e.g. tos.
@@ -148,9 +148,9 @@ def get_issues(
         )
     for facet_value, facet_type in {
         (experiment, constants.FACET_TYPE_EXPERIMENT),
-        (institute, constants.FACET_TYPE_INSTITUTE),
+        (institution_id, constants.FACET_TYPE_INSTITUTION_ID),
+        (mip_era, constants.FACET_TYPE_MIP_ERA),
         (model, constants.FACET_TYPE_MODEL),
-        (project, constants.FACET_TYPE_PROJECT),
         (severity, constants.FACET_TYPE_SEVERITY),
         (status, constants.FACET_TYPE_STATUS),
         (variable, constants.FACET_TYPE_VARIABLE),

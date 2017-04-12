@@ -60,8 +60,8 @@ def test_create_invalid():
     for attr in [
         'description',
         'uid',
-        'institute',
-        'project',
+        'institution_id',
+        'mip_era',
         'severity',
         'status',
         'title',

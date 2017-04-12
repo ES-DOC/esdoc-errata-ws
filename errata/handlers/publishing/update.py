@@ -108,7 +108,6 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
                 (constants.PID_ACTION_DELETE, list(dsets_existing - dsets_actual)),
                 (constants.PID_ACTION_INSERT, list(dsets_actual - dsets_existing)),
                 ):
-                print 666, action, len(dsets)
                 for dset in dsets:
                     task = db.models.PIDServiceTask()
                     task.action = action

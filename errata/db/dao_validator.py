@@ -51,9 +51,9 @@ def validate_get_issue_facets(uid, facet_type=None):
 
 def validate_get_issues(
     experiment=None,
-    institute=None,
+    institution_id=None,
+    mip_era=None,
     model=None,
-    project=None,
     severity=None,
     status=None,
     variable=None
@@ -63,12 +63,12 @@ def validate_get_issues(
     """
     if experiment is not None:
         v.validate_str(experiment, "Experiment name")
-    if institute is not None:
-        v.validate_str(institute, "Institute code")
+    if institution_id is not None:
+        v.validate_str(institution_id, "Institute identifer")
+    if mip_era is not None:
+        v.validate_str(mip_era, "MIP era code")
     if model is not None:
         v.validate_str(model, "Model name")
-    if project is not None:
-        v.validate_str(project, "Project code")
     if severity is not None:
         v.validate_str(severity, "Issue severity")
         v.validate_enum(
