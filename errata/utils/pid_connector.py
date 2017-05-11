@@ -47,26 +47,18 @@ def create_connector():
     :rtype: esgfpid.Connector
 
     """
-    # Information about nodes:
-    trusted_node = {
-        'password': config.pid.rabbit_password_trusted,
-        'priority': 1,
-        'url': config.pid.rabbit_url_trusted,
-        'user': config.pid.rabbit_user_trusted
-    }
-    open_node = {
-        'url': config.pid.rabbit_urls_open,
-        'user': config.pid.rabbit_user_open
-    }
-
+    # Information about rabbitmq instance:
+    cred = dict(user=config.pid.rabbit_user_trusted, password=config.pid.rabbit_password_trusted,
+                url=config.pid.rabbit_url_trusted, vhost=config.pid.vhost, port=config.pid.port)
     # Return connection for that data node:
     return esgfpid.Connector(
-        messaging_service_credentials=[trusted_node, open_node],
+        messaging_service_credentials=[cred],
         handle_prefix=config.pid.prefix,
         messaging_service_exchange_name=config.pid.rabbit_exchange,
         data_node=config.pid.data_node1,
+        test_publication=config.pid.is_test,
         thredds_service_path=config.pid.thredds_service_path1,
-        test_publication=config.pid.is_test
+        message_service_synchronous=config.pid.is_synchronous
         )
 
 

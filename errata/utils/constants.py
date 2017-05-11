@@ -32,7 +32,7 @@ FACET_TYPE_INSTITUTION_ID = 'institute'
 FACET_TYPE_MODEL = 'model'
 
 # Search facet type - mip-era.
-FACET_TYPE_MIP_ERA = 'mip_era'
+FACET_TYPE_MIP_ERA = 'project'
 
 # Search facet type - severity.
 FACET_TYPE_SEVERITY = 'severity'

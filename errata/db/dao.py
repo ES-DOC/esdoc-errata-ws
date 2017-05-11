@@ -24,6 +24,7 @@ from errata.db.utils import text_filter
 from errata.db.utils import as_date_string
 from errata.utils import constants
 from errata.utils.validation import validate
+from sqlalchemy import or_
 
 
 
@@ -186,7 +187,8 @@ def get_pid_service_tasks():
 
     """
     qry = query(PIDServiceTask)
-    qry = qry.filter(PIDServiceTask.status == constants.PID_TASK_STATE_QUEUED)
+    qry = qry.filter(or_(PIDServiceTask.status == constants.PID_TASK_STATE_QUEUED,
+                         PIDServiceTask.status == constants.PID_TASK_STATE_ERROR))
     qry = qry.order_by(PIDServiceTask.timestamp.desc())
 
     return qry.all()
