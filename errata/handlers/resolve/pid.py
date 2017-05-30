@@ -6,7 +6,7 @@
    :platform: Unix
    :synopsis: ES-DOC Errata - handle service search endpoint.
 
-.. moduleauthor:: Atef Bennasser <abenasser@ipsl.jussieu.fr>
+.. module author:: Atef Bennasser <abenasser@ipsl.jussieu.fr>
 
 
 """
@@ -15,6 +15,7 @@ import tornado
 from errata.handle_service.harvest import harvest_errata_information
 from errata.utils import constants
 from errata.utils.http import process_request
+from errata.handle_service.utils import resolve_input
 
 
 
@@ -34,6 +35,7 @@ def _get_errata_information(pid):
         }
 
     """
+    pid = resolve_input(pid)
     data = harvest_errata_information(pid)
 
     return pid, sorted(data.values(), key=lambda i: i[3])

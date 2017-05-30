@@ -22,6 +22,7 @@ from errata.handle_service.constants import *
 from errata.handle_service import constants
 from errata.handle_service import exceptions
 from errata.utils import logger
+from errata.utils import config
 
 
 # Disable requests warnings.
@@ -310,3 +311,26 @@ def get_issue_id(handle):
             "27897958-f462-43d3-8c19-309cd6a43ce3",
             "96eba87b-2f6d-4eea-a474-3f5c9dff6675"
             ])
+
+
+def resolve_input(input_string):
+    """
+    resolves input for simple pid endpoint
+    :param input_string: string
+    :return: pid
+    """
+    if config.pid.prefix in input_string:
+        return input_string
+
+    else:
+
+        drs_id = []
+        if '.v' in input_string:
+            drs_id = input_string.split('.v')
+
+        if len(drs_id) > 1:
+            return config.pid.prefix + '/' + make_suffix_from_drsid_and_versionnumber(drs_id=drs_id[0],
+                                                                                      version_number=drs_id[1])
+        else:
+            logger.log_pid('UNRECOGNIZED PID OR DATASET ID.')
+

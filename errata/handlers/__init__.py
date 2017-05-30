@@ -7,3 +7,4 @@ from errata.handlers.resolve import ResolveIssueRequestHandler
 from errata.handlers.resolve import ResolvePIDRequestHandler
 from errata.handlers.search import IssueSearchRequestHandler
 from errata.handlers.search import IssueSearchSetupRequestHandler
+from errata.handlers.resolve import ResolveSimplePIDRequestHandler

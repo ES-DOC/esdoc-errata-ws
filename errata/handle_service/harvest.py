@@ -14,6 +14,7 @@ from time import time
 from b2handle.handleclient import EUDATHandleClient
 
 from errata.handle_service.crawler import crawler
+from errata.handle_service.constants import ERRATA_IDS, DRS, VERSION
 from errata.handle_service.utils import get_handle_by_handle_string
 from errata.utils import logger
 
@@ -34,7 +35,30 @@ def harvest_errata_information(input_handle_string):
     logger.log_pid("ELAPSED TIME TILL COMPLETION : " + str(time()-tick) + " SECONDS")
     logger.log_pid("-----------------------------------END ISSUE TRACKING-----------------------------------")
     logger.log_pid("LIST OF UIDS GENERATED IS...")
+    logger.log_pid(list_of_uids)
     return list_of_uids
+
+
+def harvest_simple_errata(input_handle_string):
+    """
+    A simplified version of the harvest original implementation.
+    :param input_handle_string: pid handle string
+    :return: errata_id list, empty if no errata is found.
+    """
+    output = []
+    logger.log_pid("--CREATING HANDLE CLIENT--")
+    handle_client = EUDATHandleClient.instantiate_for_read_access()
+    logger.log_pid("--SUCCESSFULLY CREATED CLIENT--")
+    logger.log_pid("--RETRIEVING HANDLE FROM PID SERVER--")
+    handle = get_handle_by_handle_string(input_handle_string, handle_client)
+    if handle is not None:
+        if ERRATA_IDS in handle.keys():
+            output = str(handle[ERRATA_IDS].split(";"))
+        drs_id = handle[DRS]
+        version = handle[VERSION]
+    else:
+        logger.log_pid("--HANDLE NOT FOUND IN PID SERVER--")
+    return input_handle_string, drs_id, version, output, len(output) >= 1, len(drs_id) > 1
 
 # Dataset A
 # harvest_errata_information('21.14100/aae01ba2-8436-378d-84ed-5a06b9fbee46')
@@ -49,4 +73,5 @@ def harvest_errata_information(input_handle_string):
 # rainfall file
 # harvest_errata_information('21.14100/28ju73be-0e10-11e6-a148-a7751ce7ec0c')
 # rainfall_1 file
-# harvest_errata_information('21.14100/0b79de23-d15a-4827-a656-274728605343')
+# harvest_errata_information('21.14100/4ba213fc-f688-3d58-bd96-d984bb00f1d5')
+# print(harvest_simple_errata('21.14100/4ba213fc-f688-3d58-bd96-d984bb00f1d5'))
