@@ -372,6 +372,7 @@
         "source_id": {
             "items": {
                 "enum": [
+                    "ipsl-cm6-1",
                     "hadgem3-gc31-hm",
                     "hadgem3-gc31-hh",
                     "giss-e2-1g",
