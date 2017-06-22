@@ -194,7 +194,7 @@ def _invoke(handler, task, err=None):
             task(handler, err)
         else:
             task(handler)
-    except TypeError:
+    except TypeError as te:
         if err:
             task(err)
         else:

@@ -17,7 +17,6 @@ from errata.utils import exceptions
 from errata.schemas import get_schema
 
 
-
 def validate_request(handler):
     """Validates request against mapped JSON schemas.
 
@@ -26,10 +25,12 @@ def validate_request(handler):
     :raises: exceptions.SecurityError, exceptions.InvalidJSONSchemaError
 
     """
-    _validate_request_headers(handler)
-    _validate_request_params(handler)
-    _validate_request_body(handler)
-
+    if handler.test is None:
+        _validate_request_headers(handler)
+        _validate_request_params(handler)
+        _validate_request_body(handler)
+    else:
+        return
 
 def _validate(handler, data, schema):
     """Validates data against a JSON schema.

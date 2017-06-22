@@ -37,6 +37,7 @@ def _get_app_endpoints():
     """
     return {
         (r'/', handlers.ops.HeartbeatRequestHandler),
+        (r'/1/ops/credtest', handlers.ops.CredTestHandler),
         (r'/1/issue/close', handlers.publishing.CloseIssueRequestHandler),
         (r'/1/issue/create', handlers.publishing.CreateIssueRequestHandler),
         (r'/1/issue/update', handlers.publishing.UpdateIssueRequestHandler),

@@ -24,6 +24,7 @@ _SECURED_ENDPOINTS = {
     '/1/issue/close',
     '/1/issue/create',
     '/1/issue/update',
+    '/1/ops/credtest'
 }
 
 # GitHub API - user team membership within ES-DOC-OPS.
@@ -36,7 +37,7 @@ _GH_API_USER = "https://api.github.com/user?access_token={}"
 _REQUIRED_OAUTH_SCOPES = {"read:org"}
 
 
-def _authenticate(gh_login, oauth_token):
+def _authenticate(oauth_token):
     """Authenticate request against github oauth teams api.
 
     """
@@ -48,11 +49,9 @@ def _authenticate(gh_login, oauth_token):
 
     # Verify that GH login & token map to same GH account.
     user = json.loads(r.text)
-    if gh_login != user['login']:
-        raise exceptions.AuthenticationError()
 
     # Return minimal user information.
-    return user['name'] or gh_login
+    return user['name']
 
 
 def _authorize(oauth_token, team):
@@ -101,11 +100,10 @@ def secure_request(handler):
     # Extract user's GitHub OAuth personal access token from request.
     credentials = handler.request.headers['Authorization']
     credentials = credentials.replace('Basic ', '')
-    credentials = base64.b64decode(credentials).split(':')
-    gh_login, oauth_token = credentials
+    credentials = base64.b64decode(credentials)
+    oauth_token = credentials.split(':')[0]
 
     # Authenticate.
-    handler.user_name = _authenticate(gh_login, oauth_token)
-
+    handler.user_name = _authenticate(oauth_token)
     # Authorize.
     handler.user_teams = _authorize(oauth_token, constants.ERRATA_GH_TEAM)
