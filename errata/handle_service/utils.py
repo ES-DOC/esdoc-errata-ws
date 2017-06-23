@@ -319,6 +319,9 @@ def resolve_input(input_string):
     :param input_string: string
     :return: pid
     """
+    if 'hdl:' in input_string:
+        input_string = input_string.replace('hdl:', '')
+
     if config.pid.prefix in input_string:
         return input_string
 
@@ -327,6 +330,8 @@ def resolve_input(input_string):
         drs_id = []
         if '.v' in input_string:
             drs_id = input_string.split('.v')
+        elif '#' in input_string:
+            drs_id = input_string.split('#')
 
         if len(drs_id) > 1:
             return config.pid.prefix + '/' + make_suffix_from_drsid_and_versionnumber(drs_id=drs_id[0],
