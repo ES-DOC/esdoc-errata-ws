@@ -51,9 +51,8 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             for team in sorted(self.user_teams):
                 if team == constants.ERRATA_GH_TEAM:
                     return
-                if team.split("-")[-1] == self.issue.institute.lower():
+                if team.split("-")[-1] == self.request.data[JF_INSTITUTION_ID].lower():
                     return
-
             # User has no access rights to this particular issue.
             raise exceptions.AuthorizationError()
 
