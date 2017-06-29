@@ -77,7 +77,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
 
             # Determine change ratio.
             diff = difflib.SequenceMatcher(None, self.issue.description, self.request.data[JF_DESCRIPTION])
-            diff_ratio = round(diff.ratio(), 3) * 100
+            diff_ratio = 100 - round(diff.ratio(), 3) * 100
             if diff_ratio < constants.DESCRIPTION_CHANGE_RATIO:
                 raise exceptions.IssueDescriptionChangeRatioError(diff_ratio)
 
