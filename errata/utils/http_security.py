@@ -28,7 +28,8 @@ _SECURED_ENDPOINTS = {
 }
 
 # GitHub API - user team membership within ES-DOC-OPS.
-_GH_API_TEAMS = "https://api.github.com/orgs/ES-DOC-OPS/teams?access_token={}&per_page=100"
+# _GH_API_TEAMS = "https://api.github.com/orgs/ES-DOC-OPS/teams?access_token={}&per_page=100"
+_GH_API_TEAMS = "https://api.github.com/user/teams?access_token={}&per_page=100"
 
 # GitHub API - user team membership within GitHub.
 _GH_API_USER = "https://api.github.com/user?access_token={}"
