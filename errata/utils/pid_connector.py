@@ -78,7 +78,8 @@ def add_errata_to_handle(dataset_id, errata_ids, connector):
     else:
         raise Exception('Could not extract version number from dataset id. Aborting. {}'.format(dataset_id))
     if len(drs_id) == 2:
-        logger.log_pid('Adding errata to {} version {}'.format(drs_id[0], drs_id[1]))
+        for errata in errata_ids:
+            logger.log_pid('Adding errata {} to {} version {}'.format(errata, drs_id[0], drs_id[1]))
         connector.add_errata_ids(errata_ids=errata_ids, drs_id=drs_id[0], version_number=drs_id[1])
         logger.log_pid('Handle successfully updated.')
     else:
