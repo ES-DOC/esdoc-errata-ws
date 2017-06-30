@@ -100,6 +100,9 @@ def remove_errata_from_handle(dataset_id, errata_ids, connector):
         drs_id = drs_id.split('#')
     else:
         raise Exception('Could not extract version number from dataset id. Aborting. {}'.format(dataset_id))
-    logger.log_pid('Removing errata id from {}, version {}'.format(drs_id[0], drs_id[1]))
-    connector.remove_errata_ids(errata_ids=errata_ids, drs_id=drs_id[0], version_number=drs_id[1])
-    logger.log_pid('Handle successfully updated.')
+    if len(drs_id) == 2:
+        logger.log_pid('Removing errata id from {}, version {}'.format(drs_id[0], drs_id[1]))
+        connector.remove_errata_ids(errata_ids=errata_ids, drs_id=drs_id[0], version_number=drs_id[1])
+        logger.log_pid('Handle successfully updated.')
+    else:
+        raise Exception('Could not extract version number from dataset id. Aborting. {}'.format(dataset_id))
