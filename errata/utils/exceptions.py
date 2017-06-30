@@ -149,7 +149,7 @@ class IssueDescriptionChangeRatioError(RequestValidationException):
         """
         super(IssueDescriptionChangeRatioError, self).__init__(
             "ISSUE DESCRIPTION CANNOT CHANGE BY MORE THAN {}% (Actual change ratio was {}%)".format(
-                constants.DESCRIPTION_CHANGE_RATIO, 100 - change_ratio)
+                constants.DESCRIPTION_CHANGE_RATIO, change_ratio)
             )
 
 
