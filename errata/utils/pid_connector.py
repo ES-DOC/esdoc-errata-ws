@@ -70,17 +70,20 @@ def add_errata_to_handle(dataset_id, errata_ids, connector):
     :param esgfpid.Connector connector: PID RabbitMQ connector
 
     """
-    if '#' in dataset_id:
-        drs_id = dataset_id.split('#')
-    elif '.v' in dataset_id:
-        drs_id = dataset_id.replace('.v', '.#')
-        drs_id = drs_id.split('#')
-    else:
-        raise Exception('Could not extract version number from dataset id. Aborting. {}'.format(dataset_id))
-    logger.log_pid('Adding errata to {} version {}'.format(drs_id[0], drs_id[1]))
-    connector.add_errata_ids(errata_ids=errata_ids, drs_id=drs_id[0], version_number=drs_id[1])
-    logger.log_pid('Handle successfully updated.')
-
+    try:
+        if '#' in dataset_id:
+            drs_id = dataset_id.split('#')
+        elif '.v' in dataset_id:
+            drs_id = dataset_id.replace('.v', '.#')
+            drs_id = drs_id.split('#')
+        else:
+            raise Exception('Could not extract version number from dataset id. Aborting. {}'.format(dataset_id))
+        logger.log_pid('Adding errata to {} version {}'.format(drs_id[0], drs_id[1]))
+        connector.add_errata_ids(errata_ids=errata_ids, drs_id=drs_id[0], version_number=drs_id[1])
+        logger.log_pid('Handle successfully updated.')
+    except Exception as e:
+        logger.log_pid(e.message)
+        logger.log_pid(dataset_id)
 
 def remove_errata_from_handle(dataset_id, errata_ids, connector):
     """Removes an errata identifier from pid handle.
