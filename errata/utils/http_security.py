@@ -104,8 +104,6 @@ def secure_request(handler):
     credentials = base64.b64decode(credentials)
     try:
         oauth_token = credentials.split(':')[0].decode('utf-8')
-        print('gucci')
-        print(oauth_token)
     except Exception as e:
         raise exceptions.AuthenticationError
 
