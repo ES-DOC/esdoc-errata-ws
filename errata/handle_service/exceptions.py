@@ -48,3 +48,16 @@ class FileNotFoundInHandle(Exception):
         super(FileNotFoundInHandle, self).__init__(
             'FILE WAS NOT FOUND IN DATASET'
             )
+
+
+class HandleMismatch(Exception):
+    """Raised if handle was not found on the Handle Server.
+
+    """
+    def __init__(self, **args):
+        """Instance constructor.
+
+        """
+        super(HandleMismatch, self).__init__(
+            'HANDLE NOT FOUND OR MISMATCHED TEST STATE.'
+            )

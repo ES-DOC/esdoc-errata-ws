@@ -16,6 +16,10 @@ from errata import db
 from errata.utils import constants
 from errata.utils import logger
 from errata.utils import pid_connector as pid
+from b2handle.handleclient import EUDATHandleClient
+from errata.utils import config
+from errata.handle_service.utils import resolve_input
+from errata.handle_service import exceptions
 
 # Set logging levels.
 logging.getLogger("pika").setLevel(logging.CRITICAL)
@@ -28,6 +32,29 @@ _TASK_HANDLERS = {
 }
 
 
+def _check_handle_status(dataset_id):
+    """
+    Checks handle exists or not.
+    Checks is_test status.
+    :return: Boolean
+    """
+    handle_string = resolve_input(dataset_id)
+    handle_client = EUDATHandleClient.instantiate_for_read_access()
+    encoded_dict = handle_client.instantiate_for_read_access(config.pid.prefix+handle_string)
+    if encoded_dict is not None:
+        handle_record = {k.decode('utf8'): v.decode('utf8') for k, v in encoded_dict.items()}
+        if '_TEST' in handle_record.keys():
+            if handle_record['_TEST'] != config.pid.is_test:
+                logger.warn('Dataset {} has mismatched test status with pid connector'.format(dataset_id))
+                logger.warn('Dataset {} is published with test flag {}'.format(dataset_id, handle_record['_TEST']))
+                raise exceptions.HandleMismatch
+        else:
+            return True
+    else:
+        logger.warn('Dataset {} has no published pid handle'.format(dataset_id))
+        raise exceptions.HandleMismatch
+
+
 def _sync(pid_connection, task):
     """Synchronizes a task with remote PID handle service.
 
@@ -35,7 +62,8 @@ def _sync(pid_connection, task):
     logging.info('Syncing...')
     try:
         handler = _TASK_HANDLERS[task.action]
-        handler(task.dataset_id, [task.issue_uid], pid_connection)
+        if _check_handle_status(task.dataset_id):
+            handler(task.dataset_id, [task.issue_uid], pid_connection)
     except Exception as err:
         logger.log_pid_error(err)
         task.status = constants.PID_TASK_STATE_ERROR
@@ -51,7 +79,6 @@ def _main():
 
     """
     logger.log_pid("PID syncing: STARTS")
-
     with pid.get_session() as pid_connection:
         with db.session.create(commitable=True):
             for task in db.dao.get_pid_service_tasks():
