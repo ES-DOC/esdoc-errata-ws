@@ -208,9 +208,9 @@ def find_file_in_dataset(dataset_record, file_record):
         elif file_record.checksum == child[CHECKSUM]:
             logger.log('File found by checksum in dataset.')
             return child
-        elif SequenceMatcher(None, file_record.filename, child[FILE_NAME]).ratio() > 0.95:
-            logger.log('Found a really similar file, {} and {}'.format(file_record.filename, child[FILE_NAME]))
-            return child
+        # elif SequenceMatcher(None, file_record.filename, child[FILE_NAME]).ratio() > 0.95:
+        #     logger.log('Found a really similar file, {} and {}'.format(file_record.filename, child[FILE_NAME]))
+        #     return child
     raise exceptions.FileNotFoundInHandle
 
 

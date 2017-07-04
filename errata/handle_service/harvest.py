@@ -31,12 +31,12 @@ def harvest_errata_information(input_handle_string):
     logger.log_pid("--HANDLE CLIENT CREATED--")
     logger.log_pid("----------------------------------BEGIN ISSUE TRACKING----------------------------------")
     handle = get_handle_by_handle_string(input_handle_string, handle_client)
-    list_of_uids = crawler(handle, handle_client)
+    list_of_uids, incomplete_search = crawler(handle, handle_client)
     logger.log_pid("ELAPSED TIME TILL COMPLETION : " + str(time()-tick) + " SECONDS")
     logger.log_pid("-----------------------------------END ISSUE TRACKING-----------------------------------")
     logger.log_pid("LIST OF UIDS GENERATED IS...")
     logger.log_pid(list_of_uids)
-    return list_of_uids
+    return list_of_uids, incomplete_search
 
 
 def harvest_simple_errata(input_handle_string):

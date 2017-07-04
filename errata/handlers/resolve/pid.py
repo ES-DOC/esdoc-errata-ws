@@ -36,9 +36,11 @@ def _get_errata_information(pid):
 
     """
     pid = resolve_input(pid)
-    data = harvest_errata_information(pid)
-
-    return pid, sorted(data.values(), key=lambda i: i[3])
+    data, incomplete_search = harvest_errata_information(pid)
+    ordered_data = sorted(data.values(), key=lambda i: i[3])
+    ordered_data[0][4] = 1
+    ordered_data[-1][5] = 1
+    return pid, ordered_data, incomplete_search
 
 
 class ResolvePIDRequestHandler(tornado.web.RequestHandler):
