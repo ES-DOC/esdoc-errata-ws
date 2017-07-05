@@ -40,7 +40,7 @@ def _check_handle_status(dataset_id):
     """
     handle_string = resolve_input(dataset_id)
     handle_client = EUDATHandleClient.instantiate_for_read_access()
-    encoded_dict = handle_client.instantiate_for_read_access(config.pid.prefix+handle_string)
+    encoded_dict = handle_client.retrieve_handle_record(config.pid.prefix+handle_string)
     if encoded_dict is not None:
         handle_record = {k.decode('utf8'): v.decode('utf8') for k, v in encoded_dict.items()}
         if '_TEST' in handle_record.keys():
@@ -63,9 +63,10 @@ def _sync(pid_connection, task):
     logger.log_pid(task.dataset_id)
     try:
         handler = _TASK_HANDLERS[task.action]
+        logger.log_pid('CHECKING HANDLE...')
         if _check_handle_status(task.dataset_id):
             handler(task.dataset_id, [task.issue_uid], pid_connection)
-        logger.log_pid('HANDLE FOUND')
+        logger.log_pid('HANDLE FOUND...')
     except Exception as err:
         logger.log_pid_error(err)
         task.status = constants.PID_TASK_STATE_ERROR
