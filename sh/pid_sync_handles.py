@@ -60,10 +60,12 @@ def _sync(pid_connection, task):
 
     """
     logging.info('Syncing...')
+    logger.log_pid(task.dataset_id)
     try:
         handler = _TASK_HANDLERS[task.action]
         if _check_handle_status(task.dataset_id):
             handler(task.dataset_id, [task.issue_uid], pid_connection)
+        logger.log_pid('HANDLE FOUND')
     except Exception as err:
         logger.log_pid_error(err)
         task.status = constants.PID_TASK_STATE_ERROR
