@@ -41,7 +41,6 @@ def _check_handle_status(dataset_id):
     handle_string = resolve_input(dataset_id)
     handle_client = EUDATHandleClient.instantiate_for_read_access()
     encoded_dict = handle_client.retrieve_handle_record(handle_string)
-    print encoded_dict
     if encoded_dict is not None:
         handle_record = {k.decode('utf8'): v.decode('utf8') for k, v in encoded_dict.items()}
         if '_TEST' in handle_record.keys():
@@ -53,7 +52,7 @@ def _check_handle_status(dataset_id):
                 logger.log_pid('Dataset handle is on mode {}, as well as connector, validating...'.format(handle_record['_TEST']))
                 return True
         else:
-            logger.log_pid('TEST VALUE WASNT FOUND IN HANDLE, ABORTING....')
+            logger.log_pid('TEST VALUE WAS NOT FOUND IN HANDLE, ABORTING....')
             return False
     else:
         logger.warn('Dataset {} has no published pid handle'.format(dataset_id))
