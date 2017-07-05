@@ -47,12 +47,13 @@ def _check_handle_status(dataset_id):
             if handle_record['_TEST'].lower() != str(config.pid.is_test).lower():
                 logger.warn('Dataset {} has mismatched test status with pid connector'.format(dataset_id))
                 logger.warn('Dataset {} is published with test flag {}'.format(dataset_id, handle_record['_TEST']))
-                raise exceptions.HandleMismatch
+                return False
         else:
+            logger.log_pid('Dataset handle is on mode {}, as well as connector, validating...'.format(handle_record['_TEST']))
             return True
     else:
         logger.warn('Dataset {} has no published pid handle'.format(dataset_id))
-        raise exceptions.HandleMismatch
+        return False
 
 
 def _sync(pid_connection, task):
@@ -65,8 +66,11 @@ def _sync(pid_connection, task):
         handler = _TASK_HANDLERS[task.action]
         logger.log_pid('CHECKING HANDLE...')
         if _check_handle_status(task.dataset_id):
+            logger.log_pid('HANDLE FOUND...')
+            logger.log_pid('Calling update task...')
             handler(task.dataset_id, [task.issue_uid], pid_connection)
-        logger.log_pid('HANDLE FOUND...')
+        else:
+            raise exceptions.HandleMismatch
     except Exception as err:
         logger.log_pid_error(err)
         task.status = constants.PID_TASK_STATE_ERROR
