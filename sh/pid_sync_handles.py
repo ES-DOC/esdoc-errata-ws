@@ -40,11 +40,11 @@ def _check_handle_status(dataset_id):
     """
     handle_string = resolve_input(dataset_id)
     handle_client = EUDATHandleClient.instantiate_for_read_access()
-    encoded_dict = handle_client.retrieve_handle_record(config.pid.prefix+handle_string)
+    encoded_dict = handle_client.retrieve_handle_record(handle_string)
     if encoded_dict is not None:
         handle_record = {k.decode('utf8'): v.decode('utf8') for k, v in encoded_dict.items()}
         if '_TEST' in handle_record.keys():
-            if handle_record['_TEST'] != config.pid.is_test:
+            if handle_record['_TEST'].lower() != str(config.pid.is_test).lower():
                 logger.warn('Dataset {} has mismatched test status with pid connector'.format(dataset_id))
                 logger.warn('Dataset {} is published with test flag {}'.format(dataset_id, handle_record['_TEST']))
                 raise exceptions.HandleMismatch
