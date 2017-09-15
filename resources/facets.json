@@ -1,0 +1,99 @@
+{
+  "cmip6": {
+    "institute_id": "Institute",
+    "source_id": "Model",
+    "experiment_id": "Experiment",
+    "variable_id": "Variable",
+    "pid": true
+  },
+  "cmip5": {
+    "institute": "Institute",
+    "model": "Model",
+    "experiment": "Experiment",
+    "variable": "Variable",
+    "pid": true
+  },
+  "geomip": {
+    "institute": "Institute",
+    "model": "Model",
+    "experiment": "Experiment",
+    "variable": "Variable",
+    "pid": true
+  },
+  "lucid": {
+    "institute": "Institute",
+    "model": "Model",
+    "experiment": "Experiment",
+    "variable": "Variable",
+    "pid": true
+  },
+  "pmip3": {
+    "institute": "Institute",
+    "model": "Model",
+    "experiment": "Experiment",
+    "variable": "Variable",
+    "pid": true
+  },
+  "tamip": {
+    "institute": "Institute",
+    "model": "Model",
+    "experiment": "Experiment",
+    "variable": "Variable",
+    "pid": true
+  },
+  "euclipse": {
+    "institute": "Institute",
+    "model": "Model",
+    "experiment": "Experiment",
+    "variable": "Variable",
+    "pid": true
+  },
+  "cordex": {
+    "institute": "Institute",
+    "rcm_name": "Model",
+    "experiment": "Experiment",
+    "variable": "Variable",
+    "pid": true
+  },
+  "cordex_adjust": {
+    "institute": "Institute",
+    "rcm_name": "Model",
+    "experiment": "Experiment",
+    "variable": "Variable",
+    "pid": true
+  },
+  "input4mips": {
+    "institute": "Institute",
+    "source": "Source",
+    "data_type": "Data Type",
+    "variable": "Variable",
+    "pid": false
+  },
+  "obs4mips": {
+    "institute": "Institute",
+    "source_id": "Source",
+    "variable": "Variable",
+    "pid": false
+  },
+  "isimip_ft": {
+    "Sector": "Sector",
+    "impact_model": "Impact Model",
+    "experiment": "Experiment",
+    "variable": "Variable",
+    "pid": true
+  },
+  "primavera": {
+    "institute": "Institute",
+    "model": "Model",
+    "experiment": "Experiment",
+    "variable": "Variable",
+    "pid": true
+  },
+  "cc4e": {
+    "work_package": "Work Package",
+    "product": "Product",
+    "source_data_id": "Source",
+    "variable": "Variable",
+    "pid": true
+  }
+}

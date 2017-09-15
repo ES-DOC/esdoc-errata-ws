@@ -99,7 +99,6 @@ def get_issue_facets(uid, facet_type=None):
     qry = text_filter(qry, IssueFacet.issue_uid, uid)
     if facet_type is not None:
         qry = qry.filter(IssueFacet.facet_type == facet_type)
-
     return qry.all()
 
 

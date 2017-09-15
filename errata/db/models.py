@@ -55,12 +55,15 @@ _SEVERITY_ENUM = Enum(
 _FACET_TYPE_ENUM = Enum(
     FACET_TYPE_DATASET,
     FACET_TYPE_EXPERIMENT,
-    FACET_TYPE_INSTITUTION_ID,
+    FACET_TYPE_INSTITUTE,
     FACET_TYPE_MODEL,
     FACET_TYPE_MIP_ERA,
     FACET_TYPE_SEVERITY,
     FACET_TYPE_STATUS,
     FACET_TYPE_VARIABLE,
+    FACET_TYPE_SOURCE,
+    FACET_TYPE_SECTOR,
+    FACET_TYPE_WORK_PACKAGE,
     schema=_SCHEMA,
     name="FacetTypeEnum"
     )
@@ -95,8 +98,8 @@ class Issue(Entity):
     )
 
     # Column definitions.
-    mip_era = Column(Unicode(63), nullable=False)
-    institution_id = Column(Unicode(63), nullable=False)
+    project = Column(Unicode(63), nullable=False)
+    institute = Column(Unicode(63), nullable=False)
     uid = Column(Unicode(63), nullable=False, unique=True, default=uuid.uuid4())
     title = Column(Unicode(255), nullable=False)
     description = Column(Text, nullable=False)

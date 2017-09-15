@@ -18,12 +18,15 @@ from errata import db
 from errata.utils import constants
 from errata.utils import exceptions
 from errata.utils.http import process_request
+from errata.utils.constants_json import *
+
 
 
 
 # Query parameter names.
 _PARAM_UID = 'uid'
 _PARAM_STATUS = 'status'
+_TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 # ESDOC GitHub team: errata-publication.
 _ESDOC_GH_TEAM_ERRATA_PUBLICATION = 'errata-publication'
@@ -55,8 +58,9 @@ class CloseIssueRequestHandler(tornado.web.RequestHandler):
             for team in sorted(self.user_teams):
                 if team == constants.ERRATA_GH_TEAM:
                     return
-                if team.split("-")[-1] == self.issue.institution_id:
+                if team.split("-")[-1] == self.issue.institute:
                     return
+
             # User has no access rights to this particular issue.
             raise exceptions.AuthorizationError()
 
@@ -77,8 +81,7 @@ class CloseIssueRequestHandler(tornado.web.RequestHandler):
             """Closes issue.
 
             """
-            # TODO: get date_closed from closedAt field
-            self.issue.date_closed = dt.datetime.utcnow()
+            self.issue.date_closed = dt.datetime.utcnow().strftime(_TIME_FORMAT)
             self.issue.closed_by = self.user_name
             self.issue.status = self.get_argument(_PARAM_STATUS)
 
