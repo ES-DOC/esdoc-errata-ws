@@ -224,3 +224,9 @@ PID_ACTION_INSERT = 'insert'
 
 # PID service action: delete.
 PID_ACTION_DELETE = 'delete'
+
+# PROJECT PID SUPPORT
+
+PROJECT_PID_MAP = {'cmip6': True, 'cmip5': False, 'cordex': True, 'geomip': False, 'lucid': False, 'pmip3': False,
+                   'tamip': False, 'euclipse': False, 'cordex-adjust': True, 'input4mips': False, 'obs4mips': False,
+                   'isimip-ft': False, 'primavera': False, 'cc4e': False}

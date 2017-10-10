@@ -49,7 +49,8 @@ def create_connector():
     """
     # Information about rabbitmq instance:
     cred = dict(user=config.pid.rabbit_user_trusted, password=config.pid.rabbit_password_trusted,
-                url=config.pid.rabbit_url_trusted, vhost=config.pid.vhost, port=config.pid.port)
+                url=config.pid.rabbit_url_trusted, vhost=config.pid.vhost, port=config.pid.port,
+                ssl_enabled=config.pid.ssl_enabled)
     # Return connection for that data node:
     return esgfpid.Connector(
         messaging_service_credentials=[cred],

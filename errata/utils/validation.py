@@ -171,5 +171,5 @@ def validate_url(url):
         except Exception:
             raise exceptions.UnreachableURLError(url)
         else:
-            if response.status_code != requests.codes.OK:
+            if response.status_code not in [requests.codes.OK, 302]:
                 raise exceptions.UnreachableURLError(url)

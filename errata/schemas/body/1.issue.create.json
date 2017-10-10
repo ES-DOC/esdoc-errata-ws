@@ -73,7 +73,11 @@
             "type": "string"
         },
         "url": {
-            "type": "string"
+            "items": {
+                "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
         },
         "facets":{
             "type": "object",
