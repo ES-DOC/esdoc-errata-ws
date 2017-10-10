@@ -25,7 +25,8 @@ from errata.utils.http import process_request
 from errata.utils.misc import traverse
 from errata.utils.validation import validate_url
 from ESGConfigParser import SectionParser
-from ESGConfigParser.exceptions import NoConfigOptions
+from ESGConfigParser.custom_exceptions import NoConfigOptions
+
 
 
 class CreateIssueRequestHandler(tornado.web.RequestHandler):
@@ -51,6 +52,7 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
 
             # User has no access rights to this particular issue.
             raise exceptions.AuthorizationError()
+
 
         def _validate_facets():
             """
@@ -93,17 +95,15 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
                     self.facets_dict[facet_type.lower()] = facet_value
             logger.log_web('Facets successfully validated.')
 
+
         def _validate_issue_urls():
             """Validates URL's associated with incoming request.
 
             """
-            if cf.mode == "dev" and cf.network_state == "down":
-                return
-
-            urls = traverse([self.request.data.get((i)) for i in [JF_URL, JF_MATERIALS]])
-            for url in urls:
-                if url != '':
+            if config.apply_security_policy:
+                for url in traverse([self.request.data.get(i) for i in [JF_URL, JF_MATERIALS]]):
                     validate_url(url)
+
 
         def _set_issue():
             """Creates issue.
@@ -114,7 +114,7 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             facets = self.facets_dict
             issue.date_closed = obj.get(JF_DATE_CLOSED)
             issue.date_created = obj[JF_DATE_CREATED]
-            issue.created_by = self.user_name
+            issue.created_by = self.user_id
             issue.description = obj[JF_DESCRIPTION]
             issue.institute = facets[JF_INSTITUTE][0].lower()
             issue.materials = ",".join(facets.get(JF_MATERIALS, []))
@@ -123,9 +123,10 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             issue.title = obj[JF_TITLE]
             issue.uid = obj[JF_UID]
             issue.date_updated = obj.get(JF_DATE_UPDATED, issue.date_created)
-            issue.updated_by = self.user_name
+            issue.updated_by = self.user_id
             issue.url = obj.get(JF_URL)
             issue.status = obj[JF_STATUS].lower()
+
 
         def _set_facets():
             """Sets search facets to be persisted to database.
@@ -153,6 +154,7 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
                     f.issue_uid = self.issue.uid
                     self.facets.append(f)
 
+
         def _set_pid_tasks():
             """Persists pid handles.
 
@@ -168,6 +170,7 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             else:
                 logger.log_web('Project doesnt have PID support, skipping pid insertion...')
 
+
         def _persist():
             """Persists data to dB.
 
@@ -178,6 +181,7 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             if self.project_conf['pid']:
                 for pid_task in self.pid_tasks:
                     db.session.insert(pid_task)
+
 
         # Process request.
         with db.session.create(commitable=True):

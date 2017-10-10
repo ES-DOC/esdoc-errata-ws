@@ -23,6 +23,10 @@
             "minLength": 1,
             "type": "string"
         },
+        "facets": {
+            "title": "Extracted facets.",
+            "type": "object"
+        },
         "materials": {
             "items": {
                 "pattern": "\\.(jpg|gif|png|tiff)$",
@@ -54,7 +58,6 @@
             ],
             "type": "string"
         },
-
         "status": {
             "enum": [
                 "new",
@@ -74,10 +77,6 @@
         },
         "url": {
             "type": "string"
-        },
-        "facets":{
-            "type": "object",
-            "title": "Extracted facets."
         }
     },
     "required": [
@@ -94,6 +93,6 @@
         "project",
         "facets"
     ],
-    "title": "ESGF issue JSON schema",
+    "title": "ES-DOC errata JSON schema: endpoint = /1/issue/update",
     "type": "object"
 }

@@ -7,6 +7,7 @@ source $ERRATA_WS_HOME/sh/utils.sh
 main()
 {
 	export PYTHONPATH=$PYTHONPATH:$ERRATA_WS_HOME
+	export PYTHONPATH=$PYTHONPATH:$ERRATA_WS_HOME/ops/libs/esgf-config/publisher-configs/ESGConfigParser
 	source $ERRATA_WS_HOME/ops/venv/bin/activate
 }
 

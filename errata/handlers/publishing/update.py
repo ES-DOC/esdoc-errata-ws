@@ -25,9 +25,11 @@ from errata.utils import logger
 from errata.utils import exceptions
 from errata.utils.constants_json import *
 from errata.utils.http import process_request
+
 from errata.utils.config import _get_facet_config, _get_remote_config
 from ESGConfigParser import SectionParser
-from ESGConfigParser.exceptions import NoConfigOptions
+from ESGConfigParser.custom_exceptions import NoConfigOptions
+
 
 
 class UpdateIssueRequestHandler(tornado.web.RequestHandler):
@@ -60,6 +62,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
                     return
             # User has no access rights to this particular issue.
             raise exceptions.AuthorizationError()
+
 
         def _validate_facets():
             """
@@ -103,6 +106,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
                     self.facets_dict[facet_type.lower()] = facet_value
             logger.log_web('Facets successfully validated.')
 
+
         def _validate_issue_immutable_attributes():
             """Validates that issue attribute deemed to be immutable have not been changed.
 
@@ -118,6 +122,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
                         raise exceptions.ImmutableIssueAttributeError(facet_name)
             logger.log_web('Finished immutability test')
 
+
         def _validate_issue_description_change_ratio():
             """Validates that the degree of change in the issue's description is less than allowed ratio.
 
@@ -132,6 +137,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             if diff_ratio > constants.DESCRIPTION_CHANGE_RATIO:
                 raise exceptions.IssueDescriptionChangeRatioError(diff_ratio)
 
+
         def _validate_issue_status():
             """Validates that issue status allows it to be updated.
 
@@ -139,6 +145,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             if self.issue.status != constants.STATUS_NEW and \
                             self.request.data[JF_STATUS] == constants.STATUS_NEW:
                 raise exceptions.InvalidIssueStatusError()
+
 
         def _persist_pid_tasks():
             """Persists pid handles.
@@ -166,6 +173,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             else:
                 logger.log_web("This project doesnt have PID support, skipping PID insertion...")
 
+
         def _persist_issue():
             """Persists issue update.
 
@@ -178,9 +186,10 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             issue.severity = obj[JF_SEVERITY].lower()
             issue.title = obj[JF_TITLE]
             issue.date_updated = obj[JF_DATE_UPDATED]
-            issue.updated_by = self.user_name
+            issue.updated_by = self.user_id
             issue.url = obj.get(JF_URL)
             issue.status = obj[JF_STATUS].lower()
+
 
         def _persist_facets():
             """Insert new facets.
@@ -210,6 +219,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
                     f.facet_type = ft
                     f.issue_uid = self.issue.uid
                     db.session.insert(f, False)
+
 
         # Process request.
         with db.session.create(commitable=True):

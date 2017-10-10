@@ -1,99 +1,99 @@
 {
-  "cmip6": {
-    "institute_id": "Institute",
-    "source_id": "Model",
-    "experiment_id": "Experiment",
-    "variable_id": "Variable",
-    "pid": true
-  },
-  "cmip5": {
-    "institute": "Institute",
-    "model": "Model",
-    "experiment": "Experiment",
-    "variable": "Variable",
-    "pid": true
-  },
-  "geomip": {
-    "institute": "Institute",
-    "model": "Model",
-    "experiment": "Experiment",
-    "variable": "Variable",
-    "pid": true
-  },
-  "lucid": {
-    "institute": "Institute",
-    "model": "Model",
-    "experiment": "Experiment",
-    "variable": "Variable",
-    "pid": true
-  },
-  "pmip3": {
-    "institute": "Institute",
-    "model": "Model",
-    "experiment": "Experiment",
-    "variable": "Variable",
-    "pid": true
-  },
-  "tamip": {
-    "institute": "Institute",
-    "model": "Model",
-    "experiment": "Experiment",
-    "variable": "Variable",
-    "pid": true
-  },
-  "euclipse": {
-    "institute": "Institute",
-    "model": "Model",
-    "experiment": "Experiment",
-    "variable": "Variable",
-    "pid": true
-  },
-  "cordex": {
-    "institute": "Institute",
-    "rcm_name": "Model",
-    "experiment": "Experiment",
-    "variable": "Variable",
-    "pid": true
-  },
-  "cordex_adjust": {
-    "institute": "Institute",
-    "rcm_name": "Model",
-    "experiment": "Experiment",
-    "variable": "Variable",
-    "pid": true
-  },
-  "input4mips": {
-    "institute": "Institute",
-    "source": "Source",
-    "data_type": "Data Type",
-    "variable": "Variable",
-    "pid": false
-  },
-  "obs4mips": {
-    "institute": "Institute",
-    "source_id": "Source",
-    "variable": "Variable",
-    "pid": false
-  },
-  "isimip_ft": {
-    "Sector": "Sector",
-    "impact_model": "Impact Model",
-    "experiment": "Experiment",
-    "variable": "Variable",
-    "pid": true
-  },
-  "primavera": {
-    "institute": "Institute",
-    "model": "Model",
-    "experiment": "Experiment",
-    "variable": "Variable",
-    "pid": true
-  },
-  "cc4e": {
-    "work_package": "Work Package",
-    "product": "Product",
-    "source_data_id": "Source",
-    "variable": "Variable",
-    "pid": true
-  }
+    "cc4e": {
+        "pid": true,
+        "product": "Product",
+        "source_data_id": "Source",
+        "variable": "Variable",
+        "work_package": "Work Package"
+    },
+    "cmip5": {
+        "experiment": "Experiment",
+        "institute": "Institute",
+        "model": "Model",
+        "pid": true,
+        "variable": "Variable"
+    },
+    "cmip6": {
+        "experiment_id": "Experiment",
+        "institute_id": "Institute",
+        "pid": true,
+        "source_id": "Model",
+        "variable_id": "Variable"
+    },
+    "cordex": {
+        "experiment": "Experiment",
+        "institute": "Institute",
+        "pid": true,
+        "rcm_name": "Model",
+        "variable": "Variable"
+    },
+    "cordex_adjust": {
+        "experiment": "Experiment",
+        "institute": "Institute",
+        "pid": true,
+        "rcm_name": "Model",
+        "variable": "Variable"
+    },
+    "euclipse": {
+        "experiment": "Experiment",
+        "institute": "Institute",
+        "model": "Model",
+        "pid": true,
+        "variable": "Variable"
+    },
+    "geomip": {
+        "experiment": "Experiment",
+        "institute": "Institute",
+        "model": "Model",
+        "pid": true,
+        "variable": "Variable"
+    },
+    "input4mips": {
+        "data_type": "Data Type",
+        "institute": "Institute",
+        "pid": false,
+        "source": "Source",
+        "variable": "Variable"
+    },
+    "isimip_ft": {
+        "Sector": "Sector",
+        "experiment": "Experiment",
+        "impact_model": "Impact Model",
+        "pid": true,
+        "variable": "Variable"
+    },
+    "lucid": {
+        "experiment": "Experiment",
+        "institute": "Institute",
+        "model": "Model",
+        "pid": true,
+        "variable": "Variable"
+    },
+    "obs4mips": {
+        "institute": "Institute",
+        "pid": false,
+        "source_id": "Source",
+        "variable": "Variable"
+    },
+    "pmip3": {
+        "experiment": "Experiment",
+        "institute": "Institute",
+        "model": "Model",
+        "pid": true,
+        "variable": "Variable"
+    },
+    "primavera": {
+        "experiment": "Experiment",
+        "institute": "Institute",
+        "model": "Model",
+        "pid": true,
+        "variable": "Variable"
+    },
+    "tamip": {
+        "experiment": "Experiment",
+        "institute": "Institute",
+        "model": "Model",
+        "pid": true,
+        "variable": "Variable"
+    }
 }

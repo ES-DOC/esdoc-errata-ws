@@ -11,18 +11,24 @@
 
 """
 import argparse
-import json
 
-import requests
+from pyesdoc.security import is_authenticated_user
+from pyesdoc.security import is_team_member
 
 
 
 # Define command line argument parser.
-_ARGS = argparse.ArgumentParser("Enforces user access control.")
+_ARGS = argparse.ArgumentParser("Checks user access control.")
 _ARGS.add_argument(
-    "--oauth-token",
+    "--user",
+    help="A GitHub OAuth user login",
+    dest="user_id",
+    type=str
+    )
+_ARGS.add_argument(
+    "--access-token",
     help="A GitHub OAuth personal access token",
-    dest="oauth_token",
+    dest="access_token",
     type=str
     )
 _ARGS.add_argument(
@@ -31,12 +37,6 @@ _ARGS.add_argument(
     dest="team",
     type=str
     )
-
-# GitHub API - user team membership within ES-DOC.
-_GH_API_TEAMS = "https://api.github.com/orgs/ES-DOC/teams?access_token={}"
-
-# Bare minimum required OAuth scopes.
-_REQUIRED_OAUTH_SCOPES = {"read:org"}
 
 
 class AuthenticationError(Exception):
@@ -63,38 +63,27 @@ class AuthorizationError(Exception):
         self.response_code = 403
 
 
-def _authenticate(oauth_token):
+def _authenticate(user_id, access_token):
     """Authenticate request against github oauth api.
 
     """
-    # Authenticate against GitHub API.
-    url = _GH_API_TEAMS.format(oauth_token)
-    r = requests.get(url, headers={
-        'Accept': 'application/json'
-        })
-    if r.status_code != 200:
+    if not is_authenticated_user(user_id, access_token):
         raise AuthenticationError()
 
-    # Verify required OAuth scopes.
-    scopes = set(r.headers['X-OAuth-Scopes'].split(", "))
-    if _REQUIRED_OAUTH_SCOPES - scopes:
-        raise AuthenticationError()
-
-    return set([i['name'] for i in json.loads(r.text)])
+    return user_id
 
 
-def _authorize(membership, team):
+def _authorize(user_id, team_id):
     """Authorizes access by confirming that a user is a member of appropriate team.
 
     """
-    membership = [i for i in membership if i.startswith(team)]
-    if not membership:
+    if not is_team_member(team_id, user_id):
         raise AuthorizationError()
 
-    return membership
+    return 'Authenticated user {} is an authorized member of the {} team'.format(user_id, team_id)
 
 
 # Main entry point.
 if __name__ == '__main__':
     args = _ARGS.parse_args()
-    print _authorize(_authenticate(args.oauth_token), args.team)
+    print _authorize(_authenticate(args.user_id, args.access_token), args.team)

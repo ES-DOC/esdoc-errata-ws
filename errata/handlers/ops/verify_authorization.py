@@ -17,10 +17,14 @@ from errata.utils import exceptions
 from errata.utils.http import process_request
 
 
-_PARAM_TEAM = 'team'
+# Query parameter names.
+_PARAM_LOGIN = 'login'
+_PARAM_TOKEN = 'token'
+_PARAM_INSTITUTE = 'institute'
 
 
-class CredTestHandler(tornado.web.RequestHandler):
+
+class VerifyAuthorizationRequestHandler(tornado.web.RequestHandler):
     """Operations heartbeat request handler.
 
     """
@@ -28,21 +32,24 @@ class CredTestHandler(tornado.web.RequestHandler):
         """HTTP GET handler.
 
         """
-        self.team = self.get_argument(_PARAM_TEAM)
-        self.test = True
+        print 111, self.get_argument(_PARAM_LOGIN), self.get_argument(_PARAM_TOKEN), self.get_argument(_PARAM_INSTITUTE)
+
 
         def _validate_user_access():
             """Validates user's institutional access rights.
 
             """
-            # Super & insitutional users have access.
-            for team in sorted(self.user_teams):
-                if team == constants.ERRATA_GH_TEAM:
-                    return
-                if team.split("-")[-1] == self.team:
-                    return
-            # User has no access rights to this particular issue.
-            raise exceptions.AuthorizationError()
+            return
+            # # Super & insitutional users have access.
+            # for team in sorted(self.user_teams):
+            #     if team == constants.ERRATA_GH_TEAM:
+            #         return
+            #     if team.split("-")[-1] == self.team:
+            #         return
+
+            # # User has no access rights to this particular issue.
+            # raise exceptions.AuthorizationError()
+
 
         def _set_output():
             """Sets response to be returned to client.
@@ -52,6 +59,7 @@ class CredTestHandler(tornado.web.RequestHandler):
                 "message": "User allowed to post issues related to institute {}".format(self.team),
                 "code": 200
             }
+
 
         # Process request.
         process_request(self, [

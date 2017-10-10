@@ -1,0 +1,8 @@
+arrow
+feedparser
+lxml
+nose
+requests
+tornado
+xlsxwriter
+jupyter

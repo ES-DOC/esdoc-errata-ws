@@ -82,7 +82,7 @@ class CloseIssueRequestHandler(tornado.web.RequestHandler):
 
             """
             self.issue.date_closed = dt.datetime.utcnow().strftime(_TIME_FORMAT)
-            self.issue.closed_by = self.user_name
+            self.issue.closed_by = self.user_id
             self.issue.status = self.get_argument(_PARAM_STATUS)
 
 

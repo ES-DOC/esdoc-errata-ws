@@ -13,71 +13,60 @@ import base64
 import json
 import requests
 
-from errata.utils import exceptions
+from pyesdoc.security import AuthenticationError
+from pyesdoc.security import AuthorizationError
+from pyesdoc.security import is_authenticated_user
+from pyesdoc.security import is_team_member
+from pyesdoc.security import strip_credentials
+
 from errata.utils import config
 from errata.utils import constants
 
 
 
-# Set of secured endpoints.
-_SECURED_ENDPOINTS = {
-    '/1/issue/close',
-    '/1/issue/create',
-    '/1/issue/update',
-    '/1/ops/credtest'
+# GitHub identifier of errata-publication team.
+_GH_TEAM_ID = 2375691
+
+# Set of whitelisted endpoints.
+_WHITELISTED_ENDPOINTS = {
+    '/',
+    '/verify-authorization',
+    '/1/issue/retrieve',
+    '/1/issue/retrieve-all',
+    '/1/issue/search',
+    '/1/issue/search-setup',
+    '/1/pid-queue/search',
+    '/1/resolve/issue',
+    '/1/resolve/pid',
+    '/1/resolve/simple-pid'
 }
 
-# GitHub API - user team membership within ES-DOC-OPS.
-# _GH_API_TEAMS = "https://api.github.com/orgs/ES-DOC-OPS/teams?access_token={}&per_page=100"
-_GH_API_TEAMS = "https://api.github.com/user/teams?access_token={}&per_page=100"
 
-# GitHub API - user team membership within GitHub.
-_GH_API_USER = "https://api.github.com/user?access_token={}"
+def authenticate(credentials):
+    """Authenticates user credentials request against GitHub user api.
 
-# Bare minimum required OAuth scopes.
-_REQUIRED_OAUTH_SCOPES = {"read:org"}
+    :param tuple credentials: 2 member tuple (GitHub username, GitHub access token)
 
-
-def _authenticate(oauth_token):
-    """Authenticate request against github oauth teams api.
+    :returns: GitHub username
+    :rtype: str
 
     """
-    # Authenticate against GitHub user API.
-    url = _GH_API_USER.format(oauth_token)
-    r = requests.get(url, headers={'Accept': 'application/json'})
-    if r.status_code != 200:
-        raise exceptions.AuthenticationError()
+    user_id, access_token = credentials
+    if not is_authenticated_user(user_id, access_token):
+        raise AuthenticationError()
 
-    # Verify that GH login & token map to same GH account.
-    user = json.loads(r.text)
-
-    # Return minimal user information.
-    return user['name']
+    return user_id
 
 
-def _authorize(oauth_token, team):
-    """Authorizes access by confirming that a user is a member of appropriate team.
+def authorize(user_id):
+    """Authorizes user against GitHub team membership api.
+
+    :param str user_id: GitHub username.
 
     """
-    # Authorize against GitHub organization team API.
-    url = _GH_API_TEAMS.format(oauth_token)
-    r = requests.get(url, headers={'Accept': 'application/json'})
-    if r.status_code != 200:
-        raise exceptions.AuthorizationError()
-
-    # Verify minimal OAuth scope(s).
-    scopes = set(r.headers['X-OAuth-Scopes'].split(", "))
-    if _REQUIRED_OAUTH_SCOPES in scopes:
-        raise exceptions.AuthorizationError()
-
-    # Verify team membership.
-    teams = set([i['name'] for i in json.loads(r.text)])
-    teams = [i for i in teams if i.startswith(team)]
-    if not teams:
-        raise exceptions.AuthorizationError()
-
-    # Return team membership.
-    return teams
+    if not is_team_member(_GH_TEAM_ID, user_id):
+        raise AuthorizationError()
+    # TODO verify institute
 
 
 def secure_request(handler):
@@ -85,29 +74,19 @@ def secure_request(handler):
 
     :param utils.http.HTTPRequestHandler handler: An HTTP request handler.
 
-    :raises: exceptions.AuthenticationError, exceptions.AuthorizationError
+    :raises: AuthenticationError, AuthorizationError
 
     """
-    # Escape if in dev mode & network state is down.
-    if config.mode == "dev" and config.network_state == "down":
-        handler.user_name = "tester"
+    if config.apply_security_policy == False or \
+       handler.request.path in _WHITELISTED_ENDPOINTS:
+        handler.user_id = "tester"
         handler.user_teams = [constants.ERRATA_GH_TEAM]
         return
 
-    # Escape if not required.
-    if not handler.request.path.split("?")[0] in _SECURED_ENDPOINTS:
-        return
-
-    # Extract user's GitHub OAuth personal access token from request.
-    credentials = handler.request.headers['Authorization']
-    credentials = credentials.replace('Basic ', '')
-    credentials = base64.b64decode(credentials)
-    try:
-        oauth_token = credentials.split(':')[0].decode('utf-8')
-    except Exception as e:
-        raise exceptions.AuthenticationError
+    credentials = _strip_credentials(handler.request.headers['Authorization'])
 
     # Authenticate.
-    handler.user_name = _authenticate(oauth_token)
+    handler.user_id, _ = _authenticate(credentials)
+
     # Authorize.
     handler.user_teams = _authorize(oauth_token, constants.ERRATA_GH_TEAM)

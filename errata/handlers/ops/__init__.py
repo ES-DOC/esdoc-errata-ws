@@ -1,2 +1,2 @@
 from errata.handlers.ops.heartbeat import HeartbeatRequestHandler
-from errata.handlers.ops.credtest import CredTestHandler
+from errata.handlers.ops.verify_authorization import VerifyAuthorizationRequestHandler
