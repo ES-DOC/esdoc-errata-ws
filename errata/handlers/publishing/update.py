@@ -81,14 +81,14 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
                 facet_type = str(facet_type)
                 try:
                     for fv in facet_value:
-                        if facet_type.lower() != 'project' and \
+                        if facet_type.lower() not in ['project', 'mip_era'] and \
                                 type(config.get_options(facet_type)[0]) != re._pattern_type:
                             if fv.lower() not in [x.lower() for x in config.get_options(facet_type)[0]]:
                                 logger.log_web_error('Facet {} not recognized with value {}.'
                                                      .format(facet_type, fv))
                                 raise exceptions.RequestValidationException('Facet {} not recognized with value {}.'
                                                                             .format(facet_type, fv))
-                        elif facet_type.lower() != 'project':
+                        elif facet_type.lower() not in ['project', 'mip_era']:
                             if not re.match(config.get_options(facet_type)[0], fv):
                                 logger.log_web_error(
                                     '{} didnt match the regex string {}'.format(config.get_options(facet_type)[0]))

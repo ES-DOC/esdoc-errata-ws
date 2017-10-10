@@ -33,17 +33,29 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
     """issue handler.
 
     """
+    def set_default_headers(self):
+        self.set_header("Access-Control-Allow-Origin", "*")
+        self.set_header("Access-Control-Allow-Headers", "content-type, Authorization")
+        self.set_header('Access-Control-Allow-Methods', 'POST, OPTIONS')
+        self.set_header('Access-Control-Allow-Credentials', True)
+
+    def options(self):
+
+        self.set_status(204)
+        self.finish()
 
     def post(self):
+
         """HTTP POST handler.
 
         """
-
         def _validate_user_access():
             """Validates user's institutional access rights.
 
             """
-            # Super & insitutional users have access.
+            print('here')
+            print(self.request.data[JF_FACETS])
+            # Super & institutional users have access.
             for team in sorted(self.user_teams):
                 if team == constants.ERRATA_GH_TEAM:
                     return
@@ -67,24 +79,26 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             data_facets = self.request.data[JF_FACETS]
             config = SectionParser(os.path.join(os.environ.get('ERRATA_WS_HOME'), 'ops/config/'), 'project:' + project)
             logger.log_web('iterating over facets')
+            print(data_facets)
             for facet_type, facet_value in data_facets.iteritems():
                 facet_type = str(facet_type)
                 try:
                     for fv in facet_value:
-                        if facet_type.lower() != 'project' and type(
+                        print(fv)
+                        if facet_type.lower() not in ['project', 'mip_era'] and type(
                                 config.get_options(facet_type)[0]) != re._pattern_type:
                             if fv.lower() not in [x.lower() for x in config.get_options(facet_type)[0]]:
                                 logger.log_web_error('Facet {} not recognized with value {}...'.format(facet_type, fv))
                                 raise exceptions.RequestValidationException(
                                     'Facet {} not recognized with value {}...'.format(facet_type, fv))
-                        elif facet_type.lower() != 'project':
+                        elif facet_type.lower() not in ['project', 'mip_era']:
                             if not re.match(config.get_options(facet_type)[0], fv):
                                 logger.log_web_error(
                                     '{} didnt match the regex string {}'.format(config.get_options(facet_type)[0]))
                                 raise exceptions.RequestValidationException(
                                     '{} didnt match the regex string {}'.format(config.get_options(facet_type)[0]))
                 except NoConfigOptions as nco:
-                    raise exceptions.RequestValidationException('Facet type {} not recognized'.format(facet_type[0]))
+                    raise exceptions.RequestValidationException('Facet type {} not recognized'.format(facet_type))
 
                 if facet_type in self.project_conf.keys() and facet_type in data_facets.keys():
                     if self.project_conf[facet_type] not in self.facets_dict.keys():
@@ -94,6 +108,8 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
                 elif facet_type in data_facets.keys():
                     self.facets_dict[facet_type.lower()] = facet_value
             logger.log_web('Facets successfully validated.')
+            if 'mip_era' in self.facets_dict.keys():
+                self.facets_dict[JF_PROJECT] = self.request.data[JF_FACETS]['mip_era']
 
 
         def _validate_issue_urls():
@@ -116,9 +132,14 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             issue.date_created = obj[JF_DATE_CREATED]
             issue.created_by = self.user_id
             issue.description = obj[JF_DESCRIPTION]
-            issue.institute = facets[JF_INSTITUTE][0].lower()
+            # TODO workaround till further discussed.
+            if JF_INSTITUTE in facets.keys():
+                issue.institute = facets[JF_INSTITUTE][0].lower()
+            elif JF_SECTOR in facets.keys() or JF_WORK_PACKAGE in facets.keys():
+                issue.institute = ''
             issue.materials = ",".join(facets.get(JF_MATERIALS, []))
-            issue.project = facets[JF_MIP_ERA][0].lower()
+            # issue.project = facets[JF_PROJECT][0].lower()
+            issue.project = obj[JF_PROJECT].lower()
             issue.severity = obj[JF_SEVERITY].lower()
             issue.title = obj[JF_TITLE]
             issue.uid = obj[JF_UID]
@@ -159,7 +180,7 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             """Persists pid handles.
 
             """
-            if self.project_conf['pid']:
+            if constants[self.request.data[JF_PROJECT].lower()]:
                 self.pid_tasks = []
                 for dset_id in self.request.data[JF_DATASETS]:
                     task = db.models.PIDServiceTask()
