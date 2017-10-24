@@ -61,23 +61,27 @@ def test_retrieve():
     # Assert WS response.
     content = tu.assert_ws_response(_URL_RETRIEVE, response)
     assert 'issue' in content
-
-    # Assert WS response content.
     issue = content['issue']
-    for key in {'closedBy', 'createdBy', 'updatedBy', 'dateClosed', 'dateCreated', 'dateUpdated'}:
-        assert key in issue
-        if key not in {'closedBy', 'dateClosed'}:
-            assert issue[key] is not None
-    for attr in ISSUE.keys():
-        if attr == 'facets':
-            for facet_type, facet_values in issue['facets'].items():
-                assert set(ISSUE['facets'][facet_type]) == set(facet_values)
-        elif attr not in {'datasets', 'materials'}:
+
+    # Assert core info.
+    for attr in [i for i in ISSUE.keys() if i != 'facets']:
+        if attr not in {'datasets', 'materials'}:
             assert issue[attr] == ISSUE[attr], \
                    "{} :: {} :: {}".format(attr, issue[attr], ISSUE[attr])
         elif attr in issue:
             assert sorted(issue[attr]) == sorted(ISSUE[attr]), \
                    "{} :: {} :: {}".format(attr, sorted(issue[attr]), sorted(ISSUE[attr]))
+
+    # Assert tracking info.
+    for key in {'closedBy', 'createdBy', 'updatedBy', 'dateClosed', 'dateCreated', 'dateUpdated'}:
+        assert key in issue
+        if key not in {'closedBy', 'dateClosed'}:
+            assert issue[key] is not None
+
+    # Assert facets.
+    for facet_type, facet_values in issue['facets'].items():
+        if facet_type not in constants.CORE_FACET_TYPES:
+            assert set(ISSUE['facets'][facet_type]) == set(facet_values)
 
 
 def test_update():
@@ -101,7 +105,7 @@ def test_update():
     tu.assert_ws_response(_URL_UPDATE, response)
 
 
-def _test_update_retrieve():
+def test_update_retrieve():
     """ERRATA :: WS :: Postive Test :: Retrieve updated issue.
 
     """
@@ -119,7 +123,7 @@ def _test_update_retrieve():
     # assert len(content['issue']['datasets']) == 5
 
 
-def _test_close():
+def test_close():
     """ERRATA :: WS :: Postive Test :: Close issue.
 
     """
@@ -130,7 +134,7 @@ def _test_close():
     tu.assert_ws_response(_URL_CLOSE, response)
 
 
-def _test_close_retrieve():
+def test_close_retrieve():
     """ERRATA :: WS :: Postive Test :: Retrieve closed issue.
 
     """

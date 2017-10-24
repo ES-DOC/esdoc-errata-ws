@@ -67,6 +67,15 @@ FACET_TYPE = {
     FACET_TYPE_SOURCE
 }
 
+# Core search facet type set.
+CORE_FACET_TYPES = {
+    FACET_TYPE_DATASET,
+    FACET_TYPE_INSTITUTE,
+    FACET_TYPE_PROJECT,
+    FACET_TYPE_SEVERITY,
+    FACET_TYPE_STATUS
+}
+
 # Issue status - new.
 STATUS_NEW = u'new'
 

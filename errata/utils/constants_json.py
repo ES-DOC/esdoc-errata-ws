@@ -10,44 +10,35 @@
 
 
 """
-from errata.utils.constants import *
+from errata.utils.constants import FACET_TYPE_DATASET
+from errata.utils.constants import FACET_TYPE_INSTITUTE
+from errata.utils.constants import FACET_TYPE_PROJECT
+from errata.utils.constants import FACET_TYPE_SEVERITY
+from errata.utils.constants import FACET_TYPE_STATUS
+
+
 
 # JSON field names.
-JF_FACETS = 'facets'
 JF_DATE_CLOSED = 'dateClosed'
 JF_DATE_CREATED = 'dateCreated'
 JF_DATE_UPDATED = 'dateUpdated'
 JF_DESCRIPTION = 'description'
 JF_DATASETS = 'datasets'
-JF_EXPERIMENT = 'experiment'
 JF_FACETS = 'facets'
 JF_INSTITUTE = 'institute'
 JF_MATERIALS = 'materials'
-JF_MODEL = 'model'
 JF_PROJECT = 'project'
 JF_SEVERITY = 'severity'
 JF_STATUS = 'status'
 JF_TITLE = 'title'
 JF_UID = 'uid'
 JF_URL = 'url'
-JF_VARIABLE = 'variable'
-JF_WORK_PACKAGE = 'work_package'
-JF_SECTOR = 'sector'
-JF_SOURCE = 'source'
 
-# Map of facet types to corresponding JSON fields.
-FACET_TYPE_JSON_FIELD = {
-    FACET_TYPE_DATASET: JF_DATASETS,
-    FACET_TYPE_INSTITUTE: JF_INSTITUTE,
-    FACET_TYPE_PROJECT: JF_PROJECT,
-    FACET_TYPE_SEVERITY: JF_SEVERITY,
-    FACET_TYPE_STATUS: JF_STATUS,
-    FACET_TYPE_VARIABLE: JF_VARIABLE,
-    FACET_TYPE_SECTOR: JF_SECTOR,
-    FACET_TYPE_WORK_PACKAGE: JF_WORK_PACKAGE,
-    FACET_TYPE_SOURCE: JF_SOURCE,
-
-    FACET_TYPE_EXPERIMENT: JF_EXPERIMENT,
-    FACET_TYPE_MODEL: JF_MODEL,
-
+# Map of json fields to facets for extraction.
+JF_FACET_TYPE_MAP = {
+    JF_DATASETS: FACET_TYPE_DATASET,
+    JF_INSTITUTE: FACET_TYPE_INSTITUTE,
+    JF_PROJECT: FACET_TYPE_PROJECT,
+    JF_SEVERITY: FACET_TYPE_SEVERITY,
+    JF_STATUS: FACET_TYPE_STATUS
 }

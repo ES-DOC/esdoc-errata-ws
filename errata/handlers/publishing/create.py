@@ -122,14 +122,23 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             """Sets search facets to be persisted to database.
 
             """
-            self.facets = facets = []
+            facets = []
+            for field, facet_type in JF_FACET_TYPE_MAP.items():
+                facet_values = self.request.data[field]
+                if not isinstance(facet_values, list):
+                    facet_values = [facet_values]
+                facets.append((facet_type, set(facet_values)))
             for facet_type, facet_values in self.request.data[JF_FACETS].items():
-                for facet_value in set(facet_values):
+                facets.append((facet_type, set(facet_values)))
+
+            self.facets = []
+            for facet_type, facet_values in facets:
+                for facet_value in facet_values:
                     facet = db.models.IssueFacet()
                     facet.facet_type = facet_type
                     facet.facet_value = facet_value.strip()
                     facet.issue_uid = self.issue.uid
-                    facets.append(facet)
+                    self.facets.append(facet)
 
 
         def _set_pid_tasks():

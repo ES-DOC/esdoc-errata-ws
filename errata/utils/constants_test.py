@@ -81,8 +81,9 @@ ISSUE = {
     JF_UID: unicode(uuid.uuid4()),
     JF_URL: u"http://errata.ipsl.upmc.fr/issue/1",
     JF_FACETS: {
-        JF_EXPERIMENT: random.sample(ISSUE_EXPERIMENTS, 2),
-        JF_MODEL: random.sample(ISSUE_MODELS, 3),
-        JF_VARIABLE: random.sample(ISSUE_VARIABLES, 2)
+        # ... project specific facets
+        'experiment': random.sample(ISSUE_EXPERIMENTS, 2),
+        'model': random.sample(ISSUE_MODELS, 3),
+        'variable': random.sample(ISSUE_VARIABLES, 2)
         }
     }
