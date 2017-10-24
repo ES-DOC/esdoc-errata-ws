@@ -50,7 +50,8 @@ def validate_get_issues(
     model=None,
     severity=None,
     status=None,
-    variable=None
+    variable=None,
+    retrieve_all=False
     ):
     """Function input validator: get_issues.
 
@@ -73,6 +74,7 @@ def validate_get_issues(
             [i['key'] for i in constants.STATUS], status, "Issue status")
     if variable is not None:
         v.validate_str(variable, "Variable name")
+    v.validate_bool(retrieve_all, 'retrieve_all')
 
 
 def validate_get_issues_by_facet(facet_value, facet_type):
