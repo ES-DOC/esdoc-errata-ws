@@ -27,6 +27,10 @@
             "title": "Extracted facets.",
             "type": "object"
         },
+        "institute": {
+            "minLength": 1,
+            "type": "string"
+        },
         "materials": {
             "items": {
                 "pattern": "\\.(jpg|gif|png|tiff)$",
@@ -44,7 +48,8 @@
                 "cmip6",
                 "cordex",
                 "obs4mips",
-                "input4mips"
+                "input4mips",
+                "test"
             ],
             "minLength": 1,
             "type": "string"
@@ -80,18 +85,18 @@
         }
     },
     "required": [
-        "dateCreated",
-        "dateUpdated",
-        "uid",
-        "title",
-        "description",
-        "severity",
-        "status",
         "datasets",
-        "url",
+        "dateCreated",
+        "description",
+        "facets",
+        "institute",
         "materials",
         "project",
-        "facets"
+        "severity",
+        "status",
+        "title",
+        "uid",
+        "url"
     ],
     "title": "ES-DOC errata JSON schema: endpoint = /1/issue/create",
     "type": "object"

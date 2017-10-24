@@ -18,10 +18,8 @@ from tests import utils as tu
 
 
 
-# Set of target urls.
-_URL_HEARTBEAT = "{}/".format(os.getenv("ERRATA_API"))
-
-print 777, _URL_HEARTBEAT
+# Base API url.
+_BASE_URL = os.getenv("ERRATA_API")
 
 
 def test_heartbeat():
@@ -29,24 +27,25 @@ def test_heartbeat():
 
     """
     # Invoke WS endpoint.
-    url = _URL_HEARTBEAT
-    r = requests.get(_URL_HEARTBEAT)
+    url = "{}/".format(_BASE_URL)
+    r = requests.get(url)
 
     # Assert WS response.
-    data = tu.assert_ws_response(url, r)
-    assert "message" in data
-    assert "version" in data
+    tu.assert_ws_response(url, r, fields={'message', 'version'})
 
 
-def test_credentials():
-    """ERRATA :: WS :: Postive Test :: Ops heartbeat.
+def test_verify_authorization():
+    """ERRATA :: WS :: Postive Test :: Verify authorization.
 
     """
     # Invoke WS endpoint.
-    url = _URL_HEARTBEAT
-    r = requests.get(_URL_HEARTBEAT)
+    url = '{}/verify-authorization'.format(_BASE_URL)
+    params = {
+        'login': os.getenv("ERRATA_WS_TEST_LOGIN"),
+        'institute': os.getenv("ERRATA_WS_TEST_INSTITUTE"),
+        'token': os.getenv("ERRATA_WS_TEST_TOKEN")
+    }
+    r = requests.get(url, params=params)
 
     # Assert WS response.
-    data = tu.assert_ws_response(url, r)
-    assert "message" in data
-    assert "version" in data
+    tu.assert_ws_response(url, r, fields={'message',})

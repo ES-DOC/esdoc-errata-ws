@@ -18,20 +18,23 @@ from errata.utils.http import process_request
 
 
 
-# Query parameter names.
-_PARAM_EXPERIMENT = 'experiment'
-_PARAM_INSTITUTION_ID = 'institutionID'
-_PARAM_MODEL = 'model'
-_PARAM_MIP_ERA = 'mipEra'
+# Immutable parameter names.
+_PARAM_INSTITUTE = 'institute'
+_PARAM_PROJECT = 'project'
 _PARAM_SEVERITY = 'severity'
 _PARAM_STATUS = 'status'
+
+# Mutable parameter names.
+_PARAM_EXPERIMENT = 'experiment'
+_PARAM_MODEL = 'model'
 _PARAM_VARIABLE = 'variable'
 
+# Fulll parameter set.
 _PARAMS = {
     _PARAM_EXPERIMENT,
-    _PARAM_INSTITUTION_ID,
+    _PARAM_INSTITUTE,
     _PARAM_MODEL,
-    _PARAM_MIP_ERA,
+    _PARAM_PROJECT,
     _PARAM_SEVERITY,
     _PARAM_STATUS,
     _PARAM_VARIABLE
@@ -71,8 +74,8 @@ class IssueSearchRequestHandler(tornado.web.RequestHandler):
             with db.session.create():
                 self.issues = db.dao.get_issues(
                     experiment=self.experiment,
-                    institution_id=self.institutionID,
-                    mip_era=self.mipEra,
+                    institute=self.institute,
+                    project=self.project,
                     model=self.model,
                     severity=self.severity,
                     status=self.status,

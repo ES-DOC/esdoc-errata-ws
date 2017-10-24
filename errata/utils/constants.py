@@ -31,9 +31,6 @@ FACET_TYPE_INSTITUTE = 'institute'
 # Search facet type - model.
 FACET_TYPE_MODEL = 'model'
 
-# Search facet type - mip-era.
-FACET_TYPE_MIP_ERA = 'mip_era'
-
 # Search facet type - project.
 FACET_TYPE_PROJECT = 'project'
 
@@ -147,64 +144,62 @@ SEVERITY = [
 ]
 
 # Project - cmip5.
-MIP_ERA_CMIP5 = u"cmip5"
+PROJECT_CMIP5 = u"cmip5"
 
 # Project - cmip6.
-MIP_ERA_CMIP6 = u"cmip6"
+PROJECT_CMIP6 = u"cmip6"
 
 # Project - test.
-MIP_ERA_TEST = u"test"
+PROJECT_TEST = u"test"
 
 # Project - all.
-MIP_ERA = [
+PROJECT = [
     {
-        'key': MIP_ERA_CMIP5,
+        'key': PROJECT_CMIP5,
         'label': u"CMIP5"
     },
     {
-        'key': MIP_ERA_CMIP6,
+        'key': PROJECT_CMIP6,
         'label': u"CMIP6"
     },
     {
-        'key': MIP_ERA_TEST,
+        'key': PROJECT_TEST,
         'label': u"TEST"
     }
 ]
 
 # TODO - leverage pyessv
 # Institute - BADC.
-INSTITUTION_ID_BADC = u"badc"
+INSTITUTE_BADC = u"badc"
 
 # Institute - DKRZ.
-INSTITUTION_ID_DKRZ = u"dkrz"
+INSTITUTE_DKRZ = u"dkrz"
 
 # Institute - IPSL.
-INSTITUTION_ID_IPSL = u"ipsl"
+INSTITUTE_IPSL = u"ipsl"
 
 # Institute - all.
-INSTITUTION_ID = [
+INSTITUTE = [
     {
-        'key': INSTITUTION_ID_BADC,
+        'key': INSTITUTE_BADC,
         'label': u"BADC"
     },
     {
-        'key': INSTITUTION_ID_DKRZ,
+        'key': INSTITUTE_DKRZ,
         'label': u"DKRZ"
     },
     {
-        'key': INSTITUTION_ID_IPSL,
+        'key': INSTITUTE_IPSL,
         'label': u"IPSL"
     }
 ]
 
 # List of issue attributes that cannot be updated.
 IMMUTABLE_ISSUE_ATTRIBUTES = [
+    'institute',
     'title',
     'project'
     # 'dateCreated'
-]
-IMMUTABLE_ISSUE_FACETS = [
-    'institute'
 ]
 
 # Ratio of similarity between descriptions of updated and database issue.
@@ -224,9 +219,3 @@ PID_ACTION_INSERT = 'insert'
 
 # PID service action: delete.
 PID_ACTION_DELETE = 'delete'
-
-# PROJECT PID SUPPORT
-
-PROJECT_PID_MAP = {'cmip6': True, 'cmip5': False, 'cordex': True, 'geomip': False, 'lucid': False, 'pmip3': False,
-                   'tamip': False, 'euclipse': False, 'cordex-adjust': True, 'input4mips': False, 'obs4mips': False,
-                   'isimip-ft': False, 'primavera': False, 'cc4e': False}

@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: handlers.retrieve.py
+.. module:: handlers.retrieve_all.py
    :license: GPL/CeCIL
    :platform: Unix
-   :synopsis: ES-DOC Errata - retrieve issue endpoint.
+   :synopsis: ES-DOC Errata - retrieve all issues endpoint.
 
 .. moduleauthor:: Atef Bennasser <abenasser@ipsl.jussieu.fr>
 
@@ -14,8 +14,6 @@ import tornado
 
 from errata import db
 from errata.utils import constants
-from errata.utils import convertor
-from errata.utils.constants_json import FACET_TYPE_JSON_FIELD
 from errata.utils.http import process_request
 
 
@@ -39,7 +37,7 @@ class RetrieveAllIssuesRequestHandler(tornado.web.RequestHandler):
             """Pulls data from db.
 
             """
-            self.issues = db.dao.get_all_issues()
+            self.issues = db.dao.get_issues(retrieve_all=True)
             self.facets = db.dao.get_facets()
 
 
@@ -47,22 +45,9 @@ class RetrieveAllIssuesRequestHandler(tornado.web.RequestHandler):
             """Sets response to be returned to client.
 
             """
-            def _encode(issue):
-                """Encode issue as a simple dictionary.
-
-                """
-                obj = convertor.to_dict(issue)
-                obj['materials'] = sorted(issue.materials.split(","))
-                for ft, jf in [(i, FACET_TYPE_JSON_FIELD[i]) for i in constants.FACET_TYPE]:
-                    if jf not in obj:
-                        fv_list = [i[0] for i in self.facets if i[1] == ft]
-                        obj[jf] = sorted(set(fv_list))
-                return obj
-
-
             self.output = {
                 'count': len(self.issues),
-                'issues': [_encode(i) for i in self.issues]
+                'issues': [i.to_dict(self.facets) for i in self.issues]
             }
 
 

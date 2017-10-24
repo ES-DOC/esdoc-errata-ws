@@ -61,7 +61,7 @@ def test_create_invalid():
         'description',
         'uid',
         'institution_id',
-        'mip_era',
+        'project',
         'severity',
         'status',
         'title',

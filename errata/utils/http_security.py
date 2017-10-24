@@ -9,23 +9,17 @@
 
 
 """
-import base64
 import json
-import requests
 
-from pyesdoc.security import AuthenticationError
-from pyesdoc.security import AuthorizationError
-from pyesdoc.security import is_authenticated_user
-from pyesdoc.security import is_team_member
-from pyesdoc.security import strip_credentials
+import pyesdoc
 
 from errata.utils import config
 from errata.utils import constants
 
 
 
-# GitHub identifier of errata-publication team.
-_GH_TEAM_ID = 2375691
+# GitHub team name.
+_GH_TEAM = 'errata-publication'
 
 # Set of whitelisted endpoints.
 _WHITELISTED_ENDPOINTS = {
@@ -51,30 +45,35 @@ def authenticate(credentials):
     :rtype: str
 
     """
-    user_id, access_token = credentials
-    if not is_authenticated_user(user_id, access_token):
-        raise AuthenticationError()
-
-    return user_id
+    return pyesdoc.authenticate_user(credentials)
 
 
-def authorize(user_id):
+def authorize(user_id, institute_id):
     """Authorizes user against GitHub team membership api.
 
     :param str user_id: GitHub username.
+    :param str institute_id: Institute identifier, e.g. ipsl.
 
     """
-    if not is_team_member(_GH_TEAM_ID, user_id):
-        raise AuthorizationError()
-    # TODO verify institute
+    pyesdoc.authorize_user(_GH_TEAM, user_id)
+    pyesdoc.authorize_user('staff-{}'.format(institute_id), user_id)
+
+
+def apply_policy(user_id, access_token, institute_id):
+    """Applies security policy.
+
+    :param str user_id: GitHub username.
+    :param str access_token: GitHub access token.
+    :param str institute_id: Institute identifier, e.g. ipsl.
+
+    """
+    authorize(authenticate((user_id, access_token)), institute_id)
 
 
 def secure_request(handler):
     """Enforces request level security policy (if necessary).
 
     :param utils.http.HTTPRequestHandler handler: An HTTP request handler.
-
-    :raises: AuthenticationError, AuthorizationError
 
     """
     if config.apply_security_policy == False or \
@@ -83,10 +82,18 @@ def secure_request(handler):
         handler.user_teams = [constants.ERRATA_GH_TEAM]
         return
 
-    credentials = _strip_credentials(handler.request.headers['Authorization'])
-
     # Authenticate.
-    handler.user_id, _ = _authenticate(credentials)
+    credentials = pyesdoc.strip_credentials(handler.request.headers['Authorization'])
+    user_id = authenticate(credentials)
 
     # Authorize.
-    handler.user_teams = _authorize(oauth_token, constants.ERRATA_GH_TEAM)
+    # shandler.user_teams = authorize(user_id, constants.ERRATA_GH_TEAM)
+
+    # Authorize (via institute identifier).
+    issue = json.loads(handler.request.body)
+    for institute_id in issue['facets']['institute']:
+        authorize(user_id, institute_id)
+
+    # Make available downstream.
+    handler.user_id = user_id
+    handler.issue = issue

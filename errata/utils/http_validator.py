@@ -22,25 +22,16 @@ def validate_request(handler):
 
     :param utils.http.HTTPRequestHandler handler: An HTTP request handler.
 
-    :raises: exceptions.SecurityError, exceptions.InvalidJSONSchemaError
+    :raises: exceptions.InvalidJSONSchemaError
 
     """
-    if not hasattr(handler, 'test'):
-        _validate_request_headers(handler)
-        _validate_request_params(handler)
-        _validate_request_body(handler)
-    else:
-        return
+    for func in {
+        _validate_request_headers,
+        _validate_request_params,
+        _validate_request_body
+        }:
+        func(handler)
 
-
-def _validate(handler, data, schema):
-    """Validates data against a JSON schema.
-
-    """
-    try:
-        jsonschema.validate(data, schema)
-    except jsonschema.exceptions.ValidationError as json_errors:
-        raise exceptions.InvalidJSONSchemaError(json_errors)
 
 
 def _validate_request_headers(handler):
@@ -68,7 +59,7 @@ def _validate_request_params(handler):
     # Null case.
     if schema is None:
         if handler.request.query_arguments:
-            raise exceptions.SecurityError("Unexpected request url parameters.")
+            raise exceptions.RequestValidationException("Unexpected request url parameters.")
 
     # Validate request parameters.
     else:
@@ -85,7 +76,7 @@ def _validate_request_body(handler):
     # Null case.
     if schema is None:
         if handler.request.body:
-            raise exceptions.SecurityError("Unexpected request body.")
+            raise exceptions.RequestValidationException("Unexpected request body.")
 
     # Validate request data.
     else:
@@ -97,3 +88,13 @@ def _validate_request_body(handler):
 
         # ... append valid data to request.
         handler.request.data = data
+
+
+def _validate(handler, data, schema):
+    """Validates data against a JSON schema.
+
+    """
+    try:
+        jsonschema.validate(data, schema)
+    except jsonschema.exceptions.ValidationError as json_errors:
+        raise exceptions.InvalidJSONSchemaError(json_errors)

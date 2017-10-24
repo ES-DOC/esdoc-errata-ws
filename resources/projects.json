@@ -1,0 +1,129 @@
+{
+    "cc4e": {
+        "facets": {
+            "product": "Product",
+            "source_data_id": "Source",
+            "variable": "Variable",
+            "work_package": "Work Package"
+        },
+        "is_active": false,
+        "is_pid_client": true
+    },
+    "cmip5": {
+        "facets": {
+            "experiment": "esgf-publisher:cmip5:experiment",
+            "model": "esgf-publisher:cmip5:model",
+            "variable": "esgf-publisher:cmip5:variable"
+        },
+        "is_active": true,
+        "is_pid_client": true
+    },
+    "cmip6": {
+        "facets": {
+            "experiment": "esgf-publisher:cmip6:experiment",
+            "source_id": "esgf-publisher:cmip6:source-id",
+            "variable": "esgf-publisher:cmip6:variable"
+        },
+        "is_active": true,
+        "is_pid_client": true
+    },
+    "cordex": {
+        "facets": {
+            "experiment": "esgf-publisher:cmip6:experiment",
+            "rcm_name": "esgf-publisher:cmip6:source-id",
+            "variable": "esgf-publisher:cmip6:variable"
+        },
+        "is_active": true,
+        "is_pid_client": true
+    },
+    "cordex_adjust": {
+        "facets": {
+            "experiment": "Experiment",
+            "rcm_name": "Model",
+            "variable": "Variable"
+        },
+        "is_active": false,
+        "is_pid_client": true
+    },
+    "euclipse": {
+        "facets": {
+            "experiment": "Experiment",
+            "model": "Model",
+            "variable": "Variable"
+        },
+        "is_active": false,
+        "is_pid_client": true
+    },
+    "geomip": {
+        "facets": {
+            "experiment": "Experiment",
+            "model": "Model",
+            "variable": "Variable"
+        },
+        "is_active": false,
+        "is_pid_client": true
+    },
+    "input4mips": {
+        "facets": {
+            "data_type": "Data Type",
+            "source": "Source",
+            "variable": "Variable"
+        },
+        "is_active": false,
+        "is_pid_client": false
+    },
+    "isimip_ft": {
+        "facets": {
+            "sector": "Sector",
+            "experiment": "Experiment",
+            "impact_model": "Impact Model",
+            "variable": "Variable"
+        },
+        "is_active": false,
+        "is_pid_client": true
+    },
+    "lucid": {
+        "facets": {
+            "experiment": "Experiment",
+            "model": "Model",
+            "variable": "Variable"
+        },
+        "is_active": false,
+        "is_pid_client": true
+    },
+    "obs4mips": {
+        "facets": {
+            "source_id": "Source",
+            "variable": "Variable"
+        },
+        "is_active": false,
+        "is_pid_client": false
+    },
+    "pmip3": {
+        "facets": {
+            "experiment": "Experiment",
+            "model": "Model",
+            "variable": "Variable"
+        },
+        "is_active": false,
+        "is_pid_client": true
+    },
+    "primavera": {
+        "facets": {
+            "experiment": "Experiment",
+            "model": "Model",
+            "variable": "Variable"
+        },
+        "is_active": false,
+        "is_pid_client": true
+    },
+    "tamip": {
+        "facets": {
+            "experiment": "Experiment",
+            "model": "Model",
+            "variable": "Variable"
+        },
+        "is_active": false,
+        "is_pid_client": true
+    }
+}

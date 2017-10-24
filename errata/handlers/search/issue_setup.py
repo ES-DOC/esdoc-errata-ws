@@ -39,11 +39,11 @@ class IssueSearchSetupRequestHandler(tornado.web.RequestHandler):
             """
             with db.session.create():
                 self.output = {
-                    'institution_id': constants.INSTITUTION_ID,
-                    'mip_era': constants.MIP_ERA,
+                    'institute': constants.INSTITUTE,
+                    'project': constants.PROJECT,
                     'severity': constants.SEVERITY,
                     'status': constants.STATUS,
-                    'facet': db.dao.get_facets()
+                    'facet': db.dao.get_facets(include_issue_uid=False)
                 }
 
 

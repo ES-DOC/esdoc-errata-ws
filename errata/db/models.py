@@ -9,6 +9,7 @@
 
 
 """
+import collections
 import datetime as dt
 import uuid
 
@@ -24,6 +25,7 @@ from sqlalchemy import UniqueConstraint
 from sqlalchemy import Enum
 
 from errata.db.utils import Entity
+from errata.utils import convertor
 from errata.utils.constants import *
 
 
@@ -49,23 +51,6 @@ _SEVERITY_ENUM = Enum(
     SEVERITY_CRITICAL,
     schema=_SCHEMA,
     name="IssueSeverityEnum"
-    )
-
-# Facet type enumeration.
-_FACET_TYPE_ENUM = Enum(
-    FACET_TYPE_DATASET,
-    FACET_TYPE_EXPERIMENT,
-    FACET_TYPE_INSTITUTE,
-    FACET_TYPE_MODEL,
-    FACET_TYPE_MIP_ERA,
-    FACET_TYPE_SEVERITY,
-    FACET_TYPE_STATUS,
-    FACET_TYPE_VARIABLE,
-    FACET_TYPE_SOURCE,
-    FACET_TYPE_SECTOR,
-    FACET_TYPE_WORK_PACKAGE,
-    schema=_SCHEMA,
-    name="FacetTypeEnum"
     )
 
 # PID task states.
@@ -123,6 +108,19 @@ class Issue(Entity):
             self.id, self.uid, self.title, self.description)
 
 
+    def to_dict(self, facets):
+        """Encode issue as a simple dictionary.
+
+        """
+        obj = convertor.to_dict(self)
+        obj['materials'] = sorted(self.materials.split(","))
+        obj['facets'] = collections.defaultdict(list)
+        for facet_value, facet_type, _ in [i for i in facets if i[2] == self.uid]:
+            obj['facets'][facet_type].append(facet_value)
+
+        return obj
+
+
 # Set unique description (case insensitive) index.
 Index('idx_issue_description', func.lower(Issue.description))
 
@@ -139,10 +137,9 @@ class IssueFacet(Entity):
     )
 
     # Column definitions.
-    issue_uid = Column(Unicode(63),
-                       ForeignKey('{}.tbl_issue.uid'.format(_SCHEMA)), nullable=False)
+    issue_uid = Column(Unicode(63), ForeignKey('{}.tbl_issue.uid'.format(_SCHEMA)), nullable=False)
     facet_value = Column(Unicode(1023), nullable=False, index=True)
-    facet_type = Column(_FACET_TYPE_ENUM, nullable=False)
+    facet_type = Column(Unicode(63), nullable=False)
 
 
 class PIDServiceTask(Entity):
@@ -158,8 +155,7 @@ class PIDServiceTask(Entity):
     # Column definitions.
     action = Column(_PID_ACTION_ENUM, nullable=False)
     status = Column(_PID_TASK_STATE_ENUM, nullable=False, default=PID_TASK_STATE_QUEUED)
-    issue_uid = Column(Unicode(63),
-                       ForeignKey('{}.tbl_issue.uid'.format(_SCHEMA)), nullable=False)
+    issue_uid = Column(Unicode(63), ForeignKey('{}.tbl_issue.uid'.format(_SCHEMA)), nullable=False)
     dataset_id = Column(Unicode(1023), nullable=False)
     error = Column(Unicode(1023))
     try_count = Column(Integer, default=0)

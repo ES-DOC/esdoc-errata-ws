@@ -12,7 +12,6 @@
 from errata.db.dao_validator import validate_delete_facets
 from errata.db.dao_validator import validate_get_facets
 from errata.db.dao_validator import validate_get_issue
-from errata.db.dao_validator import validate_get_issue_facets
 from errata.db.dao_validator import validate_get_issues
 from errata.db.dao_validator import validate_get_issues_by_facet
 from errata.db.models import Issue
@@ -45,19 +44,30 @@ def delete_facets(issue_uid, facet_type=None):
 
 
 @validate(validate_get_facets)
-def get_facets(facet_type=None):
+def get_facets(facet_type=None, include_issue_uid=True, issue_uid=None):
     """Returns set of facets.
 
-    :param str facet_type: Type of facet to return.
+    :param str facet_type: Type of facet to filter result set by.
+    :param bool include_issue_uid: Flag indicating whether issue identifier will be included in result set.
+    :param str issue_uid: Unique issue identifier.
 
     :returns: Matching facets.
     :rtype: list
 
     """
-    qry = raw_query(
-        IssueFacet.facet_value,
-        IssueFacet.facet_type
-        )
+    if issue_uid or include_issue_uid:
+        qry = raw_query(
+            IssueFacet.facet_value,
+            IssueFacet.facet_type,
+            IssueFacet.issue_uid
+            )
+    else:
+        qry = raw_query(
+            IssueFacet.facet_value,
+            IssueFacet.facet_type
+            )
+    if issue_uid is not None:
+        qry = text_filter(qry, IssueFacet.issue_uid, issue_uid)
     if facet_type is not None:
         qry = qry.filter(IssueFacet.facet_type == facet_type)
     qry = qry.distinct()
@@ -81,63 +91,38 @@ def get_issue(uid):
     return qry.first()
 
 
-@validate(validate_get_issue_facets)
-def get_issue_facets(uid, facet_type=None):
-    """Returns facets associated with an issue.
-
-    :param str uid: Issue unique identifier.
-    :param str facet_type: Type of facet to return.
-
-    :returns: Matching issues.
-    :rtype: list
-
-    """
-    qry = raw_query(
-        IssueFacet.facet_value,
-        IssueFacet.facet_type
-        )
-    qry = text_filter(qry, IssueFacet.issue_uid, uid)
-    if facet_type is not None:
-        qry = qry.filter(IssueFacet.facet_type == facet_type)
-    return qry.all()
-
-
-def get_all_issues():
-    """Returns set of all issues.
-
-    """
-    qry = query(Issue)
-
-    return qry.all()
-
-
 @validate(validate_get_issues)
 def get_issues(
     experiment=None,
-    institution_id=None,
-    mip_era=None,
+    institute=None,
+    project=None,
     model=None,
     severity=None,
     status=None,
-    variable=None
+    variable=None,
+    retrieve_all=False
     ):
     """Returns issues that match the passed filters.
 
     :param str experiment: Experiment associated with the issue, e.g. decadal1970.
-    :param str institution_id: Institute associated with the issue, e.g. ipsl.
+    :param str institute: Institute associated with the issue, e.g. ipsl.
     :param str model: Model associated with the issue, e.g. ipsl-cm6a-lr.
-    :param str mip_era: MIP era associated with the issue, e.g. cmip6.
+    :param str project: Project associated with the issue, e.g. cmip6.
     :param str severity: Issue severity, e.g. low.
     :param str status: Issue status, e.g. hold.
     :param str variable: Variable associated with the issue, e.g. tos.
+    :param bool retrieve_all: Flag indicating whether to simply return all issues.
 
     :returns: List of matching issues.
     :rtype: list
 
     """
+    if retrieve_all:
+        return query(Issue).all()
+
     qry = raw_query(
-        Issue.mip_era,
-        Issue.institution_id,
+        Issue.project,
+        Issue.institute,
         Issue.uid,
         Issue.title,
         Issue.severity,
@@ -146,20 +131,23 @@ def get_issues(
         as_date_string(Issue.date_closed),
         as_date_string(Issue.date_updated)
         )
-    for facet_value, facet_type in {
+
+    criteria = {
         (experiment, constants.FACET_TYPE_EXPERIMENT),
-        (institution_id, constants.FACET_TYPE_INSTITUTION_ID),
-        (mip_era, constants.FACET_TYPE_MIP_ERA),
+        (institute, constants.FACET_TYPE_INSTITUTE),
+        (project, constants.FACET_TYPE_PROJECT),
         (model, constants.FACET_TYPE_MODEL),
         (severity, constants.FACET_TYPE_SEVERITY),
         (status, constants.FACET_TYPE_STATUS),
-        (variable, constants.FACET_TYPE_VARIABLE),
-    }:
-        if facet_value is not None:
-            sub_qry = query(IssueFacet.issue_uid)
-            sub_qry = sub_qry.filter(IssueFacet.facet_type == facet_type)
-            sub_qry = text_filter(sub_qry, IssueFacet.facet_value, facet_value)
-            qry = qry.filter(Issue.uid.in_(sub_qry))
+        (variable, constants.FACET_TYPE_VARIABLE)
+    }
+
+    for facet_value, facet_type in [i for i in criteria if i[0] is not None]:
+        sub_qry = query(IssueFacet.issue_uid)
+        sub_qry = sub_qry.filter(IssueFacet.facet_type == facet_type)
+        sub_qry = text_filter(sub_qry, IssueFacet.facet_value, facet_value)
+        qry = qry.filter(Issue.uid.in_(sub_qry))
+
     return qry.all()
 
 

@@ -38,47 +38,6 @@ class WebServiceError(Exception):
         self.response_code = response_code
 
 
-class SecurityError(WebServiceError):
-    """Raised if a security issue arises.
-
-    """
-    def __init__(self, msg, response_code):
-        """Instance constructor.
-
-        """
-        super(SecurityError, self).__init__(
-            "SECURITY EXCEPTION :: {}".format(msg)
-            )
-        self.response_code = response_code
-
-
-
-class AuthenticationError(SecurityError):
-    """Raised when an authentication assertion fails.
-
-    """
-    def __init__(self):
-        """Instance constructor.
-
-        """
-        super(SecurityError, self).__init__(
-            "AUTHENTICATION FAILED", _HTTP_UNAUTHENTICATED_ERROR
-            )
-
-
-class AuthorizationError(SecurityError):
-    """Raised when an authorization assertion fails.
-
-    """
-    def __init__(self):
-        """Instance constructor.
-
-        """
-        super(SecurityError, self).__init__(
-            "AUTHORIZATION FAILED", _HTTP_UNAUTHORIZED_ERROR
-            )
-
-
 class RequestValidationException(WebServiceError):
     """Base class for request validation exceptions.
 
@@ -163,4 +122,43 @@ class UnknownIssueError(RequestValidationException):
         """
         super(UnknownIssueError, self).__init__(
             "ISSUE IS UNKNOWN: {}".format(uid)
+            )
+
+
+class UnknownProjectError(RequestValidationException):
+    """Raised if a project code is either unknown or inactive.
+
+    """
+    def __init__(self, project):
+        """Instance constructor.
+
+        """
+        super(UnknownProjectError, self).__init__(
+            "PROJECT IS UNKNOWN: {}".format(project)
+            )
+
+
+class UnknownFacetError(RequestValidationException):
+    """Raised if a project facet is unsupported.
+
+    """
+    def __init__(self, project, facet_type):
+        """Instance constructor.
+
+        """
+        super(UnknownFacetError, self).__init__(
+            "PROJECT FACET IS UNKNOWN: {} :: {}".format(project, facet_type)
+            )
+
+
+class InvalidFacetError(RequestValidationException):
+    """Raised if a project facet value is invalid.
+
+    """
+    def __init__(self, project, facet_type, facet_value):
+        """Instance constructor.
+
+        """
+        super(InvalidFacetError, self).__init__(
+            "INVALID FACET VALUE: {} :: {} :: {}".format(project, facet_type, facet_value)
             )

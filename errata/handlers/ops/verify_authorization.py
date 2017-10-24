@@ -12,16 +12,16 @@
 """
 import tornado
 
-from errata.utils import constants
-from errata.utils import exceptions
+import errata
 from errata.utils.http import process_request
+from errata.utils.http_security import apply_policy
+
 
 
 # Query parameter names.
 _PARAM_LOGIN = 'login'
 _PARAM_TOKEN = 'token'
 _PARAM_INSTITUTE = 'institute'
-
 
 
 class VerifyAuthorizationRequestHandler(tornado.web.RequestHandler):
@@ -32,23 +32,15 @@ class VerifyAuthorizationRequestHandler(tornado.web.RequestHandler):
         """HTTP GET handler.
 
         """
-        print 111, self.get_argument(_PARAM_LOGIN), self.get_argument(_PARAM_TOKEN), self.get_argument(_PARAM_INSTITUTE)
-
-
-        def _validate_user_access():
-            """Validates user's institutional access rights.
+        def _verify():
+            """Verifies user is authorized to manage an institute's errata.
 
             """
-            return
-            # # Super & insitutional users have access.
-            # for team in sorted(self.user_teams):
-            #     if team == constants.ERRATA_GH_TEAM:
-            #         return
-            #     if team.split("-")[-1] == self.team:
-            #         return
-
-            # # User has no access rights to this particular issue.
-            # raise exceptions.AuthorizationError()
+            apply_policy(
+                self.get_argument(_PARAM_LOGIN),
+                self.get_argument(_PARAM_TOKEN),
+                self.get_argument(_PARAM_INSTITUTE)
+                )
 
 
         def _set_output():
@@ -56,13 +48,12 @@ class VerifyAuthorizationRequestHandler(tornado.web.RequestHandler):
 
             """
             self.output = {
-                "message": "User allowed to post issues related to institute {}".format(self.team),
-                "code": 200
+                "message": "User allowed to manage errata for institute {}".format(self.get_argument(_PARAM_INSTITUTE))
             }
 
 
         # Process request.
         process_request(self, [
-                        _validate_user_access,
-                        _set_output
-                        ])
+            _verify,
+            _set_output
+            ])

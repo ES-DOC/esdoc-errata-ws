@@ -27,6 +27,10 @@
             "title": "Extracted facets.",
             "type": "object"
         },
+        "institute": {
+            "minLength": 1,
+            "type": "string"
+        },
         "materials": {
             "items": {
                 "pattern": "\\.(jpg|gif|png|tiff)$",
@@ -80,18 +84,19 @@
         }
     },
     "required": [
+        "datasets",
         "dateCreated",
         "dateUpdated",
-        "uid",
-        "title",
         "description",
-        "severity",
-        "status",
-        "datasets",
-        "url",
+        "facets",
+        "institute",
         "materials",
         "project",
-        "facets"
+        "severity",
+        "status",
+        "title",
+        "uid",
+        "url"
     ],
     "title": "ES-DOC errata JSON schema: endpoint = /1/issue/update",
     "type": "object"

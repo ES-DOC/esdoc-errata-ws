@@ -22,15 +22,10 @@ from errata.utils.constants_json import *
 
 
 
-
 # Query parameter names.
 _PARAM_UID = 'uid'
 _PARAM_STATUS = 'status'
 _TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
-
-# ESDOC GitHub team: errata-publication.
-_ESDOC_GH_TEAM_ERRATA_PUBLICATION = 'errata-publication'
-
 
 
 class CloseIssueRequestHandler(tornado.web.RequestHandler):
@@ -54,16 +49,15 @@ class CloseIssueRequestHandler(tornado.web.RequestHandler):
             """Validates user's institutional access rights.
 
             """
+            # TODO: delegate to pyesdoc
+            raise NotImplementedError()
+
             # Super & insitutional users have access.
             for team in sorted(self.user_teams):
                 if team == constants.ERRATA_GH_TEAM:
                     return
                 if team.split("-")[-1] == self.issue.institute:
                     return
-
-            # User has no access rights to this particular issue.
-            raise exceptions.AuthorizationError()
-
 
 
         def _validate_issue_status():
@@ -90,7 +84,7 @@ class CloseIssueRequestHandler(tornado.web.RequestHandler):
         with db.session.create(commitable=True):
             process_request(self, [
                 _validate_issue_exists,
-                _validate_user_access,
+                # _validate_user_access,
                 _validate_issue_status,
                 _close_issue
                 ])

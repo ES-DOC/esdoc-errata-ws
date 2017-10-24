@@ -17,7 +17,6 @@ import urllib
 import requests
 
 from errata.utils.constants import FACET_TYPE
-from errata.utils.constants import MIP_ERA
 from errata.utils.constants_test import ISSUE
 
 

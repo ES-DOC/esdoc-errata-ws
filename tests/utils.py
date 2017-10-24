@@ -10,24 +10,31 @@
 .. moduleauthor:: Earth System Documentation (ES-DOC) <dev@es-doc.org>
 
 """
+import os
+
 import requests
 
+
+
+# Base API url.
+BASE_URL = os.getenv("ERRATA_API")
 
 
 def assert_ws_response(
     url,
     response,
     status_code=requests.codes.OK,
-    expected_content=None
+    expected_content=None,
+    fields=set()
     ):
     """Asserts a response received from web-service.
 
     """
     # WS url.
-    assert response.url == url
+    assert response.url.split('?')[0] == url.split('?')[0]
 
     # WS response HTTP status code.
-    assert response.status_code == status_code
+    assert response.status_code == status_code, response.status_code
 
     # WS response = unicode.
     assert isinstance(response.text, unicode)
@@ -57,9 +64,16 @@ def assert_ws_response(
         assert response.encoding == u'utf-8'
         content = response.json()
         assert isinstance(content, dict)
-
-        # WS response content.
         if expected_content is not None:
             assert content == expected_content
+        for field in fields:
+            assert field in content
 
         return content
+
+
+def get_credentials():
+    """Returns credentials to be passed to web service.
+
+    """
+    return os.getenv('ERRATA_WS_TEST_LOGIN'), os.getenv('ERRATA_WS_TEST_TOKEN')

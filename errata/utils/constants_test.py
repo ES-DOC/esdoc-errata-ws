@@ -14,8 +14,8 @@ import datetime as dt
 import random
 import uuid
 
-from errata.utils.constants import INSTITUTION_ID
-from errata.utils.constants import MIP_ERA
+from errata.utils.constants import INSTITUTE
+from errata.utils.constants import PROJECT
 from errata.utils.constants import SEVERITY
 from errata.utils.constants import STATUS_NEW
 from errata.utils.constants_json import *
@@ -28,15 +28,14 @@ ISSUE_DATASETS = [
     u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r10i1p1#20110922",
     u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r11i1p1#20110901",
     u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r12i1p1#20110901",
-    u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r1i1p1#20110901",
-    u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r1i1p1#20130322",
-    u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r2i1p1#20110901",
-    u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r3i1p1#20110901",
-    u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r4i1p1#20110901",
-    u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r6i1p1#20110901",
-    u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r7i1p1#20110901",
-    u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r8i1p1#20110901",
-    u"cmip5.output1.IPSL.IPSL-CM5A-LR.abrupt4xCO2.mon.ocnBgchem.Omon.r9i1p1#20110901"
+    u"cmip5.output1.IPSL.IPSL-CM5A-MR.abrupt4xCO2.mon.ocnBgchem.Omon.r1i1p1#20110901",
+    u"cmip5.output1.IPSL.IPSL-CM5A-MR.abrupt4xCO2.mon.ocnBgchem.Omon.r1i1p1#20130322",
+    u"cmip5.output1.IPSL.IPSL-CM5A-MR.abrupt4xCO2.mon.ocnBgchem.Omon.r2i1p1#20110901",
+    u"cmip5.output1.IPSL.IPSL-CM5A-MR.abrupt4xCO2.mon.ocnBgchem.Omon.r3i1p1#20110901",
+    u"cmip5.output1.IPSL.IPSL-CM5A-HR.abrupt4xCO2.mon.ocnBgchem.Omon.r6i1p1#20110901",
+    u"cmip5.output1.IPSL.IPSL-CM5A-HR.abrupt4xCO2.mon.ocnBgchem.Omon.r7i1p1#20110901",
+    u"cmip5.output1.IPSL.IPSL-CM5A-HR.abrupt4xCO2.mon.ocnBgchem.Omon.r8i1p1#20110901",
+    u"cmip5.output1.IPSL.IPSL-CM5A-HR.abrupt4xCO2.mon.ocnBgchem.Omon.r9i1p1#20110901"
 ]
 
 # Test issue experiments.
@@ -56,12 +55,6 @@ ISSUE_MATERIALS = [
 
 # Test issue models.
 ISSUE_MODELS = [
-    u"BADC-CM5A-LR",
-    u"BADC-CM5A-MR",
-    u"BADC-CM5A-HR",
-    u"DKRZ-CM5A-LR",
-    u"DKRZ-CM5A-MR",
-    u"DKRZ-CM5A-HR",
     u"IPSL-CM5A-LR",
     u"IPSL-CM5A-MR",
     u"IPSL-CM5A-HR"
@@ -79,15 +72,17 @@ ISSUE = {
     JF_DATASETS: random.sample(ISSUE_DATASETS, 5),
     JF_DATE_CREATED: unicode(dt.datetime.utcnow()),
     JF_DESCRIPTION: unicode(uuid.uuid4()),
-    JF_EXPERIMENT: random.sample(ISSUE_EXPERIMENTS, 2),
-    JF_INSTITUTION_ID: random.choice(INSTITUTION_ID)['key'],
+    JF_INSTITUTE: 'ipsl',
     JF_MATERIALS: random.sample(ISSUE_MATERIALS, 3),
-    JF_MODEL: random.sample(ISSUE_MODELS, 3),
-    JF_MIP_ERA: random.choice(MIP_ERA)['key'],
+    JF_PROJECT: 'cmip5',
     JF_SEVERITY: random.choice(SEVERITY)['key'],
     JF_STATUS: STATUS_NEW,
     JF_TITLE: unicode(uuid.uuid4()),
     JF_UID: unicode(uuid.uuid4()),
     JF_URL: u"http://errata.ipsl.upmc.fr/issue/1",
-    JF_VARIABLE: random.sample(ISSUE_VARIABLES, 2)
+    JF_FACETS: {
+        JF_EXPERIMENT: random.sample(ISSUE_EXPERIMENTS, 2),
+        JF_MODEL: random.sample(ISSUE_MODELS, 3),
+        JF_VARIABLE: random.sample(ISSUE_VARIABLES, 2)
+        }
     }
