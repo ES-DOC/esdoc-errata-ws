@@ -113,7 +113,7 @@ class Issue(Entity):
 
         """
         obj = convertor.to_dict(self)
-        obj['materials'] = sorted(self.materials.split(","))
+        obj['materials'] = self.materials.split(",")
         obj['datasets'] = []
         obj['facets'] = collections.defaultdict(list)
         for facet_value, facet_type, _ in [i for i in facets if i[2] == self.uid]:
@@ -121,6 +121,8 @@ class Issue(Entity):
                 obj['datasets'].append(facet_value)
             elif facet_type not in CORE_FACET_TYPES:
                 obj['facets'][facet_type].append(facet_value)
+        for key in {'datasets', 'materials'}:
+            obj[key] = sorted(obj[key])
 
         return obj
 
