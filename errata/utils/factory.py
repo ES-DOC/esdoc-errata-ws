@@ -51,7 +51,7 @@ def create_issue_dict():
     cfg = random.choice(get_active_projects())
 
     return {
-        JF_DATASETS: [_get_dataset(cfg['canonical_name']) for i in range(5)],
+        JF_DATASETS: get_datasets(cfg['canonical_name']),
         JF_DATE_CREATED: unicode(_NOW),
         JF_DESCRIPTION: unicode(uuid.uuid4()),
         JF_INSTITUTE: u'ipsl',
@@ -100,6 +100,19 @@ def _get_materials():
                 _MATERIALS.append(l)
 
     return _MATERIALS
+
+
+def get_datasets(project, existing=[]):
+    """Returns a collection of test dataset identifiers.
+
+    :param str project: Project code.
+    :param list existing: Dataset identifiers to be included in the result.
+
+    :returns: Collection of test datasets.
+    :rtype: list
+
+    """
+    return [_get_dataset(project) for i in range(5)] + existing
 
 
 def _get_dataset(project):

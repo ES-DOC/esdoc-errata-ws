@@ -83,7 +83,7 @@ def update_issue(issue, obj, user_id=u'test-script'):
     issue.date_updated = obj.get(JF_DATE_UPDATED, dt.datetime.utcnow())
     issue.updated_by = user_id
 
-    return issue, _get_facets(issue, obj), _get_pid_tasks(issue, obj)
+    return _get_facets(issue, obj)
 
 
 def _get_facets(issue, obj):

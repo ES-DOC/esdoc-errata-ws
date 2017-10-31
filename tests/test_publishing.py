@@ -101,6 +101,8 @@ def test_update():
     # Update test issue.
     _ISSUE['status'] = constants.STATUS_RESOLVED
     _ISSUE['dateUpdated'] = unicode(dt.datetime.utcnow())
+    _ISSUE['datasets'] = factory.get_datasets(_ISSUE['project'],
+                                              random.sample(_ISSUE['datasets'], 2))
 
     # Invoke WS endpoint.
     response = requests.post(

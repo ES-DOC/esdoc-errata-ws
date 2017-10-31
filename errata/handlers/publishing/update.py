@@ -21,7 +21,10 @@ from errata.utils import config_esg
 from errata.utils import exceptions
 from errata.utils import logger
 from errata.utils.constants import DESCRIPTION_CHANGE_RATIO
+from errata.utils.constants import FACET_TYPE_DATASET
 from errata.utils.constants import IMMUTABLE_ISSUE_ATTRIBUTES
+from errata.utils.constants import PID_ACTION_DELETE
+from errata.utils.constants import PID_ACTION_INSERT
 from errata.utils.constants import STATUS_NEW
 from errata.utils.constants_json import JF_DESCRIPTION
 from errata.utils.constants_json import JF_FACETS
@@ -108,50 +111,30 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             """Persists data to dB.
 
             """
-            # Decode from request.
-            issue, facets, pid_tasks = \
-                update_issue(self.issue, self.request.data, self.user_id)
+            # Set old datasets.
+            dsets_old = db.dao.get_facets(issue_uid=self.issue.uid, facet_type=FACET_TYPE_DATASET)
+            dsets_old = set([i.facet_value for i in dsets_old])
 
-            # Update facets.
+            # Delete old facets.
             db.dao.delete_facets(self.issue.uid)
+
+            # Update issue & insert new facets.
+            facets = update_issue(self.issue, self.request.data, self.user_id)
             for facet in facets:
                 db.session.insert(facet)
 
-            # Update PID tasks.
-            # for pid_task in pid_tasks:
-            #     db.session.insert(pid_task)
-
-
-        # def _persist_pid_tasks():
-        #     """Persists pid handles.
-
-        #     """
-        #     if self.project_conf['is_pid_client']:
-        #         # Set existing datasets.
-        #         print 111, self.issue.uid
-        #         dsets_existing = db.dao.get_facets(issue_uid=self.issue.uid, facet_type=constants.FACET_TYPE_DATASET)
-        #         dsets_existing = set([i.facet_value for i in dsets_existing])
-
-        #         # Set actual datasets.
-        #         dsets_actual = set(self.request.data[JF_DATASETS])
-
-        #         print 666, dsets_existing
-        #         print 777, dsets_actual
-
-        #         return
-
-        #         # Remove obsolete PID handle errata.
-        #         for action, dsets in (
-        #             (constants.PID_ACTION_DELETE, list(dsets_existing - dsets_actual)),
-        #             (constants.PID_ACTION_INSERT, list(dsets_actual - dsets_existing)),
-        #         ):
-        #             for dset in dsets:
-        #                 task = db.models.PIDServiceTask()
-        #                 task.action = action
-        #                 task.issue_uid = self.issue.uid
-        #                 task.dataset_id = dset
-        #                 db.session.insert(task, False)
-
+            # Update PID handle errata.
+            dsets_new = set([i.facet_value for i in facets if i.facet_type == FACET_TYPE_DATASET])
+            for action, identifiers in (
+                (PID_ACTION_DELETE, dsets_old - dsets_new),
+                (PID_ACTION_INSERT, dsets_new - dsets_old)
+            ):
+                for identifier in identifiers:
+                    task = db.models.PIDServiceTask()
+                    task.action = action
+                    task.issue_uid = self.issue.uid
+                    task.dataset_id = identifier
+                    db.session.insert(task, False)
 
 
         # Process request.
