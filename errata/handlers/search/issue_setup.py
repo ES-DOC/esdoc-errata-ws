@@ -56,7 +56,7 @@ class IssueSearchSetupRequestHandler(tornado.web.RequestHandler):
 
             def _get_data():
                 result = collections.defaultdict(lambda : collections.defaultdict(list))
-                facets = db.dao.retrieve_facets(excluded=['dataset', 'project', 'status', 'severity'])
+                facets = db.dao.get_project_facets(excluded_types=['dataset', 'project', 'status', 'severity'])
                 for project, facet_type, facet_value in facets:
                     result[project][facet_type].append(facet_value)
 

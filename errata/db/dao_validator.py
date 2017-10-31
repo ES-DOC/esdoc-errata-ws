@@ -16,22 +16,19 @@ from errata.utils import validation as v
 
 
 
-def validate_delete_facets(issue_uid, facet_type=None):
+def validate_delete_facets(issue_uid):
     """Function input validator: delete_facets.
 
     """
     v.validate_uid(issue_uid, 'Issue unique identifier')
-    if facet_type:
-        v.validate_str(facet_type, 'facet_type')
 
 
-def validate_get_facets(facet_type=None, include_issue_uid=True, issue_uid=None):
+def validate_get_facets(facet_type=None, issue_uid=None):
     """Function input validator: get_facets.
 
     """
     if facet_type:
         v.validate_str(facet_type, 'facet_type')
-    v.validate_bool(include_issue_uid, 'include_issue_uid')
     if issue_uid:
         v.validate_uid(issue_uid, 'Issue unique identifier')
 
@@ -43,19 +40,13 @@ def validate_get_issue(uid):
     v.validate_uid(uid, 'Issue unique identifier')
 
 
-def validate_get_issues(
-    experiment=None,
-    institute=None,
-    project=None,
-    model=None,
-    severity=None,
-    status=None,
-    variable=None,
-    retrieve_all=False
-    ):
+def validate_get_issues(criteria):
     """Function input validator: get_issues.
 
     """
+    pass
+    return
+
     if experiment is not None:
         v.validate_str(experiment, "Experiment name")
     if institute is not None:
@@ -74,7 +65,6 @@ def validate_get_issues(
             [i['key'] for i in constants.STATUS], status, "Issue status")
     if variable is not None:
         v.validate_str(variable, "Variable name")
-    v.validate_bool(retrieve_all, 'retrieve_all')
 
 
 def validate_get_issues_by_facet(facet_value, facet_type):
@@ -83,3 +73,11 @@ def validate_get_issues_by_facet(facet_value, facet_type):
     """
     v.validate_str(facet_value, "Facet value")
     v.validate_str(facet_type, 'facet_type')
+
+
+def validate_get_project_facets(excluded_types=[]):
+    """Function input validator: get_project_facets.
+
+    """
+    v.validate_iterable(excluded_types, 'get_project_facets')
+

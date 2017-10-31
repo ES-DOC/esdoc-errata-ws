@@ -37,7 +37,7 @@ class RetrieveAllIssuesRequestHandler(tornado.web.RequestHandler):
             """Pulls data from db.
 
             """
-            self.issues = db.dao.get_issues(retrieve_all=True)
+            self.issues = db.dao.get_all_issues()
             self.facets = db.dao.get_facets()
 
 
