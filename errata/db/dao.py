@@ -14,6 +14,7 @@ from errata.db.dao_validator import validate_get_facets
 from errata.db.dao_validator import validate_get_issue
 from errata.db.dao_validator import validate_get_issues
 from errata.db.dao_validator import validate_get_issues_by_facet
+from errata.db.dao_validator import validate_get_project_facets
 from errata.db.models import Issue
 from errata.db.models import IssueFacet
 from errata.db.models import PIDServiceTask
