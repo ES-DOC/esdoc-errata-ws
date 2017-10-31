@@ -19,20 +19,20 @@ from errata.utils.constants import FACET_TYPE_STATUS
 
 
 # JSON field names.
-JF_DATE_CLOSED = 'dateClosed'
-JF_DATE_CREATED = 'dateCreated'
-JF_DATE_UPDATED = 'dateUpdated'
-JF_DESCRIPTION = 'description'
-JF_DATASETS = 'datasets'
-JF_FACETS = 'facets'
-JF_INSTITUTE = 'institute'
-JF_MATERIALS = 'materials'
-JF_PROJECT = 'project'
-JF_SEVERITY = 'severity'
-JF_STATUS = 'status'
-JF_TITLE = 'title'
-JF_UID = 'uid'
-JF_URL = 'url'
+JF_DATE_CLOSED = u'dateClosed'
+JF_DATE_CREATED = u'dateCreated'
+JF_DATE_UPDATED = u'dateUpdated'
+JF_DESCRIPTION = u'description'
+JF_DATASETS = u'datasets'
+JF_FACETS = u'facets'
+JF_INSTITUTE = u'institute'
+JF_MATERIALS = u'materials'
+JF_PROJECT = u'project'
+JF_SEVERITY = u'severity'
+JF_STATUS = u'status'
+JF_TITLE = u'title'
+JF_UID = u'uid'
+JF_URL = u'url'
 
 # Map of json fields to facets for extraction.
 JF_FACET_TYPE_MAP = {

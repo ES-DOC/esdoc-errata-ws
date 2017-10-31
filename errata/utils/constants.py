@@ -19,56 +19,23 @@ ERRATA_GH_TEAM = 'errata-publication'
 # Default endpoint.
 DEFAULT_ENDPOINT = r'/1/ops/heartbeat'
 
-# Search facet type - dataset.
-FACET_TYPE_DATASET = 'dataset'
+# Core facet type - dataset.
+FACET_TYPE_DATASET = u'dataset'
 
-# Search facet type - experiment.
-FACET_TYPE_EXPERIMENT = 'experiment'
+# Core facet type - institution ID.
+FACET_TYPE_INSTITUTE = u'institute'
 
-# Search facet type - institution ID.
-FACET_TYPE_INSTITUTE = 'institute'
+# Core facet type - project.
+FACET_TYPE_PROJECT = u'project'
 
-# Search facet type - model.
-FACET_TYPE_MODEL = 'model'
+# Core facet type - severity.
+FACET_TYPE_SEVERITY = u'severity'
 
-# Search facet type - project.
-FACET_TYPE_PROJECT = 'project'
-
-# Search facet type - severity.
-FACET_TYPE_SEVERITY = 'severity'
-
-# Search facet type - status.
-FACET_TYPE_STATUS = 'status'
-
-# Search facet type - variable.
-FACET_TYPE_VARIABLE = 'variable'
-
-# Search facet type - sector.
-FACET_TYPE_SECTOR = 'sector'
-
-# Search facet type - work package.
-FACET_TYPE_WORK_PACKAGE = 'work_package'
-
-# Search facet type - work package.
-FACET_TYPE_SOURCE = 'source'
-
-# Search facet type set.
-FACET_TYPE = {
-    FACET_TYPE_DATASET,
-    FACET_TYPE_EXPERIMENT,
-    FACET_TYPE_INSTITUTE,
-    FACET_TYPE_MODEL,
-    FACET_TYPE_PROJECT,
-    FACET_TYPE_SEVERITY,
-    FACET_TYPE_STATUS,
-    FACET_TYPE_VARIABLE,
-    FACET_TYPE_SECTOR,
-    FACET_TYPE_WORK_PACKAGE,
-    FACET_TYPE_SOURCE
-}
+# Core facet type - status.
+FACET_TYPE_STATUS = u'status'
 
 # Core search facet type set.
-CORE_FACET_TYPES = {
+CORE_FACET_TYPESET = {
     FACET_TYPE_DATASET,
     FACET_TYPE_INSTITUTE,
     FACET_TYPE_PROJECT,
@@ -150,57 +117,6 @@ SEVERITY = [
         'key': SEVERITY_CRITICAL,
         'sortOrdinal': 3
     },
-]
-
-# Project - cmip5.
-PROJECT_CMIP5 = u"cmip5"
-
-# Project - cmip6.
-PROJECT_CMIP6 = u"cmip6"
-
-# Project - test.
-PROJECT_TEST = u"test"
-
-# Project - all.
-PROJECT = [
-    {
-        'key': PROJECT_CMIP5,
-        'label': u"CMIP5"
-    },
-    {
-        'key': PROJECT_CMIP6,
-        'label': u"CMIP6"
-    },
-    {
-        'key': PROJECT_TEST,
-        'label': u"TEST"
-    }
-]
-
-# TODO - leverage pyessv
-# Institute - BADC.
-INSTITUTE_BADC = u"badc"
-
-# Institute - DKRZ.
-INSTITUTE_DKRZ = u"dkrz"
-
-# Institute - IPSL.
-INSTITUTE_IPSL = u"ipsl"
-
-# Institute - all.
-INSTITUTE = [
-    {
-        'key': INSTITUTE_BADC,
-        'label': u"BADC"
-    },
-    {
-        'key': INSTITUTE_DKRZ,
-        'label': u"DKRZ"
-    },
-    {
-        'key': INSTITUTE_IPSL,
-        'label': u"IPSL"
-    }
 ]
 
 # List of issue attributes that cannot be updated.

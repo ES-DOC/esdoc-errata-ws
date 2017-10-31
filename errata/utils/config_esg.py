@@ -10,13 +10,12 @@
 
 """
 import os
-import logger
-import requests
 import json
-from ConfigParser import ConfigParser
-from ConfigParser import NoOptionError
 
 import pyessv
+
+from errata.utils import exceptions
+from errata.utils import convertor
 
 
 
@@ -69,20 +68,67 @@ def get_projects():
         fpath = _get_projects_fpath()
         with open(fpath, 'r') as fstream:
             _PROJECTS = json.load(fstream)
-
         for key, value in _PROJECTS.items():
             _map_project(key, value)
 
     return _PROJECTS.values()
 
 
+def validate(project, facets):
+    """Validates a project and associated facets.
+
+    :param str project: Project code.
+    :param dict facets: Set of facets.
+
+    """
+    # Validate project is active.
+    cfg = get_active_project(project)
+    if cfg is None:
+        raise exceptions.UnknownProjectError(project)
+
+    # Validate facet types are valid.
+    for facet_type in facets:
+        if facet_type not in cfg['facets']:
+            raise exceptions.UnknownFacetError(project, facet_type)
+
+    # Validate facet values are valid.
+    for facet_type, facet_values in facets.items():
+        facet_conf = cfg['facets'][facet_type]
+        collection_namespace = facet_conf['collection'].namespace
+        for facet_value in facet_values:
+            facet_namespace = '{}:{}'.format(collection_namespace, facet_value)
+            if pyessv.parse_namespace(facet_namespace, strictness=3) is None:
+                raise exceptions.InvalidFacetError(project, facet_type, facet_value)
+
+
+def validate_facet_value(project, facet_type, facet_value):
+    """Validates a project and associated facets.
+
+    :param str project: Project code.
+    :param dict facets: Set of facets.
+
+    """
+    # Validate project is active.
+    cfg = get_active_project(project)
+    if cfg is None:
+        raise exceptions.UnknownProjectError(project)
+
+    # Validate facet type is valid.
+    facet_type = convertor.to_underscore_case(facet_type)
+    if facet_type not in cfg['facets']:
+        raise exceptions.UnknownFacetError(project, facet_type)
+
+    # Validate facet value is valid.
+    namespace = cfg['facets'][facet_type]['collection'].namespace
+    namespace = '{}:{}'.format(namespace, facet_value)
+    if pyessv.parse_namespace(namespace, strictness=3) is None:
+        raise exceptions.InvalidFacetError(project, facet_type, facet_value)
+
+
 def _map_project(canonical_name, obj):
     """Transforms project configuration for ease of use downstream.
 
     """
-    # for k, v in obj.get('facets', dict()).items():
-    #     print canonical_name, k, v, pyessv.load(v)
-
     obj['canonical_name'] = canonical_name
     obj['facets'] = {k: {
         'name': k,
@@ -111,7 +157,8 @@ def _get_projects_fpath():
     """
     fname = 'projects.json'
     fpath = os.getenv('ERRATA_WS_HOME')
-    fpath = os.path.join(fpath, 'resources')
+    fpath = os.path.join(fpath, 'ops')
+    fpath = os.path.join(fpath, 'config')
     fpath = os.path.join(fpath, fname)
     if not os.path.isfile(fpath):
         raise ValueError('ESG projects config file not found: {}'.format(fname))

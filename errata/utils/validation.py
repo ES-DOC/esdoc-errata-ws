@@ -165,11 +165,15 @@ def validate_url(url):
     :param str url: The url to validate.
 
     """
-    if url is not None and url is not '':
-        try:
-            response = requests.head(url)
-        except Exception:
-            raise exceptions.UnreachableURLError(url)
-        else:
-            if response.status_code not in [requests.codes.OK, 302]:
-                raise exceptions.UnreachableURLError(url)
+    if url in (None, ''):
+        return
+
+    response = requests.head(url)
+    if response.status_code in [requests.codes.OK, 302]:
+        return
+
+    response = requests.get(url)
+    if response.status_code in [requests.codes.OK, 302]:
+        return
+
+    raise exceptions.UnreachableURLError(url)

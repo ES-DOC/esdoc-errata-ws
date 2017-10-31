@@ -18,20 +18,33 @@ import urllib
 
 import requests
 
+from errata.utils.config_esg import validate_facet_value
 from errata.utils import constants
-from errata.utils.constants_test import ISSUE
-from errata.utils.constants_test import ISSUE_DATASETS
-
+from errata.utils import factory
 from tests import utils as tu
 
 
 
-# Set of target urls.
+# Test issue.
+_ISSUE = factory.create_issue_dict()
+
+# Test endpoint: close issue.
 _URL_CLOSE = '{}/1/issue/close?'.format(tu.BASE_URL)
-_URL_CLOSE += urllib.urlencode({'uid': ISSUE['uid'], 'status': constants.STATUS_RESOLVED})
+_URL_CLOSE += urllib.urlencode({
+    'uid': _ISSUE['uid'],
+    'status': constants.STATUS_RESOLVED
+    })
+
+# Test endpoint: create issue.
 _URL_CREATE = "{}/1/issue/create".format(tu.BASE_URL)
+
+# Test endpoint: retrieve issue.
 _URL_RETRIEVE = '{}/1/issue/retrieve?'.format(tu.BASE_URL)
-_URL_RETRIEVE += urllib.urlencode({'uid': ISSUE['uid']})
+_URL_RETRIEVE += urllib.urlencode({
+    'uid': _ISSUE['uid']
+    })
+
+# Test endpoint: update issue.
 _URL_UPDATE = "{}/1/issue/update".format(tu.BASE_URL)
 
 
@@ -42,7 +55,7 @@ def test_create():
     # Invoke WS endpoint.
     response = requests.post(
         _URL_CREATE,
-        data=json.dumps(ISSUE),
+        data=json.dumps(_ISSUE),
         headers={'Content-Type': 'application/json'},
         auth=tu.get_credentials()
         )
@@ -60,28 +73,25 @@ def test_retrieve():
 
     # Assert WS response.
     content = tu.assert_ws_response(_URL_RETRIEVE, response)
+
+    # Assert content.
     assert 'issue' in content
     issue = content['issue']
 
     # Assert core info.
-    for attr in [i for i in ISSUE.keys() if i != 'facets']:
+    for attr in [i for i in _ISSUE.keys() if i != 'facets']:
         if attr not in {'datasets', 'materials'}:
-            assert issue[attr] == ISSUE[attr], \
-                   "{} :: {} :: {}".format(attr, issue[attr], ISSUE[attr])
+            assert issue[attr] == _ISSUE[attr], "{}::{}::{}".format(attr, issue[attr], _ISSUE[attr])
         elif attr in issue:
-            assert sorted(issue[attr]) == sorted(ISSUE[attr]), \
-                   "{} :: {} :: {}".format(attr, sorted(issue[attr]), sorted(ISSUE[attr]))
+            assert sorted(issue[attr]) == sorted(_ISSUE[attr]), "{}::{}::{}".format(attr, sorted(issue[attr]), sorted(_ISSUE[attr]))
 
     # Assert tracking info.
-    for key in {'closedBy', 'createdBy', 'updatedBy', 'dateClosed', 'dateCreated', 'dateUpdated'}:
-        assert key in issue
-        if key not in {'closedBy', 'dateClosed'}:
-            assert issue[key] is not None
+    _assert_tracking_info(issue)
 
     # Assert facets.
     for facet_type, facet_values in issue['facets'].items():
-        if facet_type not in constants.CORE_FACET_TYPES:
-            assert set(ISSUE['facets'][facet_type]) == set(facet_values)
+        for facet_value in facet_values:
+            validate_facet_value(issue['project'], facet_type, facet_value)
 
 
 def test_update():
@@ -89,14 +99,13 @@ def test_update():
 
     """
     # Update test issue.
-    ISSUE['status'] = constants.STATUS_RESOLVED
-    ISSUE['dateUpdated'] = unicode(dt.datetime.utcnow())
-    ISSUE['datasets'] = random.sample(ISSUE_DATASETS, 5)
+    _ISSUE['status'] = constants.STATUS_RESOLVED
+    _ISSUE['dateUpdated'] = unicode(dt.datetime.utcnow())
 
     # Invoke WS endpoint.
     response = requests.post(
         _URL_UPDATE,
-        data=json.dumps(ISSUE),
+        data=json.dumps(_ISSUE),
         headers={'Content-Type': 'application/json'},
         auth=tu.get_credentials()
         )
@@ -115,12 +124,16 @@ def test_update_retrieve():
     # Assert WS response.
     content = tu.assert_ws_response(_URL_RETRIEVE, response)
 
-    # Assert WS response content.
+    # Assert content.
+    assert 'issue' in content
     issue = content['issue']
-    assert issue['status'] == ISSUE['status']
-    assert issue['dateUpdated'] == ISSUE['dateUpdated']
-    assert issue['updatedBy'] is not None
-    # assert len(content['issue']['datasets']) == 5
+
+    # Assert core info.
+    assert issue['status'] == _ISSUE['status']
+
+    # Assert tracking info.
+    assert issue['dateUpdated'] is not None
+    _assert_tracking_info(issue)
 
 
 def test_close():
@@ -144,8 +157,33 @@ def test_close_retrieve():
     # Assert WS response.
     content = tu.assert_ws_response(_URL_RETRIEVE, response)
 
-    # Assert WS response content.
+    # Assert content.
+    assert 'issue' in content
     issue = content['issue']
-    assert issue['dateClosed'] is not None
-    assert issue['closedBy'] is not None
+
+    # Assert core info.
     assert issue['status'] == constants.STATUS_RESOLVED
+
+    # Assert tracking info.
+    assert issue['dateClosed'] is not None
+    _assert_tracking_info(issue)
+
+
+
+def _assert_tracking_info(issue):
+    """Performs assertions over issue tracking information.
+
+    """
+    for user_field, date_field in {
+        ('closedBy', 'dateClosed'),
+        ('createdBy', 'dateCreated'),
+        ('updatedBy', 'dateUpdated')
+        }:
+        assert user_field in issue
+        assert date_field in issue
+        if user_field == 'createdBy':
+            assert issue[user_field] is not None
+        if date_field == 'dateCreated':
+            assert issue[date_field] is not None
+        if issue[user_field] is not None:
+            assert issue[date_field] is not None

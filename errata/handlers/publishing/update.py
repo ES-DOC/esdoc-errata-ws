@@ -11,24 +11,28 @@
 
 """
 import difflib
-import os
 import tornado
-import re
 
 import pyessv
 
 from errata import db
-
-from errata.db.dao import get_issue
-from errata.db.dao import get_facets
-from errata.db.dao import delete_facets
 from errata.utils import config
 from errata.utils import config_esg
-from errata.utils import constants
 from errata.utils import exceptions
 from errata.utils import logger
-from errata.utils.constants_json import *
+from errata.utils.constants import DESCRIPTION_CHANGE_RATIO
+from errata.utils.constants import IMMUTABLE_ISSUE_ATTRIBUTES
+from errata.utils.constants import STATUS_NEW
+from errata.utils.constants_json import JF_DESCRIPTION
+from errata.utils.constants_json import JF_FACETS
+from errata.utils.constants_json import JF_MATERIALS
+from errata.utils.constants_json import JF_PROJECT
+from errata.utils.constants_json import JF_STATUS
+from errata.utils.constants_json import JF_UID
+from errata.utils.constants_json import JF_URL
 from errata.utils.http import process_request
+from errata.utils.publisher import update_issue
+from errata.utils.validation import validate_url
 
 
 
@@ -41,42 +45,20 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
         """HTTP POST handler.
 
         """
-        def _validate_project():
-            """Validates project is supported.
+        def _validate_issue_facets():
+            """Validates facets associated with incoming issue.
 
             """
-            self.project = self.request.data[JF_PROJECT]
-            self.project_conf = config_esg.get_active_project(self.project)
-            if self.project_conf is None:
-                raise exceptions.UnknownProjectError(self.project)
+            config_esg.validate(self.request.data[JF_PROJECT], self.request.data[JF_FACETS])
 
 
         def _validate_issue_exists():
             """Validates that the issue has been previously posted to the web-service.
 
             """
-            self.issue = get_issue(self.request.data[JF_UID])
+            self.issue = db.dao.get_issue(self.request.data[JF_UID])
             if self.issue is None:
                 raise exceptions.UnknownIssueError(self.request.data[JF_UID])
-
-
-        def _validate_issue_facets():
-            """Validates facets associated with incoming issue.
-
-            """
-            # Assert: facets are supported.
-            for facet_type in self.request.data[JF_FACETS]:
-                if facet_type not in self.project_conf['facets']:
-                    raise exceptions.UnknownFacetError(self.project, facet_type)
-
-            # Assert: facet values are valid.
-            for facet_type, facet_values in self.request.data[JF_FACETS].items():
-                facet_conf = self.project_conf['facets'][facet_type]
-                collection_namespace = facet_conf['collection'].namespace
-                for facet_value in facet_values:
-                    facet_namespace = '{}:{}'.format(collection_namespace, facet_value)
-                    if pyessv.parse_namespace(facet_namespace, strictness=3) is None:
-                        raise exceptions.InvalidFacetError(self.project, facet_type, facet_value)
 
 
         def _validate_issue_urls():
@@ -84,8 +66,9 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
 
             """
             if config.apply_security_policy:
-                urls = [self.request.data.get(i) for i in [JF_URL, JF_MATERIALS]]
-                for url in traverse(urls):
+                urls = [self.request.data[JF_URL]] + self.request.data[JF_MATERIALS]
+                urls = [i for i in urls if i]
+                for url in urls:
                     validate_url(url)
 
 
@@ -93,7 +76,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             """Validates that issue attribute deemed to be immutable have not been changed.
 
             """
-            for attr in constants.IMMUTABLE_ISSUE_ATTRIBUTES:
+            for attr in IMMUTABLE_ISSUE_ATTRIBUTES:
                 if self.request.data[attr].lower() != getattr(self.issue, attr).lower():
                     raise exceptions.ImmutableIssueAttributeError(attr)
 
@@ -109,7 +92,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             # Determine change ratio.
             diff = difflib.SequenceMatcher(None, self.issue.description, self.request.data[JF_DESCRIPTION])
             diff_ratio = 100 - round(diff.ratio(), 3) * 100
-            if diff_ratio > constants.DESCRIPTION_CHANGE_RATIO:
+            if diff_ratio > DESCRIPTION_CHANGE_RATIO:
                 raise exceptions.IssueDescriptionChangeRatioError(diff_ratio)
 
 
@@ -117,97 +100,68 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             """Validates that issue status allows it to be updated.
 
             """
-            if self.issue.status != constants.STATUS_NEW and \
-               self.request.data[JF_STATUS] == constants.STATUS_NEW:
+            if self.issue.status != STATUS_NEW and self.request.data[JF_STATUS] == STATUS_NEW:
                 raise exceptions.InvalidIssueStatusError()
 
 
-        def _persist_pid_tasks():
-            """Persists pid handles.
+        def _persist():
+            """Persists data to dB.
 
             """
-            if self.project_conf['is_pid_client']:
-                # Set existing datasets.
-                print 111, self.issue.uid
-                dsets_existing = get_facets(issue_uid=self.issue.uid, facet_type=constants.FACET_TYPE_DATASET)
-                dsets_existing = set([i.facet_value for i in dsets_existing])
+            # Decode from request.
+            issue, facets, pid_tasks = \
+                update_issue(self.issue, self.request.data, self.user_id)
 
-                # Set actual datasets.
-                dsets_actual = set(self.request.data[JF_DATASETS])
+            # Update facets.
+            db.dao.delete_facets(self.issue.uid)
+            for facet in facets:
+                db.session.insert(facet)
 
-                print 666, dsets_existing
-                print 777, dsets_actual
-
-                return
-
-                # Remove obsolete PID handle errata.
-                for action, dsets in (
-                    (constants.PID_ACTION_DELETE, list(dsets_existing - dsets_actual)),
-                    (constants.PID_ACTION_INSERT, list(dsets_actual - dsets_existing)),
-                ):
-                    for dset in dsets:
-                        task = db.models.PIDServiceTask()
-                        task.action = action
-                        task.issue_uid = self.issue.uid
-                        task.dataset_id = dset
-                        db.session.insert(task, False)
+            # Update PID tasks.
+            # for pid_task in pid_tasks:
+            #     db.session.insert(pid_task)
 
 
-        def _persist_issue():
-            """Persists issue update.
+        # def _persist_pid_tasks():
+        #     """Persists pid handles.
 
-            """
-            obj = self.request.data
-            issue = self.issue
-            issue.date_closed = obj.get(JF_DATE_CLOSED)
-            issue.description = obj[JF_DESCRIPTION]
-            issue.materials = ",".join(obj.get(JF_MATERIALS, []))
-            issue.severity = obj[JF_SEVERITY].lower()
-            issue.title = obj[JF_TITLE]
-            issue.date_updated = obj[JF_DATE_UPDATED]
-            issue.updated_by = self.user_id
-            issue.url = obj.get(JF_URL)
-            issue.status = obj[JF_STATUS].lower()
+        #     """
+        #     if self.project_conf['is_pid_client']:
+        #         # Set existing datasets.
+        #         print 111, self.issue.uid
+        #         dsets_existing = db.dao.get_facets(issue_uid=self.issue.uid, facet_type=constants.FACET_TYPE_DATASET)
+        #         dsets_existing = set([i.facet_value for i in dsets_existing])
 
+        #         # Set actual datasets.
+        #         dsets_actual = set(self.request.data[JF_DATASETS])
 
-        def _persist_facets():
-            """Insert new facets.
+        #         print 666, dsets_existing
+        #         print 777, dsets_actual
 
-            """
-            # Delete existing facets.
-            delete_facets(self.issue.uid)
+        #         return
 
-            # Build new facet set.
-            facets = []
-            for field, facet_type in JF_FACET_TYPE_MAP.items():
-                facet_values = self.request.data[field]
-                if not isinstance(facet_values, list):
-                    facet_values = [facet_values]
-                facets.append((facet_type, set(facet_values)))
-            for facet_type, facet_values in self.request.data[JF_FACETS].items():
-                facets.append((facet_type, set(facet_values)))
+        #         # Remove obsolete PID handle errata.
+        #         for action, dsets in (
+        #             (constants.PID_ACTION_DELETE, list(dsets_existing - dsets_actual)),
+        #             (constants.PID_ACTION_INSERT, list(dsets_actual - dsets_existing)),
+        #         ):
+        #             for dset in dsets:
+        #                 task = db.models.PIDServiceTask()
+        #                 task.action = action
+        #                 task.issue_uid = self.issue.uid
+        #                 task.dataset_id = dset
+        #                 db.session.insert(task, False)
 
-            # Insert new facet set.
-            for facet_type, facet_values in facets:
-                for facet_value in facet_values:
-                    facet = db.models.IssueFacet()
-                    facet.facet_type = facet_type
-                    facet.facet_value = facet_value.strip()
-                    facet.issue_uid = self.issue.uid
-                    db.session.insert(facet, False)
 
 
         # Process request.
         with db.session.create(commitable=True):
             process_request(self, [
-                _validate_project,
-                _validate_issue_exists,
                 _validate_issue_facets,
+                _validate_issue_exists,
                 _validate_issue_urls,
                 _validate_issue_immutable_attributes,
                 _validate_issue_description_change_ratio,
                 _validate_issue_status,
-                _persist_pid_tasks,
-                _persist_issue,
-                _persist_facets
+                _persist
             ])

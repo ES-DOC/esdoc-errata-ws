@@ -10,9 +10,12 @@
 
 
 """
+import collections
+
 import tornado
 
 from errata import db
+from errata.utils import config_esg
 from errata.utils import constants
 from errata.utils.http import process_request
 
@@ -33,17 +36,44 @@ class IssueSearchSetupRequestHandler(tornado.web.RequestHandler):
         """HTTP GET handler.
 
         """
+        def _get_project_data():
+            """Returns project setup data.
+
+            """
+            def _map_facet(key, values):
+                return {
+                    'key': key,
+                    'label': '{}{}'.format(key[0].upper(), key[1:]),
+                    'values': values
+                }
+
+            def _map_project(key, facets):
+                return {
+                    'key': key,
+                    'label': key.upper(),
+                    'facets': [_map_facet(k, v) for k, v in facets.items()]
+                }
+
+            def _get_data():
+                result = collections.defaultdict(lambda : collections.defaultdict(list))
+                facets = db.dao.retrieve_facets(excluded=['dataset', 'project', 'status', 'severity'])
+                for project, facet_type, facet_value in facets:
+                    result[project][facet_type].append(facet_value)
+
+                return result.items()
+
+            return [_map_project(k, v) for k, v in _get_data()]
+
+
         def _set_output():
             """Sets response to be returned to client.
 
             """
             with db.session.create():
                 self.output = {
-                    'institute': constants.INSTITUTE,
-                    'project': constants.PROJECT,
+                    'project': _get_project_data(),
                     'severity': constants.SEVERITY,
-                    'status': constants.STATUS,
-                    'facet': db.dao.get_facets(include_issue_uid=False)
+                    'status': constants.STATUS
                 }
 
 

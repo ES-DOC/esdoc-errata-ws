@@ -91,6 +91,58 @@ def get_issue(uid):
     return qry.first()
 
 
+def retrieve_issues(criteria):
+    """Returns collection of matching issues.
+
+    :param list criteria: Collection of 2 member tuples: (facet-type, facet-value).
+
+    :returns: List of matching issues.
+    :rtype: list
+
+    """
+    qry = raw_query(
+        Issue.project,
+        Issue.institute,
+        Issue.uid,
+        Issue.title,
+        Issue.severity,
+        Issue.status,
+        as_date_string(Issue.date_created),
+        as_date_string(Issue.date_closed),
+        as_date_string(Issue.date_updated)
+        )
+
+    for facet_type, facet_value in criteria:
+        sub_qry = query(IssueFacet.issue_uid)
+        sub_qry = sub_qry.filter(IssueFacet.facet_type == facet_type)
+        sub_qry = text_filter(sub_qry, IssueFacet.facet_value, facet_value)
+        qry = qry.filter(Issue.uid.in_(sub_qry))
+
+    return qry.all()
+
+
+# @validate(validate_get_facets)
+def retrieve_facets(excluded=[]):
+    """Returns collection of facets.
+
+    :param list excluded: Facets to be excluded from search.
+
+    :returns: Matching facets.
+    :rtype: list
+
+    """
+    qry = raw_query(
+        IssueFacet.project,
+        IssueFacet.facet_type,
+        IssueFacet.facet_value
+        )
+    for facet_type in excluded:
+        qry = qry.filter(IssueFacet.facet_type != facet_type)
+    qry = qry.distinct()
+
+    return qry.all()
+
+
 @validate(validate_get_issues)
 def get_issues(
     experiment=None,

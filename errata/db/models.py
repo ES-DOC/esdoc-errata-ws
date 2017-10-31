@@ -104,8 +104,8 @@ class Issue(Entity):
         """Instance representation.
 
         """
-        return "<Issue(id={}, uid={}, title={}, description=={})>".format(
-            self.id, self.uid, self.title, self.description)
+        return "<Issue(uid={}, title={}, description=={})>".format(
+            self.uid, self.title, self.description)
 
 
     def to_dict(self, facets):
@@ -119,7 +119,7 @@ class Issue(Entity):
         for facet_value, facet_type, _ in [i for i in facets if i[2] == self.uid]:
             if facet_type == 'dataset':
                 obj['datasets'].append(facet_value)
-            elif facet_type not in CORE_FACET_TYPES:
+            elif facet_type not in CORE_FACET_TYPESET:
                 obj['facets'][facet_type].append(facet_value)
         for key in {'datasets', 'materials'}:
             obj[key] = sorted(obj[key])
@@ -143,9 +143,18 @@ class IssueFacet(Entity):
     )
 
     # Column definitions.
+    project = Column(Unicode(63), nullable=False)
     issue_uid = Column(Unicode(63), ForeignKey('{}.tbl_issue.uid'.format(_SCHEMA)), nullable=False)
-    facet_value = Column(Unicode(1023), nullable=False, index=True)
     facet_type = Column(Unicode(63), nullable=False)
+    facet_value = Column(Unicode(1023), nullable=False, index=True)
+
+
+    def __repr__(self):
+        """Instance representation.
+
+        """
+        return "<IssueFacet(uid={}, type={}, value=={})>".format(
+            self.issue_uid, self.facet_type, self.facet_value)
 
 
 class PIDServiceTask(Entity):

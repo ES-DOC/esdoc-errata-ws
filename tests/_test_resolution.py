@@ -16,8 +16,7 @@ import urllib
 
 import requests
 
-from errata.utils.constants import FACET_TYPE
-from errata.utils.constants_test import ISSUE
+from errata.utils.constants import CORE_FACET_TYPESET
 
 
 
@@ -61,7 +60,7 @@ def test_resolve():
         assert content['count'] == len(content['issueIdentifiers'])
 
 
-    for facet_type in FACET_TYPE:
+    for facet_type in CORE_FACET_TYPESET:
         _do.description = "ERRATA :: WS :: Postive test :: Resolve Issue from {}".format(facet_type)
 
         yield _do, facet_type

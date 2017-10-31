@@ -76,10 +76,8 @@ def secure_request(handler):
     :param utils.http.HTTPRequestHandler handler: An HTTP request handler.
 
     """
-    if config.apply_security_policy == False or \
-       handler.request.path in _WHITELISTED_ENDPOINTS:
-        handler.user_id = "tester"
-        handler.user_teams = [constants.ERRATA_GH_TEAM]
+    # Escape if policy does not require enforcing.
+    if config.apply_security_policy == False or handler.request.path in _WHITELISTED_ENDPOINTS:
         return
 
     # Authenticate.
@@ -87,13 +85,12 @@ def secure_request(handler):
     user_id = authenticate(credentials)
 
     # Authorize.
-    # shandler.user_teams = authorize(user_id, constants.ERRATA_GH_TEAM)
+    try:
+        data = json.loads(handler.request.body)
+    except ValueError:
+        pass
+    else:
+        authorize(user_id, data['institute'])
 
-    # Authorize (via institute identifier).
-    issue = json.loads(handler.request.body)
-    for institute_id in issue['facets']['institute']:
-        authorize(user_id, institute_id)
-
-    # Make available downstream.
+    # Make user-id available downstream.
     handler.user_id = user_id
-    handler.issue = issue

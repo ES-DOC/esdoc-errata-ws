@@ -7,7 +7,7 @@
             "work_package": "Work Package"
         },
         "is_active": false,
-        "is_pid_client": true
+        "is_pid_client": false
     },
     "cmip5": {
         "facets": {
@@ -16,7 +16,7 @@
             "variable": "esgf-publisher:cmip5:variable"
         },
         "is_active": true,
-        "is_pid_client": true
+        "is_pid_client": false
     },
     "cmip6": {
         "facets": {
@@ -29,21 +29,21 @@
     },
     "cordex": {
         "facets": {
-            "experiment": "esgf-publisher:cmip6:experiment",
-            "rcm_name": "esgf-publisher:cmip6:source-id",
-            "variable": "esgf-publisher:cmip6:variable"
+            "experiment": "esgf-publisher:cordex:experiment",
+            "rcm_model": "esgf-publisher:cordex:rcm-model",
+            "variable": "esgf-publisher:cordex:variable"
         },
         "is_active": true,
-        "is_pid_client": true
+        "is_pid_client": false
     },
     "cordex_adjust": {
         "facets": {
             "experiment": "Experiment",
-            "rcm_name": "Model",
+            "rcm_model": "Model",
             "variable": "Variable"
         },
         "is_active": false,
-        "is_pid_client": true
+        "is_pid_client": false
     },
     "euclipse": {
         "facets": {
@@ -52,7 +52,7 @@
             "variable": "Variable"
         },
         "is_active": false,
-        "is_pid_client": true
+        "is_pid_client": false
     },
     "geomip": {
         "facets": {
@@ -61,7 +61,7 @@
             "variable": "Variable"
         },
         "is_active": false,
-        "is_pid_client": true
+        "is_pid_client": false
     },
     "input4mips": {
         "facets": {
@@ -80,7 +80,7 @@
             "variable": "Variable"
         },
         "is_active": false,
-        "is_pid_client": true
+        "is_pid_client": false
     },
     "lucid": {
         "facets": {
@@ -89,7 +89,7 @@
             "variable": "Variable"
         },
         "is_active": false,
-        "is_pid_client": true
+        "is_pid_client": false
     },
     "obs4mips": {
         "facets": {
@@ -106,7 +106,7 @@
             "variable": "Variable"
         },
         "is_active": false,
-        "is_pid_client": true
+        "is_pid_client": false
     },
     "primavera": {
         "facets": {
@@ -115,7 +115,7 @@
             "variable": "Variable"
         },
         "is_active": false,
-        "is_pid_client": true
+        "is_pid_client": false
     },
     "tamip": {
         "facets": {
@@ -124,6 +124,6 @@
             "variable": "Variable"
         },
         "is_active": false,
-        "is_pid_client": true
+        "is_pid_client": false
     }
 }

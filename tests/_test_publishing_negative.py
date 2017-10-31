@@ -17,8 +17,6 @@ import urllib
 import nose
 import requests
 
-from errata.utils.constants_test import ISSUE
-
 
 
 # Set of target urls.

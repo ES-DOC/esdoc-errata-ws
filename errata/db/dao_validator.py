@@ -22,7 +22,7 @@ def validate_delete_facets(issue_uid, facet_type=None):
     """
     v.validate_uid(issue_uid, 'Issue unique identifier')
     if facet_type:
-        v.validate_enum(constants.FACET_TYPE, facet_type, 'facet_type')
+        v.validate_str(facet_type, 'facet_type')
 
 
 def validate_get_facets(facet_type=None, include_issue_uid=True, issue_uid=None):
@@ -30,7 +30,7 @@ def validate_get_facets(facet_type=None, include_issue_uid=True, issue_uid=None)
 
     """
     if facet_type:
-        v.validate_enum(constants.FACET_TYPE, facet_type, 'facet_type')
+        v.validate_str(facet_type, 'facet_type')
     v.validate_bool(include_issue_uid, 'include_issue_uid')
     if issue_uid:
         v.validate_uid(issue_uid, 'Issue unique identifier')
@@ -82,4 +82,4 @@ def validate_get_issues_by_facet(facet_value, facet_type):
 
     """
     v.validate_str(facet_value, "Facet value")
-    v.validate_enum(constants.FACET_TYPE, facet_type, 'facet_type')
+    v.validate_str(facet_type, 'facet_type')

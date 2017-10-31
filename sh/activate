@@ -20,7 +20,6 @@ chmod a+x $ERRATA_WS_HOME/sh/*.sh
 mkdir -p $ERRATA_WS_HOME/ops
 mkdir -p $ERRATA_WS_HOME/ops/config
 mkdir -p $ERRATA_WS_HOME/ops/daemon
-mkdir -p $ERRATA_WS_HOME/ops/libs
 mkdir -p $ERRATA_WS_HOME/ops/logs
 
 # ###############################################################

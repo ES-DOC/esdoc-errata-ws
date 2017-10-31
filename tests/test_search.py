@@ -18,12 +18,7 @@ import uuid
 
 import requests
 
-from errata.utils.constants import INSTITUTE
-from errata.utils.constants import PROJECT
-from errata.utils.constants import SEVERITY
-from errata.utils.constants import STATUS
-from errata.utils.constants_test import ISSUE
-
+from errata.utils import factory
 from tests import utils as tu
 
 
@@ -42,7 +37,7 @@ def test_search_setup():
     r = requests.get(_URL_SEARCH_SETUP)
 
     # Assert WS response.
-    tu.assert_ws_response(_URL_SEARCH_SETUP, r, fields={'institute', 'project', 'severity', 'status', 'facet'})
+    tu.assert_ws_response(_URL_SEARCH_SETUP, r, fields={'project', 'severity', 'status'})
 
 
 def test_search():
@@ -54,12 +49,8 @@ def test_search():
 
     # Publish test issues.
     for _ in range(5):
-    # for _ in range(50):
         # ... create;
-        issue = ISSUE.copy()
-        issue['uid'] = unicode(uuid.uuid4())
-        issue['severity'] = random.choice(SEVERITY)['key']
-        issue['status'] = random.choice(STATUS)['key']
+        issue = factory.create_issue_dict()
 
         # .... publish.
         r = requests.post(
@@ -73,18 +64,18 @@ def test_search():
         # ... cache criteria;
         criteria[(issue['project'], issue['severity'], issue['status'])] += 1
 
-    # Perform searches:
-    for project, severity, status in criteria:
-        # ... invoke WS;
-        params = {
-          'project': project,
-          'severity': severity,
-          'status': status
-        }
-        r = requests.get(_URL_SEARCH, params=params)
+    # # Perform searches:
+    # for project, severity, status in criteria:
+    #     # ... invoke WS;
+    #     params = {
+    #       'project': project,
+    #       'severity': severity,
+    #       'status': status
+    #     }
+    #     r = requests.get(_URL_SEARCH, params=params)
 
-        # Assert WS response.
-        data = tu.assert_ws_response(_URL_SEARCH, r)
+    #     # Assert WS response.
+    #     data = tu.assert_ws_response(_URL_SEARCH, r)
 
-        # Assert search total.
-        assert data['total'] >= criteria[project, severity, status]
+    #     # Assert search total.
+    #     assert data['total'] >= criteria[project, severity, status]

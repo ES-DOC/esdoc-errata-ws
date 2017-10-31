@@ -18,6 +18,7 @@ from errata import db
 from errata.utils import constants
 from errata.utils import exceptions
 from errata.utils.http import process_request
+from errata.utils.http_security import authorize
 from errata.utils.constants_json import *
 
 
@@ -49,15 +50,7 @@ class CloseIssueRequestHandler(tornado.web.RequestHandler):
             """Validates user's institutional access rights.
 
             """
-            # TODO: delegate to pyesdoc
-            raise NotImplementedError()
-
-            # Super & insitutional users have access.
-            for team in sorted(self.user_teams):
-                if team == constants.ERRATA_GH_TEAM:
-                    return
-                if team.split("-")[-1] == self.issue.institute:
-                    return
+            authorize(self.user_id, self.issue.institute)
 
 
         def _validate_issue_status():
