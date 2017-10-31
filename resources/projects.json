@@ -39,7 +39,7 @@
     "cordex_adjust": {
         "facets": {
             "experiment": "Experiment",
-            "rcm_model": "Model",
+            "rcm_name": "Model",
             "variable": "Variable"
         },
         "is_active": false,
