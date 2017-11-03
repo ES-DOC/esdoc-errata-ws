@@ -29,7 +29,7 @@ _URL_SEARCH_SETUP = "{}/1/issue/search-setup".format(tu.BASE_URL)
 _URL_SEARCH = "{}/1/issue/search".format(tu.BASE_URL)
 
 
-def test_search_setup():
+def _test_search_setup():
     """ERRATA :: WS :: Postive Test :: Search setup.
 
     """
@@ -38,6 +38,25 @@ def test_search_setup():
 
     # Assert WS response.
     tu.assert_ws_response(_URL_SEARCH_SETUP, r, fields={'project', 'severity', 'status'})
+
+
+def _test_search_lite():
+    import urllib
+
+    # ... invoke WS;
+    params = {
+        'criteria': ','.join([
+            'project:cmip6',
+            'severity:medium',
+            'status:new '
+        ])
+    }
+    r = requests.get(_URL_SEARCH, params=urllib.urlencode(params))
+
+    # Assert WS response.
+    data = tu.assert_ws_response(_URL_SEARCH, r)
+
+    print data
 
 
 def test_search():
@@ -64,18 +83,20 @@ def test_search():
         # ... cache criteria;
         criteria[(issue['project'], issue['severity'], issue['status'])] += 1
 
-    # # Perform searches:
-    # for project, severity, status in criteria:
-    #     # ... invoke WS;
-    #     params = {
-    #       'project': project,
-    #       'severity': severity,
-    #       'status': status
-    #     }
-    #     r = requests.get(_URL_SEARCH, params=params)
+    # Perform searches:
+    for project, severity, status in criteria:
+        # ... invoke WS;
+        params = {
+            'criteria': ','.join([
+                'project:{}'.format(project),
+                'severity:{}'.format(severity),
+                'status:{}'.format(status)
+            ])
+        }
+        r = requests.get(_URL_SEARCH, params=params)
 
-    #     # Assert WS response.
-    #     data = tu.assert_ws_response(_URL_SEARCH, r)
+        # Assert WS response.
+        data = tu.assert_ws_response(_URL_SEARCH, r)
 
-    #     # Assert search total.
-    #     assert data['total'] >= criteria[project, severity, status]
+        # Assert search total.
+        assert data['total'] >= criteria[project, severity, status]

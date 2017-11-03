@@ -10,6 +10,8 @@
 
 
 """
+import collections
+
 import tornado
 
 from errata import db
@@ -18,27 +20,8 @@ from errata.utils.http import process_request
 
 
 
-# Immutable parameter names.
-_PARAM_INSTITUTE = 'institute'
-_PARAM_PROJECT = 'project'
-_PARAM_SEVERITY = 'severity'
-_PARAM_STATUS = 'status'
-
-# Mutable parameter names.
-_PARAM_EXPERIMENT = 'experiment'
-_PARAM_MODEL = 'model'
-_PARAM_VARIABLE = 'variable'
-
-# Fulll parameter set.
-_PARAMS = {
-    _PARAM_EXPERIMENT,
-    _PARAM_INSTITUTE,
-    _PARAM_MODEL,
-    _PARAM_PROJECT,
-    _PARAM_SEVERITY,
-    _PARAM_STATUS,
-    _PARAM_VARIABLE
-}
+# Query parameters.
+_PARAM_CRITERIA = 'criteria'
 
 
 class IssueSearchRequestHandler(tornado.web.RequestHandler):
@@ -60,11 +43,9 @@ class IssueSearchRequestHandler(tornado.web.RequestHandler):
             """Sets search criteria.
 
             """
-            for param in _PARAMS:
-                if self.get_argument(param, None) in {None, "*"}:
-                    setattr(self, param, None)
-                else:
-                    setattr(self, param, self.get_argument(param).lower())
+            self.criteria = collections.defaultdict(set)
+            for k, v in [i.split(':') for i in self.get_argument(_PARAM_CRITERIA).split(',')]:
+                self.criteria[k].add(v)
 
 
         def _set_data():
@@ -72,16 +53,9 @@ class IssueSearchRequestHandler(tornado.web.RequestHandler):
 
             """
             with db.session.create():
-                self.issues = db.dao.get_issues(
-                    experiment=self.experiment,
-                    institute=self.institute,
-                    project=self.project,
-                    model=self.model,
-                    severity=self.severity,
-                    status=self.status,
-                    variable=self.variable
-                    )
+                self.issues = db.dao.get_issues(self.criteria)
                 self.total = db.utils.get_count(db.models.Issue)
+
 
         def _set_output():
             """Sets response to be returned to client.
