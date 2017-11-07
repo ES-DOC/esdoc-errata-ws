@@ -171,7 +171,6 @@ def test_close_retrieve():
     _assert_tracking_info(issue)
 
 
-
 def _assert_tracking_info(issue):
     """Performs assertions over issue tracking information.
 
