@@ -69,7 +69,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
 
             """
             if config.apply_security_policy:
-                urls = [self.request.data[JF_URL]] + self.request.data[JF_MATERIALS]
+                urls = self.request.data[JF_URL] + self.request.data[JF_MATERIALS]
                 urls = [i for i in urls if i]
                 for url in urls:
                     validate_url(url)

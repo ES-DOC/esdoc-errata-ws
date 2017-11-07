@@ -54,7 +54,8 @@ def create_issue(obj, user_id=u'test-script'):
     issue.status = obj[JF_STATUS].lower()
     issue.title = obj[JF_TITLE].strip()
     issue.uid = obj[JF_UID].strip()
-    issue.url = obj[JF_URL].strip()
+    # issue.url = obj[JF_URL].strip()
+    issue.url = ",".join(obj.get(JF_URL, []))
 
     # Issue tracking info.
     issue.date_created = obj.get(JF_DATE_CREATED, dt.datetime.utcnow())
@@ -77,7 +78,8 @@ def update_issue(issue, obj, user_id=u'test-script'):
     issue.severity = obj[JF_SEVERITY].lower()
     issue.status = obj[JF_STATUS].lower()
     issue.title = obj[JF_TITLE].strip()
-    issue.url = obj[JF_URL].strip()
+    # issue.url = obj[JF_URL].strip()
+    issue.url = ",".join(obj.get(JF_URL, []))
 
     # Issue tracking info.
     issue.date_updated = obj.get(JF_DATE_UPDATED, dt.datetime.utcnow())

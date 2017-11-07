@@ -173,7 +173,7 @@ def validate_url(url):
         return
 
     response = requests.get(url)
-    if response.status_code in [requests.codes.OK, 302]:
+    if response.ok:
         return
 
     raise exceptions.UnreachableURLError(url)

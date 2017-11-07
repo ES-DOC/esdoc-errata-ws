@@ -81,7 +81,11 @@
             "type": "string"
         },
         "url": {
-            "type": "string"
+            "items": {
+                "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
         }
     },
     "required": [
