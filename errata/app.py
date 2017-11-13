@@ -69,8 +69,8 @@ def _get_app():
     """
     endpoints = _get_app_endpoints()
     log("Endpoint to handler mappings:")
-    for url, handler in sorted(endpoints, key=lambda i: i[0]):
-        log("{0} ---> {1}".format(url, str(handler).split(".")[-1][0:-2]))
+    for ep, handler in sorted(endpoints, key=lambda i: i[0]):
+        log("{0} ---> {1}".format(ep, str(handler).split(".")[-1][0:-2]))
 
 
     schemas.init([i[0] for i in endpoints])

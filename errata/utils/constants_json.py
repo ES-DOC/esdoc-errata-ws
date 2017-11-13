@@ -32,7 +32,7 @@ JF_SEVERITY = u'severity'
 JF_STATUS = u'status'
 JF_TITLE = u'title'
 JF_UID = u'uid'
-JF_URL = u'url'
+JF_URLS = u'urls'
 
 # Map of json fields to facets for extraction.
 JF_FACET_TYPE_MAP = {

@@ -80,7 +80,7 @@
             "pattern": "^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$",
             "type": "string"
         },
-        "url": {
+        "urls": {
             "items": {
                 "type": "string"
             },
@@ -100,7 +100,7 @@
         "status",
         "title",
         "uid",
-        "url"
+        "urls"
     ],
     "title": "ES-DOC errata JSON schema: endpoint = /1/issue/create",
     "type": "object"

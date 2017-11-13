@@ -61,7 +61,7 @@ def create_issue_dict():
         JF_STATUS: STATUS_NEW,
         JF_TITLE: unicode(uuid.uuid4()),
         JF_UID: unicode(uuid.uuid4()),
-        JF_URL: u'https://es-doc.org/cmip6-dataset-errata',
+        JF_URLS: [u'https://es-doc.org/cmip6-dataset-errata'],
         JF_FACETS: _get_facets(cfg)
     }
 

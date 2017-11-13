@@ -90,7 +90,7 @@ class Issue(Entity):
     description = Column(Text, nullable=False)
     severity = Column(_SEVERITY_ENUM, nullable=False)
     status = Column(_STATUS_ENUM, nullable=False)
-    url = Column(Unicode(1023))
+    urls = Column(Unicode(1023))
     date_created = Column(DateTime, nullable=False, default=dt.datetime.utcnow)
     date_updated = Column(DateTime)
     date_closed = Column(DateTime)
@@ -116,6 +116,7 @@ class Issue(Entity):
         obj['materials'] = self.materials.split(",")
         obj['datasets'] = []
         obj['facets'] = collections.defaultdict(list)
+        obj['urls'] = self.urls.split(',')
         for facet_value, facet_type, _ in [i for i in facets if i[2] == self.uid]:
             if facet_type == 'dataset':
                 obj['datasets'].append(facet_value)

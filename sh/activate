@@ -59,7 +59,7 @@ alias errata-ws-db-vacuum=$ERRATA_WS_HOME/sh/db_vacuum.sh
 alias errata-ws-pid-sync-handles=$ERRATA_WS_HOME/sh/pid_sync_handles.sh
 
 # Test related commands.
-alias errata-ws-tests=$ERRATA_WS_HOME/sh/run_tests.sh
+alias errata-ws-tests=$ERRATA_WS_HOME/tests/run.sh
 
 # ###############################################################
 # CUSTOM-SECTION

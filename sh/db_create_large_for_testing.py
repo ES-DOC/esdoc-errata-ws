@@ -11,6 +11,10 @@
 
 """
 import argparse
+import json
+import os
+
+import requests
 
 from errata import db
 from errata.utils import logger
@@ -26,20 +30,27 @@ _ARGS.add_argument(
     type=int
     )
 
+# Web-service endpoint: create issue.
+_URL_CREATE = "{}/1/issue/create".format(os.getenv("ERRATA_API"))
+
+
 
 def _main(args):
     """Main entry point.
 
     """
-    with db.session.create():
-        for _ in range(args.count):
-            issue, facets, pid_tasks = factory.create_issue()
-            db.session.insert(issue)
-            for facet in facets:
-                db.session.insert(facet)
-            for pid_task in pid_tasks:
-                db.session.insert(pid_task)
-            logger.log_db("issue inserted :: {}".format(issue.uid))
+    for _ in range(args.count):
+        issue = factory.create_issue_dict()
+        requests.post(
+            _URL_CREATE,
+            data=json.dumps(issue),
+            headers={'Content-Type': 'application/json'},
+            auth=(
+                os.getenv('ERRATA_WS_TEST_LOGIN'),
+                os.getenv('ERRATA_WS_TEST_TOKEN')
+            )
+        )
+        logger.log("issue inserted :: {}".format(issue['uid']))
 
 
 # Main entry point.

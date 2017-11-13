@@ -20,7 +20,7 @@ from errata.utils import factory
 from errata.utils.constants_json import JF_FACETS
 from errata.utils.constants_json import JF_MATERIALS
 from errata.utils.constants_json import JF_PROJECT
-from errata.utils.constants_json import JF_URL
+from errata.utils.constants_json import JF_URLS
 from errata.utils.http import process_request
 from errata.utils.publisher import create_issue
 from errata.utils.validation import validate_url
@@ -64,8 +64,8 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             """Validates URL's associated with incoming request.
 
             """
-            if config.apply_security_policy:
-                urls = [self.request.data[JF_URL]] + self.request.data[JF_MATERIALS]
+            if config.validate_issue_urls:
+                urls = self.request.data[JF_URLS] + self.request.data[JF_MATERIALS]
                 urls = [i for i in urls if i]
                 for url in urls:
                     validate_url(url)

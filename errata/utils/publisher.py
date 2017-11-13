@@ -27,7 +27,7 @@ from errata.utils.constants_json import JF_SEVERITY
 from errata.utils.constants_json import JF_STATUS
 from errata.utils.constants_json import JF_TITLE
 from errata.utils.constants_json import JF_UID
-from errata.utils.constants_json import JF_URL
+from errata.utils.constants_json import JF_URLS
 from errata.db.models import Issue
 from errata.db.models import IssueFacet
 from errata.db.models import PIDServiceTask
@@ -54,8 +54,7 @@ def create_issue(obj, user_id=u'test-script'):
     issue.status = obj[JF_STATUS].lower()
     issue.title = obj[JF_TITLE].strip()
     issue.uid = obj[JF_UID].strip()
-    # issue.url = obj[JF_URL].strip()
-    issue.url = ",".join(obj.get(JF_URL, []))
+    issue.urls = ",".join(obj.get(JF_URLS, []))
 
     # Issue tracking info.
     issue.date_created = obj.get(JF_DATE_CREATED, dt.datetime.utcnow())
@@ -78,8 +77,7 @@ def update_issue(issue, obj, user_id=u'test-script'):
     issue.severity = obj[JF_SEVERITY].lower()
     issue.status = obj[JF_STATUS].lower()
     issue.title = obj[JF_TITLE].strip()
-    # issue.url = obj[JF_URL].strip()
-    issue.url = ",".join(obj.get(JF_URL, []))
+    issue.urls = ",".join(obj.get(JF_URLS, []))
 
     # Issue tracking info.
     issue.date_updated = obj.get(JF_DATE_UPDATED, dt.datetime.utcnow())
