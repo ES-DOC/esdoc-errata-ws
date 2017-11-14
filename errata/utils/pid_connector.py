@@ -17,9 +17,11 @@ from errata.utils import config
 from errata.utils import logger
 
 
+
 @contextlib.contextmanager
 def get_session():
     """Starts & manages a pid-handle-server session.
+
     """
     connection = create_connector()
     connection.start_messaging_thread()
@@ -27,9 +29,7 @@ def get_session():
     try:
         yield connection
     except Exception as err:
-        msg = "An unhandled exception occurred within the context of a PID service connection: {}."
-        msg = msg.format(err)
-        logger.log_pid_error(msg)
+        logger.log_pid_error("Unhandled exception whilst a PID service connection was open: {}.".format(err))
         raise err
     finally:
         try:
@@ -48,12 +48,18 @@ def create_connector():
 
     """
     # Information about rabbitmq instance:
-    cred = dict(user=config.pid.rabbit_user_trusted, password=config.pid.rabbit_password_trusted,
-                url=config.pid.rabbit_url_trusted, vhost=config.pid.vhost, port=config.pid.port,
-                ssl_enabled=config.pid.ssl_enabled)
+    credentials = dict(
+        user=config.pid.rabbit_user_trusted,
+        password=config.pid.rabbit_password_trusted,
+        url=config.pid.rabbit_url_trusted,
+        vhost=config.pid.vhost,
+        port=config.pid.port,
+        ssl_enabled=config.pid.ssl_enabled
+        )
+
     # Return connection for that data node:
     return esgfpid.Connector(
-        messaging_service_credentials=[cred],
+        messaging_service_credentials=[credentials],
         handle_prefix=config.pid.prefix,
         messaging_service_exchange_name=config.pid.rabbit_exchange,
         data_node=config.pid.data_node1,

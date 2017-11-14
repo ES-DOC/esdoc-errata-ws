@@ -54,10 +54,12 @@ class HandleMismatch(Exception):
     """Raised if handle was not found on the Handle Server.
 
     """
-    def __init__(self, **args):
+    def __init__(self, err):
         """Instance constructor.
 
         """
         super(HandleMismatch, self).__init__(
-            'HANDLE NOT FOUND OR MISMATCHED TEST STATE.'
+            'HANDLE MISMATCH: {}'.format(err)
             )
+
+

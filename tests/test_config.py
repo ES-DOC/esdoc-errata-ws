@@ -54,6 +54,7 @@ def test_fields_pid():
     	('rabbit_user_trusted', _STR_TYPE),
     	('rabbit_urls_open', list),
     	('rabbit_url_trusted', _STR_TYPE),
+        ('ssl_enabled', _STR_TYPE),
     	('sync_retry_interval_in_seconds', int),
     	('thredds_service_path1', _STR_TYPE)
     }:
