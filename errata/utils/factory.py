@@ -55,7 +55,6 @@ def create_issue_dict():
     return {
         JF_DATASETS: get_datasets(cfg['canonical_name']),
         JF_DESCRIPTION: unicode(uuid.uuid4()),
-        JF_INSTITUTE: u'ipsl',
         JF_MATERIALS: _get_materials(),
         JF_PROJECT: cfg['canonical_name'],
         JF_SEVERITY: pyessv.get_random('esdoc:errata:severity'),
@@ -105,7 +104,7 @@ def _get_dataset(project):
     if project == 'cmip5':
         return pattern.format(
             pyessv.get_random('wcrp:cmip5:product'),
-            pyessv.get_random('wcrp:cmip5:institute'),
+            pyessv.parse_namespace('wcrp:cmip5:institute:ipsl'),
             pyessv.get_random('wcrp:cmip5:model'),
             pyessv.get_random('wcrp:cmip5:experiment'),
             pyessv.get_random('wcrp:cmip5:time-frequency'),
@@ -116,7 +115,7 @@ def _get_dataset(project):
     elif project == 'cmip6':
         return pattern.format(
             pyessv.get_random('wcrp:cmip6:activity-id'),
-            pyessv.get_random('wcrp:cmip6:institution-id'),
+            pyessv.parse_namespace('wcrp:cmip6:institution-id:ipsl'),
             pyessv.get_random('wcrp:cmip6:source-id'),
             pyessv.get_random('wcrp:cmip6:experiment-id'),
             pyessv.get_random('wcrp:cmip6:table-id'),
@@ -127,7 +126,7 @@ def _get_dataset(project):
         return pattern.format(
             pyessv.get_random('wcrp:cordex:product'),
             pyessv.get_random('wcrp:cordex:domain'),
-            pyessv.get_random('wcrp:cordex:institute'),
+            pyessv.parse_namespace('wcrp:cordex:institute:ipsl-ineris'),
             pyessv.get_random('wcrp:cordex:driving-model'),
             pyessv.get_random('wcrp:cordex:experiment'),
             pyessv.get_random('wcrp:cordex:rcm-name'),

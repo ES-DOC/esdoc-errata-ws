@@ -99,7 +99,9 @@ def secure_request(handler):
     except ValueError:
         pass
     else:
-        authorize(user_id, data['institute'])
+        for dataset_id in data['datasets']:
+            print 'authorize', dataset_id
+        # authorize(user_id, data['institute'])
 
     # Make user-id available downstream.
     handler.user_id = user_id

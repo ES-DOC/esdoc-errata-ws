@@ -25,6 +25,7 @@ from errata.utils.constants_json import JF_PROJECT
 from errata.utils.constants_json import JF_URLS
 from errata.utils.http import process_request
 from errata.utils.publisher import create_issue
+from errata.utils.publisher import get_institutes
 from errata.utils.validation import validate_url
 
 
@@ -65,6 +66,14 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
                 )
 
 
+        def _validate_issue_institute():
+            """Validates datasets associated with incoming issue.
+
+            """
+            if len(get_institutes(self.request.data)) != 1:
+                raise ValueError('Multiple insitiute codes are not supported')
+
+
         def _validate_issue_urls():
             """Validates URL's associated with incoming request.
 
@@ -88,6 +97,7 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
         # Process request.
         process_request(self, [
             _validate_issue_datasets,
+            _validate_issue_institute,
             _validate_issue_urls,
             _persist
         ])

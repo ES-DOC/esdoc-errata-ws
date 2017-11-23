@@ -27,8 +27,6 @@ JF_TITLE = u'title'
 JF_UID = u'uid'
 JF_URLS = u'urls'
 
-JF_INSTITUTE = u'institute'
-
 # Map of json fields to facets for extraction.
 JF_FACET_TYPE_MAP = {
     JF_PROJECT: FACET_TYPE_PROJECT,

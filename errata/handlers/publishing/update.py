@@ -33,6 +33,8 @@ from errata.utils.constants_json import JF_STATUS
 from errata.utils.constants_json import JF_UID
 from errata.utils.constants_json import JF_URLS
 from errata.utils.http import process_request
+from errata.utils.publisher import get_institute
+from errata.utils.publisher import get_institutes
 from errata.utils.publisher import update_issue
 from errata.utils.validation import validate_url
 
@@ -55,6 +57,14 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
                 self.request.data[JF_PROJECT],
                 self.request.data[JF_DATASETS]
                 )
+
+
+        def _validate_issue_institute():
+            """Validates datasets associated with incoming issue.
+
+            """
+            if len(get_institutes(self.request.data)) != 1:
+                raise ValueError('Multiple insitiute codes are not supported')
 
 
         def _validate_issue_exists():
@@ -81,6 +91,8 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             """Validates that issue attribute deemed to be immutable have not been changed.
 
             """
+            if self.issue.institute != get_institute(self.request.data):
+                raise exceptions.ImmutableIssueAttributeError('institute')
             for attr in IMMUTABLE_ISSUE_ATTRIBUTES:
                 if self.request.data[attr].lower() != getattr(self.issue, attr).lower():
                     raise exceptions.ImmutableIssueAttributeError(attr)
@@ -142,6 +154,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
         with db.session.create(commitable=True):
             process_request(self, [
                 _validate_issue_datasets,
+                _validate_issue_institute,
                 _validate_issue_exists,
                 _validate_issue_urls,
                 _validate_issue_immutable_attributes,

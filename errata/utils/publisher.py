@@ -20,7 +20,6 @@ from errata.utils.constants import RESOURCE_TYPE_URL
 from errata.utils.constants import CORE_FACET_TYPESET
 from errata.utils.constants_json import JF_DATASETS
 from errata.utils.constants_json import JF_DESCRIPTION
-from errata.utils.constants_json import JF_INSTITUTE
 from errata.utils.constants_json import JF_FACET_TYPE_MAP
 from errata.utils.constants_json import JF_MATERIALS
 from errata.utils.constants_json import JF_PROJECT
@@ -50,8 +49,8 @@ def create_issue(obj, user_id):
     # Issue - core fields.
     issue = Issue()
     issue.description = obj[JF_DESCRIPTION].strip()
-    issue.institute = obj[JF_INSTITUTE].lower()
     issue.project = obj[JF_PROJECT].lower()
+    issue.institute = get_institute(obj)
     issue.severity = obj[JF_SEVERITY].lower()
     issue.status = obj[JF_STATUS].lower()
     issue.title = obj[JF_TITLE].strip()
@@ -99,6 +98,22 @@ def close_issue(issue, status, user_id):
     # Issue - tracking info.
     issue.closed_by = user_id
     issue.closed_date = dt.datetime.utcnow()
+
+
+def get_institute(obj):
+    """Returns insitiute identifier from issue data.
+
+    """
+    return get_institutes(obj)[0].canonical_name
+
+
+def get_institutes(obj):
+    """Returns insitiute identifiers from issue data.
+
+    """
+    terms = pyessv.parse_dataset_identifers(obj[JF_PROJECT], obj[JF_DATASETS])
+
+    return [i for i in terms if i.collection.canonical_name in ('institute', 'institution-id')]
 
 
 def _get_resources(issue, obj):

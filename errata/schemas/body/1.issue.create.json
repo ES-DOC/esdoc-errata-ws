@@ -15,10 +15,6 @@
             "minLength": 1,
             "type": "string"
         },
-        "institute": {
-            "minLength": 1,
-            "type": "string"
-        },
         "materials": {
             "items": {
                 "pattern": "\\.(jpg|gif|png|tiff)$",
@@ -73,7 +69,6 @@
     "required": [
         "datasets",
         "description",
-        "institute",
         "materials",
         "project",
         "severity",

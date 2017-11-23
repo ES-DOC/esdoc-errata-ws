@@ -78,7 +78,6 @@ SEVERITY = {
 
 # List of issue attributes that cannot be updated.
 IMMUTABLE_ISSUE_ATTRIBUTES = [
-    'institute',
     'title',
     'project'
 ]
