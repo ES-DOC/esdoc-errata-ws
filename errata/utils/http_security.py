@@ -9,8 +9,6 @@
 
 
 """
-import json
-
 import pyesdoc
 
 from errata.utils import config
@@ -82,26 +80,8 @@ def secure_request(handler):
     if handler.request.path in _WHITELISTED_ENDPOINTS:
         return
 
-    # Strip credentials from request header.
     credentials = pyesdoc.strip_credentials(handler.request.headers['Authorization'])
-
-    # Escape if policy does not require enforcing - i.e. during dev|testing.
-    if config.apply_security_policy == False:
-        handler.user_id = credentials[0]
-        return
-
-    # Authenticate.
-    user_id = authenticate(credentials)
-
-    # Authorize.
-    try:
-        data = json.loads(handler.request.body)
-    except ValueError:
-        pass
+    if config.apply_security_policy:
+        handler.user_id = authenticate(credentials)
     else:
-        for dataset_id in data['datasets']:
-            print 'authorize', dataset_id
-        # authorize(user_id, data['institute'])
-
-    # Make user-id available downstream.
-    handler.user_id = user_id
+        handler.user_id = credentials[0]
