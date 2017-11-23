@@ -10,10 +10,12 @@
 
 """
 from errata.db.dao_validator import validate_delete_facets
-from errata.db.dao_validator import validate_get_facets
+from errata.db.dao_validator import validate_delete_resources
+from errata.db.dao_validator import validate_get_datasets
 from errata.db.dao_validator import validate_get_issue
 from errata.db.dao_validator import validate_get_issues
 from errata.db.dao_validator import validate_get_issues_by_facet
+from errata.db.dao_validator import validate_get_resources
 from errata.db.models import Issue
 from errata.db.models import IssueFacet
 from errata.db.models import IssueResource
@@ -43,7 +45,7 @@ def delete_facets(uid):
     qry.delete()
 
 
-@validate(validate_delete_facets)
+@validate(validate_delete_resources)
 def delete_resources(uid):
     """Deletes resources associated with an issue.
 
@@ -54,37 +56,6 @@ def delete_resources(uid):
     qry = qry.filter(IssueResource.issue_uid == uid)
 
     qry.delete()
-
-
-@validate(validate_get_facets)
-def get_facets(facet_type=None, issue_uid=None):
-    """Returns set of facets.
-
-    :param str facet_type: Type of facet to filter result set by.
-    :param str issue_uid: Unique issue identifier.
-
-    :returns: Matching facets.
-    :rtype: list
-
-    """
-    if issue_uid:
-        qry = raw_query(
-            IssueFacet.facet_value,
-            IssueFacet.facet_type,
-            IssueFacet.issue_uid
-            )
-    else:
-        qry = raw_query(
-            IssueFacet.facet_value,
-            IssueFacet.facet_type
-            )
-    if issue_uid is not None:
-        qry = text_filter(qry, IssueFacet.issue_uid, issue_uid)
-    if facet_type is not None:
-        qry = qry.filter(IssueFacet.facet_type == facet_type)
-    qry = qry.distinct()
-
-    return qry.all()
 
 
 @validate(validate_get_issue)
@@ -135,22 +106,7 @@ def get_issues(criteria):
     return qry.all()
 
 
-def get_resources(issue_uid=None):
-    """Returns set of issue resources.
-
-    :param str issue_uid: Unique issue identifier.
-
-    :returns: Related resource collection.
-    :rtype: list
-
-    """
-    qry = query(IssueResource)
-    if issue_uid is not None:
-        qry = text_filter(qry, IssueResource.issue_uid, issue_uid)
-
-    return qry.all()
-
-
+@validate(validate_get_datasets)
 def get_datasets(issue_uid):
     """Returns set of issue datasets.
 
@@ -166,6 +122,23 @@ def get_datasets(issue_uid):
         qry = text_filter(qry, IssueResource.issue_uid, issue_uid)
 
     return set([i.resource_location for i in qry.all()])
+
+
+@validate(validate_get_resources)
+def get_resources(issue_uid=None):
+    """Returns set of issue resources.
+
+    :param str issue_uid: Unique issue identifier.
+
+    :returns: Related resource collection.
+    :rtype: list
+
+    """
+    qry = query(IssueResource)
+    if issue_uid is not None:
+        qry = text_filter(qry, IssueResource.issue_uid, issue_uid)
+
+    return qry.all()
 
 
 def get_project_facets():

@@ -25,13 +25,25 @@ def validate_delete_facets(issue_uid):
     v.validate_uid(issue_uid, 'Issue unique identifier')
 
 
-def validate_get_facets(facet_type=None, issue_uid=None):
-    """Function input validator: get_facets.
+def validate_delete_resources(issue_uid):
+    """Function input validator: delete_resources.
 
     """
-    if facet_type:
-        v.validate_str(facet_type, 'facet_type')
-    if issue_uid:
+    v.validate_uid(issue_uid, 'Issue unique identifier')
+
+
+def validate_get_datasets(issue_uid):
+    """Function input validator: get_datasets.
+
+    """
+    v.validate_uid(issue_uid, 'Issue unique identifier')
+
+
+def validate_get_resources(issue_uid=None):
+    """Function input validator: get_resources.
+
+    """
+    if issue_uid is not None:
         v.validate_uid(issue_uid, 'Issue unique identifier')
 
 
