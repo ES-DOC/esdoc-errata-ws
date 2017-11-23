@@ -15,6 +15,7 @@ import pyesdoc
 
 from errata.utils import config
 from errata.utils import constants
+from errata.utils import logger
 
 
 
@@ -55,6 +56,7 @@ def authorize(user_id, institute_id):
     :param str institute_id: Institute identifier, e.g. ipsl.
 
     """
+    logger.log('Authorizing: {} :: {}'.format(user_id, institute_id))
     pyesdoc.authorize_user(_GH_TEAM, user_id)
     pyesdoc.authorize_user('staff-{}'.format(institute_id), user_id)
 
