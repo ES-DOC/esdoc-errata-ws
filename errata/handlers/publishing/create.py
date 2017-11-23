@@ -25,7 +25,9 @@ from errata.utils.constants_json import JF_PROJECT
 from errata.utils.constants_json import JF_URLS
 from errata.utils.http import process_request
 from errata.utils.publisher import create_issue
+from errata.utils.publisher import get_institute
 from errata.utils.publisher import get_institutes
+from errata.utils.http_security import authorize
 from errata.utils.validation import validate_url
 
 
@@ -74,6 +76,14 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
                 raise ValueError('Multiple insitiute codes are not supported')
 
 
+        def _validate_user_access():
+            """Validates user's institutional access rights.
+
+            """
+            if config.apply_security_policy:
+                authorize(self.user_id, get_institute(self.request.data))
+
+
         def _validate_issue_urls():
             """Validates URL's associated with incoming request.
 
@@ -98,6 +108,7 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
         process_request(self, [
             _validate_issue_datasets,
             _validate_issue_institute,
+            _validate_user_access,
             _validate_issue_urls,
             _persist
         ])

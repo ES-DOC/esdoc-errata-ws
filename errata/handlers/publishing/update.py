@@ -67,6 +67,14 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
                 raise ValueError('Multiple insitiute codes are not supported')
 
 
+        def _validate_user_access():
+            """Validates user's institutional access rights.
+
+            """
+            if config.apply_security_policy:
+                authorize(self.user_id, get_institute(self.request.data))
+
+
         def _validate_issue_exists():
             """Validates that the issue has been previously posted to the web-service.
 
@@ -155,6 +163,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             process_request(self, [
                 _validate_issue_datasets,
                 _validate_issue_institute,
+                _validate_user_access,
                 _validate_issue_exists,
                 _validate_issue_urls,
                 _validate_issue_immutable_attributes,
