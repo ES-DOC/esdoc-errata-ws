@@ -15,13 +15,13 @@ import datetime as dt
 import tornado
 
 from errata import db
+from errata.utils import config
 from errata.utils import constants
 from errata.utils import exceptions
 from errata.utils.http import process_request
 from errata.utils.http_security import authorize
 from errata.utils.constants_json import *
 from errata.utils.publisher import close_issue
-
 
 
 # Query parameter names.
@@ -50,7 +50,8 @@ class CloseIssueRequestHandler(tornado.web.RequestHandler):
             """Validates user's institutional access rights.
 
             """
-            authorize(self.user_id, self.issue.institute)
+            if config.apply_security_policy:
+                authorize(self.user_id, self.issue.institute)
 
 
         def _validate_issue_status():

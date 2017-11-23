@@ -78,13 +78,19 @@ def secure_request(handler):
     :param utils.http.HTTPRequestHandler handler: An HTTP request handler.
 
     """
+    # Escape if endpoint is whitelisted.
+    if handler.request.path in _WHITELISTED_ENDPOINTS:
+        return
+
+    # Strip credentials from request header.
+    credentials = pyesdoc.strip_credentials(handler.request.headers['Authorization'])
+
     # Escape if policy does not require enforcing - i.e. during dev|testing.
-    if config.apply_security_policy == False or handler.request.path in _WHITELISTED_ENDPOINTS:
-        handler.user_id = u'test-script'
+    if config.apply_security_policy == False:
+        handler.user_id = credentials[0]
         return
 
     # Authenticate.
-    credentials = pyesdoc.strip_credentials(handler.request.headers['Authorization'])
     user_id = authenticate(credentials)
 
     # Authorize.
