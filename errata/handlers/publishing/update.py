@@ -36,6 +36,7 @@ from errata.utils.http import process_request
 from errata.utils.publisher import get_institute
 from errata.utils.publisher import get_institutes
 from errata.utils.publisher import update_issue
+from errata.utils.http_security import authorize
 from errata.utils.validation import validate_url
 
 
