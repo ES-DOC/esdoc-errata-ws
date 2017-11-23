@@ -11,6 +11,8 @@
 
 
 """
+import pyessv
+
 from errata.utils import constants
 from errata.utils import validation as v
 
@@ -57,12 +59,10 @@ def validate_get_issues(criteria):
         v.validate_str(model, "Model name")
     if severity is not None:
         v.validate_str(severity, "Issue severity")
-        v.validate_enum(
-            [i['key'] for i in constants.SEVERITY], severity, "Issue severity")
+        v.validate_pyessv_enum('esdoc:errata:severity', severity, "Issue severity")
     if status is not None:
         v.validate_str(status, "Issue status")
-        v.validate_enum(
-            [i['key'] for i in constants.STATUS], status, "Issue status")
+        v.validate_pyessv_enum('esdoc:errata:status', status, "Issue status")
     if variable is not None:
         v.validate_str(variable, "Variable name")
 
@@ -71,13 +71,5 @@ def validate_get_issues_by_facet(facet_value, facet_type):
     """Function input validator: get_issues_by_facet.
 
     """
-    v.validate_str(facet_value, "Facet value")
+    v.validate_str(facet_value, "facet_value")
     v.validate_str(facet_type, 'facet_type')
-
-
-def validate_get_project_facets(excluded_types=[]):
-    """Function input validator: get_project_facets.
-
-    """
-    v.validate_iterable(excluded_types, 'get_project_facets')
-

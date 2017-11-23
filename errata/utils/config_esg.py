@@ -24,25 +24,6 @@ _PROJECTS = None
 
 
 
-def get_active_project(canonical_name):
-    """Returns a project's configuration information.
-
-    :str canonical_name: A project code.
-
-    :returns: Project configuration.
-    :rtype: dict
-
-    """
-    return _get_project(canonical_name, get_active_projects)
-
-
-def get_active_projects():
-    """Returns set of active projects.
-
-    """
-    return [i for i in get_projects() if i['is_active']]
-
-
 def get_project(canonical_name):
     """Returns project specific configuration information.
 
@@ -52,7 +33,9 @@ def get_project(canonical_name):
     :rtype: dict
 
     """
-    return _get_project(canonical_name, get_projects)
+    for cfg in get_projects():
+        if cfg['canonical_name'] == canonical_name:
+            return cfg
 
 
 def get_projects():
@@ -81,8 +64,8 @@ def validate(project, facets):
     :param dict facets: Set of facets.
 
     """
-    # Validate project is active.
-    cfg = get_active_project(project)
+    # Validate project is configured.
+    cfg = get_project(project)
     if cfg is None:
         raise exceptions.UnknownProjectError(project)
 
@@ -108,8 +91,8 @@ def validate_facet_value(project, facet_type, facet_value):
     :param dict facets: Set of facets.
 
     """
-    # Validate project is active.
-    cfg = get_active_project(project)
+    # Validate project is configured.
+    cfg = get_project(project)
     if cfg is None:
         raise exceptions.UnknownProjectError(project)
 
@@ -137,15 +120,6 @@ def _map_project(canonical_name, obj):
     } for k, v in obj.get('facets', dict()).items()}
 
     return obj
-
-
-def _get_project(canonical_name, collection):
-    """Returns a project's configuration information.
-
-    """
-    for cfg in collection():
-        if cfg['canonical_name'] == canonical_name:
-            return cfg
 
 
 def _get_projects_fpath():

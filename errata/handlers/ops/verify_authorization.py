@@ -13,6 +13,7 @@
 import tornado
 
 import errata
+from errata.utils import config
 from errata.utils.http import process_request
 from errata.utils.http_security import apply_policy
 
@@ -36,11 +37,12 @@ class VerifyAuthorizationRequestHandler(tornado.web.RequestHandler):
             """Verifies user is authorized to manage an institute's errata.
 
             """
-            apply_policy(
-                self.get_argument(_PARAM_LOGIN),
-                self.get_argument(_PARAM_TOKEN),
-                self.get_argument(_PARAM_INSTITUTE)
-                )
+            if config.apply_security_policy == True:
+                apply_policy(
+                    self.get_argument(_PARAM_LOGIN),
+                    self.get_argument(_PARAM_TOKEN),
+                    self.get_argument(_PARAM_INSTITUTE)
+                    )
 
 
         def _set_output():

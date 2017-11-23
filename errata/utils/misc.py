@@ -5,7 +5,7 @@
    :platform: Unix
    :synopsis: Miscellaneous utility functions.
 
-.. moduleauthor:: Guillaume Levavasseur <glipsl@ipsl.jussieu.fr>
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """

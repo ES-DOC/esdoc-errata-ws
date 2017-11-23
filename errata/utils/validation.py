@@ -14,6 +14,7 @@ import uuid
 
 import arrow
 import requests
+import pyessv
 
 from errata.utils import exceptions
 
@@ -58,6 +59,17 @@ def validate_enum(enum_values, val, var):
 
     """
     if val not in enum_values:
+        _raise_value_error(val, var, 'enum-member')
+
+
+def validate_pyessv_enum(collection_id, val, var):
+    """Validates an enumerable member.
+
+    """
+    namespace = '{}:{}'.format(collection_id, val)
+    try:
+        pyessv.parse_namespace(namespace)
+    except pyessv.ParsingError:
         _raise_value_error(val, var, 'enum-member')
 
 

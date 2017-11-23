@@ -5,7 +5,7 @@
    :platform: Unix
    :synopsis: Miscellaneous utility functions.
 
-.. moduleauthor:: Guillaume Levavasseur <glipsl@ipsl.jussieu.fr>
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """
@@ -76,8 +76,9 @@ def secure_request(handler):
     :param utils.http.HTTPRequestHandler handler: An HTTP request handler.
 
     """
-    # Escape if policy does not require enforcing.
+    # Escape if policy does not require enforcing - i.e. during dev|testing.
     if config.apply_security_policy == False or handler.request.path in _WHITELISTED_ENDPOINTS:
+        handler.user_id = u'test-script'
         return
 
     # Authenticate.

@@ -53,6 +53,15 @@ _SEVERITY_ENUM = Enum(
     name="IssueSeverityEnum"
     )
 
+# Issue resource type enumeration.
+_RESOURCE_TYPE_ENUM = Enum(
+    RESOURCE_TYPE_URL,
+    RESOURCE_TYPE_MATERIAL,
+    RESOURCE_TYPE_DATASET,
+    schema=_SCHEMA,
+    name="IssueResourceTypeEnum"
+    )
+
 # PID task states.
 _PID_TASK_STATE_ENUM = Enum(
     PID_TASK_STATE_COMPLETE,
@@ -82,7 +91,7 @@ class Issue(Entity):
         {'schema': _SCHEMA}
     )
 
-    # Column definitions.
+    # Core columns.
     project = Column(Unicode(63), nullable=False)
     institute = Column(Unicode(63), nullable=False)
     uid = Column(Unicode(63), nullable=False, unique=True, default=uuid.uuid4())
@@ -90,14 +99,14 @@ class Issue(Entity):
     description = Column(Text, nullable=False)
     severity = Column(_SEVERITY_ENUM, nullable=False)
     status = Column(_STATUS_ENUM, nullable=False)
-    urls = Column(Unicode(1023))
-    date_created = Column(DateTime, nullable=False, default=dt.datetime.utcnow)
-    date_updated = Column(DateTime)
-    date_closed = Column(DateTime)
+
+    # Tracking columns.
     created_by = Column(Unicode(511))
+    created_date = Column(DateTime, nullable=False, default=dt.datetime.utcnow)
     updated_by = Column(Unicode(511))
+    updated_date = Column(DateTime)
     closed_by = Column(Unicode(511))
-    materials = Column(Text)
+    closed_date = Column(DateTime)
 
 
     def __repr__(self):
@@ -108,22 +117,20 @@ class Issue(Entity):
             self.uid, self.title, self.description)
 
 
-    def to_dict(self, facets):
+    def to_dict(self, resources):
         """Encode issue as a simple dictionary.
 
+        :param list resources: Collection of issue resources.
+
         """
+        def _get_reources(resource_type):
+            return sorted([i.resource_location for i in resources \
+                           if i.issue_uid == self.uid and i.resource_type == resource_type])
+
         obj = convertor.to_dict(self)
-        obj['materials'] = self.materials.split(",")
-        obj['datasets'] = []
-        obj['facets'] = collections.defaultdict(list)
-        obj['urls'] = self.urls.split(',')
-        for facet_value, facet_type, _ in [i for i in facets if i[2] == self.uid]:
-            if facet_type == 'dataset':
-                obj['datasets'].append(facet_value)
-            elif facet_type not in CORE_FACET_TYPESET:
-                obj['facets'][facet_type].append(facet_value)
-        for key in {'datasets', 'materials'}:
-            obj[key] = sorted(obj[key])
+        obj['datasets'] = _get_reources(RESOURCE_TYPE_DATASET)
+        obj['materials'] = _get_reources(RESOURCE_TYPE_MATERIAL)
+        obj['urls'] = _get_reources(RESOURCE_TYPE_URL)
 
         return obj
 
@@ -133,7 +140,7 @@ Index('idx_issue_description', func.lower(Issue.description))
 
 
 class IssueFacet(Entity):
-    """Associates an issue with a searchable facet such as dataset id.
+    """Associates an issue with a searchable facet such as severity.
 
     """
     # SQLAlchemy directives.
@@ -156,6 +163,31 @@ class IssueFacet(Entity):
         """
         return "<IssueFacet(uid={}, type={}, value=={})>".format(
             self.issue_uid, self.facet_type, self.facet_value)
+
+
+class IssueResource(Entity):
+    """Associates an issue with a resource such as a dataset id.
+
+    """
+    # SQLAlchemy directives.
+    __tablename__ = 'tbl_issue_resource'
+    __table_args__ = (
+        UniqueConstraint('issue_uid', 'resource_type', 'resource_location'),
+        {'schema': _SCHEMA}
+    )
+
+    # Column definitions.
+    issue_uid = Column(Unicode(63), ForeignKey('{}.tbl_issue.uid'.format(_SCHEMA)), nullable=False)
+    resource_type = Column(_RESOURCE_TYPE_ENUM, nullable=False)
+    resource_location = Column(Unicode(1023), nullable=False)
+
+
+    def __repr__(self):
+        """Instance representation.
+
+        """
+        return "<IssueResource(uid={}, type={}, location=={})>".format(
+            self.issue_uid, self.resource_type, self.resource_location)
 
 
 class PIDServiceTask(Entity):

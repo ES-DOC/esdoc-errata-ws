@@ -37,8 +37,9 @@ class RetrieveAllIssuesRequestHandler(tornado.web.RequestHandler):
             """Pulls data from db.
 
             """
-            self.issues = db.dao.get_all_issues()
-            self.facets = db.dao.get_facets()
+            with db.session.create():
+                self.issues = db.dao.get_all_issues()
+                self.resources = db.dao.get_resources()
 
 
         def _set_output():
@@ -47,13 +48,12 @@ class RetrieveAllIssuesRequestHandler(tornado.web.RequestHandler):
             """
             self.output = {
                 'count': len(self.issues),
-                'issues': [i.to_dict(self.facets) for i in self.issues]
+                'issues': [i.to_dict(self.resources) for i in self.issues]
             }
 
 
         # Process request.
-        with db.session.create():
-            process_request(self, [
-                _set_data,
-                _set_output
-                ])
+        process_request(self, [
+            _set_data,
+            _set_output
+            ])

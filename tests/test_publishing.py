@@ -18,7 +18,6 @@ import urllib
 
 import requests
 
-from errata.utils.config_esg import validate_facet_value
 from errata.utils import constants
 from errata.utils import factory
 from tests import utils as tu
@@ -64,8 +63,8 @@ def test_create():
     tu.assert_ws_response(_URL_CREATE, response)
 
 
-def test_retrieve():
-    """ERRATA :: WS :: Postive Test :: Retrieve issue.
+def test_create_retrieve():
+    """ERRATA :: WS :: Postive Test :: Retrieve created issue.
 
     """
     # Invoke WS endpoint.
@@ -88,11 +87,6 @@ def test_retrieve():
     # Assert tracking info.
     _assert_tracking_info(issue)
 
-    # Assert facets.
-    for facet_type, facet_values in issue['facets'].items():
-        for facet_value in facet_values:
-            validate_facet_value(issue['project'], facet_type, facet_value)
-
 
 def test_update():
     """ERRATA :: WS :: Postive Test :: Update issue.
@@ -100,9 +94,7 @@ def test_update():
     """
     # Update test issue.
     _ISSUE['status'] = constants.STATUS_RESOLVED
-    _ISSUE['dateUpdated'] = unicode(dt.datetime.utcnow())
-    _ISSUE['datasets'] = factory.get_datasets(_ISSUE['project'],
-                                              random.sample(_ISSUE['datasets'], 2))
+    _ISSUE['datasets'] = factory.get_datasets(_ISSUE['project'], random.sample(_ISSUE['datasets'], 2))
 
     # Invoke WS endpoint.
     response = requests.post(
@@ -134,7 +126,7 @@ def test_update_retrieve():
     assert issue['status'] == _ISSUE['status']
 
     # Assert tracking info.
-    assert issue['dateUpdated'] is not None
+    assert issue['updatedDate'] is not None
     _assert_tracking_info(issue)
 
 
@@ -167,7 +159,7 @@ def test_close_retrieve():
     assert issue['status'] == constants.STATUS_RESOLVED
 
     # Assert tracking info.
-    assert issue['dateClosed'] is not None
+    assert issue['closedDate'] is not None
     _assert_tracking_info(issue)
 
 
@@ -176,15 +168,15 @@ def _assert_tracking_info(issue):
 
     """
     for user_field, date_field in {
-        ('closedBy', 'dateClosed'),
-        ('createdBy', 'dateCreated'),
-        ('updatedBy', 'dateUpdated')
+        ('closedBy', 'closedDate'),
+        ('createdBy', 'createdDate'),
+        ('updatedBy', 'updatedDate')
         }:
         assert user_field in issue
         assert date_field in issue
         if user_field == 'createdBy':
             assert issue[user_field] is not None
-        if date_field == 'dateCreated':
+        if date_field == 'createdDate':
             assert issue[date_field] is not None
         if issue[user_field] is not None:
             assert issue[date_field] is not None

@@ -9,17 +9,18 @@
 
 
 """
+import pyessv
+
 import datetime as dt
 
-from errata.utils.config_esg import get_active_project
 from errata.utils.constants import PID_ACTION_INSERT
-from errata.utils.constants_json import JF_DATE_CLOSED
-from errata.utils.constants_json import JF_DATE_CREATED
-from errata.utils.constants_json import JF_DATE_UPDATED
+from errata.utils.constants import RESOURCE_TYPE_DATASET
+from errata.utils.constants import RESOURCE_TYPE_MATERIAL
+from errata.utils.constants import RESOURCE_TYPE_URL
+from errata.utils.constants import CORE_FACET_TYPESET
 from errata.utils.constants_json import JF_DATASETS
 from errata.utils.constants_json import JF_DESCRIPTION
 from errata.utils.constants_json import JF_INSTITUTE
-from errata.utils.constants_json import JF_FACETS
 from errata.utils.constants_json import JF_FACET_TYPE_MAP
 from errata.utils.constants_json import JF_MATERIALS
 from errata.utils.constants_json import JF_PROJECT
@@ -28,62 +29,96 @@ from errata.utils.constants_json import JF_STATUS
 from errata.utils.constants_json import JF_TITLE
 from errata.utils.constants_json import JF_UID
 from errata.utils.constants_json import JF_URLS
+from errata.utils.facet_extractor import extract_facets
 from errata.db.models import Issue
 from errata.db.models import IssueFacet
+from errata.db.models import IssueResource
 from errata.db.models import PIDServiceTask
 
 
 
-def create_issue(obj, user_id=u'test-script'):
-    """Returns an issue.
+def create_issue(obj, user_id):
+    """Returns set of db entities created when processing a new issue.
 
-    :param dict obj: Over the wire dictionary representation.
+    :param dict obj: Over the wire dictionary representation (i.e. coming from client).
     :param str user_id: ID of user responsible for maintaining issue.
 
-    :returns: A 3 member tuple: (issue, facets, pid_tasks).
-    :rtype: tuple
+    :returns: List of db entities.
+    :rtype: list
 
     """
-    # Issue.
+    # Issue - core fields.
     issue = Issue()
     issue.description = obj[JF_DESCRIPTION].strip()
     issue.institute = obj[JF_INSTITUTE].lower()
-    issue.materials = ",".join(obj.get(JF_MATERIALS, []))
     issue.project = obj[JF_PROJECT].lower()
     issue.severity = obj[JF_SEVERITY].lower()
     issue.status = obj[JF_STATUS].lower()
     issue.title = obj[JF_TITLE].strip()
     issue.uid = obj[JF_UID].strip()
-    issue.urls = ",".join(obj.get(JF_URLS, []))
 
-    # Issue tracking info.
-    issue.date_created = obj.get(JF_DATE_CREATED, dt.datetime.utcnow())
+    # Issue - tracking info.
     issue.created_by = user_id
+    issue.created_date = dt.datetime.utcnow()
 
-    return issue, _get_facets(issue, obj), _get_pid_tasks(issue, obj)
+    return [issue] + _get_resources(issue, obj) + _get_facets(issue, obj) + _get_pid_tasks(issue, obj)
 
 
-def update_issue(issue, obj, user_id=u'test-script'):
+def update_issue(issue, obj, user_id):
     """Updates an issue.
 
-    :param db.models.Issue issue: Issue ot be updated.
-    :param dict obj: Over the wire dictionary representation.
+    :param db.models.Issue issue: Issue to be updated.
+    :param dict obj: Over the wire dictionary representation (i.e. coming from client).
     :param str user_id: ID of user responsible for maintaining issue.
 
     """
-    # Update issue.
+    # Issue - core fields.
     issue.description = obj[JF_DESCRIPTION].strip()
-    issue.materials = ",".join(obj.get(JF_MATERIALS, []))
     issue.severity = obj[JF_SEVERITY].lower()
     issue.status = obj[JF_STATUS].lower()
     issue.title = obj[JF_TITLE].strip()
-    issue.urls = ",".join(obj.get(JF_URLS, []))
 
-    # Issue tracking info.
-    issue.date_updated = obj.get(JF_DATE_UPDATED, dt.datetime.utcnow())
+    # Issue - tracking info.
     issue.updated_by = user_id
+    issue.updated_date = dt.datetime.utcnow()
 
-    return _get_facets(issue, obj)
+    return _get_resources(issue, obj) + _get_facets(issue, obj)
+
+
+def close_issue(issue, status, user_id):
+    """Updates an issue.
+
+    :param db.models.Issue issue: Issue to be updated.
+    :param str status: Issue status.
+    :param str user_id: ID of user responsible for maintaining issue.
+
+    """
+    # Issue - core fields.
+    issue.status = status
+
+    # Issue - tracking info.
+    issue.closed_by = user_id
+    issue.closed_date = dt.datetime.utcnow()
+
+
+def _get_resources(issue, obj):
+    """Returns resources extracted from issue data.
+
+    """
+    resources = []
+    for typeof, locations in (
+        (RESOURCE_TYPE_DATASET, obj[JF_DATASETS]),
+        (RESOURCE_TYPE_MATERIAL, obj.get(JF_MATERIALS, [])),
+        (RESOURCE_TYPE_URL, obj.get(JF_URLS, [])),
+        ):
+        for location in locations:
+            resource = IssueResource()
+            resource.issue_uid = issue.uid
+            resource.resource_type = typeof
+            resource.resource_location = location
+            resources.append(resource)
+
+    return resources
 
 
 def _get_facets(issue, obj):
@@ -93,27 +128,22 @@ def _get_facets(issue, obj):
     facets = []
 
     # Core facets.
-    for field, facet_type in JF_FACET_TYPE_MAP.items():
-        facet_values =  obj[field]
-        if not isinstance(facet_values, list):
-            facet_values = [facet_values]
-        for facet_value in facet_values:
-            facet = IssueFacet()
-            facet.project = issue.project
-            facet.issue_uid = issue.uid
-            facet.facet_type = facet_type
-            facet.facet_value = facet_value
-            facets.append(facet)
+    for facet_type in CORE_FACET_TYPESET:
+        facet = IssueFacet()
+        facet.project = issue.project
+        facet.issue_uid = issue.uid
+        facet.facet_type = u'esdoc:errata:{}'.format(facet_type)
+        facet.facet_value = getattr(issue, facet_type).lower()
+        facets.append(facet)
 
     # Project specific facets.
-    for facet_type, facet_values in obj[JF_FACETS].items():
-        for facet_value in facet_values:
-            facet = IssueFacet()
-            facet.project = issue.project
-            facet.issue_uid = issue.uid
-            facet.facet_type = facet_type
-            facet.facet_value = facet_value
-            facets.append(facet)
+    for term in pyessv.parse_dataset_identifers(issue.project, obj[JF_DATASETS]):
+        facet = IssueFacet()
+        facet.project = issue.project
+        facet.issue_uid = issue.uid
+        facet.facet_type = term.collection.namespace
+        facet.facet_value = term.canonical_name
+        facets.append(facet)
 
     return facets
 
@@ -123,8 +153,8 @@ def _get_pid_tasks(issue, obj):
 
     """
     pid_tasks = []
-    project_conf = get_active_project(obj[JF_PROJECT])
-    if project_conf['is_pid_client']:
+    project = pyessv.load('esdoc:errata:project:{}'.format(issue.project))
+    if project.data['is_pid_client'] == True:
         for identifier in obj[JF_DATASETS]:
             task = PIDServiceTask()
             task.action = PID_ACTION_INSERT

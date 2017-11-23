@@ -67,7 +67,7 @@ def test_search():
     criteria = collections.defaultdict(int)
 
     # Publish test issues.
-    for _ in range(5):
+    for _ in range(2):
         # ... create;
         issue = factory.create_issue_dict()
 
@@ -82,6 +82,8 @@ def test_search():
 
         # ... cache criteria;
         criteria[(issue['project'], issue['severity'], issue['status'])] += 1
+
+    return
 
     # Perform searches:
     for project, severity, status in criteria:

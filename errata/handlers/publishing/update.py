@@ -21,13 +21,12 @@ from errata.utils import config_esg
 from errata.utils import exceptions
 from errata.utils import logger
 from errata.utils.constants import DESCRIPTION_CHANGE_RATIO
-from errata.utils.constants import FACET_TYPE_DATASET
 from errata.utils.constants import IMMUTABLE_ISSUE_ATTRIBUTES
 from errata.utils.constants import PID_ACTION_DELETE
 from errata.utils.constants import PID_ACTION_INSERT
 from errata.utils.constants import STATUS_NEW
+from errata.utils.constants_json import JF_DATASETS
 from errata.utils.constants_json import JF_DESCRIPTION
-from errata.utils.constants_json import JF_FACETS
 from errata.utils.constants_json import JF_MATERIALS
 from errata.utils.constants_json import JF_PROJECT
 from errata.utils.constants_json import JF_STATUS
@@ -48,11 +47,14 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
         """HTTP POST handler.
 
         """
-        def _validate_issue_facets():
-            """Validates facets associated with incoming issue.
+        def _validate_issue_datasets():
+            """Validates datasets associated with incoming issue.
 
             """
-            config_esg.validate(self.request.data[JF_PROJECT], self.request.data[JF_FACETS])
+            pyessv.parse_dataset_identifers(
+                self.request.data[JF_PROJECT],
+                self.request.data[JF_DATASETS]
+                )
 
 
         def _validate_issue_exists():
@@ -111,20 +113,19 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             """Persists data to dB.
 
             """
-            # Set old datasets.
-            dsets_old = db.dao.get_facets(issue_uid=self.issue.uid, facet_type=FACET_TYPE_DATASET)
-            dsets_old = set([i.facet_value for i in dsets_old])
+            # Get old datasets.
+            dsets_old = db.dao.get_datasets(self.issue.uid)
 
-            # Delete old facets.
+            # Delete existing facets / resources.
             db.dao.delete_facets(self.issue.uid)
+            db.dao.delete_resources(self.issue.uid)
 
-            # Update issue & insert new facets.
-            facets = update_issue(self.issue, self.request.data, self.user_id)
-            for facet in facets:
-                db.session.insert(facet)
+            # Update issue.
+            for entity in update_issue(self.issue, self.request.data, self.user_id):
+                db.session.insert(entity)
 
             # Update PID handle errata.
-            dsets_new = set([i.facet_value for i in facets if i.facet_type == FACET_TYPE_DATASET])
+            dsets_new = db.dao.get_datasets(self.issue.uid)
             for action, identifiers in (
                 (PID_ACTION_DELETE, dsets_old - dsets_new),
                 (PID_ACTION_INSERT, dsets_new - dsets_old)
@@ -140,7 +141,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
         # Process request.
         with db.session.create(commitable=True):
             process_request(self, [
-                _validate_issue_facets,
+                _validate_issue_datasets,
                 _validate_issue_exists,
                 _validate_issue_urls,
                 _validate_issue_immutable_attributes,

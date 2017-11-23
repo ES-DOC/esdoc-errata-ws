@@ -11,21 +11,9 @@
             "type": "array",
             "uniqueItems": true
         },
-        "dateCreated": {
-            "format": "date-time",
-            "type": "string"
-        },
-        "dateUpdated": {
-            "format": "date-time",
-            "type": "string"
-        },
         "description": {
             "minLength": 1,
             "type": "string"
-        },
-        "facets": {
-            "title": "Extracted facets.",
-            "type": "object"
         },
         "institute": {
             "minLength": 1,
@@ -41,14 +29,9 @@
         },
         "project": {
             "enum": [
-                "cmip1",
-                "cmip2",
-                "cmip3",
                 "cmip5",
                 "cmip6",
-                "cordex",
-                "obs4mips",
-                "input4mips"
+                "cordex"
             ],
             "minLength": 1,
             "type": "string"
@@ -89,10 +72,7 @@
     },
     "required": [
         "datasets",
-        "dateCreated",
-        "dateUpdated",
         "description",
-        "facets",
         "institute",
         "materials",
         "project",

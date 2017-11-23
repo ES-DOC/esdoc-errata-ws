@@ -19,11 +19,6 @@ ERRATA_GH_TEAM = 'errata-publication'
 # Default endpoint.
 DEFAULT_ENDPOINT = r'/1/ops/heartbeat'
 
-# Core facet type - dataset.
-FACET_TYPE_DATASET = u'dataset'
-
-# Core facet type - institution ID.
-FACET_TYPE_INSTITUTE = u'institute'
 
 # Core facet type - project.
 FACET_TYPE_PROJECT = u'project'
@@ -36,8 +31,6 @@ FACET_TYPE_STATUS = u'status'
 
 # Core search facet type set.
 CORE_FACET_TYPESET = {
-    FACET_TYPE_DATASET,
-    FACET_TYPE_INSTITUTE,
     FACET_TYPE_PROJECT,
     FACET_TYPE_SEVERITY,
     FACET_TYPE_STATUS
@@ -56,28 +49,12 @@ STATUS_RESOLVED = u'resolved'
 STATUS_WONT_FIX = u'wontfix'
 
 # Issue status set.
-STATUS = [
-    {
-        'color': "#00ff00",
-        'label': 'New',
-        'key': STATUS_NEW
-    },
-    {
-        'color': "#ff9900",
-        'label': 'On Hold',
-        'key': STATUS_ON_HOLD
-    },
-    {
-        'color': "#0c343d",
-        'label': 'Resolved',
-        'key': STATUS_RESOLVED
-    },
-    {
-        'color': "#38761d",
-        'label': 'Wont Fix',
-        'key': STATUS_WONT_FIX
-    },
-]
+STATUS = {
+    STATUS_NEW,
+    STATUS_ON_HOLD,
+    STATUS_RESOLVED,
+    STATUS_WONT_FIX
+}
 
 # Issue severity - low.
 SEVERITY_LOW = u"low"
@@ -92,39 +69,18 @@ SEVERITY_HIGH = u"high"
 SEVERITY_CRITICAL = u"critical"
 
 # Issue severity level set.
-SEVERITY = [
-    {
-        'color': "#e6b8af",
-        'label': 'Low',
-        'key': SEVERITY_LOW,
-        'sortOrdinal': 0
-    },
-    {
-        'color': "#dd7e6b",
-        'label': 'Medium',
-        'key': SEVERITY_MEDIUM,
-        'sortOrdinal': 1
-    },
-    {
-        'color': "#cc4125",
-        'label': 'High',
-        'key': SEVERITY_HIGH,
-        'sortOrdinal': 2
-    },
-    {
-        'color': "#a61c00",
-        'label': 'Critical',
-        'key': SEVERITY_CRITICAL,
-        'sortOrdinal': 3
-    },
-]
+SEVERITY = {
+    SEVERITY_LOW,
+    SEVERITY_MEDIUM,
+    SEVERITY_HIGH,
+    SEVERITY_CRITICAL
+}
 
 # List of issue attributes that cannot be updated.
 IMMUTABLE_ISSUE_ATTRIBUTES = [
     'institute',
     'title',
     'project'
-    # 'dateCreated'
 ]
 
 # Ratio of similarity between descriptions of updated and database issue.
@@ -144,3 +100,19 @@ PID_ACTION_INSERT = 'insert'
 
 # PID service action: delete.
 PID_ACTION_DELETE = 'delete'
+
+# Resource type: dataset.
+RESOURCE_TYPE_DATASET = 'dataset'
+
+# Resource type: material.
+RESOURCE_TYPE_MATERIAL = 'material'
+
+# Resource type: url.
+RESOURCE_TYPE_URL = 'url'
+
+# Resouce typeset.
+RESOURCE_TYPE = {
+    RESOURCE_TYPE_DATASET,
+    RESOURCE_TYPE_MATERIAL,
+    RESOURCE_TYPE_URL
+}

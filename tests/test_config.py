@@ -54,7 +54,7 @@ def test_fields_pid():
     	('rabbit_user_trusted', _STR_TYPE),
     	('rabbit_urls_open', list),
     	('rabbit_url_trusted', _STR_TYPE),
-        ('ssl_enabled', _STR_TYPE),
+        ('ssl_enabled', bool),
     	('sync_retry_interval_in_seconds', int),
     	('thredds_service_path1', _STR_TYPE)
     }:
@@ -65,14 +65,16 @@ def test_get_esg_projects():
     """ERRATA :: WS :: Postive Test :: Get ESGF projects (all).
 
     """
-    _assert_esg_projects(config_esg.get_projects())
-
-
-def test_get_active_esg_project():
-    """ERRATA :: WS :: Postive Test :: Get ESGF projects (active).
-
-    """
-    _assert_esg_projects(config_esg.get_active_projects(), facet_collection_types=pyessv.Collection, count=3)
+    projects = config_esg.get_projects()
+    assert isinstance(projects, list)
+    if bool(count):
+        assert len(projects) == count
+    for project in projects:
+        assert isinstance(project, dict)
+        for field in {'canonical_name', 'is_pid_client', 'facets'}:
+            assert field in project
+        for facet in project['facets'].values():
+            assert isinstance(facet['collection'], pyessv.Collection)
 
 
 def test_get_esg_project():
@@ -89,18 +91,3 @@ def _asset_field(cfg, field, typeof):
     """
     assert field in cfg
     assert isinstance(cfg[field], typeof)
-
-
-def _assert_esg_projects(projects, facet_collection_types=(type(None), pyessv.Collection), count=None):
-    """Performs asertions over project configuration.
-
-    """
-    assert isinstance(projects, list)
-    if bool(count):
-        assert len(projects) == count
-    for project in projects:
-        assert isinstance(project, dict)
-        for field in {'canonical_name', 'is_active', 'is_pid_client', 'facets'}:
-            assert field in project
-        for facet in project['facets'].values():
-            assert isinstance(facet['collection'], facet_collection_types)

@@ -14,9 +14,9 @@ from errata.db.dao_validator import validate_get_facets
 from errata.db.dao_validator import validate_get_issue
 from errata.db.dao_validator import validate_get_issues
 from errata.db.dao_validator import validate_get_issues_by_facet
-from errata.db.dao_validator import validate_get_project_facets
 from errata.db.models import Issue
 from errata.db.models import IssueFacet
+from errata.db.models import IssueResource
 from errata.db.models import PIDServiceTask
 from errata.db.session import query
 from errata.db.session import raw_query
@@ -24,6 +24,7 @@ from errata.db.utils import text_filter
 from errata.db.utils import as_date_string
 from errata.utils import constants
 from errata.utils.constants import PID_ACTION_DELETE
+from errata.utils.constants import RESOURCE_TYPE_DATASET
 from errata.utils.validation import validate
 from sqlalchemy import or_
 
@@ -38,6 +39,19 @@ def delete_facets(uid):
     """
     qry = query(IssueFacet)
     qry = qry.filter(IssueFacet.issue_uid == uid)
+
+    qry.delete()
+
+
+@validate(validate_delete_facets)
+def delete_resources(uid):
+    """Deletes resources associated with an issue.
+
+    :param str uid: Issue unique identifier.
+
+    """
+    qry = query(IssueResource)
+    qry = qry.filter(IssueResource.issue_uid == uid)
 
     qry.delete()
 
@@ -106,9 +120,9 @@ def get_issues(criteria):
         Issue.title,
         Issue.severity,
         Issue.status,
-        as_date_string(Issue.date_created),
-        as_date_string(Issue.date_closed),
-        as_date_string(Issue.date_updated)
+        as_date_string(Issue.created_date),
+        as_date_string(Issue.closed_date),
+        as_date_string(Issue.updated_date)
         )
 
     for facet_type, facet_values in criteria.items():
@@ -121,26 +135,53 @@ def get_issues(criteria):
     return qry.all()
 
 
-@validate(validate_get_project_facets)
-def get_project_facets(excluded_types=[]):
+def get_resources(issue_uid=None):
+    """Returns set of issue resources.
+
+    :param str issue_uid: Unique issue identifier.
+
+    :returns: Related resource collection.
+    :rtype: list
+
+    """
+    qry = query(IssueResource)
+    if issue_uid is not None:
+        qry = text_filter(qry, IssueResource.issue_uid, issue_uid)
+
+    return qry.all()
+
+
+def get_datasets(issue_uid):
+    """Returns set of issue datasets.
+
+    :param str issue_uid: Unique issue identifier.
+
+    :returns: Related resource collection.
+    :rtype: list
+
+    """
+    qry = query(IssueResource)
+    qry = qry.filter(IssueResource.resource_type == RESOURCE_TYPE_DATASET)
+    if issue_uid is not None:
+        qry = text_filter(qry, IssueResource.issue_uid, issue_uid)
+
+    return set([i.resource_location for i in qry.all()])
+
+
+def get_project_facets():
     """Returns collection of facets.
 
-    :param list excluded_types: Facets to be excluded from search.
-
-    :returns: Matching facets.
+    :returns: Set of facets from database.
     :rtype: list
 
     """
     qry = raw_query(
-        IssueFacet.project,
         IssueFacet.facet_type,
         IssueFacet.facet_value
         )
-    for facet_type in excluded_types:
-        qry = qry.filter(IssueFacet.facet_type != facet_type)
     qry = qry.distinct()
 
-    return qry.all()
+    return sorted(['{}:{}'.format(i[0], i[1]) for i in qry.all()])
 
 
 def get_all_issues():

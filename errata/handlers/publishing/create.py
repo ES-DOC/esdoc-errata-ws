@@ -12,12 +12,14 @@
 """
 import tornado
 
+import pyessv
+
 from errata import db
 from errata.utils import config
 from errata.utils import config_esg
 from errata.utils import constants
 from errata.utils import factory
-from errata.utils.constants_json import JF_FACETS
+from errata.utils.constants_json import JF_DATASETS
 from errata.utils.constants_json import JF_MATERIALS
 from errata.utils.constants_json import JF_PROJECT
 from errata.utils.constants_json import JF_URLS
@@ -53,11 +55,14 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
         """HTTP POST handler.
 
         """
-        def _validate_issue_facets():
-            """Validates facets associated with incoming issue.
+        def _validate_issue_datasets():
+            """Validates datasets associated with incoming issue.
 
             """
-            config_esg.validate(self.request.data[JF_PROJECT], self.request.data[JF_FACETS])
+            pyessv.parse_dataset_identifers(
+                self.request.data[JF_PROJECT],
+                self.request.data[JF_DATASETS]
+                )
 
 
         def _validate_issue_urls():
@@ -75,22 +80,14 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             """Persists data to dB.
 
             """
-            # Decode from request.
-            issue, facets, pid_tasks = \
-                create_issue(self.request.data, self.user_id)
-
-            # Persist to dB.
-            db.session.insert(issue)
-            for facet in facets:
-                db.session.insert(facet)
-            for pid_task in pid_tasks:
-                db.session.insert(pid_task)
+            with db.session.create():
+                for entity in create_issue(self.request.data, self.user_id):
+                    db.session.insert(entity)
 
 
         # Process request.
-        with db.session.create(commitable=True):
-            process_request(self, [
-                _validate_issue_facets,
-                _validate_issue_urls,
-                _persist
-            ])
+        process_request(self, [
+            _validate_issue_datasets,
+            _validate_issue_urls,
+            _persist
+        ])

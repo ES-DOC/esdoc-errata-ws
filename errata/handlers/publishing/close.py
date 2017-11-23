@@ -20,13 +20,13 @@ from errata.utils import exceptions
 from errata.utils.http import process_request
 from errata.utils.http_security import authorize
 from errata.utils.constants_json import *
+from errata.utils.publisher import close_issue
 
 
 
 # Query parameter names.
 _PARAM_UID = 'uid'
 _PARAM_STATUS = 'status'
-_TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 
 class CloseIssueRequestHandler(tornado.web.RequestHandler):
@@ -57,10 +57,10 @@ class CloseIssueRequestHandler(tornado.web.RequestHandler):
             """Validates that issue status allows it to be closed.
 
             """
-            if self.issue.status in [
+            if self.issue.status in {
                 constants.STATUS_ON_HOLD,
                 constants.STATUS_NEW
-                ]:
+                }:
                 raise exceptions.InvalidIssueStatusError()
 
 
@@ -68,16 +68,14 @@ class CloseIssueRequestHandler(tornado.web.RequestHandler):
             """Closes issue.
 
             """
-            self.issue.date_closed = dt.datetime.utcnow().strftime(_TIME_FORMAT)
-            self.issue.closed_by = self.user_id
-            self.issue.status = self.get_argument(_PARAM_STATUS)
+            close_issue(self.issue, self.get_argument(_PARAM_STATUS), self.user_id)
 
 
         # Process request.
         with db.session.create(commitable=True):
             process_request(self, [
                 _validate_issue_exists,
-                # _validate_user_access,
+                _validate_user_access,
                 _validate_issue_status,
                 _close_issue
                 ])
