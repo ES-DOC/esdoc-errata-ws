@@ -23,6 +23,7 @@ from errata.utils.http_security import apply_policy
 _PARAM_LOGIN = 'login'
 _PARAM_TOKEN = 'token'
 _PARAM_INSTITUTE = 'institute'
+_PARAM_PROJECT = 'project'
 
 
 class VerifyAuthorizationRequestHandler(tornado.web.RequestHandler):
@@ -41,6 +42,7 @@ class VerifyAuthorizationRequestHandler(tornado.web.RequestHandler):
                 apply_policy(
                     self.get_argument(_PARAM_LOGIN),
                     self.get_argument(_PARAM_TOKEN),
+                    self.get_argument(_PARAM_PROJECT),
                     self.get_argument(_PARAM_INSTITUTE)
                     )
 
@@ -50,7 +52,8 @@ class VerifyAuthorizationRequestHandler(tornado.web.RequestHandler):
 
             """
             self.output = {
-                "message": "User allowed to manage errata for institute {}".format(self.get_argument(_PARAM_INSTITUTE))
+                "message": "User allowed to manage errata: project={}; institute={}.".format(
+                    self.get_argument(_PARAM_PROJECT), self.get_argument(_PARAM_INSTITUTE))
             }
 
 

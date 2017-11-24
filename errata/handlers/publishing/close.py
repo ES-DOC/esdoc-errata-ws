@@ -51,7 +51,7 @@ class CloseIssueRequestHandler(tornado.web.RequestHandler):
 
             """
             if config.apply_security_policy:
-                authorize(self.user_id, self.issue.institute)
+                authorize(self.user_id, self.issue.project, self.issue.institute)
 
 
         def _validate_issue_status():

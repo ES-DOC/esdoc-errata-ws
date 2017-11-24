@@ -81,7 +81,7 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
 
             """
             if config.apply_security_policy:
-                authorize(self.user_id, get_institute(self.request.data))
+                authorize(self.user_id, self.request.data[JF_PROJECT], get_institute(self.request.data))
 
 
         def _validate_issue_urls():

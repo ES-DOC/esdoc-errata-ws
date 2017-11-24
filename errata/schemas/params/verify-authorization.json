@@ -18,6 +18,14 @@
             },
             "type": "array"
         },
+        "project": {
+            "items": {
+                "minItems": 1,
+                "maxItems": 1,
+                "type": "string"
+            },
+            "type": "array"
+        },
         "token": {
             "items": {
                 "minItems": 1,
@@ -30,6 +38,7 @@
     "required": [
         "institute",
         "login",
+        "project",
         "token"
     ],
     "title": "ES-DOC CDF2CIM JSON schema: endpoint = /verify-authorization",

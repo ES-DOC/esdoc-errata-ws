@@ -48,10 +48,6 @@ def create_issue_dict():
     """
     cfg = random.choice(get_projects())
 
-    # Date fields to be set server side
-    # institute to be extracted from dataset identifiers
-    # facets to be extracted from dataset identifiers
-
     return {
         JF_DATASETS: get_datasets(cfg['canonical_name']),
         JF_DESCRIPTION: unicode(uuid.uuid4()),

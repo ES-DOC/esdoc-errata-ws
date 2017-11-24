@@ -44,22 +44,25 @@ def authenticate(credentials):
     :rtype: str
 
     """
-    return pyesdoc.authenticate_user(credentials)
+    pyesdoc.authenticate_user(credentials)
 
 
-def authorize(user_id, institute_id):
+def authorize(user_id, project_id, institute_id):
     """Authorizes user against GitHub team membership api.
 
     :param str user_id: GitHub username.
+    :param str project_id: Project identifier, e.g. cmip6.
     :param str institute_id: Institute identifier, e.g. ipsl.
 
     """
-    logger.log('Authorizing: {} :: {}'.format(user_id, institute_id))
+    logger.log_web('Authorizing: {} --> {}'.format(user_id, _GH_TEAM))
     pyesdoc.authorize_user(_GH_TEAM, user_id)
-    pyesdoc.authorize_user('staff-{}'.format(institute_id), user_id)
+
+    logger.log_web('Authorizing: {} --> {}-{}'.format(user_id, project_id, institute_id))
+    pyesdoc.authorize_user('{}-{}'.format(project_id, institute_id), user_id)
 
 
-def apply_policy(user_id, access_token, institute_id):
+def apply_policy(user_id, access_token, project_id, institute_id):
     """Applies security policy.
 
     :param str user_id: GitHub username.
@@ -67,7 +70,8 @@ def apply_policy(user_id, access_token, institute_id):
     :param str institute_id: Institute identifier, e.g. ipsl.
 
     """
-    authorize(authenticate((user_id, access_token)), institute_id)
+    authenticate((user_id, access_token))
+    authorize(user_id, project_id, institute_id)
 
 
 def secure_request(handler):
@@ -80,8 +84,11 @@ def secure_request(handler):
     if handler.request.path in _WHITELISTED_ENDPOINTS:
         return
 
+    # Authenticate.
     credentials = pyesdoc.strip_credentials(handler.request.headers['Authorization'])
     if config.apply_security_policy:
-        handler.user_id = authenticate(credentials)
-    else:
-        handler.user_id = credentials[0]
+        logger.log_web('Authenticating: {}'.format(credentials[0]))
+        authenticate(credentials)
+
+    # Make user-id available downstream.
+    handler.user_id = credentials[0]
