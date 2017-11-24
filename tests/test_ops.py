@@ -23,7 +23,7 @@ _BASE_URL = os.getenv("ERRATA_API")
 
 
 def test_heartbeat():
-    """ERRATA :: WS :: Postive Test :: Ops heartbeat.
+    """ERRATA :: WS :: OPS :: heartbeat.
 
     """
     # Invoke WS endpoint.
@@ -35,7 +35,7 @@ def test_heartbeat():
 
 
 def test_verify_authorization():
-    """ERRATA :: WS :: Postive Test :: Verify authorization.
+    """ERRATA :: WS :: OPS :: verify authorization.
 
     """
     # Invoke WS endpoint.
@@ -43,6 +43,7 @@ def test_verify_authorization():
     params = {
         'login': os.getenv("ERRATA_WS_TEST_LOGIN"),
         'institute': os.getenv("ERRATA_WS_TEST_INSTITUTE"),
+        'project': os.getenv("ERRATA_WS_TEST_PROJECT"),
         'token': os.getenv("ERRATA_WS_TEST_TOKEN")
     }
     r = requests.get(url, params=params)

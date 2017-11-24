@@ -32,7 +32,7 @@ _URL_RESOLVE_MODEL = "{}/1/resolve/issue?facetType=model&{}".format(
 
 
 def test_resolve():
-    """ERRATA :: WS :: Postive Test :: Resolve issue(s) from facet id.
+    """ERRATA :: WS :: Resolve issue(s) from facet id.
 
     """
     def _do(facet_type):

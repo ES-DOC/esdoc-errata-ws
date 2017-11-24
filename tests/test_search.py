@@ -16,6 +16,7 @@ import os
 import random
 import uuid
 
+import pyessv
 import requests
 
 from errata.utils import factory
@@ -29,38 +30,23 @@ _URL_SEARCH_SETUP = "{}/1/issue/search-setup".format(tu.BASE_URL)
 _URL_SEARCH = "{}/1/issue/search".format(tu.BASE_URL)
 
 
-def _test_search_setup():
-    """ERRATA :: WS :: Postive Test :: Search setup.
+def test_search_setup():
+    """ERRATA :: WS :: SEARCH :: setup.
 
     """
     # Invoke WS endpoint.
     r = requests.get(_URL_SEARCH_SETUP)
 
     # Assert WS response.
-    tu.assert_ws_response(_URL_SEARCH_SETUP, r, fields={'project', 'severity', 'status'})
+    obj = tu.assert_ws_response(_URL_SEARCH_SETUP, r, fields={'data',})
 
-
-def _test_search_lite():
-    import urllib
-
-    # ... invoke WS;
-    params = {
-        'criteria': ','.join([
-            'project:cmip6',
-            'severity:medium',
-            'status:new '
-        ])
-    }
-    r = requests.get(_URL_SEARCH, params=urllib.urlencode(params))
-
-    # Assert WS response.
-    data = tu.assert_ws_response(_URL_SEARCH, r)
-
-    print data
+    # Assert vocabularies.
+    for collection in obj['data']:
+        assert isinstance(pyessv.load(collection['key']), pyessv.Collection)
 
 
 def test_search():
-    """ERRATA :: WS :: Postive Test :: Search execution.
+    """ERRATA :: WS :: SEARCH :: execution.
 
     """
     # Initialise criteria.

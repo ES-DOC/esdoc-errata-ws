@@ -100,7 +100,7 @@ class IssueSearchSetupRequestHandler(tornado.web.RequestHandler):
 
 
             self.output = {
-                'xxx': [_map_collection(i) for i in {
+                'data': [_map_collection(i) for i in {
                     'esdoc:errata:project',
                     'esdoc:errata:severity',
                     'esdoc:errata:status',

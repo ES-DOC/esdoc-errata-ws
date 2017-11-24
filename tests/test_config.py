@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: test_config_esg.py
+.. module:: test_config.py
 
    :license: GPL / CeCILL
    :platform: Unix, Windows
-   :synopsis: Executes esg configuration integration tests.
+   :synopsis: Executes configuration integration tests.
 
 .. moduleauthor:: Earth System Documentation (ES-DOC) <dev@es-doc.org>
 
@@ -13,7 +13,6 @@
 import pyessv
 
 from errata.utils import config
-from errata.utils import config_esg
 
 from tests import utils as tu
 

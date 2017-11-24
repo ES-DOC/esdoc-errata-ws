@@ -16,6 +16,7 @@ import arrow
 import requests
 import pyessv
 
+from errata.utils import config
 from errata.utils import exceptions
 
 
@@ -180,12 +181,13 @@ def validate_url(url):
     if url in (None, ''):
         return
 
-    response = requests.head(url)
-    if response.status_code in [requests.codes.OK, 302]:
-        return
-
-    response = requests.get(url)
-    if response.ok:
-        return
+    if url.startswith('http'):
+        if config.validate_issue_urls:
+            response = requests.head(url)
+            if response.status_code in [requests.codes.OK, 302]:
+                return
+            response = requests.get(url)
+            if response.ok:
+                return
 
     raise exceptions.InvalidURLError(url)

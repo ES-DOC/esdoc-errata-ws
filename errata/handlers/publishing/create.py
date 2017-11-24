@@ -88,11 +88,10 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             """Validates URL's associated with incoming request.
 
             """
-            if config.validate_issue_urls:
-                urls = self.request.data[JF_URLS] + self.request.data[JF_MATERIALS]
-                urls = [i for i in urls if i]
-                for url in urls:
-                    validate_url(url)
+            urls = self.request.data[JF_URLS] + self.request.data[JF_MATERIALS]
+            urls = [i for i in urls if i]
+            for url in urls:
+                validate_url(url)
 
 
         def _persist():

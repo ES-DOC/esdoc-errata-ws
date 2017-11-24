@@ -48,7 +48,7 @@ _URL_UPDATE = "{}/1/issue/update".format(tu.BASE_URL)
 
 
 def test_create():
-    """ERRATA :: WS :: Postive Test :: Create issue.
+    """ERRATA :: WS :: PUBLISHING :: create issue.
 
     """
     # Invoke WS endpoint.
@@ -64,7 +64,7 @@ def test_create():
 
 
 def test_create_retrieve():
-    """ERRATA :: WS :: Postive Test :: Retrieve created issue.
+    """ERRATA :: WS :: PUBLISHING :: retrieve created issue.
 
     """
     # Invoke WS endpoint.
@@ -89,7 +89,7 @@ def test_create_retrieve():
 
 
 def test_update():
-    """ERRATA :: WS :: Postive Test :: Update issue.
+    """ERRATA :: WS :: PUBLISHING :: update issue.
 
     """
     # Update test issue.
@@ -109,7 +109,7 @@ def test_update():
 
 
 def test_update_retrieve():
-    """ERRATA :: WS :: Postive Test :: Retrieve updated issue.
+    """ERRATA :: WS :: PUBLISHING :: retrieve updated issue.
 
     """
     # Invoke WS endpoint.
@@ -131,7 +131,7 @@ def test_update_retrieve():
 
 
 def test_close():
-    """ERRATA :: WS :: Postive Test :: Close issue.
+    """ERRATA :: WS :: PUBLISHING :: close issue.
 
     """
     # Invoke WS endpoint.
@@ -142,7 +142,7 @@ def test_close():
 
 
 def test_close_retrieve():
-    """ERRATA :: WS :: Postive Test :: Retrieve closed issue.
+    """ERRATA :: WS :: PUBLISHING :: retrieve closed issue.
 
     """
     # Invoke WS endpoint.
