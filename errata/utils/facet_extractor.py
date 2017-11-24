@@ -1,26 +1,17 @@
+# -*- coding: utf-8 -*-
+
+"""
+.. module:: utils.facet_extractor.py
+   :platform: Unix
+   :synopsis: Encapsulates extraction of facets from dataset identifiers.
+
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
+
+
+"""
 import pyessv
 from pyessv._utils.compat import basestring
 
-
-
-def extract_facets(project, data):
-	"""Extracts terms from a dataset identifer.
-
-    :param str project: Project code.
-    :param str|list data: Dataset identifier(s).
-
-    :returns: Set of pyessv terms extracted from dataset identifier.
-	:rtype: list
-
-	"""
-	identifiers = [data] if isinstance(data, basestring) else data
-	seperator, targets = _CONFIG[project]
-	facets = []
-	for identifier in identifiers:
-		parts = identifier.split(seperator)
-		facets += ['{}:{}'.format(i, parts[j]) for i, j in targets]
-
-	return [pyessv.load(i) for i in set(facets)]
 
 
 # Map of projects to extraction configuration.
@@ -43,3 +34,23 @@ _CONFIG = {
 		('wcrp:cordex:experiment', 5),
 		)),
 }
+
+
+def extract_facets(project, data):
+	"""Extracts terms from a dataset identifer.
+
+    :param str project: Project code.
+    :param str|list data: Dataset identifier(s).
+
+    :returns: Set of pyessv terms extracted from dataset identifier.
+	:rtype: list
+
+	"""
+	identifiers = [data] if isinstance(data, basestring) else data
+	seperator, targets = _CONFIG[project]
+	facets = []
+	for identifier in identifiers:
+		parts = identifier.split(seperator)
+		facets += ['{}:{}'.format(i, parts[j]) for i, j in targets]
+
+	return [pyessv.load(i) for i in set(facets)]

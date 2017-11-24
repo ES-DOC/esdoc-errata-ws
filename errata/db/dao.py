@@ -9,12 +9,13 @@
 
 
 """
+from sqlalchemy import or_
+
 from errata.db.dao_validator import validate_delete_facets
 from errata.db.dao_validator import validate_delete_resources
 from errata.db.dao_validator import validate_get_datasets
 from errata.db.dao_validator import validate_get_issue
 from errata.db.dao_validator import validate_get_issues
-from errata.db.dao_validator import validate_get_issues_by_facet
 from errata.db.dao_validator import validate_get_resources
 from errata.db.models import Issue
 from errata.db.models import IssueFacet
@@ -22,13 +23,10 @@ from errata.db.models import IssueResource
 from errata.db.models import PIDServiceTask
 from errata.db.session import query
 from errata.db.session import raw_query
-from errata.db.utils import text_filter
 from errata.db.utils import as_date_string
-from errata.utils import constants
-from errata.utils.constants import PID_ACTION_DELETE
-from errata.utils.constants import RESOURCE_TYPE_DATASET
+from errata.db.utils import text_filter
+from errata.utils.constants import *
 from errata.utils.validation import validate
-from sqlalchemy import or_
 
 
 
@@ -58,6 +56,24 @@ def delete_resources(uid):
     qry.delete()
 
 
+@validate(validate_get_datasets)
+def get_datasets(issue_uid):
+    """Returns set of issue datasets.
+
+    :param str issue_uid: Unique issue identifier.
+
+    :returns: Related resource collection.
+    :rtype: list
+
+    """
+    qry = query(IssueResource)
+    qry = qry.filter(IssueResource.resource_type == RESOURCE_TYPE_DATASET)
+    if issue_uid is not None:
+        qry = text_filter(qry, IssueResource.issue_uid, issue_uid)
+
+    return set([i.resource_location for i in qry.all()])
+
+
 @validate(validate_get_issue)
 def get_issue(uid):
     """Returns an issue.
@@ -75,7 +91,7 @@ def get_issue(uid):
 
 
 @validate(validate_get_issues)
-def get_issues(criteria):
+def get_issues(criteria=None):
     """Returns collection of matching issues.
 
     :param dict criteria: Map of criteria facet-types to facet-values.
@@ -84,6 +100,9 @@ def get_issues(criteria):
     :rtype: list
 
     """
+    if criteria is None:
+        return query(Issue).all()
+
     qry = raw_query(
         Issue.project,
         Issue.institute,
@@ -106,37 +125,14 @@ def get_issues(criteria):
     return qry.all()
 
 
-@validate(validate_get_datasets)
-def get_datasets(issue_uid):
-    """Returns set of issue datasets.
-
-    :param str issue_uid: Unique issue identifier.
-
-    :returns: Related resource collection.
-    :rtype: list
+def get_pid_service_tasks():
+    """Returns pid service tasks awaiting processing.
 
     """
-    qry = query(IssueResource)
-    qry = qry.filter(IssueResource.resource_type == RESOURCE_TYPE_DATASET)
-    if issue_uid is not None:
-        qry = text_filter(qry, IssueResource.issue_uid, issue_uid)
-
-    return set([i.resource_location for i in qry.all()])
-
-
-@validate(validate_get_resources)
-def get_resources(issue_uid=None):
-    """Returns set of issue resources.
-
-    :param str issue_uid: Unique issue identifier.
-
-    :returns: Related resource collection.
-    :rtype: list
-
-    """
-    qry = query(IssueResource)
-    if issue_uid is not None:
-        qry = text_filter(qry, IssueResource.issue_uid, issue_uid)
+    qry = query(PIDServiceTask)
+    qry = qry.filter(or_(PIDServiceTask.status == PID_TASK_STATE_QUEUED,
+                         PIDServiceTask.status == PID_TASK_STATE_ERROR))
+    qry = qry.order_by(PIDServiceTask.timestamp.desc())
 
     return qry.all()
 
@@ -157,38 +153,18 @@ def get_project_facets():
     return sorted(['{}:{}'.format(i[0], i[1]) for i in qry.all()])
 
 
-def get_all_issues():
-    """Returns all issues within database.
+@validate(validate_get_resources)
+def get_resources(issue_uid=None):
+    """Returns set of issue resources.
 
-    """
-    return query(Issue).all()
+    :param str issue_uid: Unique issue identifier.
 
-
-@validate(validate_get_issues_by_facet)
-def get_issues_by_facet(facet_value, facet_type):
-    """Returns issues associated with a facet.
-
-    :param str facet_value: A facet value.
-    :param str facet_type: Type of issue facet, e.g. dataset.
-
-    :returns: Matching issues.
+    :returns: Related resource collection.
     :rtype: list
 
     """
-    qry = raw_query(IssueFacet.issue_uid)
-    qry = text_filter(qry, IssueFacet.facet_value, facet_value)
-    qry = qry.filter(IssueFacet.facet_type == facet_type)
-
-    return sorted([i[0] for i in qry.all()])
-
-
-def get_pid_service_tasks():
-    """Returns pid service tasks awaiting processing.
-
-    """
-    qry = query(PIDServiceTask)
-    qry = qry.filter(or_(PIDServiceTask.status == constants.PID_TASK_STATE_QUEUED,
-                         PIDServiceTask.status == constants.PID_TASK_STATE_ERROR))
-    qry = qry.order_by(PIDServiceTask.timestamp.desc())
+    qry = query(IssueResource)
+    if issue_uid is not None:
+        qry = text_filter(qry, IssueResource.issue_uid, issue_uid)
 
     return qry.all()

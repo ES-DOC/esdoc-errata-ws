@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-.. module:: utils.misc.py
+.. module:: utils.http_security.py
    :license: GPL/CeCIL
    :platform: Unix
    :synopsis: Miscellaneous utility functions.

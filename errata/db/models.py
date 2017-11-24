@@ -208,3 +208,11 @@ class PIDServiceTask(Entity):
     error = Column(Unicode(1023))
     try_count = Column(Integer, default=0)
     timestamp = Column(DateTime, nullable=False, default=dt.datetime.utcnow)
+
+
+    def __repr__(self):
+        """Instance representation.
+
+        """
+        return "<PIDServiceTask(uid={}, dataset_id={}, action={}, status=={})>".format(
+            self.issue_uid, self.dataset_id, self.action, self.status)

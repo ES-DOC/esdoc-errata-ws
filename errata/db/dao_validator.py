@@ -39,14 +39,6 @@ def validate_get_datasets(issue_uid):
     v.validate_uid(issue_uid, 'Issue unique identifier')
 
 
-def validate_get_resources(issue_uid=None):
-    """Function input validator: get_resources.
-
-    """
-    if issue_uid is not None:
-        v.validate_uid(issue_uid, 'Issue unique identifier')
-
-
 def validate_get_issue(uid):
     """Function input validator: get_issue.
 
@@ -54,11 +46,13 @@ def validate_get_issue(uid):
     v.validate_uid(uid, 'Issue unique identifier')
 
 
-def validate_get_issues(criteria):
+def validate_get_issues(criteria=None):
     """Function input validator: get_issues.
 
     """
-    pass
+    if criteria is None:
+        return
+
     return
 
     if experiment is not None:
@@ -79,9 +73,9 @@ def validate_get_issues(criteria):
         v.validate_str(variable, "Variable name")
 
 
-def validate_get_issues_by_facet(facet_value, facet_type):
-    """Function input validator: get_issues_by_facet.
+def validate_get_resources(issue_uid=None):
+    """Function input validator: get_resources.
 
     """
-    v.validate_str(facet_value, "facet_value")
-    v.validate_str(facet_type, 'facet_type')
+    if issue_uid is not None:
+        v.validate_uid(issue_uid, 'Issue unique identifier')

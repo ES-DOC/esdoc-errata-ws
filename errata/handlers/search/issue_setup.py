@@ -18,7 +18,6 @@ import tornado
 import pyessv
 
 from errata import db
-from errata.utils import config_esg
 from errata.utils import constants
 from errata.utils.http import process_request
 

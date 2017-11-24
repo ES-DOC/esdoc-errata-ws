@@ -20,7 +20,6 @@ from errata.utils import constants
 from errata.utils import exceptions
 from errata.utils.http import process_request
 from errata.utils.http_security import authorize
-from errata.utils.constants_json import *
 from errata.utils.publisher import close_issue
 
 

@@ -61,30 +61,6 @@ def test_fields_pid():
     	_asset_field(config.pid.__dict__, field, typeof)
 
 
-def test_get_esg_projects():
-    """ERRATA :: WS :: Postive Test :: Get ESGF projects (all).
-
-    """
-    projects = config_esg.get_projects()
-    assert isinstance(projects, list)
-    if bool(count):
-        assert len(projects) == count
-    for project in projects:
-        assert isinstance(project, dict)
-        for field in {'canonical_name', 'is_pid_client', 'facets'}:
-            assert field in project
-        for facet in project['facets'].values():
-            assert isinstance(facet['collection'], pyessv.Collection)
-
-
-def test_get_esg_project():
-    """ERRATA :: WS :: Postive Test :: Get ESGF project.
-
-    """
-    for name in [i['canonical_name'] for i in config_esg.get_projects()]:
-        assert isinstance(config_esg.get_project(name), dict)
-
-
 def _asset_field(cfg, field, typeof):
     """Asserts a configuration field.
 

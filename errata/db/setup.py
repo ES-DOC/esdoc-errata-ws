@@ -26,7 +26,7 @@ def execute():
 
     """
     # Initialize schemas.
-    # db_session.sa_engine.execute(DropSchema('public'))
+    db_session.sa_engine.execute(DropSchema('public'))
     for schema in _SCHEMAS:
         db_session.sa_engine.execute(CreateSchema(schema))
 

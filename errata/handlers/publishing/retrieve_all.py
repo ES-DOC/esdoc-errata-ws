@@ -38,7 +38,7 @@ class RetrieveAllIssuesRequestHandler(tornado.web.RequestHandler):
 
             """
             with db.session.create():
-                self.issues = db.dao.get_all_issues()
+                self.issues = db.dao.get_issues()
                 self.resources = db.dao.get_resources()
 
 

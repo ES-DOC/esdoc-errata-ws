@@ -17,21 +17,9 @@ import pyessv
 
 from errata import db
 from errata.utils import config
-from errata.utils import config_esg
 from errata.utils import exceptions
 from errata.utils import logger
-from errata.utils.constants import DESCRIPTION_CHANGE_RATIO
-from errata.utils.constants import IMMUTABLE_ISSUE_ATTRIBUTES
-from errata.utils.constants import PID_ACTION_DELETE
-from errata.utils.constants import PID_ACTION_INSERT
-from errata.utils.constants import STATUS_NEW
-from errata.utils.constants_json import JF_DATASETS
-from errata.utils.constants_json import JF_DESCRIPTION
-from errata.utils.constants_json import JF_MATERIALS
-from errata.utils.constants_json import JF_PROJECT
-from errata.utils.constants_json import JF_STATUS
-from errata.utils.constants_json import JF_UID
-from errata.utils.constants_json import JF_URLS
+from errata.utils.constants import *
 from errata.utils.http import process_request
 from errata.utils.publisher import get_institute
 from errata.utils.publisher import get_institutes

@@ -16,14 +16,10 @@ import pyessv
 
 from errata import db
 from errata.utils import config
-from errata.utils import config_esg
 from errata.utils import constants
 from errata.utils import exceptions
 from errata.utils import factory
-from errata.utils.constants_json import JF_DATASETS
-from errata.utils.constants_json import JF_MATERIALS
-from errata.utils.constants_json import JF_PROJECT
-from errata.utils.constants_json import JF_URLS
+from errata.utils.constants import *
 from errata.utils.http import process_request
 from errata.utils.publisher import create_issue
 from errata.utils.publisher import get_institute

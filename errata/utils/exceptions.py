@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: errata.exceptions.py
+.. module:: utils.exceptions.py
    :platform: Unix
    :synopsis: Custom exceptions used in this module for better readability of code.
 
@@ -12,7 +12,6 @@
 import pyesdoc
 
 from errata.utils import constants
-from errata.utils.constants_json import *
 
 
 
@@ -67,7 +66,7 @@ class InvalidDatasetIdentifierError(RequestValidationException):
         """Instance constructor.
 
         """
-        self.field = JF_DATASETS
+        self.field = constants.JF_DATASETS
         msg = 'ISSUE HAS INVALID DATASET IDENTIFIER'
         super(InvalidDatasetIdentifierError, self).__init__(msg)
 
@@ -80,7 +79,7 @@ class MultipleInstitutesError(RequestValidationException):
         """Instance constructor.
 
         """
-        self.field = JF_DATASETS
+        self.field = constants.JF_DATASETS
         msg = 'ISSUE HAS MULTIPLE INSTITUTES'
         super(MultipleInstitutesError, self).__init__(msg)
 
@@ -93,7 +92,7 @@ class InvalidURLError(RequestValidationException):
         """Instance constructor.
 
         """
-        self.field = JF_URLS
+        self.field = constants.JF_URLS
         msg = 'URL INVALID: {}'.format(url)
         super(InvalidURLError, self).__init__(msg)
 
@@ -106,7 +105,7 @@ class IssueStatusChangeError(RequestValidationException):
         """Instance constructor.
 
         """
-        self.field = JF_STATUS
+        self.field = constants.JF_STATUS
         msg = 'ISSUE STATUS CHANGE NOT ALLOWED'
         super(IssueStatusChangeError, self).__init__(msg)
 
@@ -132,7 +131,7 @@ class IssueDescriptionChangeRatioError(RequestValidationException):
         """Instance constructor.
 
         """
-        self.field = JF_DESCRIPTION
+        self.field = constants.JF_DESCRIPTION
         msg = "ISSUE DESCRIPTION CHANGE RATIO LIMIT ({}%) EXCEEDED - RATIO = {}%".format(constants.DESCRIPTION_CHANGE_RATIO, change_ratio)
         super(IssueDescriptionChangeRatioError, self).__init__(msg)
 
@@ -145,7 +144,7 @@ class UnknownIssueError(RequestValidationException):
         """Instance constructor.
 
         """
-        self.field = JF_UID
+        self.field = constants.JF_UID
         msg = "ISSUE IS UNKNOWN: {}".format(uid)
         super(UnknownIssueError, self).__init__(msg)
 

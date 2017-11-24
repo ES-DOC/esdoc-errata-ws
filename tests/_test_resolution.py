@@ -16,7 +16,7 @@ import urllib
 
 import requests
 
-from errata.utils.constants import CORE_FACET_TYPESET
+from errata.utils.constants import *
 
 
 

@@ -17,11 +17,7 @@ import uuid
 
 import pyessv
 
-from errata.utils.config_esg import get_project
-from errata.utils.config_esg import get_projects
-from errata.utils.constants import PID_ACTION_INSERT
-from errata.utils.constants import STATUS_NEW
-from errata.utils.constants_json import *
+from errata.utils.constants import *
 from errata.db.models import Issue
 from errata.db.models import IssueFacet
 from errata.db.models import PIDServiceTask
@@ -36,9 +32,9 @@ _MATERIALS = []
 
 # Collection of data set patters used when generating test dataset identifiers.
 _DATASETS_PATTERNS = {
-    'cmip5': u'cmip5.{}.{}.{}.{}.{}.{}.{}.r1i1p1',
-    'cmip6': u'cmip6.{}.{}.{}.{}.r1i1p1f1.{}.clitter.{}',
-    'cordex': u'cordex.{}.{}.{}.{}.{}.r12i1p1.{}.v1.{}.{}'
+    'cmip5': u'cmip5.{}.{}.{}.{}.{}.{}.{}.r1i1p1#v20180101',
+    'cmip6': u'cmip6.{}.{}.{}.{}.r1i1p1f1.{}.clitter.{}#v20180101',
+    'cordex': u'cordex.{}.{}.{}.{}.{}.r12i1p1.{}.v1.{}.{}#v20180101'
 }
 
 
@@ -46,13 +42,13 @@ def create_issue_dict():
     """Returns a test issue (dictionary encoding).
 
     """
-    cfg = random.choice(get_projects())
+    project_id = pyessv.get_random('esdoc:errata:project')
 
     return {
-        JF_DATASETS: get_datasets(cfg['canonical_name']),
+        JF_DATASETS: get_datasets(project_id),
         JF_DESCRIPTION: unicode(uuid.uuid4()),
         JF_MATERIALS: _get_materials(),
-        JF_PROJECT: cfg['canonical_name'],
+        JF_PROJECT: project_id,
         JF_SEVERITY: pyessv.get_random('esdoc:errata:severity'),
         JF_STATUS: STATUS_NEW,
         JF_TITLE: unicode(uuid.uuid4()),

@@ -13,20 +13,7 @@ import pyessv
 
 import datetime as dt
 
-from errata.utils.constants import PID_ACTION_INSERT
-from errata.utils.constants import RESOURCE_TYPE_DATASET
-from errata.utils.constants import RESOURCE_TYPE_MATERIAL
-from errata.utils.constants import RESOURCE_TYPE_URL
-from errata.utils.constants import CORE_FACET_TYPESET
-from errata.utils.constants_json import JF_DATASETS
-from errata.utils.constants_json import JF_DESCRIPTION
-from errata.utils.constants_json import JF_MATERIALS
-from errata.utils.constants_json import JF_PROJECT
-from errata.utils.constants_json import JF_SEVERITY
-from errata.utils.constants_json import JF_STATUS
-from errata.utils.constants_json import JF_TITLE
-from errata.utils.constants_json import JF_UID
-from errata.utils.constants_json import JF_URLS
+from errata.utils.constants import *
 from errata.utils.facet_extractor import extract_facets
 from errata.db.models import Issue
 from errata.db.models import IssueFacet
@@ -142,7 +129,11 @@ def _get_facets(issue, obj):
     facets = []
 
     # Core facets.
-    for facet_type in CORE_FACET_TYPESET:
+    for facet_type in {
+            FACET_TYPE_PROJECT,
+            FACET_TYPE_SEVERITY,
+            FACET_TYPE_STATUS
+        }:
         facet = IssueFacet()
         facet.project = issue.project
         facet.issue_uid = issue.uid

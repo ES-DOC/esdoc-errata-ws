@@ -1,3 +1,2 @@
-from errata.handlers.resolve.issue import ResolveIssueRequestHandler
 from errata.handlers.resolve.pid import ResolvePIDRequestHandler
 from errata.handlers.resolve.simple_pid import ResolveSimplePIDRequestHandler
