@@ -9,21 +9,15 @@
 
 
 """
+import pyesdoc
+
 from errata.utils import constants
+from errata.utils.constants_json import *
 
 
-
-# Processing error HTTP response code.
-_HTTP_RESPONSE_SERVER_ERROR = 500
 
 # Request validation error HTTP response code.
-_HTTP_RESPONSE_INVALID_REQUEST_ERROR = 400
-
-# Request authentication error HTTP response code.
-_HTTP_UNAUTHENTICATED_ERROR = 401
-
-# Request authorization error HTTP response code.
-_HTTP_UNAUTHORIZED_ERROR = 403
+_HTTP_RESPONSE_BAD_REQUEST_ERROR = 400
 
 
 class WebServiceError(Exception):
@@ -46,24 +40,52 @@ class RequestValidationException(WebServiceError):
         """Instance constructor.
 
         """
-        super(RequestValidationException, self).__init__(
-            "VALIDATION EXCEPTION :: {}".format(msg), _HTTP_RESPONSE_INVALID_REQUEST_ERROR
-            )
+        super(RequestValidationException, self).__init__(msg, _HTTP_RESPONSE_BAD_REQUEST_ERROR)
 
 
-class InvalidJSONSchemaError(RequestValidationException):
+class InvalidJSONError(RequestValidationException):
     """Raised if the submitted issue post data is invalid according to a JSON schema.
 
     """
-    def __init__(self, json_errors):
+    def __init__(self, json_err):
         """Instance constructor.
 
         """
-        super(InvalidJSONSchemaError, self).__init__(
-            'ISSUE HAS INVALID JSON SCHEMA: \n{}'.format(json_errors))
+        msg = json_err.message.strip()
+        try:
+            self.field = json_err.path[0]
+        except Exception as err:
+            self.field = msg.split("'")[1]
+        super(InvalidJSONError, self).__init__(msg)
 
 
-class UnreachableURLError(RequestValidationException):
+class InvalidDatasetIdentifierError(RequestValidationException):
+    """Raised if the submitted issue post data contains an invalid dataset identifer.
+
+    """
+    def __init__(self):
+        """Instance constructor.
+
+        """
+        self.field = JF_DATASETS
+        msg = 'ISSUE HAS INVALID DATASET IDENTIFIER'
+        super(InvalidDatasetIdentifierError, self).__init__(msg)
+
+
+class MultipleInstitutesError(RequestValidationException):
+    """Raised if the submitted issue post data contains an multiple institute identifers.
+
+    """
+    def __init__(self):
+        """Instance constructor.
+
+        """
+        self.field = JF_DATASETS
+        msg = 'ISSUE HAS MULTIPLE INSTITUTES'
+        super(MultipleInstitutesError, self).__init__(msg)
+
+
+class InvalidURLError(RequestValidationException):
     """Raised if the submitted issue has unreachable (HTTP 404) urls.
 
     """
@@ -71,11 +93,12 @@ class UnreachableURLError(RequestValidationException):
         """Instance constructor.
 
         """
-        super(UnreachableURLError, self).__init__(
-            'URL CANNOT BE REACHED: {}'.format(url))
+        self.field = JF_URLS
+        msg = 'URL INVALID: {}'.format(url)
+        super(InvalidURLError, self).__init__(msg)
 
 
-class InvalidIssueStatusError(RequestValidationException):
+class IssueStatusChangeError(RequestValidationException):
     """Raised if a submitted issue status is invalid.
 
     """
@@ -83,10 +106,12 @@ class InvalidIssueStatusError(RequestValidationException):
         """Instance constructor.
 
         """
-        super(InvalidIssueStatusError, self).__init__('ISSUE STATUS CHANGE NOT ALLOWED')
+        self.field = JF_STATUS
+        msg = 'ISSUE STATUS CHANGE NOT ALLOWED'
+        super(IssueStatusChangeError, self).__init__(msg)
 
 
-class ImmutableIssueAttributeError(RequestValidationException):
+class IssueImmutableAttributeError(RequestValidationException):
     """Raised if an immutable issue attribute is updated.
 
     """
@@ -94,8 +119,9 @@ class ImmutableIssueAttributeError(RequestValidationException):
         """Instance constructor.
 
         """
-        super(ImmutableIssueAttributeError, self).__init__(
-            'ISSUE ATTRIBUTE IS IMMUTABLE: {}'.format(attr_name))
+        self.field = attr_name
+        msg = 'ISSUE ATTRIBUTE IS IMMUTABLE: {}'.format(attr_name)
+        super(IssueImmutableAttributeError, self).__init__(msg)
 
 
 class IssueDescriptionChangeRatioError(RequestValidationException):
@@ -106,10 +132,9 @@ class IssueDescriptionChangeRatioError(RequestValidationException):
         """Instance constructor.
 
         """
-        super(IssueDescriptionChangeRatioError, self).__init__(
-            "ISSUE DESCRIPTION CANNOT CHANGE BY MORE THAN {}% (Actual change ratio was {}%)".format(
-                constants.DESCRIPTION_CHANGE_RATIO, change_ratio)
-            )
+        self.field = JF_DESCRIPTION
+        msg = "ISSUE DESCRIPTION CHANGE RATIO LIMIT ({}%) EXCEEDED - RATIO = {}%".format(constants.DESCRIPTION_CHANGE_RATIO, change_ratio)
+        super(IssueDescriptionChangeRatioError, self).__init__(msg)
 
 
 class UnknownIssueError(RequestValidationException):
@@ -120,45 +145,45 @@ class UnknownIssueError(RequestValidationException):
         """Instance constructor.
 
         """
-        super(UnknownIssueError, self).__init__(
-            "ISSUE IS UNKNOWN: {}".format(uid)
-            )
+        self.field = JF_UID
+        msg = "ISSUE IS UNKNOWN: {}".format(uid)
+        super(UnknownIssueError, self).__init__(msg)
 
 
-class UnknownProjectError(RequestValidationException):
-    """Raised if a project code is either unknown or inactive.
+class AuthenticationError(WebServiceError):
+    """Raised if an issue in the process of being updated does not exist within dB.
 
     """
-    def __init__(self, project):
+    def __init__(self, uid):
         """Instance constructor.
 
         """
-        super(UnknownProjectError, self).__init__(
-            "PROJECT IS UNKNOWN: {}".format(project)
-            )
+        msg = 'Authentication failure'
+        super(AuthenticationError, self).__init__(msg, 401)
 
 
-class UnknownFacetError(RequestValidationException):
-    """Raised if a project facet is unsupported.
+class AuthorizationError(WebServiceError):
+    """Raised if an issue in the process of being updated does not exist within dB.
 
     """
-    def __init__(self, project, facet_type):
+    def __init__(self, uid):
         """Instance constructor.
 
         """
-        super(UnknownFacetError, self).__init__(
-            "PROJECT FACET IS UNKNOWN: {} :: {}".format(project, facet_type)
-            )
+        msg = 'Authorization failure'
+        super(AuthorizationError, self).__init__(msg, 403)
 
 
-class InvalidFacetError(RequestValidationException):
-    """Raised if a project facet value is invalid.
-
-    """
-    def __init__(self, project, facet_type, facet_value):
-        """Instance constructor.
-
-        """
-        super(InvalidFacetError, self).__init__(
-            "INVALID FACET VALUE: {} :: {} :: {}".format(project, facet_type, facet_value)
-            )
+# Map of managed error codes.
+ERROR_CODES = {
+    InvalidJSONError: 900,
+    InvalidDatasetIdentifierError: 901,
+    MultipleInstitutesError: 902,
+    InvalidURLError: 903,
+    UnknownIssueError: 904,
+    IssueStatusChangeError: 905,
+    IssueImmutableAttributeError: 906,
+    IssueDescriptionChangeRatioError: 907,
+    pyesdoc.AuthenticationError: 990,
+    pyesdoc.AuthorizationError: 991
+}

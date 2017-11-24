@@ -13,6 +13,7 @@ import pyesdoc
 
 from errata.utils import config
 from errata.utils import constants
+from errata.utils import exceptions
 from errata.utils import logger
 
 
@@ -84,8 +85,10 @@ def secure_request(handler):
     if handler.request.path in _WHITELISTED_ENDPOINTS:
         return
 
-    # Authenticate.
+    # Strip credentials.
     credentials = pyesdoc.strip_credentials(handler.request.headers['Authorization'])
+
+    # Authenticate.
     if config.apply_security_policy:
         logger.log_web('Authenticating: {}'.format(credentials[0]))
         authenticate(credentials)

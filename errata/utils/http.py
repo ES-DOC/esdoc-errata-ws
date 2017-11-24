@@ -9,16 +9,25 @@
 
 
 """
-from errata.utils.http_security import secure_request
-from errata.utils.http_validator import validate_request
+import pyesdoc
+
 from errata.utils import logger
 from errata.utils.convertor import to_dict
 from errata.utils.convertor import to_camel_case
+from errata.utils.exceptions import ERROR_CODES
+from errata.utils.http_security import secure_request
+from errata.utils.http_validator import validate_request
 
 
 
 # Request validation error HTTP response code.
 _HTTP_RESPONSE_INVALID_REQUEST_ERROR = 400
+
+# Request validation error HTTP response code.
+_HTTP_RESPONSE_AUTHENTICATION_ERROR = 401
+
+# Request validation error HTTP response code.
+_HTTP_RESPONSE_AUTHORIZATION_ERROR = 403
 
 # Processing error HTTP response code.
 _HTTP_RESPONSE_SERVER_ERROR = 500
@@ -114,7 +123,7 @@ _WRITERS = {
 }
 
 
-def _write(handler, data, encoding):
+def _write(handler, data, encoding='json'):
     """Writes HTTP response data.
 
     """
@@ -135,17 +144,19 @@ def write_error(handler, error):
     # Reset handler output.
     handler.clear()
 
-    # Set reason code (exception shielding when not in PROD).
-    reason = unicode(error) if _can_return_debug_info(handler) else None
+    # Set error info to be returned to client.
+    _write(handler, {
+        'error_code': ERROR_CODES.get(type(error), 999),
+        'error_field': getattr(error, 'field', '--'),
+        'error_message': error.message.strip(),
+        'error_type': type(error).__name__
+    })
 
-    # Set response code.
+    # Set response HTTP status code.
     try:
-        response_code = error.response_code
+        handler.set_status(error.response_code)
     except AttributeError:
-        response_code = _HTTP_RESPONSE_SERVER_ERROR
-
-    # Return error.
-    handler.send_error(response_code, reason=reason.replace("\n", ""))
+        handler.set_status(_HTTP_RESPONSE_SERVER_ERROR)
 
 
 def _write_success(handler):

@@ -18,6 +18,7 @@ from errata import db
 from errata.utils import config
 from errata.utils import config_esg
 from errata.utils import constants
+from errata.utils import exceptions
 from errata.utils import factory
 from errata.utils.constants_json import JF_DATASETS
 from errata.utils.constants_json import JF_MATERIALS
@@ -62,10 +63,13 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             """Validates datasets associated with incoming issue.
 
             """
-            pyessv.parse_dataset_identifers(
-                self.request.data[JF_PROJECT],
-                self.request.data[JF_DATASETS]
-                )
+            try:
+                pyessv.parse_dataset_identifers(
+                    self.request.data[JF_PROJECT],
+                    self.request.data[JF_DATASETS]
+                    )
+            except pyessv.TemplateParsingError:
+                raise exceptions.InvalidDatasetIdentifierError()
 
 
         def _validate_issue_institute():
@@ -73,7 +77,7 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
 
             """
             if len(get_institutes(self.request.data)) != 1:
-                raise ValueError('Multiple insitiute codes are not supported')
+                raise exceptions.MultipleInstitutesError()
 
 
         def _validate_user_access():

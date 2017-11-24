@@ -62,7 +62,7 @@ class CloseIssueRequestHandler(tornado.web.RequestHandler):
                 constants.STATUS_ON_HOLD,
                 constants.STATUS_NEW
                 }:
-                raise exceptions.InvalidIssueStatusError()
+                raise exceptions.IssueStatusChangeError()
 
 
         def _close_issue():

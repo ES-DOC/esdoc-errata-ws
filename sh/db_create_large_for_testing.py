@@ -41,7 +41,7 @@ def _main(args):
     """
     for _ in range(args.count):
         issue = factory.create_issue_dict()
-        requests.post(
+        r = requests.post(
             _URL_CREATE,
             data=json.dumps(issue),
             headers={'Content-Type': 'application/json'},
@@ -50,7 +50,10 @@ def _main(args):
                 os.getenv('ERRATA_WS_TEST_TOKEN')
             )
         )
-        logger.log("issue inserted :: {}".format(issue['uid']))
+        if r.status_code == 200:
+            logger.log("issue inserted :: {}".format(issue['uid']))
+        else:
+            logger.log_error(r.text)
 
 
 # Main entry point.

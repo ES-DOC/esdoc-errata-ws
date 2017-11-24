@@ -20,7 +20,6 @@ from errata.utils.constants import RESOURCE_TYPE_URL
 from errata.utils.constants import CORE_FACET_TYPESET
 from errata.utils.constants_json import JF_DATASETS
 from errata.utils.constants_json import JF_DESCRIPTION
-from errata.utils.constants_json import JF_FACET_TYPE_MAP
 from errata.utils.constants_json import JF_MATERIALS
 from errata.utils.constants_json import JF_PROJECT
 from errata.utils.constants_json import JF_SEVERITY

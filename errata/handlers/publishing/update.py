@@ -54,10 +54,13 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             """Validates datasets associated with incoming issue.
 
             """
-            pyessv.parse_dataset_identifers(
-                self.request.data[JF_PROJECT],
-                self.request.data[JF_DATASETS]
-                )
+            try:
+                pyessv.parse_dataset_identifers(
+                    self.request.data[JF_PROJECT],
+                    self.request.data[JF_DATASETS]
+                    )
+            except pyessv.TemplateParsingError:
+                raise exceptions.InvalidDatasetIdentifierError()
 
 
         def _validate_issue_institute():
@@ -65,7 +68,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
 
             """
             if len(get_institutes(self.request.data)) != 1:
-                raise ValueError('Multiple insitiute codes are not supported')
+                raise exceptions.MultipleInstitutesError()
 
 
         def _validate_user_access():
@@ -101,10 +104,10 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
 
             """
             if self.issue.institute != get_institute(self.request.data):
-                raise exceptions.ImmutableIssueAttributeError('institute')
+                raise exceptions.IssueImmutableAttributeError('institute')
             for attr in IMMUTABLE_ISSUE_ATTRIBUTES:
                 if self.request.data[attr].lower() != getattr(self.issue, attr).lower():
-                    raise exceptions.ImmutableIssueAttributeError(attr)
+                    raise exceptions.IssueImmutableAttributeError(attr)
 
 
         def _validate_issue_description_change_ratio():
@@ -127,7 +130,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
 
             """
             if self.issue.status != STATUS_NEW and self.request.data[JF_STATUS] == STATUS_NEW:
-                raise exceptions.InvalidIssueStatusError()
+                raise exceptions.IssueStatusChangeError()
 
 
         def _persist():

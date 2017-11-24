@@ -188,4 +188,4 @@ def validate_url(url):
     if response.ok:
         return
 
-    raise exceptions.UnreachableURLError(url)
+    raise exceptions.InvalidURLError(url)
