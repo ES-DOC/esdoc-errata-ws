@@ -136,30 +136,6 @@ class UnknownIssueError(RequestValidationException):
         super(UnknownIssueError, self).__init__(msg)
 
 
-class AuthenticationError(WebServiceError):
-    """Raised if an issue in the process of being updated does not exist within dB.
-
-    """
-    def __init__(self, uid):
-        """Instance constructor.
-
-        """
-        msg = 'Authentication failure'
-        super(AuthenticationError, self).__init__(msg, 401)
-
-
-class AuthorizationError(WebServiceError):
-    """Raised if an issue in the process of being updated does not exist within dB.
-
-    """
-    def __init__(self, uid):
-        """Instance constructor.
-
-        """
-        msg = 'Authorization failure'
-        super(AuthorizationError, self).__init__(msg, 403)
-
-
 # Map of managed error codes.
 ERROR_CODES = {
     InvalidJSONError: 900,
