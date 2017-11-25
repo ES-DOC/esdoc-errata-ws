@@ -36,24 +36,24 @@ def test_publishing():
     """
     for test_type in ['create', 'update']:
         # Simple field tests.
-        for field in sorted([
+        for field in [
             'description',
             'project',
             'severity',
             'status',
             'title',
             'uid'
-            ]):
+            ]:
             yield _do_test(test_type, _callback_01, field, "is not a string")
             if field not in {'description', 'title'}:
                 yield _do_test(test_type, _callback_02, field, "is invalid string value")
 
         # Array field tests.
-        for field in sorted([
+        for field in [
             'datasets',
             'materials',
             'urls'
-            ]):
+            ]:
             yield _do_test(test_type, _callback_02, field, "is not an array")
             yield _do_test(test_type, _callback_03, field, "is invalid array [contains non-string values]")
             yield _do_test(test_type, _callback_04, field, "is invalid array [contains invalid item]")
