@@ -45,8 +45,15 @@ def test_publishing():
             'uid'
             ]:
             yield _do_test(test_type, _callback_01, field, "is not a string")
-            if field not in {'description', 'title'}:
-                yield _do_test(test_type, _callback_02, field, "is invalid string value")
+
+        # Constrained field tests.
+        for field in [
+            'project',
+            'severity',
+            'status',
+            'uid'
+            ]:
+            yield _do_test(test_type, _callback_02, field, "is invalid string value")
 
         # Array field tests.
         for field in [
