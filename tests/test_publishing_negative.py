@@ -37,24 +37,26 @@ def test_publishing():
     for test_type in ['create', 'update']:
         # Simple field tests.
         for field in sorted([
-            'datasets',
             'description',
-            'materials',
             'project',
             'severity',
             'status',
             'title',
-            'uid',
+            'uid'
+            ]):
+            yield _do_test(test_type, _callback_01, field, "is not a string")
+            if field not in {'description', 'title'}:
+                yield _do_test(test_type, _callback_02, field, "is invalid string value")
+
+        # Array field tests.
+        for field in sorted([
+            'datasets',
+            'materials',
             'urls'
             ]):
-            if field in {'datasets', 'materials', 'urls'}:
-                yield _do_test(test_type, _callback_02, field, "is not an array")
-                yield _do_test(test_type, _callback_03, field, "is invalid array [contains non-string values]")
-                yield _do_test(test_type, _callback_04, field, "is invalid array [contains invalid item]")
-            else:
-                yield _do_test(test_type, _callback_01, field, "is not a string")
-                if field not in {'description', 'title'}:
-                    yield _do_test(test_type, _callback_02, field, "is invalid string value")
+            yield _do_test(test_type, _callback_02, field, "is not an array")
+            yield _do_test(test_type, _callback_03, field, "is invalid array [contains non-string values]")
+            yield _do_test(test_type, _callback_04, field, "is invalid array [contains invalid item]")
 
         # Dataset identifier tests.
         yield _do_test(test_type, _callback_05, 'datasets', "with invalid DRS elements")
@@ -74,7 +76,7 @@ def _do_test(test_type, callback, field, description):
     issue = factory.create_issue_dict()
 
     def _do_create():
-        '''Performs a create issue test.'''
+        """Performs a create issue test."""
         callback(issue, field)
         _assert_bad_ws_response(requests.post(
             _URL_CREATE,
@@ -84,7 +86,7 @@ def _do_test(test_type, callback, field, description):
 
 
     def _do_update():
-        '''Performs an update issue test.'''
+        """Performs an update issue test."""
         requests.post(
             _URL_CREATE,
             data=json.dumps(issue),
@@ -104,27 +106,27 @@ def _do_test(test_type, callback, field, description):
 
 
 def _callback_01(issue, field):
-    '''Set field value to a non string value.'''
+    """Set field value to a non string value."""
     issue[field] = 123
 
 
 def _callback_02(issue, field):
-    '''Set field value to an invalid string value.'''
+    """Set field value to an invalid string value."""
     issue[field] = "invalid-value"
 
 
 def _callback_03(issue, field):
-    '''Set array field value to a non-string array.'''
+    """Set array field value to a non-string array."""
     issue[field] = [123]
 
 
 def _callback_04(issue, field):
-    '''Set URL field value to an array with an invalid url.'''
+    """Set URL field value to an array with an invalid url."""
     issue[field] = ["an-invalid-item.png"]
 
 
 def _callback_05(issue, _):
-    '''Set dataset identifer to an invalid value.'''
+    """Set dataset identifer to an invalid value."""
     for idx, identifier in enumerate(issue['datasets']):
         parts = identifier.split('.')
         parts[2] = 'xxxxx'
@@ -132,7 +134,7 @@ def _callback_05(issue, _):
 
 
 def _callback_06(issue, _):
-    '''Set dataset identifers so that multiple institutes are repesented.'''
+    """Set dataset identifers so that multiple institutes are repesented."""
     identifier = issue['datasets'][0]
     parts = identifier.split('.')
     project = parts[0]
@@ -144,12 +146,12 @@ def _callback_06(issue, _):
 
 
 def _callback_07(issue, _):
-    '''Set issue uid so that update will fail.'''
+    """Set issue uid so that update will fail."""
     issue['uid'] = unicode(uuid.uuid4())
 
 
 def _callback_08(issue, field):
-    '''Set immutable field.'''
+    """Set immutable field."""
     if field == 'title':
         issue['title'] = unicode(uuid.uuid4())
     elif field == 'project':
@@ -159,7 +161,7 @@ def _callback_08(issue, field):
 
 
 def _callback_09(issue, _):
-    '''Set status field to an invalid value.'''
+    """Set status field to an invalid value."""
     issue['status'] = STATUS_NEW
 
 
