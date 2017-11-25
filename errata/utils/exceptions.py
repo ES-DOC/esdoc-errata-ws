@@ -123,19 +123,6 @@ class IssueImmutableAttributeError(RequestValidationException):
         super(IssueImmutableAttributeError, self).__init__(msg)
 
 
-class IssueDescriptionChangeRatioError(RequestValidationException):
-    """Raised if an issue description changes by more than the allowed ratio.
-
-    """
-    def __init__(self, change_ratio):
-        """Instance constructor.
-
-        """
-        self.field = constants.JF_DESCRIPTION
-        msg = "ISSUE DESCRIPTION CHANGE RATIO LIMIT ({}%) EXCEEDED - RATIO = {}%".format(constants.DESCRIPTION_CHANGE_RATIO, change_ratio)
-        super(IssueDescriptionChangeRatioError, self).__init__(msg)
-
-
 class UnknownIssueError(RequestValidationException):
     """Raised if an issue in the process of being updated does not exist within dB.
 
@@ -182,7 +169,6 @@ ERROR_CODES = {
     UnknownIssueError: 904,
     IssueStatusChangeError: 905,
     IssueImmutableAttributeError: 906,
-    IssueDescriptionChangeRatioError: 907,
     pyesdoc.AuthenticationError: 990,
     pyesdoc.AuthorizationError: 991
 }

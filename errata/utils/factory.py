@@ -9,18 +9,12 @@
 
 
 """
-import collections
 import datetime as dt
-import os
-import random
 import uuid
 
 import pyessv
 
 from errata.utils.constants import *
-from errata.db.models import Issue
-from errata.db.models import IssueFacet
-from errata.db.models import PIDServiceTask
 
 
 
@@ -50,10 +44,10 @@ def create_issue_dict():
         JF_MATERIALS: _get_materials(),
         JF_PROJECT: project_id,
         JF_SEVERITY: pyessv.get_random('esdoc:errata:severity'),
-        JF_STATUS: STATUS_NEW,
+        JF_STATUS: STATUS_ON_HOLD,
         JF_TITLE: unicode(uuid.uuid4()),
         JF_UID: unicode(uuid.uuid4()),
-        JF_URLS: [u'https://es-doc.org/cmip6-dataset-errata']
+        JF_URLS: ['https://es-doc.org/cmip6-dataset-errata']
     }
 
 
@@ -61,17 +55,13 @@ def _get_materials():
     """Returns test affected  datasets.
 
     """
-    if not _MATERIALS:
-        fpath = os.getenv('ERRATA_WS_HOME')
-        fpath = os.path.join(fpath, 'tests')
-        fpath = os.path.join(fpath, 'test-data')
-        fpath = os.path.join(fpath, 'materials')
-        fpath = os.path.join(fpath, 'MANIFEST.txt')
-        with open(fpath, 'r') as fstream:
-            for l in [l.strip() for l in fstream.readlines() if l.strip()]:
-                _MATERIALS.append(l)
-
-    return _MATERIALS
+    return [
+        'https://test-errata.es-doc.org/media/img/materials/material-01.png',
+        'https://test-errata.es-doc.org/media/img/materials/material-02.png',
+        'https://test-errata.es-doc.org/media/img/materials/material-03.png',
+        'https://test-errata.es-doc.org/media/img/materials/material-04.png',
+        'https://test-errata.es-doc.org/media/img/materials/material-05.png'
+    ]
 
 
 def get_datasets(project, existing=[]):

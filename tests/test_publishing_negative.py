@@ -12,157 +12,164 @@
 """
 import json
 import urllib
+import uuid
 
 import requests
 
+import pyessv
 from pyessv._utils.compat import basestring
 from errata.utils import factory
+from errata.utils.constants import *
 from tests import utils as tu
 
 
-
-D = '''
-{
-    "project": "cordex", 
-    "status": "new", 
-    "datasets": [
-        "cordex.output.cas-44.ipsl-ineris.cnrm-cerfacs-cnrm-cm5.historical.r12i1p1.wrf350i.v1.3hr.zmla#v20180101", 
-        "cordex.output.aus-44.ipsl-ineris.miroc-miroc5.rcp45.r12i1p1.promes.v1.sem.rlds#v20180101", 
-        "cordex.output.eur-44.ipsl-ineris.mpi-m-mpi-esm-mr.rcp45.r12i1p1.wrf331.v1.mon.sfcwindmax#v20180101", 
-        "cordex.output.mna-22.ipsl-ineris.mpi-m-mpi-esm-lr.rcp45.r12i1p1.remo2009.v1.sem.va300#v20180101", 
-        "cordex.output.eas-44i.ipsl-ineris.ecmwf-eraint.rcp60.r12i1p1.hadrm3p.v1.mon.ua600#v20180101"
-    ], 
-    "description": "310d649e-3153-4d4f-b7e8-b72b59a3a346", 
-    "urls": [
-        "https://es-doc.org/cmip6-dataset-errata"
-    ], 
-    "title": "0bc926c5-9709-4baa-9027-ffe7fb763215", 
-    "uid": "113456ef-e8a3-4d60-8536-1aab891d31b5", 
-    "severity": "medium", 
-    "materials": [
-        "https://test-errata.es-doc.org/media/img/materials/material-01.png", 
-        "https://test-errata.es-doc.org/media/img/materials/material-02.png", 
-        "https://test-errata.es-doc.org/media/img/materials/material-03.png", 
-        "https://test-errata.es-doc.org/media/img/materials/material-04.png", 
-        "https://test-errata.es-doc.org/media/img/materials/material-05.png"
-    ]
-}
-'''
-
-# Test issue.
-_ISSUE = factory.create_issue_dict()
-# print json.dumps(_ISSUE, indent=4)
-
 # Test endpoint: create issue.
 _URL_CREATE = "{}/1/issue/create".format(tu.BASE_URL)
-
-# Test endpoint: retrieve issue.
-_URL_RETRIEVE = '{}/1/issue/retrieve?'.format(tu.BASE_URL)
-_URL_RETRIEVE += urllib.urlencode({
-    'uid': _ISSUE['uid']
-    })
 
 # Test endpoint: update issue.
 _URL_UPDATE = "{}/1/issue/update".format(tu.BASE_URL)
 
 
-def test_create_invalid():
-    """ERRATA :: WS :: Test creating an issue - invalid id.
+def test_publishing():
+    """ERRATA :: WS :: PUBLISHING :: issue (-ve).
 
     """
-    # Test string properties:
-    for attr in [
-        'description',
-        'project',
-        'severity',
-        'status',
-        'title',
-        'uid'
-        ]:
-        # ... test invalid value;
-        issue = _ISSUE.copy()
-        issue[attr] = 123
-        yield _do_test(issue, attr, "is not a string")
+    for test_type in ['create', 'update']:
+        # Simple field tests.
+        for field in sorted([
+            'datasets',
+            'description',
+            'materials',
+            'project',
+            'severity',
+            'status',
+            'title',
+            'uid',
+            'urls'
+            ]):
+            if field in {'datasets', 'materials', 'urls'}:
+                yield _do_test(test_type, _callback_02, field, "is not an array")
+                yield _do_test(test_type, _callback_03, field, "is invalid array [contains non-string values]")
+                yield _do_test(test_type, _callback_04, field, "is invalid array [contains invalid item]")
+            else:
+                yield _do_test(test_type, _callback_01, field, "is not a string")
+                if field not in {'description', 'title'}:
+                    yield _do_test(test_type, _callback_02, field, "is invalid string value")
 
-        # ... test constrained values;
-        if attr not in {'description', 'title'}:
-            issue[attr] = "invalid-value"
-            yield _do_test(issue, attr, "is invalid string value")
+        # Dataset identifier tests.
+        yield _do_test(test_type, _callback_05, 'datasets', "with invalid DRS elements")
+        yield _do_test(test_type, _callback_06, 'datasets', "with multiple institutes")
 
-
-    # Test array properties:
-    for attr in {
-        'datasets',
-        'materials',
-        'urls'
-        }:
-        # ... test invalid value
-        issue = _ISSUE.copy()
-        issue[attr] = "invalid-value"
-        yield _do_test(issue, attr, "is not an array")
-
-        # ... arrays must contain only string values;
-        issue[attr] = [123]
-        yield _do_test(issue, attr, "is invalid array [contains non-string values]")
-
-        # ... array values are further validated;
-        issue[attr] = ["an-invalid-item.png"]
-        yield _do_test(issue, attr, "is invalid array [contains invalid item]")
+    # More specialized tests.
+    yield _do_test('update', _callback_07, 'uid', "does not match an existing issue")
+    for field in {'project', 'title'}:
+        yield _do_test('update', _callback_08, field, "is an immutable attribute")
+    yield _do_test('update', _callback_09, 'status', "change error")
 
 
-def test_create_invalid_datasets():
-    """ERRATA :: WS :: Test creating an issue - invalid title.
+def _do_test(test_type, callback, field, description):
+    """Executes unit test.
 
     """
-    def _convert(identifier):
-        parts = identifier.split('.')
-        parts[2] = 'xxxxx'
-        return '.'.join(parts)
+    issue = factory.create_issue_dict()
 
-    issue = _ISSUE.copy()
-    issue['datasets'] = [_convert(i) for i in issue['datasets']]
-    yield _do_test(issue, 'datasets', "is invalid array [contains invalid datasets]")
-
-
-def test_create_invalid_title():
-    """ERRATA :: WS :: Test creating an issue - invalid title.
-
-    """
-    pass
-
-
-def _do_test(issue, attr, description):
-    """Executes create issue unit test.
-
-    """
-    def _do():
-        response = requests.post(
+    def _do_create():
+        '''Performs a create issue test.'''
+        callback(issue, field)
+        _assert_bad_ws_response(requests.post(
             _URL_CREATE,
             data=json.dumps(issue),
-            headers={'Content-Type': 'application/json'},
+            auth=tu.get_credentials()
+            ))
+
+
+    def _do_update():
+        '''Performs an update issue test.'''
+        requests.post(
+            _URL_CREATE,
+            data=json.dumps(issue),
             auth=tu.get_credentials()
             )
-        _assert_ws_response(_URL_CREATE, response)
+        callback(issue, field)
+        _assert_bad_ws_response(requests.post(
+            _URL_UPDATE,
+            data=json.dumps(issue),
+            auth=tu.get_credentials()
+            ))
 
-    _do.description = "ERRATA :: WS :: PUBLISHING :: create issue (-ve) :: {} {}".format(attr, description)
+    func = _do_create if test_type == 'create' else _do_update
+    func.description = "ERRATA :: WS :: PUBLISHING :: {} issue (-ve) :: {} {}".format(test_type, field, description)
 
-    return _do
+    return func
 
 
-def _assert_ws_response(
-    url,
-    response,
-    expected_status_code=requests.codes.BAD_REQUEST,
-    expected_content=None):
+def _callback_01(issue, field):
+    '''Set field value to a non string value.'''
+    issue[field] = 123
+
+
+def _callback_02(issue, field):
+    '''Set field value to an invalid string value.'''
+    issue[field] = "invalid-value"
+
+
+def _callback_03(issue, field):
+    '''Set array field value to a non-string array.'''
+    issue[field] = [123]
+
+
+def _callback_04(issue, field):
+    '''Set URL field value to an array with an invalid url.'''
+    issue[field] = ["an-invalid-item.png"]
+
+
+def _callback_05(issue, _):
+    '''Set dataset identifer to an invalid value.'''
+    for idx, identifier in enumerate(issue['datasets']):
+        parts = identifier.split('.')
+        parts[2] = 'xxxxx'
+        issue['datasets'][idx] = '.'.join(parts)
+
+
+def _callback_06(issue, _):
+    '''Set dataset identifers so that multiple institutes are repesented.'''
+    identifier = issue['datasets'][0]
+    parts = identifier.split('.')
+    project = parts[0]
+    if project in {'cordex', }:
+        parts[3] = 'mohc'
+    elif project in {'cmip5', 'cmip6'}:
+        parts[2] = 'mohc'
+    issue['datasets'][0] = '.'.join(parts)
+
+
+def _callback_07(issue, _):
+    '''Set issue uid so that update will fail.'''
+    issue['uid'] = unicode(uuid.uuid4())
+
+
+def _callback_08(issue, field):
+    '''Set immutable field.'''
+    if field == 'title':
+        issue['title'] = unicode(uuid.uuid4())
+    elif field == 'project':
+        project = issue['project']
+        while project == issue['project']:
+            issue['project'] = pyessv.get_random('esdoc:errata:project')
+
+
+def _callback_09(issue, _):
+    '''Set status field to an invalid value.'''
+    issue['status'] = STATUS_NEW
+
+
+def _assert_bad_ws_response(response):
     """Asserts a response received from web-service.
 
     """
-    # WS url.
-    assert response.url == url
-
     # WS response HTTP status code.
-    assert response.status_code == expected_status_code, \
-           "invalid response code: actual={} :: expected={}".format(response.status_code, expected_status_code)
+    assert response.status_code == requests.codes.BAD_REQUEST, \
+           "invalid response code: actual={} :: expected={}".format(response.status_code, requests.codes.BAD_REQUEST)
 
     # WS response = unicode.
     assert isinstance(response.text, unicode)
@@ -190,6 +197,6 @@ def _assert_ws_response(
     # WS JSON response.
     obj = json.loads(response.text)
     assert isinstance(obj, dict)
-    for field, typeof in {('errorCode', int), ('errorMessage', basestring), ('errorType', basestring), ('errorField', basestring)}:
+    for field, test_type in {('errorCode', int), ('errorMessage', basestring), ('errorType', basestring), ('errorField', basestring)}:
         assert field in obj
-        assert isinstance(obj[field], typeof), "{}:{}".format(obj[field], field)
+        assert isinstance(obj[field], test_type), "{}:{}".format(obj[field], field)

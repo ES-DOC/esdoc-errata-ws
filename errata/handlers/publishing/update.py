@@ -10,7 +10,6 @@
 
 
 """
-import difflib
 import tornado
 
 import pyessv
@@ -97,21 +96,6 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
                     raise exceptions.IssueImmutableAttributeError(attr)
 
 
-        def _validate_issue_description_change_ratio():
-            """Validates that the degree of change in the issue's description is less than allowed ratio.
-
-            """
-            # Escape if no change.
-            if self.request.data[JF_DESCRIPTION] == self.issue.description:
-                return
-
-            # Determine change ratio.
-            diff = difflib.SequenceMatcher(None, self.issue.description, self.request.data[JF_DESCRIPTION])
-            diff_ratio = 100 - round(diff.ratio(), 3) * 100
-            if diff_ratio > DESCRIPTION_CHANGE_RATIO:
-                raise exceptions.IssueDescriptionChangeRatioError(diff_ratio)
-
-
         def _validate_issue_status():
             """Validates that issue status allows it to be updated.
 
@@ -158,7 +142,6 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
                 _validate_issue_exists,
                 _validate_issue_urls,
                 _validate_issue_immutable_attributes,
-                _validate_issue_description_change_ratio,
                 _validate_issue_status,
                 _persist
             ])
