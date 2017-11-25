@@ -27,7 +27,7 @@ _MATERIALS = []
 # Collection of data set patters used when generating test dataset identifiers.
 _DATASETS_PATTERNS = {
     'cmip5': u'cmip5.{}.{}.{}.{}.{}.{}.{}.r1i1p1#v20180101',
-    'cmip6': u'cmip6.{}.{}.{}.{}.r1i1p1f1.{}.clitter.{}#v20180101',
+    'cmip6': u'cmip6.{}.{}.{}.{}.r1i1p1f1.{}.Emon.{}#v20180101',
     'cordex': u'cordex.{}.{}.{}.{}.{}.r12i1p1.{}.v1.{}.{}#v20180101'
 }
 
