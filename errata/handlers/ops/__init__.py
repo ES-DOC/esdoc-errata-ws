@@ -1,2 +1,3 @@
 from errata.handlers.ops.heartbeat import HeartbeatRequestHandler
+from errata.handlers.ops.validate_dataset_identifier import ValidateDatasetIdentifierRequestHandler
 from errata.handlers.ops.verify_authorization import VerifyAuthorizationRequestHandler

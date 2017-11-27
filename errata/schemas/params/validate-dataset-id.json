@@ -1,0 +1,28 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "additionalProperties": false,
+    "properties": {
+        "identifier": {
+            "items": {
+                "minItems": 1,
+                "maxItems": 1,
+                "type": "string"
+            },
+            "type": "array"
+        },
+        "project": {
+            "items": {
+                "minItems": 1,
+                "maxItems": 1,
+                "type": "string"
+            },
+            "type": "array"
+        }
+    },
+    "required": [
+        "identifier",
+        "project"
+    ],
+    "title": "ES-DOC Errata JSON schema: endpoint = /validate-dataset-id",
+    "type": "object"
+}

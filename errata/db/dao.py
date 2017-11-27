@@ -115,12 +115,14 @@ def get_issues(criteria=None):
         as_date_string(Issue.updated_date)
         )
 
-    for facet_type, facet_values in criteria.items():
-        for facet_value in facet_values:
-            sub_qry = query(IssueFacet.issue_uid)
-            sub_qry = sub_qry.filter(IssueFacet.facet_type == facet_type)
-            sub_qry = text_filter(sub_qry, IssueFacet.facet_value, facet_value)
-            qry = qry.filter(Issue.uid.in_(sub_qry))
+    print 444, criteria
+
+    # for facet_type, facet_values in criteria.items():
+    #     for facet_value in facet_values:
+    #         sub_qry = query(IssueFacet.issue_uid)
+    #         sub_qry = sub_qry.filter(IssueFacet.facet_type == facet_type)
+    #         sub_qry = text_filter(sub_qry, IssueFacet.facet_value, facet_value)
+    #         qry = qry.filter(Issue.uid.in_(sub_qry))
 
     return qry.all()
 

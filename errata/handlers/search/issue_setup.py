@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+    # -*- coding: utf-8 -*-
 
 """
 .. module:: handlers.search_setup.py
@@ -51,61 +51,29 @@ class IssueSearchSetupRequestHandler(tornado.web.RequestHandler):
             return result
 
 
-        # def _get_project_data(facet_types):
-        #     """Returns project setup data.
-
-        #     """
-        #     def _map_facet(key, values):
-        #         return {
-        #             'key': key,
-        #             'label': '{}{}'.format(key[0].upper(), key[1:]),
-        #             'values': values
-        #         }
-
-        #     def _map_project(key, facets):
-        #         return {
-        #             'key': key,
-        #             'label': key.upper(),
-        #             'facets': [_map_facet(k, v) for k, v in facets.items()]
-        #         }
-
-        #     def _get_data():
-        #         result = collections.defaultdict(lambda : collections.defaultdict(list))
-        #         facets = db.dao.get_project_facets(facet_types)
-        #         for project, facet_type, facet_value in facets:
-        #             result[project][facet_type].append(facet_value)
-
-        #         return result.items()
-
-        #     return [_map_project(k, v) for k, v in _get_data()]
-
 
         def _set_output():
             """Sets response to be returned to client.
 
             """
-            facet_types = reduce(operator.add, [i.data['facets'] for i in pyessv.load('esdoc:errata:project')], [])
+            # Set facet types.
+            facet_types = {
+                'esdoc:errata:project',
+                'esdoc:errata:severity',
+                'esdoc:errata:status',
+            }
+            for project in pyessv.load('esdoc:errata:project'):
+                for facet_type in project.data['facets']:
+                    facet_types.add(facet_type)
+
+            # Get facet values.
             with db.session.create():
-                for i in db.dao.get_project_facets():
-                    print i
+                facet_values = set(db.dao.get_project_facets())
 
-            # print facet_types
-
-
-            # with db.session.create():
-            #     projects = [_map_term(i) for i in pyessv.load('esdoc:errata:project')]
-            #     facets = []
-            #     for project in projects:
-            #         facets += [pyessv.load(i) for i in project['facets']]
-
-
+            # Set output.
             self.output = {
-                'data': [_map_collection(i) for i in {
-                    'esdoc:errata:project',
-                    'esdoc:errata:severity',
-                    'esdoc:errata:status',
-                }],
-                'facets': []
+                'collections': [_map_collection(i) for i in sorted(facet_types)],
+                'values': facet_values
             }
 
         # Process request.
@@ -121,7 +89,7 @@ def _map_collection(identifier):
     return {
         'key': collection.namespace,
         'label': collection.label,
-        'values': [_map_term(i) for i in collection]
+        'terms': [_map_term(i) for i in collection]
     }
 
 
@@ -130,7 +98,8 @@ def _map_term(term):
 
     """
     result = {
-        'key': term.canonical_name,
+        'key': term.namespace,
+        # 'key': term.canonical_name,
         'namespace': term.namespace,
         'label': term.label,
     }

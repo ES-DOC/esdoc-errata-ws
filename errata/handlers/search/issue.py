@@ -43,9 +43,9 @@ class IssueSearchRequestHandler(tornado.web.RequestHandler):
             """Sets search criteria.
 
             """
-            self.criteria = collections.defaultdict(set)
-            for k, v in [i.split(':') for i in self.get_argument(_PARAM_CRITERIA).split(',')]:
-                self.criteria[k].add(v)
+            self.criteria = self.get_argument(_PARAM_CRITERIA).split(',')
+            # for k, v in [i.split(':') for i in self.get_argument(_PARAM_CRITERIA).split(',')]:
+            #     self.criteria[k].add(v)
 
 
         def _set_data():

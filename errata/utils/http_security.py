@@ -24,6 +24,7 @@ _GH_TEAM = 'errata-publication'
 # Set of whitelisted endpoints.
 _WHITELISTED_ENDPOINTS = {
     '/',
+    '/validate-dataset-id',
     '/verify-authorization',
     '/1/issue/retrieve',
     '/1/issue/retrieve-all',
