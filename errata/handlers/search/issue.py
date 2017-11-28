@@ -44,8 +44,6 @@ class IssueSearchRequestHandler(tornado.web.RequestHandler):
 
             """
             self.criteria = self.get_argument(_PARAM_CRITERIA).split(',')
-            # for k, v in [i.split(':') for i in self.get_argument(_PARAM_CRITERIA).split(',')]:
-            #     self.criteria[k].add(v)
 
 
         def _set_data():

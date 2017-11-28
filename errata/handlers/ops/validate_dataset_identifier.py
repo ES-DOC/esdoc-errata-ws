@@ -37,7 +37,7 @@ class ValidateDatasetIdentifierRequestHandler(tornado.web.RequestHandler):
             """Validates dataset identifer using pyessv.
 
             """
-            print pyessv.parse_dataset_identifer(
+            pyessv.parse_dataset_identifer(
                 self.get_argument(_PARAM_PROJECT),
                 self.get_argument(_PARAM_IDENTIFIER)
                 )

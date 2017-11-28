@@ -94,7 +94,7 @@ def get_issue(uid):
 def get_issues(criteria=None):
     """Returns collection of matching issues.
 
-    :param dict criteria: Map of criteria facet-types to facet-values.
+    :param list criteria: Map of criteria facet-types to facet-values.
 
     :returns: List of matching issues.
     :rtype: list
@@ -115,14 +115,11 @@ def get_issues(criteria=None):
         as_date_string(Issue.updated_date)
         )
 
-    print 444, criteria
-
-    # for facet_type, facet_values in criteria.items():
-    #     for facet_value in facet_values:
-    #         sub_qry = query(IssueFacet.issue_uid)
-    #         sub_qry = sub_qry.filter(IssueFacet.facet_type == facet_type)
-    #         sub_qry = text_filter(sub_qry, IssueFacet.facet_value, facet_value)
-    #         qry = qry.filter(Issue.uid.in_(sub_qry))
+    for item in criteria:
+        sub_qry = query(IssueFacet.issue_uid)
+        sub_qry = sub_qry.filter(IssueFacet.facet_type == ':'.join(item.split(':')[0:3]))
+        sub_qry = text_filter(sub_qry, IssueFacet.facet_value, item.split(':')[-1])
+        qry = qry.filter(Issue.uid.in_(sub_qry))
 
     return qry.all()
 

@@ -85,33 +85,33 @@ def _get_dataset(project):
 
     if project == 'cmip5':
         return pattern.format(
-            pyessv.get_random('wcrp:cmip5:product'),
-            pyessv.parse_namespace('wcrp:cmip5:institute:ipsl'),
-            pyessv.get_random('wcrp:cmip5:model'),
-            pyessv.get_random('wcrp:cmip5:experiment'),
-            pyessv.get_random('wcrp:cmip5:time-frequency'),
-            pyessv.get_random('wcrp:cmip5:realm'),
-            pyessv.get_random('wcrp:cmip5:cmor-table')
+            pyessv.get_random('wcrp:cmip5:product', field='raw_name'),
+            pyessv.parse_namespace('wcrp:cmip5:institute:ipsl', field='raw_name'),
+            pyessv.get_random('wcrp:cmip5:model', field='raw_name'),
+            pyessv.get_random('wcrp:cmip5:experiment', field='raw_name'),
+            pyessv.get_random('wcrp:cmip5:time-frequency', field='raw_name'),
+            pyessv.get_random('wcrp:cmip5:realm', field='raw_name'),
+            pyessv.get_random('wcrp:cmip5:cmor-table', field='raw_name')
             )
 
     elif project == 'cmip6':
         return pattern.format(
-            pyessv.get_random('wcrp:cmip6:activity-id'),
-            pyessv.parse_namespace('wcrp:cmip6:institution-id:ipsl'),
-            pyessv.get_random('wcrp:cmip6:source-id'),
-            pyessv.get_random('wcrp:cmip6:experiment-id'),
-            pyessv.get_random('wcrp:cmip6:table-id'),
-            pyessv.get_random('wcrp:cmip6:grid-label')
+            pyessv.get_random('wcrp:cmip6:activity-id', field='raw_name'),
+            pyessv.parse_namespace('wcrp:cmip6:institution-id:ipsl', field='raw_name'),
+            pyessv.get_random('wcrp:cmip6:source-id', field='raw_name'),
+            pyessv.get_random('wcrp:cmip6:experiment-id', field='raw_name'),
+            pyessv.get_random('wcrp:cmip6:table-id', field='raw_name'),
+            pyessv.get_random('wcrp:cmip6:grid-label', field='raw_name')
             )
 
     elif project == 'cordex':
         return pattern.format(
-            pyessv.get_random('wcrp:cordex:product'),
-            pyessv.get_random('wcrp:cordex:domain'),
-            pyessv.parse_namespace('wcrp:cordex:institute:ipsl-ineris'),
-            pyessv.get_random('wcrp:cordex:driving-model'),
-            pyessv.get_random('wcrp:cordex:experiment'),
-            pyessv.get_random('wcrp:cordex:rcm-name'),
-            pyessv.get_random('wcrp:cordex:time-frequency'),
-            pyessv.get_random('wcrp:cordex:variable')
+            pyessv.get_random('wcrp:cordex:product', field='raw_name'),
+            pyessv.get_random('wcrp:cordex:domain', field='raw_name'),
+            pyessv.parse_namespace('wcrp:cordex:institute:ipsl-ineris', field='raw_name'),
+            pyessv.get_random('wcrp:cordex:driving-model', field='raw_name'),
+            pyessv.get_random('wcrp:cordex:experiment', field='raw_name'),
+            pyessv.get_random('wcrp:cordex:rcm-name', field='raw_name'),
+            pyessv.get_random('wcrp:cordex:time-frequency', field='raw_name'),
+            pyessv.get_random('wcrp:cordex:variable', field='raw_name')
             )
