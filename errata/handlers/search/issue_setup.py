@@ -72,7 +72,7 @@ class IssueSearchSetupRequestHandler(tornado.web.RequestHandler):
 
             # Set output.
             self.output = {
-                'collections': [_map_collection(i) for i in sorted(facet_types)],
+                'vocabs': [_map_collection(i) for i in sorted(facet_types)],
                 'values': facet_values
             }
 
@@ -86,11 +86,15 @@ def _map_collection(identifier):
     """
     collection = pyessv.load(identifier)
 
-    return {
+    result = {
         'key': collection.namespace,
         'label': collection.label,
         'terms': [_map_term(i) for i in collection]
     }
+    if collection.data is not None:
+        result.update(collection.data)
+
+    return result
 
 
 def _map_term(term):
@@ -99,6 +103,7 @@ def _map_term(term):
     """
     result = {
         'key': term.namespace,
+        'canonicalName': term.canonical_name,
         # 'key': term.canonical_name,
         'namespace': term.namespace,
         'label': term.label,

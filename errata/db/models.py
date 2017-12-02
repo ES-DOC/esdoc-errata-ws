@@ -117,17 +117,21 @@ class Issue(Entity):
             self.uid, self.title, self.description)
 
 
-    def to_dict(self, resources):
+    def to_dict(self, resources, facets):
         """Encode issue as a simple dictionary.
 
         :param list resources: Collection of issue resources.
 
         """
+        def _get_facets():
+            return sorted(['{}:{}'.format(i.facet_type, i.facet_value) for i in facets if i.issue_uid == self.uid])
+
         def _get_reources(resource_type):
             return sorted([i.resource_location for i in resources \
                            if i.issue_uid == self.uid and i.resource_type == resource_type])
 
         obj = convertor.to_dict(self)
+        obj['facets'] = _get_facets()
         obj['datasets'] = _get_reources(RESOURCE_TYPE_DATASET)
         obj['materials'] = _get_reources(RESOURCE_TYPE_MATERIAL)
         obj['urls'] = _get_reources(RESOURCE_TYPE_URL)

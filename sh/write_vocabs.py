@@ -160,7 +160,8 @@ def _write_projects(scope):
                 "wcrp:cmip5:model",
                 "wcrp:cmip5:variable"
             ],
-            "is_pid_client": False
+            "is_pid_client": False,
+            "is_documented": True
         }
     )
 
@@ -173,7 +174,8 @@ def _write_projects(scope):
                 "wcrp:cmip6:source-id",
                 "wcrp:cmip6:variable"
             ],
-            "is_pid_client": True
+            "is_pid_client": True,
+            "is_documented": True
         }
     )
 
@@ -186,7 +188,8 @@ def _write_projects(scope):
                 "wcrp:cordex:rcm-model",
                 "wcrp:cordex:variable"
             ],
-            "is_pid_client": False
+            "is_pid_client": False,
+            "is_documented": False
         }
     )
 

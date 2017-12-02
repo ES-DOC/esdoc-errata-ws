@@ -124,6 +124,22 @@ def get_issues(criteria=None):
     return qry.all()
 
 
+def get_facets(issue_uid=None):
+    """Returns collection of facets.
+
+    :param str issue_uid: Unique issue identifier.
+
+    :returns: Set of facets from database.
+    :rtype: list
+
+    """
+    qry = query(IssueFacet)
+    if issue_uid is not None:
+        qry = text_filter(qry, IssueFacet.issue_uid, issue_uid)
+
+    return qry.all()
+
+
 def get_pid_service_tasks():
     """Returns pid service tasks awaiting processing.
 

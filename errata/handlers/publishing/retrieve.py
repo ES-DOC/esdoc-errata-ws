@@ -44,6 +44,7 @@ class RetrieveIssueRequestHandler(tornado.web.RequestHandler):
             with db.session.create():
                 self.issue = db.dao.get_issue(self.get_argument(_PARAM_UID))
                 self.resources = db.dao.get_resources(issue_uid=self.get_argument(_PARAM_UID))
+                self.facets = db.dao.get_facets(issue_uid=self.get_argument(_PARAM_UID))
 
 
         def _set_output():
@@ -51,7 +52,7 @@ class RetrieveIssueRequestHandler(tornado.web.RequestHandler):
 
             """
             self.output = {
-                'issue': self.issue.to_dict(self.resources)
+                'issue': self.issue.to_dict(self.resources, self.facets)
             }
 
 
