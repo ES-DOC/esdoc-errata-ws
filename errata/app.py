@@ -47,6 +47,7 @@ def _get_app_endpoints():
         (r'/1/issue/search', handlers.search.IssueSearchRequestHandler),
         (r'/1/issue/search-setup', handlers.search.IssueSearchSetupRequestHandler),
         (r'/1/pid-queue/search', handlers.search.PIDQueueSearchRequestHandler),
+        (r'/1/pid-queue/search-setup', handlers.search.PIDQueueSearchSetupRequestHandler),
         (r'/1/resolve/pid', handlers.resolve.ResolvePIDRequestHandler),
         (r'/1/resolve/simple-pid', handlers.resolve.ResolveSimplePIDRequestHandler)
     }

@@ -47,7 +47,7 @@ class PIDQueueSearchRequestHandler(tornado.web.RequestHandler):
             """
             self.output = {
                 'count': len(self.tasks),
-                'results': self.tasks
+                'results': [i.to_dict() for i in self.tasks]
             }
 
 

@@ -31,6 +31,7 @@ _WHITELISTED_ENDPOINTS = {
     '/1/issue/search',
     '/1/issue/search-setup',
     '/1/pid-queue/search',
+    '/1/pid-queue/search-setup',
     '/1/resolve/issue',
     '/1/resolve/pid',
     '/1/resolve/simple-pid'

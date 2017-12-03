@@ -1,18 +1,15 @@
-    # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 """
-.. module:: handlers.search_setup.py
+.. module:: handlers.search.py
    :license: GPL/CeCIL
    :platform: Unix
-   :synopsis: ES-DOC Errata - search setup endpoint.
+   :synopsis: ES-DOC Errata - search issues endpoint.
 
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """
-import collections
-import operator
-
 import tornado
 
 import pyessv
@@ -23,8 +20,8 @@ from errata.utils.http import process_request
 
 
 
-class IssueSearchSetupRequestHandler(tornado.web.RequestHandler):
-    """Search issue request handler.
+class PIDQueueSearchSetupRequestHandler(tornado.web.RequestHandler):
+    """Search PID queue request handler.
 
     """
     def set_default_headers(self):
@@ -44,23 +41,15 @@ class IssueSearchSetupRequestHandler(tornado.web.RequestHandler):
             """
             # Set vocabs to be loaded.
             vocabs = {
-                'esdoc:errata:project',
-                'esdoc:errata:severity',
-                'esdoc:errata:status',
+                'esdoc:errata:pid-task-action',
+                'esdoc:errata:pid-task-status'
             }
-            for project in pyessv.load('esdoc:errata:project'):
-                for vocab in project.data['facets']:
-                    vocabs.add(vocab)
-
-            # Get facet values.
-            with db.session.create():
-                facet_values = set(db.dao.get_project_facets())
 
             # Set output.
             self.output = {
                 'vocabs': [_map_collection(i) for i in sorted(vocabs)],
-                'values': facet_values
             }
+
 
         # Process request.
         process_request(self, _set_output)
@@ -88,7 +77,6 @@ def _map_term(term):
 
     """
     result = {
-        'key': term.namespace,
         'canonical_name': term.canonical_name,
         'namespace': term.namespace,
         'label': term.label,

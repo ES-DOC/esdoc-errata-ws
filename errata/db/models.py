@@ -118,9 +118,10 @@ class Issue(Entity):
 
 
     def to_dict(self, resources, facets):
-        """Encode issue as a simple dictionary.
+        """Encode object as a simple dictionary.
 
         :param list resources: Collection of issue resources.
+        :param list facets: Collection of issue facets.
 
         """
         def _get_facets():
@@ -220,3 +221,10 @@ class PIDServiceTask(Entity):
         """
         return "<PIDServiceTask(uid={}, dataset_id={}, action={}, status=={})>".format(
             self.issue_uid, self.dataset_id, self.action, self.status)
+
+
+    def to_dict(self):
+        """Encode object as a simple dictionary.
+
+        """
+        return convertor.to_dict(self)

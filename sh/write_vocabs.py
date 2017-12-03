@@ -28,8 +28,10 @@ def _main():
     scope = _write_scope(authority)
     for func in (
         _write_projects,
-        _write_severity,
-        _write_status
+        _write_issue_severity,
+        _write_issue_status,
+        _write_pid_task_action,
+        _write_pid_task_status
         ):
         func(scope)
 
@@ -64,7 +66,7 @@ def _write_scope(authority):
         )
 
 
-def _write_status(scope):
+def _write_issue_status(scope):
     """Writes ES-DOC errata status terms.
 
     """
@@ -100,7 +102,7 @@ def _write_status(scope):
         }
     )
 
-def _write_severity(scope):
+def _write_issue_severity(scope):
     """Writes ES-DOC errata severity terms.
 
     """
@@ -138,6 +140,55 @@ def _write_severity(scope):
         data={
             'color': '#a61c00',
             'sortOrdinal': 3
+        }
+    )
+
+
+def _write_pid_task_action(scope):
+    """Writes ES-DOC PID task action terms.
+
+    """
+    collection = pyessv.create_collection(scope, 'pid-task-action',
+        label='Action',
+        description="Errata PID task action codes"
+    )
+
+    pyessv.create_term(collection, 'insert',
+        label='Insert'
+    )
+
+    pyessv.create_term(collection, 'delete',
+        label='Delete'
+    )
+
+
+def _write_pid_task_status(scope):
+    """Writes ES-DOC PID task status terms.
+
+    """
+    collection = pyessv.create_collection(scope, 'pid-task-status',
+        label='Status',
+        description="Errata PID task status codes"
+    )
+
+    pyessv.create_term(collection, 'complete',
+        label='Complete',
+        data={
+            'color': '#e6b8af'
+        }
+    )
+
+    pyessv.create_term(collection, 'error',
+        label='Error',
+        data={
+            'color': '#a61c00'
+        }
+    )
+
+    pyessv.create_term(collection, 'queued',
+        label='Queued',
+        data={
+            'color': '#dd7e6b'
         }
     )
 

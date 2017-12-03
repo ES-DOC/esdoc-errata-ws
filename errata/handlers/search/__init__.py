@@ -1,3 +1,4 @@
 from errata.handlers.search.issue import IssueSearchRequestHandler
 from errata.handlers.search.issue_setup import IssueSearchSetupRequestHandler
 from errata.handlers.search.pid_queue import PIDQueueSearchRequestHandler
+from errata.handlers.search.pid_queue_setup import PIDQueueSearchSetupRequestHandler
