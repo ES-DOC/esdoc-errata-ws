@@ -18,6 +18,10 @@ from errata.utils.http import process_request
 
 
 
+# Query parameters.
+_PARAM_CRITERIA = 'criteria'
+
+
 class PIDQueueSearchRequestHandler(tornado.web.RequestHandler):
     """Search PID queue request handler.
 
@@ -33,12 +37,22 @@ class PIDQueueSearchRequestHandler(tornado.web.RequestHandler):
         """HTTP GET handler.
 
         """
+        def _set_criteria():
+            """Sets search criteria.
+
+            """
+            self.criteria = self.get_argument(_PARAM_CRITERIA).split(',') if bool(self.get_argument(_PARAM_CRITERIA)) else None
+            if self.criteria is not None:
+                self.criteria = [(i.split(':')[2].split('-')[-1], i.split(':')[-1]) for i in self.criteria]
+
+
         def _set_data():
             """Pulls data from db.
 
             """
             with db.session.create():
-                self.tasks = db.dao.get_pid_service_tasks()
+                self.items = db.dao.get_pid_tasks(self.criteria)
+                self.total = db.utils.get_count(db.models.PIDServiceTask)
 
 
         def _set_output():
@@ -46,13 +60,15 @@ class PIDQueueSearchRequestHandler(tornado.web.RequestHandler):
 
             """
             self.output = {
-                'count': len(self.tasks),
-                'results': [i.to_dict() for i in self.tasks]
+                'count': len(self.items),
+                'results': [i.to_dict() for i in self.items],
+                'total': self.total
             }
 
 
         # Process request.
         process_request(self, [
+            _set_criteria,
             _set_data,
             _set_output
             ])

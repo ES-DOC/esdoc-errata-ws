@@ -62,7 +62,7 @@ class IssueSearchRequestHandler(tornado.web.RequestHandler):
             self.output = {
                 'count': len(self.issues),
                 'results': self.issues,
-                'total': self.total,
+                'total': self.total
             }
 
 

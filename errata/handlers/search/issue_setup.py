@@ -73,8 +73,10 @@ def _map_collection(identifier):
     collection = pyessv.load(identifier)
 
     result = {
+        'canonical_name': collection.canonical_name,
         'key': collection.namespace,
         'label': collection.label,
+        'namespace': collection.namespace,
         'terms': [_map_term(i) for i in collection]
     }
     if collection.data is not None:
@@ -88,10 +90,10 @@ def _map_term(term):
 
     """
     result = {
-        'key': term.namespace,
         'canonical_name': term.canonical_name,
-        'namespace': term.namespace,
+        'key': term.namespace,
         'label': term.label,
+        'namespace': term.namespace
     }
     result.update(term.data)
 

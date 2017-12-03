@@ -40,14 +40,15 @@ class PIDQueueSearchSetupRequestHandler(tornado.web.RequestHandler):
 
             """
             # Set vocabs to be loaded.
-            vocabs = {
+            vocabs = [
+                'esdoc:errata:project',
                 'esdoc:errata:pid-task-action',
                 'esdoc:errata:pid-task-status'
-            }
+            ]
 
             # Set output.
             self.output = {
-                'vocabs': [_map_collection(i) for i in sorted(vocabs)],
+                'vocabs': [_map_collection(i) for i in vocabs],
             }
 
 
@@ -78,6 +79,7 @@ def _map_term(term):
     """
     result = {
         'canonical_name': term.canonical_name,
+        'key': term.namespace,
         'namespace': term.namespace,
         'label': term.label,
     }

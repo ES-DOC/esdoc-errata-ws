@@ -140,13 +140,20 @@ def get_facets(issue_uid=None):
     return qry.all()
 
 
-def get_pid_service_tasks():
+def get_pid_tasks(criteria=None):
     """Returns pid service tasks awaiting processing.
 
     """
     qry = query(PIDServiceTask)
-    qry = qry.filter(or_(PIDServiceTask.status == PID_TASK_STATE_QUEUED,
-                         PIDServiceTask.status == PID_TASK_STATE_ERROR))
+    if criteria is None:
+        qry = qry.filter(or_(PIDServiceTask.status == PID_TASK_STATE_QUEUED,
+                             PIDServiceTask.status == PID_TASK_STATE_ERROR))
+    else:
+        for field, value in criteria:
+            if field == 'project':
+                qry = qry.filter(PIDServiceTask.dataset_id.like('{}.%'.format(value)))
+            else:
+                qry = qry.filter(getattr(PIDServiceTask, field) == value)
     qry = qry.order_by(PIDServiceTask.timestamp.desc())
 
     return qry.all()

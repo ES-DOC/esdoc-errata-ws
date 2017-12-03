@@ -49,7 +49,7 @@ def _main():
     logger.log_pid("PID syncing: STARTS")
     with pid.get_session() as pid_connection:
         with db.session.create(commitable=True):
-            for task in db.dao.get_pid_service_tasks():
+            for task in db.dao.get_pid_tasks():
                 logger.log_pid('Syncing: {}'.format(task.dataset_id))
                 task.status, task.error = _sync(pid_connection, task)
                 task.try_count += 1
