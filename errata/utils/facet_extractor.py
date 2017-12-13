@@ -46,9 +46,9 @@ def extract_facets(project, data):
 	:rtype: list
 
 	"""
-	identifiers = [data] if isinstance(data, basestring) else data
 	seperator, targets = _CONFIG[project]
 	facets = []
+	identifiers = [data] if isinstance(data, basestring) else data
 	for identifier in identifiers:
 		parts = identifier.split(seperator)
 		facets += ['{}:{}'.format(i, parts[j]) for i, j in targets]

@@ -27,7 +27,8 @@ FACET_TYPE_STATUS = u'status'
 # HTTP CORS header.
 HTTP_HEADER_Access_Control_Allow_Origin = "Access-Control-Allow-Origin"
 
-# Processing error HTTP response code.
+# Processing error HTTP response codes.
+HTTP_RESPONSE_BAD_REQUEST_ERROR = 400
 HTTP_RESPONSE_SERVER_ERROR = 500
 
 # List of issue attributes that cannot be updated.

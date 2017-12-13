@@ -20,7 +20,7 @@ __title__ = 'errata web service'
 __version__ = '0.5.1'
 __author__ = 'ES-DOC'
 __license__ = 'GPL'
-__copyright__ = 'Copyright 2016: IPSL'
+__copyright__ = 'Copyright 2018: IPSL'
 
 from errata.app import run
 from errata.app import stop

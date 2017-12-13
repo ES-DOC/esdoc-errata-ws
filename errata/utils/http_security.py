@@ -12,8 +12,6 @@
 import pyesdoc
 
 from errata.utils import config
-from errata.utils import constants
-from errata.utils import exceptions
 from errata.utils import logger
 
 
@@ -36,6 +34,18 @@ _WHITELISTED_ENDPOINTS = {
     '/1/resolve/pid',
     '/1/resolve/simple-pid'
 }
+
+
+def apply_policy(user_id, access_token, project_id, institute_id):
+    """Applies security policy.
+
+    :param str user_id: GitHub username.
+    :param str access_token: GitHub access token.
+    :param str institute_id: Institute identifier, e.g. ipsl.
+
+    """
+    authenticate((user_id, access_token))
+    authorize(user_id, project_id, institute_id)
 
 
 def authenticate(credentials):
@@ -63,18 +73,6 @@ def authorize(user_id, project_id, institute_id):
 
     logger.log_web('Authorizing: {} --> {}-{}'.format(user_id, project_id, institute_id))
     pyesdoc.authorize_user('{}-{}'.format(project_id, institute_id), user_id)
-
-
-def apply_policy(user_id, access_token, project_id, institute_id):
-    """Applies security policy.
-
-    :param str user_id: GitHub username.
-    :param str access_token: GitHub access token.
-    :param str institute_id: Institute identifier, e.g. ipsl.
-
-    """
-    authenticate((user_id, access_token))
-    authorize(user_id, project_id, institute_id)
 
 
 def secure_request(handler):

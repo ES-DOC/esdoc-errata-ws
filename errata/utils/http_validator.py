@@ -33,7 +33,6 @@ def validate_request(handler):
         func(handler)
 
 
-
 def _validate_request_headers(handler):
     """Validates request headers against a JSON schema.
 

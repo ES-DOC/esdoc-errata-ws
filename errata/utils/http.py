@@ -9,8 +9,6 @@
 
 
 """
-import pyesdoc
-
 from errata.utils import logger
 from errata.utils.constants import *
 from errata.utils.convertor import to_dict
@@ -29,13 +27,8 @@ def process_request(handler, tasks, error_tasks=None):
     :param list error_tasks: Collection of error processing tasks.
 
     """
-    # Log request.
-    msg = "[{0}]: executing --> {1}"
-    msg = msg.format(id(handler), handler)
-    logger.log_web(msg)
-
     # Extend tasksets.
-    tasks = _get_tasks([secure_request, validate_request], tasks, [_log_success, _write_success])
+    tasks = _get_tasks([_log_begin, secure_request, validate_request], tasks, [_log_success, _write_success])
     error_tasks = _get_tasks([], error_tasks or [], [_log_error, write_error])
 
     # Invoke tasksets.
@@ -61,6 +54,15 @@ def _log(handler, msg, is_error=False):
         logger.log_web_error(msg)
     else:
         logger.log_web(msg)
+
+
+def _log_begin(handler):
+    """Logs beginning of request processing.
+
+    """
+    msg = "[{0}]: executing --> {1}"
+    msg = msg.format(id(handler), handler)
+    logger.log_web(msg)
 
 
 def _log_error(handler, error):

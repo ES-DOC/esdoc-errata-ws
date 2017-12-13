@@ -24,11 +24,18 @@ import requests
 BASE_URL = os.getenv("ERRATA_API")
 
 
+def get_credentials():
+    """Returns credentials to be passed to web service.
+
+    """
+    return os.getenv('ERRATA_WS_TEST_LOGIN'), \
+           os.getenv('ERRATA_WS_TEST_TOKEN')
+
+
 def assert_ws_response(
     url,
     response,
     status_code=requests.codes.OK,
-    expected_content=None,
     fields=set()
     ):
     """Asserts a response received from web-service.
@@ -65,22 +72,13 @@ def assert_ws_response(
 
     # WS response content must be utf-8 encoded JSON.
     if response.text:
-        assert response.encoding == u'utf-8'
+        assert response.encoding.lower() == u'utf-8'
         content = response.json()
         assert isinstance(content, dict)
-        if expected_content is not None:
-            assert content == expected_content
         for field in fields:
             assert field in content
 
         return content
-
-
-def get_credentials():
-    """Returns credentials to be passed to web service.
-
-    """
-    return os.getenv('ERRATA_WS_TEST_LOGIN'), os.getenv('ERRATA_WS_TEST_TOKEN')
 
 
 # Integer assertion constants.

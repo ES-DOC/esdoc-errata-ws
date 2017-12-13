@@ -15,10 +15,6 @@ from errata.utils import constants
 
 
 
-# Request validation error HTTP response code.
-_HTTP_RESPONSE_BAD_REQUEST_ERROR = 400
-
-
 class WebServiceError(Exception):
     """Web service error wrapper.
 
@@ -39,7 +35,7 @@ class RequestValidationException(WebServiceError):
         """Instance constructor.
 
         """
-        super(RequestValidationException, self).__init__(msg, _HTTP_RESPONSE_BAD_REQUEST_ERROR)
+        super(RequestValidationException, self).__init__(msg, constants.HTTP_RESPONSE_BAD_REQUEST_ERROR)
 
 
 class InvalidJSONError(RequestValidationException):

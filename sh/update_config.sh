@@ -7,7 +7,7 @@ source $ERRATA_WS_HOME/sh/utils.sh
 main()
 {
 	# Create backups.
-	cp $ERRATA_WS_HOME/resources/supervisord.conf $ERRATA_WS_HOME/ops/config/supervisord-backup.conf
+	cp $ERRATA_WS_HOME/ops/config/supervisord.conf $ERRATA_WS_HOME/ops/config/supervisord-backup.conf
 	cp $ERRATA_WS_HOME/ops/config/ws.conf $ERRATA_WS_HOME/ops/config/ws-backup.conf
 
 	# Update.
