@@ -281,21 +281,3 @@ def resolve_input(input_string):
                                                                                       version_number=drs_id[1])
         else:
             logger.log_pid('UNRECOGNIZED PID OR DATASET ID.')
-
-
-# def resolve_prefix(input_string):
-#     """
-#     This method needs to find the proper prefix per project.
-#     :param input_string: /!\ could be a ready made handle string
-#     :return: prefix
-#     """
-#     if "hdl:" in input_string:
-#         pass
-#     elif input_string.split('/')[0] in config.pid.prefix_list.__dict__.values():
-#         pass
-#     # case the input string is a dataset id
-#     else:
-#         if input_string.split('.')[0] in config.pid.prefix_list.__dict__.keys():
-#             return config.pid.prefix_list.__dict__[input_string.split('.')[0]]
-#         else:
-#             logger.log_pid('UNRECOGNIZED PID OR DATASET ID: {}'.format(input_string))
