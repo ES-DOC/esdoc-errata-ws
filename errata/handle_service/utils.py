@@ -142,57 +142,6 @@ def get_issue_information(direction):
         return None
 
 
-# def find_file_within_dataset(dataset_handle_register, file_handle_register, direction):
-#     """
-#     Finds specific file, designated by its filename in a dataset designated by its handle.
-#     :param dataset_handle_register: handle of the dataset
-#     :param file_handle_register: handle of the file
-#     :param direction: up or down needed for errata extraction
-#     :returns: next_file_handle(same if it is found within dataset), errata_information(None if no change occurred)
-#     :except file not found in successor
-#     """
-#     # list containing the file_handle_strings
-#     list_of_children = dataset_handle_register.children
-#     logger.log("THE CURRENT DATASET CONTAINS " + str(len(list_of_children)) + " CHILDREN...")
-#     logger.log(list_of_children)
-#     logger.log("STARTING LOOP OVER CHILDREN...")
-#
-#     # Test added to improve performance
-#     # If file handle is automatically in the list we just bypass the filename test.
-#     if file_handle_register.handle not in list_of_children:
-#         logger.log('FILE NOT FOUND IN CHILDREN LIST, PROCEEDING TO FILENAME TESTING...')
-#         for fhs in list_of_children:
-#             logger.log("PROCESSING FILE " + file_handle_register.filename + " IN COMPARISON TO " + fhs[FILE_NAME])
-#             logger.log("STARTING RESEMBLANCE TEST.")
-#             ratio = difflib.SequenceMatcher(None, file_handle_register.filename, fhs[FILE_NAME]).ratio()
-#             if file_handle_register.filename == fhs[FILE_NAME]:
-#                 logger.log("FILE HAS BEEN FOUND WITHIN PREDECESSOR/SUCCESSOR COMPARING CHECKSUMS...")
-#                 if is_same_checksum(file_handle_register.checksum, fhs[CHECKSUM]):
-#                     logger.log("SIMILAR CHECKSUMS WERE FOUND, FILE IS INTACT SO FAR...")
-#                     return fhs, None
-#                 else:
-#                     # TODO REPLACE NONE WITH PROPER ERRATA INFO
-#                     logger.log("CHECKSUM DIFFERENCE HAS BEEN DETECTED, REPLACING FILE HANDLE AND RETRIEVING ISSUE...")
-#                     if direction == SUCCESSOR:
-#                         logger.log('FILE WAS CHANGED IN THE SUCCEDING DATASET, GETTING ISSUE FROM PREVIOUS HANDLE')
-#                         return fhs, dataset_handle_register.predecessor.errata
-#                     elif direction == PREDECESSOR:
-#                         logger.log('FILE WAS CHANGED IN THE PRECEDING DATASET, GETTING ISSUE FROM THIS HANDLE')
-#                         return fhs, dataset_handle_register.errata
-#
-#             elif 1 > ratio > 0.9:
-#                 logger.log('A CONTENDER TO THAT BARES A STRONG RESEMBLANCE TO THE FILE IN HANDS HAS BEEN DETECTED...')
-#             else:
-#                 pass
-#         logger.log_warning("FILE WAS NOT FOUND IN THIS PREDECESSOR/SUCCESSOR...")
-#         logger.log_warning("DEDUCING ERRATA INFORMATION ON AGGREGATION LEVEL OF FILES IS IMPOSSIBLE IN THIS CASE...")
-#         logger.log(dataset_handle_register.errata)
-#         return file_handle_register.handle, dataset_handle_register.errata
-#     else:
-#         logger.log('FILE UNCHANGED, MOVING ON...')
-#         return file_handle_register.handle, None
-
-
 def find_file_in_dataset(dataset_record, file_record):
     """
     Finds specific file, designated by its filename in a dataset designated by its handle.
@@ -303,14 +252,8 @@ def get_issue_id(handle):
     try:
         return handle[constants.ERRATA_IDS]
     except KeyError:
-        return random.choice([
-            "11221244-2194-4c1f-bdea-4887036a9e63",
-            "9de57705-48b8-4343-8bcd-22dad2c28c9a",
-            "979e3ad5-9123-483c-89e9-c2de2372d0a8",
-            "4d4c9942-f3a4-4538-891c-069007ed37f1",
-            "27897958-f462-43d3-8c19-309cd6a43ce3",
-            "96eba87b-2f6d-4eea-a474-3f5c9dff6675"
-            ])
+        logger.log_pid('No errata entry found for pid: {}'.format(handle))
+        return None
 
 
 def resolve_input(input_string):
@@ -339,3 +282,20 @@ def resolve_input(input_string):
         else:
             logger.log_pid('UNRECOGNIZED PID OR DATASET ID.')
 
+
+# def resolve_prefix(input_string):
+#     """
+#     This method needs to find the proper prefix per project.
+#     :param input_string: /!\ could be a ready made handle string
+#     :return: prefix
+#     """
+#     if "hdl:" in input_string:
+#         pass
+#     elif input_string.split('/')[0] in config.pid.prefix_list.__dict__.values():
+#         pass
+#     # case the input string is a dataset id
+#     else:
+#         if input_string.split('.')[0] in config.pid.prefix_list.__dict__.keys():
+#             return config.pid.prefix_list.__dict__[input_string.split('.')[0]]
+#         else:
+#             logger.log_pid('UNRECOGNIZED PID OR DATASET ID: {}'.format(input_string))

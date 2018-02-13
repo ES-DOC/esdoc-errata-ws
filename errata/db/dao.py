@@ -154,7 +154,7 @@ def get_pid_tasks(criteria=None):
                 qry = qry.filter(PIDServiceTask.dataset_id.like('{}.%'.format(value)))
             else:
                 qry = qry.filter(getattr(PIDServiceTask, field) == value)
-    qry = qry.order_by(PIDServiceTask.timestamp.desc())
+    qry = qry.order_by(PIDServiceTask.timestamp.asc())
 
     return qry.all()
 
