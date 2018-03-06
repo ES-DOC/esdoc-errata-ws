@@ -65,7 +65,7 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
                     self.request.data[JF_DATASETS]
                     )
             except pyessv.TemplateParsingError:
-                raise exceptions.InvalidDatasetIdentifierError()
+                raise exceptions.InvalidDatasetIdentifierError(self.request.data[JF_PROJECT])
 
 
         def _validate_issue_institute():

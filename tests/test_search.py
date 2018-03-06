@@ -38,11 +38,13 @@ def test_search_setup():
     r = requests.get(_URL_SEARCH_SETUP)
 
     # Assert WS response.
-    obj = tu.assert_ws_response(_URL_SEARCH_SETUP, r, fields={'data',})
+    obj = tu.assert_ws_response(_URL_SEARCH_SETUP, r, fields={'vocabs', 'values'})
 
     # Assert vocabularies.
-    for collection in obj['data']:
-        assert isinstance(pyessv.load(collection['key']), pyessv.Collection)
+    for collection in obj['vocabs']:
+        assert isinstance(pyessv.load(collection['namespace']), pyessv.Collection)
+        for term in collection['terms']:
+            assert isinstance(pyessv.load(term['namespace']), pyessv.Term)
 
 
 def test_search():

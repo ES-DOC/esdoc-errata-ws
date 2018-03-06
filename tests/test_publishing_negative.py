@@ -144,7 +144,7 @@ def _callback_06(issue, _):
     """Set dataset identifers so that multiple institutes are repesented."""
     identifier = issue['datasets'][0]
     parts = identifier.split('.')
-    project = parts[0]
+    project = parts[0].lower()
     if project in {'cordex', }:
         parts[3] = 'mohc'
     elif project in {'cmip5', 'cmip6'}:
@@ -164,7 +164,7 @@ def _callback_08(issue, field):
     elif field == 'project':
         project = issue['project']
         while project == issue['project']:
-            issue['project'] = pyessv.get_random('esdoc:errata:project')
+            issue['project'] = pyessv.load_random('esdoc:errata:project')
 
 
 def _callback_09(issue, _):

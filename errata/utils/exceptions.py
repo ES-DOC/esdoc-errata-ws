@@ -58,12 +58,12 @@ class InvalidDatasetIdentifierError(RequestValidationException):
     """Raised if the submitted issue post data contains an invalid dataset identifer.
 
     """
-    def __init__(self):
+    def __init__(self, project):
         """Instance constructor.
 
         """
         self.field = constants.JF_DATASETS
-        msg = 'ISSUE HAS INVALID DATASET IDENTIFIER'
+        msg = 'ISSUE HAS INVALID DATASET IDENTIFIER: PROJECT={}'.format(project)
         super(InvalidDatasetIdentifierError, self).__init__(msg)
 
 

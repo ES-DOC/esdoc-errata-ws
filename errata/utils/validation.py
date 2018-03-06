@@ -69,7 +69,7 @@ def validate_pyessv_enum(collection_id, val, var):
     """
     namespace = '{}:{}'.format(collection_id, val)
     try:
-        pyessv.parse_namespace(namespace)
+        pyessv.parse(namespace)
     except pyessv.ParsingError:
         _raise_value_error(val, var, 'enum-member')
 

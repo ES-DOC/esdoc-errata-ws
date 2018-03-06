@@ -76,7 +76,7 @@ def assert_ws_response(
         content = response.json()
         assert isinstance(content, dict)
         for field in fields:
-            assert field in content
+            assert field in content, 'field not found: {}'.format(field)
 
         return content
 
