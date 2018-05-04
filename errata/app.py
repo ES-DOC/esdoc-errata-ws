@@ -36,7 +36,8 @@ def _get_app_endpoints():
 
     """
     return {
-        (r'/', handlers.ops.HeartbeatRequestHandler),
+        (r'/', handlers.ops.FrontEndRequestHandler),
+        (r'/status', handlers.ops.HeartbeatRequestHandler),
         (r'/validate-dataset-id', handlers.ops.ValidateDatasetIdentifierRequestHandler),
         (r'/verify-authorization', handlers.ops.VerifyAuthorizationRequestHandler),
         (r'/1/issue/close', handlers.publishing.CloseIssueRequestHandler),
@@ -60,7 +61,7 @@ def _get_app_settings():
     return {
         "cookie_secret": config.cookie_secret,
         "compress_response": True,
-        "static_path": _get_path_to_front_end()
+        "static_path": config.staticFilePath
     }
 
 

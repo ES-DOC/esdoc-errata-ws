@@ -1,9 +1,5 @@
-from errata.handlers.ops import HeartbeatRequestHandler
-from errata.handlers.publishing  import CloseIssueRequestHandler
-from errata.handlers.publishing import CreateIssueRequestHandler
-from errata.handlers.publishing import RetrieveIssueRequestHandler
-from errata.handlers.publishing import UpdateIssueRequestHandler
-from errata.handlers.resolve import ResolvePIDRequestHandler
-from errata.handlers.search import IssueSearchRequestHandler
-from errata.handlers.search import IssueSearchSetupRequestHandler
-from errata.handlers.resolve import ResolveSimplePIDRequestHandler
+import errata.handlers.ops
+import errata.handlers.publishing
+import errata.handlers.resolve
+import errata.handlers.search
+import errata.handlers.resolve
