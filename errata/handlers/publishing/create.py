@@ -39,16 +39,8 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
         """
         self.set_header(constants.HTTP_HEADER_Access_Control_Allow_Origin, "*")
         self.set_header("Access-Control-Allow-Headers", "content-type, Authorization")
-        self.set_header('Access-Control-Allow-Methods', 'POST, OPTIONS')
+        self.set_header('Access-Control-Allow-Methods', 'POST')
         self.set_header('Access-Control-Allow-Credentials', True)
-
-
-    def options(self):
-        """HTTP OPTIONS handler.
-
-        """
-        self.set_status(204)
-        self.finish()
 
 
     def post(self):

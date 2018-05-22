@@ -85,8 +85,12 @@ def secure_request(handler):
     if handler.request.path in _WHITELISTED_ENDPOINTS:
         return
 
-    # Strip credentials.
-    credentials = pyesdoc.strip_credentials(handler.request.headers['Authorization'])
+    # Set credentials - either from web-form or cli client.
+    credentials = handler.get_secure_cookie('errata-oauth-credentials') or \
+                  handler.request.headers['Authorization']
+
+    # Strip credentials - i.e. destructure from b64 --> 2 member tuple.
+    credentials = pyesdoc.strip_credentials(credentials)
 
     # Authenticate.
     if config.apply_security_policy:

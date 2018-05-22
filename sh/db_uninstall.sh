@@ -9,7 +9,7 @@ _db_drop_users()
 	log "Deleting DB users"
 
 	dropuser -U $ERRATA_DB_ADMIN $ERRATA_DB_USER
-	dropuser -U postgres $ERRATA_DB_ADMIN
+	dropuser -U $ERRATA_DB_SYSTEM_USER $ERRATA_DB_ADMIN
 }
 
 # Drop db.

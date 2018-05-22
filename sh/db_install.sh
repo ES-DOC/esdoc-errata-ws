@@ -7,7 +7,7 @@ source $ERRATA_WS_HOME/sh/utils.sh
 _db_create_users()
 {
 	log "Creating DB users"
-	createuser -U postgres -d -s $ERRATA_DB_ADMIN
+	createuser -U $ERRATA_DB_SYSTEM_USER -d -s $ERRATA_DB_ADMIN
 	createuser -U $ERRATA_DB_ADMIN -D -S -R $ERRATA_DB_USER
 }
 

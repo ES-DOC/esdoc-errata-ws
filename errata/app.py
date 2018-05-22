@@ -37,7 +37,8 @@ def _get_app_endpoints():
     """
     return {
         (r'/', handlers.ops.FrontEndRequestHandler),
-        (r'/status', handlers.ops.HeartbeatRequestHandler),
+        (r'/oauth/authorize', handlers.ops.oauth.AuthorizeRequestHandler),
+        (r'/oauth/callback', handlers.ops.oauth.CallbackRequestHandler),
         (r'/validate-dataset-id', handlers.ops.ValidateDatasetIdentifierRequestHandler),
         (r'/verify-authorization', handlers.ops.VerifyAuthorizationRequestHandler),
         (r'/1/issue/close', handlers.publishing.CloseIssueRequestHandler),
@@ -60,8 +61,10 @@ def _get_app_settings():
     """
     return {
         "cookie_secret": config.cookie_secret,
+        # "cookie_secret": os.urandom(24),
         "compress_response": True,
-        "static_path": config.staticFilePath
+        "static_path": config.staticFilePath,
+        "xsrf_cookies": True
     }
 
 
@@ -103,4 +106,3 @@ def stop():
     """
     ioloop = tornado.ioloop.IOLoop.instance()
     ioloop.add_callback(lambda x: x.stop(), ioloop)
-
