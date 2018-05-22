@@ -226,4 +226,3 @@ def _invoke_task(handler, task, err=None):
             task(err)
         else:
             task()
-
