@@ -54,7 +54,7 @@ class IssueSearchSetupRequestHandler(tornado.web.RequestHandler):
 
             # Get facet values.
             with db.session.create():
-                facet_values = set(db.dao.get_project_facets())
+                facet_values = set(db.dao.get_project_facets())                
 
             # Set output.
             self.output = {
