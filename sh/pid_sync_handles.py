@@ -104,11 +104,12 @@ def _check_handle_status(dataset_id):
 
     # Error if handle has no test value.
     if '_TEST' not in handle_record.keys():
-        raise exceptions.HandleMismatch('TEST VALUE WAS NOT FOUND IN HANDLE, ABORTING....')
-
-    # Error if handle record value.
-    if handle_record['_TEST'].lower() != str(config.pid.is_test).lower():
-        raise exceptions.HandleMismatch('Dataset {} has mismatched test status [{}] with pid connector'.format(dataset_id, handle_record['_TEST']))
+        logger.log_pid('Dataset handle does not have test value, assuming not test...')
+        # raise exceptions.HandleMismatch('TEST VALUE WAS NOT FOUND IN HANDLE, ABORTING....')
+    else:
+        # Error if handle record value.
+        if handle_record['_TEST'].lower() != str(config.pid.is_test).lower():
+            raise exceptions.HandleMismatch('Dataset {} has mismatched test status [{}] with pid connector'.format(dataset_id, handle_record['_TEST']))
 
     logger.log_pid('Dataset handle is on mode {}, as well as connector, validating...'.format(handle_record['_TEST']))
 
