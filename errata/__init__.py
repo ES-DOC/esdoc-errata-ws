@@ -17,7 +17,7 @@
 
 """
 __title__ = 'errata web service'
-__version__ = '0.5.3'
+__version__ = '0.5.3.2'
 __author__ = 'ES-DOC'
 __license__ = 'GPL'
 __copyright__ = 'Copyright 2018: IPSL'

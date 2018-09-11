@@ -5,6 +5,7 @@ psycopg2-binary
 SQLAlchemy
 SQLAlchemy-Utils
 schedule
+supervisor
 tornado
 requests
 requests_oauthlib
