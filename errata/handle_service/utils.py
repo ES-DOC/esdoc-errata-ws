@@ -9,10 +9,8 @@
 
 
 """
-import random
 import uuid
-from difflib import SequenceMatcher
-
+import re
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 from requests.packages.urllib3.exceptions import InsecurePlatformWarning
@@ -271,13 +269,36 @@ def resolve_input(input_string):
     else:
 
         drs_id = []
-        if '.v' in input_string:
-            drs_id = input_string.split('.v')
-        elif '#' in input_string:
+        if '#' in input_string:
             drs_id = input_string.split('#')
+        elif '.v' in input_string:
+            drs_id = seperate_dataset_and_version_number(input_string)
 
         if len(drs_id) > 1:
             return config.pid.prefix + '/' + make_suffix_from_drsid_and_versionnumber(drs_id=drs_id[0],
                                                                                       version_number=drs_id[1])
         else:
             logger.log_pid('UNRECOGNIZED PID OR DATASET ID.')
+
+
+def seperate_dataset_and_version_number(dataset_id):
+    """
+    Used in case the dataset id uses .v syntax instead of #
+    :param dataset_id: dataset id string with version number at the end.
+    :return: drs + version string.
+    """
+    regex = r"^((?:[a-zA-Z0-9\-]\.*)*[^\.v0-9]*)(\.v[0-9]*)"
+
+    test_str = "CMIP6.CMIP.IPSL.IPSL-CM6A-LR.1pctCO2.r1i1p1f1.Omon.vmo.gn.v20180717"
+
+    matches = re.finditer(regex, test_str, re.MULTILINE)
+
+    for matchNum, match in enumerate(matches):
+        if len(match.groups())>2:
+            logger.warn('Dataset id and version separation operation failed for dataset {}'.format(dataset_id))
+        else:
+            drs_id = match.group(1)
+            version_number = match.group(2).lower().replace('.v', '')
+            return drs_id, version_number
+
+print resolve_input('CMIP6.CMIP.IPSL.IPSL-CM6A-LR.1pctCO2.r1i1p1f1.Omon.vmo.gn.v20180717')
