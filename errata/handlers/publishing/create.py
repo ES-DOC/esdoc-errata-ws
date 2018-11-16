@@ -48,7 +48,10 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
 
         """
 
-        def _validate_issue_dataset_version():
+        def _validate_issue_datasets():
+            """Validates datasets associated with incoming issue.
+
+            """
             if self.request.data[JF_DATASETS] is None or len(self.request.data[JF_DATASETS]) == 0:
                 raise exceptions.EmptyDatasetList()
             else:
@@ -56,10 +59,6 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
                     if re.search(VERSION_REGEX, dset) is None:
                         raise exceptions.MissingVersionNumber()
 
-        def _validate_issue_datasets():
-            """Validates datasets associated with incoming issue.
-
-            """
             try:
                 pyessv.parse_dataset_identifers(
                     self.request.data[JF_PROJECT],

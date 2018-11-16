@@ -37,20 +37,16 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
         """HTTP POST handler.
 
         """
-
-        def _validate_issue_dataset_version():
-            if self.request.data[JF_DATASETS] is None or len(self.request.data[JF_DATASETS]) == 0:
-                raise exceptions.EmptyDatasetList()
-            else:
-                for dset in self.requests.data[JF_DATASETS]:
-                    if re.search(VERSION_REGEX, dset) is None:
-                        raise exceptions.MissingVersionNumber()
-
-
         def _validate_issue_datasets():
             """Validates datasets associated with incoming issue.
 
             """
+            if self.request.data[JF_DATASETS] is None or len(self.request.data[JF_DATASETS]) == 0:
+                raise exceptions.EmptyDatasetList()
+            else:
+                for dset in self.request.data[JF_DATASETS]:
+                    if re.search(VERSION_REGEX, dset) is None:
+                        raise exceptions.MissingVersionNumber()
             try:
                 pyessv.parse_dataset_identifers(
                     self.request.data[JF_PROJECT],
@@ -146,7 +142,6 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
         # Process request.
         with db.session.create(commitable=True):
             process_request(self, [
-                _validate_issue_dataset_version,
                 _validate_issue_datasets,
                 _validate_issue_institute,
                 _validate_user_access,
