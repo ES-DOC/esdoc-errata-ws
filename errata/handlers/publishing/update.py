@@ -39,7 +39,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
         """
 
         def _validate_issue_dataset_version():
-            if self.requests.data[JF_DATASETS] is None or len(self.requests.data[JF_DATASETS]) == 0:
+            if self.request.data[JF_DATASETS] is None or len(self.request.data[JF_DATASETS]) == 0:
                 raise exceptions.EmptyDatasetList()
             else:
                 for dset in self.requests.data[JF_DATASETS]:
