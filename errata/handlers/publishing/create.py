@@ -55,7 +55,7 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             if self.request.data[JF_DATASETS] is None or len(self.request.data[JF_DATASETS]) == 0:
                 raise exceptions.EmptyDatasetList()
             else:
-                for dset in self.requests.data[JF_DATASETS]:
+                for dset in self.request.data[JF_DATASETS]:
                     if re.search(VERSION_REGEX, dset) is None:
                         raise exceptions.MissingVersionNumber()
 
