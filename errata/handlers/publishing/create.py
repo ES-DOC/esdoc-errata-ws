@@ -100,7 +100,6 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
 
         # Process request.
         process_request(self, [
-            _validate_issue_dataset_version(),
             _validate_issue_datasets,
             _validate_issue_institute,
             _validate_user_access,
