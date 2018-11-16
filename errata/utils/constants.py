@@ -73,3 +73,6 @@ STATUS_NEW = u'new'
 STATUS_ON_HOLD = u'onhold'
 STATUS_RESOLVED = u'resolved'
 STATUS_WONT_FIX = u'wontfix'
+
+# regex
+VERSION_REGEX = r'(?P<version_string>(\.v|#)\d+)$'

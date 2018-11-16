@@ -300,5 +300,3 @@ def seperate_dataset_and_version_number(dataset_id):
             drs_id = match.group(1)
             version_number = match.group(2).lower().replace('.v', '')
             return drs_id, version_number
-
-print resolve_input('CMIP6.CMIP.IPSL.IPSL-CM6A-LR.1pctCO2.r1i1p1f1.Omon.vmo.gn.v20180717')

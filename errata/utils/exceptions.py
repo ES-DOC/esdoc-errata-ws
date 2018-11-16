@@ -80,6 +80,32 @@ class MultipleInstitutesError(RequestValidationException):
         super(MultipleInstitutesError, self).__init__(msg)
 
 
+class EmptyDatasetList(RequestValidationException):
+    """Raised if the submitted issue post data contains an multiple institute identifers.
+
+    """
+    def __init__(self):
+        """Instance constructor.
+
+        """
+        self.field = constants.JF_DATASETS
+        msg = 'ISSUE HAS EMPTY DATASET LIST'
+        super(EmptyDatasetList, self).__init__(msg)
+
+
+class MissingVersionNumber(RequestValidationException):
+    """Raised if the submitted issue post data contains an multiple institute identifers.
+
+    """
+    def __init__(self):
+        """Instance constructor.
+
+        """
+        self.field = constants.JF_DATASETS
+        msg = 'DATASET MISSING VERSION NUMBER'
+        super(MissingVersionNumber, self).__init__(msg)
+
+
 class InvalidURLError(RequestValidationException):
     """Raised if the submitted issue has unreachable (HTTP 404) urls.
 

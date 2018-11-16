@@ -11,7 +11,7 @@
 
 """
 import tornado
-
+import re
 import pyessv
 
 from errata import db
@@ -28,11 +28,11 @@ from errata.utils.http_security import authorize
 from errata.utils.validation import validate_url
 
 
-
 class CreateIssueRequestHandler(tornado.web.RequestHandler):
     """issue handler.
 
     """
+
     def set_default_headers(self):
         """Set HTTP headers at the beginning of the request.
 
@@ -41,12 +41,21 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
         self.set_header("Access-Control-Allow-Headers", "content-type, Authorization")
         self.set_header('Access-Control-Allow-Methods', 'POST')
         self.set_header('Access-Control-Allow-Credentials', True)
-
+        self.set_header('X-XSRFToken', self.xsrf_token)
 
     def post(self):
         """HTTP POST handler.
 
         """
+
+        def _validate_issue_dataset_version():
+            if self.requests.data[JF_DATASETS] is None or len(self.requests.data[JF_DATASETS]) == 0:
+                raise exceptions.EmptyDatasetList()
+            else:
+                for dset in self.requests.data[JF_DATASETS]:
+                    if re.search(VERSION_REGEX, dset) is None:
+                        raise exceptions.MissingVersionNumber()
+
         def _validate_issue_datasets():
             """Validates datasets associated with incoming issue.
 
@@ -55,10 +64,9 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
                 pyessv.parse_dataset_identifers(
                     self.request.data[JF_PROJECT],
                     self.request.data[JF_DATASETS]
-                    )
+                )
             except pyessv.TemplateParsingError:
                 raise exceptions.InvalidDatasetIdentifierError(self.request.data[JF_PROJECT])
-
 
         def _validate_issue_institute():
             """Validates datasets associated with incoming issue.
@@ -67,14 +75,12 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             if len(get_institutes(self.request.data)) != 1:
                 raise exceptions.MultipleInstitutesError()
 
-
         def _validate_user_access():
             """Validates user's institutional access rights.
 
             """
             if config.apply_security_policy:
                 authorize(self.user_id, self.request.data[JF_PROJECT], get_institute(self.request.data))
-
 
         def _validate_issue_urls():
             """Validates URL's associated with incoming request.
@@ -85,7 +91,6 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             for url in urls:
                 validate_url(url)
 
-
         def _persist():
             """Persists data to dB.
 
@@ -94,9 +99,9 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
                 for entity in create_issue(self.request.data, self.user_id):
                     db.session.insert(entity)
 
-
         # Process request.
         process_request(self, [
+            _validate_issue_dataset_version(),
             _validate_issue_datasets,
             _validate_issue_institute,
             _validate_user_access,
