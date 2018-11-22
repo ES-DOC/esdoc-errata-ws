@@ -26,9 +26,9 @@ _MATERIALS = []
 
 # Collection of data set patters used when generating test dataset identifiers.
 _DATASETS_PATTERNS = {
-    'cmip5': u'cmip5.{}.{}.{}.{}.{}.{}.{}.r1i1p1#v20180101',
-    'cmip6': u'CMIP6.{}.{}.{}.{}.r1i1p1f1.{}.Emon.{}#v20180101',
-    'cordex': u'cordex.{}.{}.{}.{}.{}.r12i1p1.{}.v1.{}.{}#v20180101'
+    'cmip5': u'cmip5.{}.{}.{}.{}.{}.{}.{}.r1i1p1#20180101',
+    'cmip6': u'CMIP6.{}.{}.{}.{}.r1i1p1f1.{}.Emon.{}#20180101',
+    'cordex': u'cordex.{}.{}.{}.{}.{}.r12i1p1.{}.v1.{}.{}#20180101'
 }
 
 
@@ -44,7 +44,7 @@ def create_issue_dict():
         JF_MATERIALS: _get_materials(),
         JF_PROJECT: project_id,
         JF_SEVERITY: pyessv.load_random('esdoc:errata:severity'),
-        JF_STATUS: STATUS_ON_HOLD,
+        JF_STATUS: STATUS_NEW,
         JF_TITLE: unicode(uuid.uuid4()),
         JF_UID: unicode(uuid.uuid4()),
         JF_URLS: ['https://es-doc.org/cmip6-dataset-errata']
