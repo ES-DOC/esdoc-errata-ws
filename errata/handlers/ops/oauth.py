@@ -50,7 +50,7 @@ class AuthorizeRequestHandler(tornado.web.RequestHandler):
         """HTTP GET handler.
 
         """
-        # Open seesion with OAuth2 provider.
+        # Open session with OAuth2 provider.
         github = OAuth2Session(OAUTH_CLIENT_ID)
         authorization_url, state = github.authorization_url(OAUTH_URL_AUTHORIZE)
 

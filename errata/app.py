@@ -37,6 +37,7 @@ def _get_app_endpoints():
     """
     return {
         (r'/', handlers.ops.FrontEndRequestHandler),
+        (r'/status', handlers.ops.HeartbeatRequestHandler),
         (r'/oauth/authorize', handlers.ops.oauth.AuthorizeRequestHandler),
         (r'/oauth/callback', handlers.ops.oauth.CallbackRequestHandler),
         (r'/validate-dataset-id', handlers.ops.ValidateDatasetIdentifierRequestHandler),
