@@ -117,6 +117,7 @@ def make_suffix_from_drsid_and_versionnumber(**args):
     :rtype: str
 
     """
+    print args['drs_id'] + '.v' + str(args['version_number'])
     check_presence_of_mandatory_args(args, ['drs_id', 'version_number'])
     hash_basis = args['drs_id']+'.v'+str(args['version_number'])
     hash_basis_utf8 = hash_basis.encode('utf-8')
@@ -289,9 +290,9 @@ def seperate_dataset_and_version_number(dataset_id):
     """
     regex = r"^((?:[a-zA-Z0-9\-]\.*)*[^\.v0-9]*)(\.v[0-9]*)"
 
-    test_str = "CMIP6.CMIP.IPSL.IPSL-CM6A-LR.1pctCO2.r1i1p1f1.Omon.vmo.gn.v20180717"
+    # test_str = "CMIP6.CMIP.IPSL.IPSL-CM6A-LR.1pctCO2.r1i1p1f1.Omon.vmo.gn.v20180717"
 
-    matches = re.finditer(regex, test_str, re.MULTILINE)
+    matches = re.finditer(regex, dataset_id, re.MULTILINE)
 
     for matchNum, match in enumerate(matches):
         if len(match.groups())>2:
@@ -300,3 +301,4 @@ def seperate_dataset_and_version_number(dataset_id):
             drs_id = match.group(1)
             version_number = match.group(2).lower().replace('.v', '')
             return drs_id, version_number
+
