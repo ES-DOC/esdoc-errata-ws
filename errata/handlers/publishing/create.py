@@ -19,6 +19,7 @@ from errata.utils import config
 from errata.utils import constants
 from errata.utils import exceptions
 from errata.utils import factory
+from errata.utils import logger
 from errata.utils.constants import *
 from errata.utils.http import process_request
 from errata.utils.publisher import create_issue
@@ -54,10 +55,10 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             """
             if self.request.data[JF_DATASETS] is None or len(self.request.data[JF_DATASETS]) == 0:
                 raise exceptions.EmptyDatasetList()
-            else:
-                for dset in self.request.data[JF_DATASETS]:
-                    if re.search(VERSION_REGEX, dset) is None:
-                        raise exceptions.MissingVersionNumber()
+
+            for dset in self.request.data[JF_DATASETS]:
+                if re.search(VERSION_REGEX, dset) is None:
+                    raise exceptions.MissingVersionNumber()
 
             try:
                 pyessv.parse_dataset_identifers(
@@ -67,6 +68,7 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             except pyessv.TemplateParsingError:
                 raise exceptions.InvalidDatasetIdentifierError(self.request.data[JF_PROJECT])
 
+
         def _validate_issue_institute():
             """Validates datasets associated with incoming issue.
 
@@ -74,12 +76,14 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             if len(get_institutes(self.request.data)) != 1:
                 raise exceptions.MultipleInstitutesError()
 
+
         def _validate_user_access():
             """Validates user's institutional access rights.
 
             """
             if config.apply_security_policy:
                 authorize(self.user_id, self.request.data[JF_PROJECT], get_institute(self.request.data))
+
 
         def _validate_issue_urls():
             """Validates URL's associated with incoming request.
@@ -90,13 +94,23 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             for url in urls:
                 validate_url(url)
 
+
         def _persist():
             """Persists data to dB.
 
             """
             with db.session.create():
-                for entity in create_issue(self.request.data, self.user_id):
-                    db.session.insert(entity)
+                # Map request data to db entities.
+                entities = create_issue(self.request.data, self.user_id)
+
+                # Insert issue first so that the foreign keys can be established.
+                db.session.insert(entities[0])
+
+                # Insert facets/resources/pid-tasks.
+                for entity in entities[1:]:
+                    db.session.insert(entity, auto_commit=False)
+                db.session.commit()
+
 
         # Process request.
         process_request(self, [

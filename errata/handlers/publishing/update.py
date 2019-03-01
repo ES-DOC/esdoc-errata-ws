@@ -123,7 +123,8 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
 
             # Update issue.
             for entity in update_issue(self.issue, self.request.data, self.user_id):
-                db.session.insert(entity)
+                db.session.insert(entity, auto_commit=False)
+            db.session.commit()
 
             # Update PID handle errata.
             dsets_new = db.dao.get_datasets(self.issue.uid)
