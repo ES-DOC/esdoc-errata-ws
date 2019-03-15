@@ -18,6 +18,9 @@ import errata
 from errata.utils.http import process_request
 
 
+# Query parameter names.
+_PARAM_PROJECT = 'project'
+
 
 class FrontEndRequestHandler(tornado.web.RequestHandler):
     """Front end request handler.
@@ -32,6 +35,14 @@ class FrontEndRequestHandler(tornado.web.RequestHandler):
             self.request.protocol,
             self.request.host
             )
+
+        # Inject project param.
+        try:
+            self.get_argument(_PARAM_PROJECT)
+        except:
+            pass
+        else:
+            url = '{}?project={}'.format(url, self.get_argument(_PARAM_PROJECT))
 
         # Redirect.
         self.redirect(url, permanent=False)
