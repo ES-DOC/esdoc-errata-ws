@@ -44,6 +44,11 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
         self.set_header('Access-Control-Allow-Credentials', True)
         self.set_header('X-XSRFToken', self.xsrf_token)
 
+    def options(self):
+        self.set_status(204)
+        self.set_default_headers()
+        self.finish()
+
     def post(self):
         """HTTP POST handler.
 
