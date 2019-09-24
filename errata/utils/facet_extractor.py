@@ -10,7 +10,7 @@
 
 """
 import pyessv
-from pyessv._utils.compat import basestring
+from pyessv.utils.compat import basestring
 
 
 
