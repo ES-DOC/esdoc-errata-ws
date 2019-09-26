@@ -8,13 +8,12 @@ main()
 {
     log "installing virtual environment ..."
 
-    $ERRATA_WS_PIP install --upgrade pip
-    $ERRATA_WS_PIP install --upgrade virtualenv
+    pip install --upgrade pip
+    pip install --upgrade virtualenv
     virtualenv $ERRATA_WS_HOME/ops/venv
     source $ERRATA_WS_HOME/sh/activate_venv.sh
-    $ERRATA_WS_PIP install --upgrade pip
-    $ERRATA_WS_PIP install --upgrade --no-cache-dir -I -r $ERRATA_WS_HOME/resources/requirements.txt
-    $ERRATA_WS_PIP install --upgrade --no-cache-dir -I -r $ERRATA_WS_HOME/resources/requirements-pyesdoc.txt
+    pip install --upgrade pip
+    pip install --upgrade --no-cache-dir -I -r $ERRATA_WS_HOME/requirements.txt
 
     deactivate
 }

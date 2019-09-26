@@ -7,9 +7,8 @@ source $ERRATA_WS_HOME/sh/utils.sh
 main()
 {
 	source $ERRATA_WS_HOME/sh/activate_venv.sh
-    $ERRATA_WS_PIP install --upgrade pip
-    $ERRATA_WS_PIP install --upgrade --no-cache-dir -I -r $ERRATA_WS_HOME/resources/requirements.txt
-    $ERRATA_WS_PIP install --upgrade --no-cache-dir -I -r $ERRATA_WS_HOME/resources/requirements-pyesdoc.txt
+    pip install --upgrade pip
+    pip install --upgrade --no-cache-dir -I -r $ERRATA_WS_HOME/requirements.txt
 
     deactivate
 

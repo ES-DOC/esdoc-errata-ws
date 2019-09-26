@@ -6,12 +6,6 @@
 export ERRATA_WS_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 export ERRATA_WS_HOME="$( cd "$( dirname "${ERRATA_WS_HOME[0]}" )" && pwd )"
 
-# Set python path
-export PYTHONPATH=$ERRATA_WS_HOME:$PYTHONPATH
-
-# Set pip
-export ERRATA_WS_PIP=pip
-
 # ###############################################################
 # STANDARD-SECTION: OPERATIONS
 # ###############################################################

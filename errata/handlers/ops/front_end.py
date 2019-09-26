@@ -52,7 +52,7 @@ class FrontEndRequestHandler(tornado.web.RequestHandler):
             )
 
         # Set url params.
-        params = [i for i in _PARAMS if self.get_argument(i, None)]
+        params = (i for i in _PARAMS if self.get_argument(i, None))
         for idx, param in enumerate(sorted(params)):
             seperator = '?' if idx == 0 else '&'
             url = '{}{}{}={}'.format(url, seperator, param, self.get_argument(param))
