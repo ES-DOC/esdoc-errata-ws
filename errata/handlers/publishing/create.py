@@ -18,8 +18,6 @@ from errata import db
 from errata.utils import config
 from errata.utils import constants
 from errata.utils import exceptions
-from errata.utils import factory
-from errata.utils import logger
 from errata.utils.constants import *
 from errata.utils.http import process_request
 from errata.utils.publisher import create_issue
@@ -89,6 +87,24 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             if config.apply_security_policy:
                 authorize(self.user_id, self.request.data[JF_PROJECT], get_institute(self.request.data))
 
+        def _validate_issue_title():
+            """Validates URL's associated with incoming request.
+
+            """
+            issue_title = self.request.data[JF_TITLE]
+            # Check db for existing titles.
+            with db.session.create():
+                existing_titles = db.dao.get_titles()
+                if issue_title in existing_titles:
+                    raise exceptions.TitleExistsError(issue_title)
+
+
+        def _validate_issue_description():
+            """Validates URL's associated with incoming request.
+
+            """
+            pass
+
 
         def _validate_issue_urls():
             """Validates URL's associated with incoming request.
@@ -119,6 +135,7 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
 
         # Process request.
         process_request(self, [
+            _validate_issue_title,
             _validate_issue_datasets,
             _validate_issue_institute,
             _validate_user_access,
