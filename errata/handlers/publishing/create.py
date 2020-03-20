@@ -13,6 +13,7 @@
 import tornado
 import re
 import pyessv
+from difflib import SequenceMatcher
 
 from errata import db
 from errata.utils import config
@@ -98,13 +99,19 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
                 if issue_title in existing_titles:
                     raise exceptions.TitleExistsError(issue_title)
 
-
         def _validate_issue_description():
             """Validates URL's associated with incoming request.
 
             """
-            pass
-
+            issue_description = self.request.data[JF_DESCRIPTION]
+            # Check db for existing descriptions.
+            with db.session.create():
+                existing_descriptions = db.dao.get_descriptions()
+                for desc in existing_descriptions:
+                    s = SequenceMatcher(None, issue_description, desc[0])
+                    similarity_ratio = s.ratio()
+                    if similarity_ratio > config.allowed_description_similarity_ratio:
+                        raise exceptions.SimilarIssueDescriptionError(desc[1])
 
         def _validate_issue_urls():
             """Validates URL's associated with incoming request.
@@ -132,9 +139,9 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
                     db.session.insert(entity, auto_commit=False)
                 db.session.commit()
 
-
         # Process request.
         process_request(self, [
+            _validate_issue_description,
             _validate_issue_title,
             _validate_issue_datasets,
             _validate_issue_institute,
