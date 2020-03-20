@@ -32,10 +32,26 @@ class CloseIssueRequestHandler(tornado.web.RequestHandler):
     """issue handler.
 
     """
+    def set_default_headers(self):
+        """Set HTTP headers at the beginning of the request.
+
+        """
+        self.set_header(constants.HTTP_HEADER_Access_Control_Allow_Origin, "*")
+        self.set_header("Access-Control-Allow-Headers", "content-type, Authorization")
+        self.set_header('Access-Control-Allow-Methods', 'POST')
+        self.set_header('Access-Control-Allow-Credentials', True)
+        self.set_header('X-XSRFToken', self.xsrf_token)
+
+    def options(self):
+        self.set_status(204)
+        self.set_default_headers()
+        self.finish()
+
     def post(self):
         """HTTP POST handler.
 
         """
+
         def _validate_issue_exists():
             """Validates that issue exists within dB.
 
