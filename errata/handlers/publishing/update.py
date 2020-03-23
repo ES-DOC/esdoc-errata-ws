@@ -13,11 +13,11 @@
 import tornado
 import re
 import pyessv
+from difflib import SequenceMatcher
 
 from errata import db
 from errata.utils import config
 from errata.utils import exceptions
-from errata.utils import logger
 from errata.utils.constants import *
 from errata.utils.http import process_request
 from errata.utils.publisher import get_institute
@@ -126,6 +126,36 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
                 raise exceptions.IssueStatusChangeError()
 
 
+        def _validate_issue_description():
+            """Validates URL's associated with incoming request.
+            When an issue is updated, all descriptions in the db are dumped and compared to the new description.
+            The new description needs to be different to existing descriptions by predefined ratio (in ws.conf).
+            The updated description needs to also be no more different thant the original by a ratio that is also
+            predefined in the ws.conf file.
+
+            """
+            # Testing incoming description to db existing descriptions.
+            issue_description = self.request.data[JF_DESCRIPTION]
+            issue_uid = self.request.data[JF_UID]
+            # Check db for existing descriptions.
+            existing_descriptions = db.dao.get_descriptions()
+            for desc in existing_descriptions:
+                # Making sure to discard the same issue from this test.
+                if desc[1] != issue_uid:
+                    s = SequenceMatcher(None, issue_description, desc[0])
+                    if s.ratio() > config.allowed_description_similarity_ratio:
+                        raise exceptions.SimilarIssueDescriptionError(desc[1])
+            # Testing updated description to the db stored original description.
+            issue = db.dao.get_issue(self.request.data[JF_UID])
+            s = SequenceMatcher(None, issue_description, issue.description)
+            # Here the test is < since the update description can't be too different from the original one,
+            # Otherwise users are asked to create a new issue altogether.
+            if s.ratio() < config.allowed_description_update_similarity_ratio:
+                raise exceptions.SimilarIssueDescriptionError
+
+
+
+
         def _persist():
             """Persists data to dB.
 
@@ -159,6 +189,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
         # Process request.
         with db.session.create(commitable=True):
             process_request(self, [
+                _validate_issue_description,
                 _validate_issue_datasets,
                 _validate_issue_institute,
                 _validate_user_access,

@@ -101,6 +101,8 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
 
         def _validate_issue_description():
             """Validates URL's associated with incoming request.
+            When an issue is created, all descriptions in the db are dumped and compared to the new description.
+            The new description needs to be different to existing descriptions by predefined ratio (in ws.conf).
 
             """
             issue_description = self.request.data[JF_DESCRIPTION]
@@ -141,8 +143,8 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
 
         # Process request.
         process_request(self, [
-            _validate_issue_description,
             _validate_issue_title,
+            _validate_issue_description,
             _validate_issue_datasets,
             _validate_issue_institute,
             _validate_user_access,

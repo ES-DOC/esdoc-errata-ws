@@ -29,7 +29,6 @@ from errata.utils.constants import *
 from errata.utils.validation import validate
 
 
-
 @validate(validate_delete_facets)
 def delete_facets(uid):
     """Deletes search facets associated with an issue.
@@ -88,6 +87,28 @@ def get_issue(uid):
     qry = text_filter(qry, Issue.uid, uid)
 
     return qry.first()
+
+
+def get_titles():
+    """Returns list of all issue titles in db
+
+    :rtype: list
+
+    """
+    qry = raw_query(Issue.title)
+    # return filter(get_first_item(), qry.all())
+    return [x[0] for x in qry.all()]
+
+
+def get_descriptions():
+    """Returns list of all issue descriptions in db
+
+    :rtype: list
+
+    """
+    qry = raw_query(Issue.description, Issue.uid)
+    # return filter(get_first_item(), qry.all())
+    return [(x[0], x[1])for x in qry.all()]
 
 
 @validate(validate_get_issues)
