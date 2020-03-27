@@ -188,12 +188,12 @@ class UpdatedDescriptionTooDifferentError(RequestValidationException):
     """Raised if the submitted issue post data contains an invalid dataset identifer.
 
     """
-    def __init__(self, uid):
+    def __init__(self, ratio):
         """Instance constructor.
 
         """
         self.field = constants.JF_DATASETS
-        msg = 'THE UPDATED DESCRIPTION IS TOO DIFFERENT FROM THE ORIGINAL.'
+        msg = 'THE UPDATED DESCRIPTION IS TOO DIFFERENT FROM THE ORIGINAL. Difference ratio = {}'.format(ratio)
         super(UpdatedDescriptionTooDifferentError, self).__init__(msg)
 
 
