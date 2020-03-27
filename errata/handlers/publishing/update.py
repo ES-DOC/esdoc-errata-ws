@@ -151,7 +151,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             # Here the test is < since the update description can't be too different from the original one,
             # Otherwise users are asked to create a new issue altogether.
             if s.ratio() < config.allowed_description_update_similarity_ratio:
-                raise exceptions.SimilarIssueDescriptionError
+                raise exceptions.UpdatedDescriptionTooDifferentError
 
 
 
