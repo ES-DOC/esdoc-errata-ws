@@ -27,7 +27,6 @@ from errata.utils.http_security import authorize
 from errata.utils.validation import validate_url
 
 
-
 class UpdateIssueRequestHandler(tornado.web.RequestHandler):
     """issue handler.
 
@@ -151,7 +150,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             # Here the test is < since the update description can't be too different from the original one,
             # Otherwise users are asked to create a new issue altogether.
             if s.ratio() < config.allowed_description_update_similarity_ratio:
-                raise exceptions.UpdatedDescriptionTooDifferentError
+                raise exceptions.UpdatedDescriptionTooDifferentError(s.ratio())
 
 
 
@@ -189,7 +188,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
         # Process request.
         with db.session.create(commitable=True):
             process_request(self, [
-                _validate_issue_description,
+                #_validate_issue_description,
                 _validate_issue_datasets,
                 _validate_issue_institute,
                 _validate_user_access,
