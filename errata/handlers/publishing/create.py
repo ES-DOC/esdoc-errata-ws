@@ -144,7 +144,7 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
         # Process request.
         process_request(self, [
             _validate_issue_title,
-            _validate_issue_description,
+            # _validate_issue_description,
             _validate_issue_datasets,
             # _validate_issue_institute,
             _validate_user_access,

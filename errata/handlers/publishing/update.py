@@ -188,7 +188,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
         # Process request.
         with db.session.create(commitable=True):
             process_request(self, [
-                _validate_issue_description,
+                # _validate_issue_description,
                 _validate_issue_datasets,
                 # _validate_issue_institute,
                 _validate_user_access,
