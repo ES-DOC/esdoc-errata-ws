@@ -110,8 +110,8 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             """Validates that issue attribute deemed to be immutable have not been changed.
 
             """
-            if self.issue.institute != get_institute(self.request.data):
-                raise exceptions.IssueImmutableAttributeError('institute')
+            # if self.issue.institute != get_institute(self.request.data):
+            #     raise exceptions.IssueImmutableAttributeError('institute')
             for attr in IMMUTABLE_ISSUE_ATTRIBUTES:
                 if self.request.data[attr].lower() != getattr(self.issue, attr).lower():
                     raise exceptions.IssueImmutableAttributeError(attr)
@@ -188,9 +188,9 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
         # Process request.
         with db.session.create(commitable=True):
             process_request(self, [
-                #_validate_issue_description,
+                _validate_issue_description,
                 _validate_issue_datasets,
-                _validate_issue_institute,
+                # _validate_issue_institute,
                 _validate_user_access,
                 _validate_issue_exists,
                 _validate_issue_urls,
