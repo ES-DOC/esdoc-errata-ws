@@ -9,9 +9,8 @@
 
 
 """
-import pyesdoc
-
 from errata.utils import constants
+from errata.utils import security
 
 
 
@@ -167,6 +166,6 @@ ERROR_CODES = {
     UnknownIssueError: 904,
     IssueStatusChangeError: 905,
     IssueImmutableAttributeError: 906,
-    pyesdoc.AuthenticationError: 990,
-    pyesdoc.AuthorizationError: 991
+    security.AuthenticationError: 990,
+    security.AuthorizationError: 991
 }

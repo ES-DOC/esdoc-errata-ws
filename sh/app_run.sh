@@ -8,8 +8,8 @@ main()
 {
     log "running ..."
 
-    source $ERRATA_WS_HOME/sh/activate_venv.sh
-	python $ERRATA_WS_HOME/sh/app_run.py
+	pushd $ERRATA_WS_HOME
+	pipenv run python $ERRATA_WS_HOME/sh/app_run.py
 }
 
 # Invoke entry point.

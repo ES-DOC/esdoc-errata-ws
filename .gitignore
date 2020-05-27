@@ -24,3 +24,4 @@ errata.egg-info
 errata-ws.conf
 errata-supervisord.conf
 /ops
+*.lock

@@ -9,10 +9,9 @@
 
 
 """
-import pyesdoc
-
 from errata.utils import config
 from errata.utils import logger
+from errata.utils import security
 
 
 
@@ -58,7 +57,7 @@ def authenticate(credentials):
     :rtype: str
 
     """
-    pyesdoc.authenticate_user(credentials)
+    security.authenticate_user(credentials)
 
 
 def authorize(user_id, project_id, institute_id):
@@ -70,10 +69,10 @@ def authorize(user_id, project_id, institute_id):
 
     """
     logger.log_web('Authorizing: {} --> {}'.format(user_id, _GH_TEAM))
-    pyesdoc.authorize_user(_GH_TEAM, user_id)
+    security.authorize_user(_GH_TEAM, user_id)
 
     logger.log_web('Authorizing: {} --> {}-{}'.format(user_id, project_id, institute_id))
-    pyesdoc.authorize_user('{}-{}'.format(project_id, institute_id), user_id)
+    security.authorize_user('{}-{}'.format(project_id, institute_id), user_id)
 
 
 def secure_request(handler):
@@ -91,7 +90,7 @@ def secure_request(handler):
                   handler.request.headers['Authorization']
 
     # Strip credentials - i.e. destructure from b64 --> 2 member tuple.
-    credentials = pyesdoc.strip_credentials(credentials)
+    credentials = security.strip_credentials(credentials)
 
     # Authenticate.
     if config.apply_security_policy:
