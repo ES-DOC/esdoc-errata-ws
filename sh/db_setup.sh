@@ -8,8 +8,8 @@ main()
 {
 	log "DB : setting up ..."
 
-    source $ERRATA_WS_HOME/sh/activate_venv.sh
-	python $ERRATA_WS_HOME/sh/db_setup.py
+	pushd $ERRATA_WS_HOME
+	pipenv run python $ERRATA_WS_HOME/sh/db_setup.py
 
 	log "DB : set up complete ..."
 }

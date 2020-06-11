@@ -9,9 +9,8 @@
 
 
 """
-import pyesdoc
-
 from errata.utils import constants
+from errata.utils import security
 
 
 
@@ -209,6 +208,6 @@ ERROR_CODES = {
     TitleExistsError: 907,
     SimilarIssueDescriptionError: 908,
     UpdatedDescriptionTooDifferentError: 909,
-    pyesdoc.AuthenticationError: 990,
-    pyesdoc.AuthorizationError: 991
+    security.AuthenticationError: 990,
+    security.AuthorizationError: 991
 }

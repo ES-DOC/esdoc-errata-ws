@@ -8,8 +8,8 @@ main()
 {
     log "DB : creating large database ..."
 
-    source $ERRATA_WS_HOME/sh/activate_venv.sh
-	python $ERRATA_WS_HOME/sh/db_create_large_for_testing.py -c $1
+    pushd $ERRATA_WS_HOME
+	pipenv run python $ERRATA_WS_HOME/sh/db_create_large_for_testing.py -c $1
 
     log "DB : creating large database complete ..."
 }

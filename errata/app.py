@@ -95,7 +95,7 @@ def run():
 
     # Open port.
     app.listen(config.port)
-    log("Ready")
+    log("Running @ port {}".format(config.port))
 
     # Start processing requests.
     tornado.ioloop.IOLoop.instance().start()

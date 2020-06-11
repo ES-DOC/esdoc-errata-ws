@@ -8,8 +8,8 @@ main()
 {
 	log "PID : syncing ..."
 
-    source $ERRATA_WS_HOME/sh/activate_venv.sh
-	python $ERRATA_WS_HOME/sh/pid_sync_handles.py
+	pushd $ERRATA_WS_HOME
+	pipenv run python $ERRATA_WS_HOME/sh/pid_sync_handles.py
 
 	log "PID : syncing complete ..."
 }
