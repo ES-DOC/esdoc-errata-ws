@@ -8,8 +8,8 @@ main()
 {
     log "SECURITY : access control check ..."
 
-    source $ERRATA_WS_HOME/sh/activate_venv.sh
-	python $ERRATA_WS_HOME/sh/check_access_control.py --user=$1 --access-token=$ERRATA_GITHUB_ACCESS_TOKEN --team=$2
+    pushd $ERRATA_WS_HOME
+	pipenv run python $ERRATA_WS_HOME/sh/check_access_control.py --user=$1 --access-token=$ERRATA_GITHUB_ACCESS_TOKEN --team=$2
 
     log "SECURITY : access control check complete ..."
 }
