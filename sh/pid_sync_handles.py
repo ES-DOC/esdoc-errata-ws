@@ -86,7 +86,7 @@ def _sync(pid_connection, task):
 def _check_handle_status(dataset_id):
     """Checks handle exists or not.
 
-    :returns: Flag indicating whether handle status is such that it requires fiurther processing
+    :returns: Flag indicating whether handle status is such that it requires further processing
     :rtype: bool
 
     """

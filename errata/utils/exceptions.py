@@ -157,6 +157,45 @@ class UnknownIssueError(RequestValidationException):
         super(UnknownIssueError, self).__init__(msg)
 
 
+class TitleExistsError(RequestValidationException):
+    """Raised if the submitted issue post data contains an invalid dataset identifer.
+
+    """
+    def __init__(self, title):
+        """Instance constructor.
+
+        """
+        self.field = constants.JF_DATASETS
+        msg = 'ISSUE TITLE ALREADY EXISTS IN DB: TITLE={}'.format(title)
+        super(TitleExistsError, self).__init__(msg)
+
+
+class SimilarIssueDescriptionError(RequestValidationException):
+    """Raised if the submitted issue post data contains an invalid dataset identifer.
+
+    """
+    def __init__(self, uid):
+        """Instance constructor.
+
+        """
+        self.field = constants.JF_DATASETS
+        msg = 'AN ISSUE WITH HIGHLY SIMILAR DESCRIPTION ALREADY EXISTS IN DB: UID={}'.format(uid)
+        super(SimilarIssueDescriptionError, self).__init__(msg)
+
+
+class UpdatedDescriptionTooDifferentError(RequestValidationException):
+    """Raised if the submitted issue post data contains an invalid dataset identifer.
+
+    """
+    def __init__(self, ratio):
+        """Instance constructor.
+
+        """
+        self.field = constants.JF_DATASETS
+        msg = 'THE UPDATED DESCRIPTION IS TOO DIFFERENT FROM THE ORIGINAL. Difference ratio = {}'.format(ratio)
+        super(UpdatedDescriptionTooDifferentError, self).__init__(msg)
+
+
 # Map of managed error codes.
 ERROR_CODES = {
     InvalidJSONError: 900,
@@ -166,6 +205,9 @@ ERROR_CODES = {
     UnknownIssueError: 904,
     IssueStatusChangeError: 905,
     IssueImmutableAttributeError: 906,
+    TitleExistsError: 907,
+    SimilarIssueDescriptionError: 908,
+    UpdatedDescriptionTooDifferentError: 909,
     security.AuthenticationError: 990,
     security.AuthorizationError: 991
 }
