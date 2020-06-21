@@ -32,7 +32,6 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
     """issue handler.
 
     """
-
     def set_default_headers(self):
         """Set HTTP headers at the beginning of the request.
 
@@ -43,16 +42,20 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
         self.set_header('Access-Control-Allow-Credentials', True)
         self.set_header('X-XSRFToken', self.xsrf_token)
 
+
     def options(self):
+        """HTTP OPTIONS handler.
+
+        """
         self.set_status(204)
         self.set_default_headers()
         self.finish()
+
 
     def post(self):
         """HTTP POST handler.
 
         """
-
         def _validate_issue_datasets():
             """Validates datasets associated with incoming issue.
 
@@ -88,6 +91,7 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             if config.apply_security_policy:
                 authorize(self.user_id, self.request.data[JF_PROJECT], get_institute(self.request.data))
 
+
         def _validate_issue_title():
             """Validates URL's associated with incoming request.
 
@@ -98,6 +102,7 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
                 existing_titles = db.dao.get_titles()
                 if issue_title in existing_titles:
                     raise exceptions.TitleExistsError(issue_title)
+
 
         def _validate_issue_description():
             """Validates URL's associated with incoming request.
@@ -114,6 +119,7 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
                     similarity_ratio = s.ratio()
                     if similarity_ratio > config.allowed_description_similarity_ratio:
                         raise exceptions.SimilarIssueDescriptionError(desc[1])
+
 
         def _validate_issue_urls():
             """Validates URL's associated with incoming request.
@@ -140,6 +146,7 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
                 for entity in entities[1:]:
                     db.session.insert(entity, auto_commit=False)
                 db.session.commit()
+
 
         # Process request.
         process_request(self, [

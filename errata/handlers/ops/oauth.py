@@ -22,10 +22,10 @@ from errata.utils import config
 from errata.utils.http import process_request
 
 
-# OAuth hanlder client identifier.
+# OAuth handler client identifier.
 OAUTH_CLIENT_ID = os.getenv('ERRATA_OAUTH_CLIENT_ID')
 
-# OAuth hanlder client secret.
+# OAuth handler client secret.
 OAUTH_CLIENT_SECRET = os.getenv('ERRATA_OAUTH_CLIENT_SECRET')
 
 # OAuth authorize URL.
@@ -51,8 +51,8 @@ class AuthorizeRequestHandler(tornado.web.RequestHandler):
 
         """
         # Open session with OAuth2 provider.
-        github = OAuth2Session(OAUTH_CLIENT_ID)
-        authorization_url, state = github.authorization_url(OAUTH_URL_AUTHORIZE)
+        gh_session = OAuth2Session(OAUTH_CLIENT_ID)
+        authorization_url, state = gh_session.authorization_url(OAUTH_URL_AUTHORIZE)
 
         # State is used to prevent CSRF, keep this for later.
         self.set_secure_cookie('errata-oauth-state', state, expires_days=_COOKIE_EXPIRATION_IN_DAYS)
@@ -72,17 +72,30 @@ class CallbackRequestHandler(tornado.web.RequestHandler):
         # The user has been redirected back from the OAuth provider.
         # With this redirection comes an authorization code included
         # in the redirect URL. We will use that to obtain an access token.
-        github = OAuth2Session(OAUTH_CLIENT_ID, state=self.get_secure_cookie('errata-oauth-state'))
-        token = github.fetch_token(OAUTH_URL_ACCESS_TOKEN, client_secret=OAUTH_CLIENT_SECRET, authorization_response=self.request.full_url())
+        gh_session = OAuth2Session(
+            OAUTH_CLIENT_ID,
+            state=self.get_secure_cookie('errata-oauth-state')
+            )
+        token = gh_session.fetch_token(
+            OAUTH_URL_ACCESS_TOKEN,
+            client_secret=OAUTH_CLIENT_SECRET,
+            authorization_response=self.request.full_url()
+            )
 
         # At this point you can fetch protected resources - we need the users GitHub ID.
-        github = OAuth2Session(OAUTH_CLIENT_ID, token=token)
-        gh_user = github.get('https://api.github.com/user').json()
+        gh_session = OAuth2Session(OAUTH_CLIENT_ID, token=token)
+        gh_user = gh_session.get('https://api.github.com/user').json()
 
         # Allow client side credential access via secure cookies.
         self.clear_cookie('errata-oauth-state')
-        self.set_secure_cookie('errata-oauth-credentials', _encode_credentials(gh_user, token), expires_days=_COOKIE_EXPIRATION_IN_DAYS)
-        print self.xsrf_token
+        self.set_secure_cookie(
+            'errata-oauth-credentials',
+            _encode_credentials(gh_user, token),
+            expires_days=_COOKIE_EXPIRATION_IN_DAYS
+            )
+
+        # Set XSRF header.
+        self.set_header('X-XSRFToken', self.xsrf_token)            
 
         # Redirect.
         self.redirect('/static/index.html', permanent=False)

@@ -13,5 +13,4 @@ github3.py
 bs4
 jsonschema
 esgfpid
-pyesdoc
 pyessv

@@ -68,9 +68,11 @@ def authorize(user_id, project_id, institute_id):
     :param str institute_id: Institute identifier, e.g. ipsl.
 
     """
+    # User must be a member of errata-publication team.
     logger.log_web('Authorizing: {} --> {}'.format(user_id, _GH_TEAM))
     security.authorize_user(_GH_TEAM, user_id)
 
+    # User must be a member of {project}-{institute} specific team, e.g. cmip6-ipsl.
     logger.log_web('Authorizing: {} --> {}-{}'.format(user_id, project_id, institute_id))
     security.authorize_user('{}-{}'.format(project_id, institute_id), user_id)
 
