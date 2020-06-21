@@ -34,6 +34,9 @@ OAUTH_URL_AUTHORIZE = 'https://github.com/login/oauth/authorize'
 # OAuth get access token URL.
 OAUTH_URL_ACCESS_TOKEN = 'https://github.com/login/oauth/access_token'
 
+# Application redirect URL.
+APP_REDIRECT_URL = '/static/index.html'
+
 # When in dev mode allow HTTP callback.
 if config.mode == 'dev':
     os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
@@ -52,6 +55,8 @@ class AuthorizeRequestHandler(tornado.web.RequestHandler):
         """
         # Open session with OAuth2 provider.
         gh_session = OAuth2Session(OAUTH_CLIENT_ID)
+
+        # Ask OAuth2 provider for an autohrisation URL.
         authorization_url, state = gh_session.authorization_url(OAUTH_URL_AUTHORIZE)
 
         # State is used to prevent CSRF, keep this for later.
@@ -98,7 +103,7 @@ class CallbackRequestHandler(tornado.web.RequestHandler):
         self.set_header('X-XSRFToken', self.xsrf_token)            
 
         # Redirect.
-        self.redirect('/static/index.html', permanent=False)
+        self.redirect(APP_REDIRECT_URL, permanent=False)
 
 
 def _encode_credentials(user, token):
