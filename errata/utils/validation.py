@@ -184,9 +184,11 @@ def validate_url(url):
     if url.startswith('http'):
         if not config.validate_issue_urls:
             return
+
         response = requests.head(url)
         if response.status_code in [requests.codes.OK, 302]:
             return
+
         response = requests.get(url)
         if response.ok:
             return

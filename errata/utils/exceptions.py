@@ -62,7 +62,7 @@ class InvalidDatasetIdentifierError(RequestValidationException):
 
         """
         self.field = constants.JF_DATASETS
-        msg = 'ISSUE HAS INVALID DATASET IDENTIFIER: PROJECT={}'.format(project)
+        msg = 'Dataset list contains invalid identifier(s)'
         super(InvalidDatasetIdentifierError, self).__init__(msg)
 
 
@@ -75,7 +75,7 @@ class MultipleInstitutesError(RequestValidationException):
 
         """
         self.field = constants.JF_DATASETS
-        msg = 'ISSUE HAS MULTIPLE INSTITUTES'
+        msg = 'Issue is associated with multiple institutes'
         super(MultipleInstitutesError, self).__init__(msg)
 
 
@@ -88,7 +88,7 @@ class EmptyDatasetList(RequestValidationException):
 
         """
         self.field = constants.JF_DATASETS
-        msg = 'ISSUE HAS EMPTY DATASET LIST'
+        msg = 'Dataset list is empty'
         super(EmptyDatasetList, self).__init__(msg)
 
 
@@ -101,7 +101,7 @@ class MissingVersionNumber(RequestValidationException):
 
         """
         self.field = constants.JF_DATASETS
-        msg = 'DATASET MISSING VERSION NUMBER'
+        msg = 'Dataset list contains an identifier without a version'
         super(MissingVersionNumber, self).__init__(msg)
 
 
@@ -114,7 +114,7 @@ class InvalidURLError(RequestValidationException):
 
         """
         self.field = constants.JF_URLS
-        msg = 'URL INVALID: {}'.format(url)
+        msg = 'URL is invalid'
         super(InvalidURLError, self).__init__(msg)
 
 
@@ -127,7 +127,7 @@ class IssueStatusChangeError(RequestValidationException):
 
         """
         self.field = constants.JF_STATUS
-        msg = 'ISSUE STATUS CHANGE NOT ALLOWED'
+        msg = 'Status is immutable & cannot be changed'
         super(IssueStatusChangeError, self).__init__(msg)
 
 
@@ -140,7 +140,7 @@ class IssueImmutableAttributeError(RequestValidationException):
 
         """
         self.field = attr_name
-        msg = 'ISSUE ATTRIBUTE IS IMMUTABLE: {}'.format(attr_name)
+        msg = 'Issue attribute {} is immutable and cannot be updated'.format(attr_name)
         super(IssueImmutableAttributeError, self).__init__(msg)
 
 
@@ -153,7 +153,7 @@ class UnknownIssueError(RequestValidationException):
 
         """
         self.field = constants.JF_UID
-        msg = "ISSUE IS UNKNOWN: {}".format(uid)
+        msg = "Unknown issue: {}".format(uid)
         super(UnknownIssueError, self).__init__(msg)
 
 
@@ -165,8 +165,8 @@ class TitleExistsError(RequestValidationException):
         """Instance constructor.
 
         """
-        self.field = constants.JF_DATASETS
-        msg = 'ISSUE TITLE ALREADY EXISTS IN DB: TITLE={}'.format(title)
+        self.field = constants.JF_TITLE
+        msg = 'Title already exists in dB'
         super(TitleExistsError, self).__init__(msg)
 
 
@@ -179,7 +179,7 @@ class SimilarIssueDescriptionError(RequestValidationException):
 
         """
         self.field = constants.JF_DATASETS
-        msg = 'AN ISSUE WITH HIGHLY SIMILAR DESCRIPTION ALREADY EXISTS IN DB: UID={}'.format(uid)
+        msg = 'An issue with a highly similar description already exists in dB'
         super(SimilarIssueDescriptionError, self).__init__(msg)
 
 
@@ -192,7 +192,7 @@ class UpdatedDescriptionTooDifferentError(RequestValidationException):
 
         """
         self.field = constants.JF_DATASETS
-        msg = 'THE UPDATED DESCRIPTION IS TOO DIFFERENT FROM THE ORIGINAL. Difference ratio = {}'.format(ratio)
+        msg = 'The updated description is too different to the original. Difference ratio = {}'.format(ratio)
         super(UpdatedDescriptionTooDifferentError, self).__init__(msg)
 
 

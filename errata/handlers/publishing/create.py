@@ -19,12 +19,13 @@ from errata import db
 from errata.utils import config
 from errata.utils import constants
 from errata.utils import exceptions
+from errata.utils import security
 from errata.utils.constants import *
 from errata.utils.http import process_request
+from errata.utils.http_security import authorize
 from errata.utils.publisher import create_issue
 from errata.utils.publisher import get_institute
 from errata.utils.publisher import get_institutes
-from errata.utils.http_security import authorize
 from errata.utils.validation import validate_url
 
 
@@ -96,8 +97,8 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             """Validates URL's associated with incoming request.
 
             """
-            issue_title = self.request.data[JF_TITLE]
             # Check db for existing titles.
+            issue_title = self.request.data[JF_TITLE]
             with db.session.create():
                 existing_titles = db.dao.get_titles()
                 if issue_title in existing_titles:
@@ -110,8 +111,8 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             The new description needs to be different to existing descriptions by predefined ratio (in ws.conf).
 
             """
-            issue_description = self.request.data[JF_DESCRIPTION]
             # Check db for existing descriptions.
+            issue_description = self.request.data[JF_DESCRIPTION]
             with db.session.create():
                 existing_descriptions = db.dao.get_descriptions()
                 for desc in existing_descriptions:
