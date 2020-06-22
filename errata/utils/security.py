@@ -185,9 +185,9 @@ def authenticate_user(credentials):
         raise AuthenticationError("GitHub user authentication with access token failed")
 
     # Assert user has granted application read:org permissions.
-    # if 'admin:org' not in r.headers['X-OAuth-Scopes'] and \
-    #    'read:org' not in r.headers['X-OAuth-Scopes']:
-    #     raise AuthenticationError("Access token must have either admin:org or read:org scope enabled")
+    if 'admin:org' not in r.headers['X-OAuth-Scopes'] and \
+       'read:org' not in r.headers['X-OAuth-Scopes']:
+        raise AuthenticationError("Access token must have either admin:org or read:org scope enabled")
 
     # Assert user id matches access token.
     if json.loads(r.text)['login'] != user_id:
