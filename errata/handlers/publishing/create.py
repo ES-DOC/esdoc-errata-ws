@@ -61,17 +61,18 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             """Validates datasets associated with incoming issue.
 
             """
-            if self.request.data[JF_DATASETS] is None or len(self.request.data[JF_DATASETS]) == 0:
+            sanitzed_datasets = [dset.strip for dset in self.request.data[JF_DATASETS]]
+            if sanitzed_datasets is None or len(sanitzed_datasets) == 0:
                 raise exceptions.EmptyDatasetList()
 
-            for dset in self.request.data[JF_DATASETS]:
+            for dset in sanitzed_datasets:
                 if re.search(VERSION_REGEX, dset) is None:
-                    raise exceptions.MissingVersionNumber()
+                    raise exceptions.MissingVersionNumber(dset)
 
             try:
                 pyessv.parse_dataset_identifers(
                     self.request.data[JF_PROJECT],
-                    self.request.data[JF_DATASETS]
+                    sanitzed_datasets
                 )
             except pyessv.TemplateParsingError:
                 raise exceptions.InvalidDatasetIdentifierError(self.request.data[JF_PROJECT])
@@ -159,3 +160,9 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             _validate_issue_urls,
             _persist
         ])
+
+
+dset = 'CMIP6.PMIP.AWI.AWI-ESM-1-1-LR.lig127k.r1i1p1f1.SImon.sifllatstop.gn#20200212'
+
+if re.search(VERSION_REGEX, dset) is None:
+    raise exceptions.MissingVersionNumber()

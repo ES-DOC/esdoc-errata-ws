@@ -93,15 +93,15 @@ class EmptyDatasetList(RequestValidationException):
 
 
 class MissingVersionNumber(RequestValidationException):
-    """Raised if the submitted issue post data contains an multiple institute identifers.
+    """Raised if the submitted issue post data contains an unversionned dataset identifier.
 
     """
-    def __init__(self):
+    def __init__(self, dataset_id):
         """Instance constructor.
 
         """
         self.field = constants.JF_DATASETS
-        msg = 'Dataset list contains an identifier without a version'
+        msg = 'Dataset list contains an identifier without a version: {}'.format(dataset_id)
         super(MissingVersionNumber, self).__init__(msg)
 
 
