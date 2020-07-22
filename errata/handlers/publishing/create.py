@@ -61,7 +61,8 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             """Validates datasets associated with incoming issue.
 
             """
-            sanitzed_datasets = [dset.strip() for dset in self.request.data[JF_DATASETS]]
+            sanitzed_datasets = [dset.strip().encode('ascii', 'ignore').decode('ascii')
+                                 for dset in self.request.data[JF_DATASETS]]
             if sanitzed_datasets is None or len(sanitzed_datasets) == 0:
                 raise exceptions.EmptyDatasetList()
 
