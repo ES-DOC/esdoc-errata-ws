@@ -71,7 +71,7 @@ _GH_TEAMS = {
     'cmip6-cnrm-cerfacs': 2567277,
     'cmip6-csir-csiro': 2567278,
     'cmip6-csiro-bom': 2567279,
-    'cmip6-csiro': 28601319,
+    'cmip6-csiro': 2942355,
     'cmip6-csiro-arccss': 3532044,
     'cmip6-ec-earth-consortium': 2567280,
     'cmip6-fio-ronm': 2567281,
