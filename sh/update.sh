@@ -15,13 +15,11 @@ _update_config()
 
 _update_src()
 {
-	cd $ERRATA_WS_HOME
 	git pull
 }
 
 _update_venv()
 {
-    pushd $ESDOC_WS_HOME
     pipenv install -r $ESDOC_WS_HOME/requirements.txt
 }
 
@@ -30,10 +28,12 @@ main()
 {
     log "update starts ..."
 
+    pushd $ESDOC_WS_HOME
 	_update_src
 	_update_config
 	_update_venv
-
+	popd
+	
     log "update complete"
 }
 

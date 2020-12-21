@@ -10,6 +10,7 @@ main()
 
 	pushd $ERRATA_WS_HOME
 	pipenv run python $ERRATA_WS_HOME/sh/app_run.py
+	popd
 }
 
 # Invoke entry point.

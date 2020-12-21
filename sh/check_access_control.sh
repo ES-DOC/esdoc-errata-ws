@@ -10,7 +10,8 @@ main()
 
     pushd $ERRATA_WS_HOME
 	pipenv run python $ERRATA_WS_HOME/sh/check_access_control.py --user=$1 --access-token=$ERRATA_GITHUB_ACCESS_TOKEN --team=$2
-
+    popd
+    
     log "SECURITY : access control check complete ..."
 }
 

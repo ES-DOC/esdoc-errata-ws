@@ -19,9 +19,9 @@ _install_ops_dir()
 
 _install_venv()
 {
-    log "installing virtual environment ..."
-
 	pushd $ERRATA_WS_HOME
+
+    log "installing virtual environment ..."
 
     # Update pip / pipenv to latest versions.
     pip2 install --upgrade pip
@@ -32,6 +32,8 @@ _install_venv()
 	pipenv install
 
 	log "virtual environment installed"
+
+	popd
 }
 
 # Main entry point.
