@@ -153,8 +153,6 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
                 raise exceptions.UpdatedDescriptionTooDifferentError(s.ratio())
 
 
-
-
         def _persist():
             """Persists data to dB.
 

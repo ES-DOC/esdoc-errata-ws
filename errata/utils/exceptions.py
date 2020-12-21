@@ -62,7 +62,7 @@ class InvalidDatasetIdentifierError(RequestValidationException):
 
         """
         self.field = constants.JF_DATASETS
-        msg = 'Dataset list contains invalid identifier(s)'
+        msg = 'Dataset list contains invalid identifier(s): {}'.format(project)
         super(InvalidDatasetIdentifierError, self).__init__(msg)
 
 

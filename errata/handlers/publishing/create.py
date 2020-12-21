@@ -146,6 +146,8 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
                 # Insert facets/resources/pid-tasks.
                 for entity in entities[1:]:
                     db.session.insert(entity, auto_commit=False)
+                
+                # Commit atomic transation.
                 db.session.commit()
 
 

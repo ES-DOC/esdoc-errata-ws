@@ -21,6 +21,8 @@ _install_venv()
 {
     log "installing virtual environment ..."
 
+	pushd $ERRATA_WS_HOME
+
     # Update pip / pipenv to latest versions.
     pip2 install --upgrade pip
     pip2 install --upgrade pipenv

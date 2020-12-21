@@ -25,4 +25,4 @@ b2handle = "*"
 backports-abc = "*"
 
 [requires]
-python_version = "2.7.17"
+python_version = "2.7.18"
