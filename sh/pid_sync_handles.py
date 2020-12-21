@@ -68,7 +68,7 @@ def _sync(pid_connection, task):
         # Update handle.
         logger.log_pid('... calling update task')
         task_handler = _TASK_HANDLERS[task.action]
-        task_handler(task.dataset_id, [task.issue_uid], pid_connection)
+        task_handler(str(task.dataset_id), [str(task.issue_uid)], pid_connection)
 
     # ... managed exceptions
     except exceptions.HandleMismatch as err:

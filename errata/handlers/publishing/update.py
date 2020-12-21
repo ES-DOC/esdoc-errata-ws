@@ -56,16 +56,18 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             """Validates datasets associated with incoming issue.
 
             """
-            if self.request.data[JF_DATASETS] is None or len(self.request.data[JF_DATASETS]) == 0:
+            sanitized_datasets = [dt.strip().encode('ascii', 'ignore').decode('ascii')
+                                  for dt in self.request.data[JF_DATASETS]]
+            if sanitized_datasets is None or sanitized_datasets == 0:
                 raise exceptions.EmptyDatasetList()
             else:
-                for dset in self.request.data[JF_DATASETS]:
+                for dset in sanitized_datasets:
                     if re.search(VERSION_REGEX, dset) is None:
-                        raise exceptions.MissingVersionNumber()
+                        raise exceptions.MissingVersionNumber(dset)
             try:
                 pyessv.parse_dataset_identifers(
                     self.request.data[JF_PROJECT],
-                    self.request.data[JF_DATASETS]
+                    sanitized_datasets
                     )
             except pyessv.TemplateParsingError:
                 raise exceptions.InvalidDatasetIdentifierError(self.request.data[JF_PROJECT])
