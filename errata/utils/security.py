@@ -18,6 +18,9 @@ import requests
 
 # GitHub API - credentials.
 _GH_API_CREDENTIALS = ('esdoc-system-user', os.getenv('ESDOC_GITHUB_ACCESS_TOKEN'))
+_GH_API_HEADERS = {
+    'Authorization': 'token {}'.format(os.getenv('ESDOC_GITHUB_PAT')),
+}
 
 # GitHub API - teams.
 _GH_API_TEAMS = "https://api.github.com/teams"
@@ -211,7 +214,7 @@ def authorize_user(team_id, user_id):
 
     # Invoke GitHub API.
     url = '{}/{}/memberships/{}'.format(_GH_API_TEAMS, _GH_TEAMS[team_id], user_id)
-    r = requests.get(url, auth=_GH_API_CREDENTIALS)
+    r = requests.get(url, headers=_GH_API_HEADERS)
 
     # Assert user is a team member.
     if r.status_code != 200:
