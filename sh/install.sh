@@ -26,9 +26,9 @@ _install_venv()
     # Update pip / pipenv to latest versions.
     pip2 install --upgrade pip
     pip2 install --upgrade pipenv
+    pip2 install --upgrade supervisor
 
 	# Install venv using pip env.
-	pushd $ERRATA_WS_HOME
 	pipenv install
 
 	log "virtual environment installed"
