@@ -42,6 +42,8 @@ At a high level the existing system can be summarised as follows:
 
 ## New System - User Roles
 
+In the new system the set of supported user roles will be extended.  A new **moderator** role will join the existing **public** and **author** roles.
+
 ### Author
 
 An **authenticated** user authorised to perform the following actions:
@@ -74,10 +76,23 @@ An **anonymous** user authorised to perform the following actions:
 
 ## New System - User-Interface
 
-- New page: moderator dashboard;
-- Accept/Reject actions added to existing view page;
-- New GitHub scope: read:email.
-- Errata edit page extensions;
+In the new system the user interface will be extended to support the moderation process.
+
+- New page
+  - Moderator Dashboard;
+
+- New action
+  - Accept Errata;
+
+- New action
+  - Reject Errata;
+
+- New GitHub scope
+  - read:email;
+
+- Update page
+  - Edit Errata
+  - If user role is public then prompt for email address;
 
 ## New System - Web-API
 
