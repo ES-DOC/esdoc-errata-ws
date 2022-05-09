@@ -72,6 +72,27 @@ An **anonymous** user authorised to perform the following actions:
 - Errata - View
 - PID - Search
 
+## New System - User-Interface
+
+- New page: moderator dashboard;
+- Accept/Reject actions added to existing view page;
+- New GitHub scope: read:email.
+- Errata edit page extensions;
+
+## New System - Web-API
+
+- New endpoint: 1/errata/moderate
+- New sub-system: notifications
+
+
+## New System - Web-API
+
+- New Column: tbl_errata.moderation_status (accepted | not_required | rejected)
+- New Column: tbl_errata.email_of_creator
+- New table: tbl_notifications
+
+
+
 ## Development Outline
 
 The updated system will extend the above layers as follows:
