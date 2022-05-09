@@ -17,13 +17,13 @@ At a high level the existing system can be summarised as follows:
 ### User Roles
 
 - Author
--- Authenticated
--- Typically a data-node administrator
--- GitHub account is white-listed
+  - Authenticated
+  - Typically a data-node administrator
+  - GitHub account is white-listed
 
 - Public
--- Anonymous
--- Typically a researcher
+  - Anonymous
+  - Typically a researcher
 
 ### User-Interface
 
