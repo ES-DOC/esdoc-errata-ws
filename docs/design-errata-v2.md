@@ -131,6 +131,11 @@ In the new system the user interface will be extended to support the moderation 
 
 - New Column
   - Table: tbl_errata
+  - Name: moderation_window
+  - Constraint - valid timestamp
+
+- New Column
+  - Table: tbl_errata
   - Name: email_of_creator
   - Constraint - valid email address
 
