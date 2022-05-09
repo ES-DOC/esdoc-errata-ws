@@ -27,18 +27,18 @@ At a high level the existing system can be summarised as follows:
 
 ### User-Interface
 
-    - a set of web-pages implemented in JavaScript;
-    - a set of interactions with GitHub OAuth.
+- A set of web-pages implemented in JavaScript;
+- A set of interactions with GitHub OAuth.
 
 ### Web-API
 
-    - a set of open RESTful end-points;
-    - a sub-set of end-points requiring GitHub OAuth authentication,
+- A set of open RESTful end-points;
+- A sub-set of end-points requiring GitHub OAuth authentication,
 
 ### Database
 
-    - a set of PostGreSQL tables;
-    - a set of dB management scripts.
+- A set of PostGreSQL tables;
+- A set of dB management scripts.
 
 ## New System - User Roles
 
