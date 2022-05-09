@@ -78,19 +78,24 @@ An **anonymous** user authorised to perform the following actions:
 
 In the new system the user interface will be extended to support the moderation process.
 
-- New page
-  - Moderator Dashboard;
+- New Page
+  - Moderator Dashboard
+  - Allows moderator to see all errata requiring moderation
 
-- New action
-  - Accept Errata;
+- New GitHub Scope
+  - Scope name: read:email
+  - Applies to moderators only
+  - Allows system to auto-email moderators
 
-- New action
-  - Reject Errata;
+- Update Page
+  - Edit Errata
+  - New action: Accept Errata
 
-- New GitHub scope
-  - read:email;
+- Update Page
+  - Edit Errata
+  - New action: Reject Errata
 
-- Update page
+- Update Page
   - Edit Errata
   - If user role is public then prompt for email address;
 
