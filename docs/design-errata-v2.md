@@ -101,36 +101,43 @@ In the new system the user interface will be extended to support the moderation 
 
 ## New System - Web-API
 
-- New endpoint: 1/errata/moderate
+- New endpoint
+  - BASE_ADDRESS/1/errata/moderation/accept
+  - Set errata status -> Accepted
+  - Send email notification -> Author
+
+- New endpoint
+  - BASE_ADDRESS/1/errata/moderation/extend
+  - Set errata moderation time window
+  - Send email notification -> Author
+
+- New endpoint
+  - BASE_ADDRESS/1/errata/moderation/reject
+  - Set errata status -> Rejected
+  - Send email notification -> Author
+
 - New sub-system: notifications
+  - Support automated email of moderation decisions
+  - Email 1: Errata Accepted
+  - Email 2: Errata Extended
+  - Email 3: Errata Rejected
 
+## New System - Database
 
-## New System - Web-API
+- New Column
+  - Table: tbl_errata
+  - Name: moderation_status
+  - Constraint: allowed values = accepted | in_review | not_required | rejected
 
-- New Column: tbl_errata.moderation_status (accepted | not_required | rejected)
-- New Column: tbl_errata.email_of_creator
-- New table: tbl_notifications
+- New Column
+  - Table: tbl_errata
+  - Name: email_of_creator
+  - Constraint - valid email address
 
+- New Table
+  - Table: tbl_notification
+  - Description: Stores details injected into email templates
 
-
-## Development Outline
-
-The updated system will extend the above layers as follows:
-
-### User-Interface:
-
-    - New page: moderator dashboard;
-    - Accept/Reject actions added to existing view page;
-    - New GitHub scope: read:email.
-    - Errata edit page extensions;
-
-### Web-API:
-
-    - New endpoint: 1/errata/moderate
-    - New sub-system: notifications
-
-### Database:
-
-    - New Column: tbl_errata.moderation_status (accepted | not_required | rejected)
-    - New Column: tbl_errata.email_of_creator
-    - New table: tbl_notifications
+- New Table
+  - Table: tbl_notification_template
+  - Description: Stores email templates as text blobs
