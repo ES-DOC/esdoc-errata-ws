@@ -62,7 +62,7 @@ def create(connection=None, commitable=False):
     """
     _start(connection)
     logger.log_db("db connection [{}] opened".format(id(_sa_session)))
-ENV_ERRATA_DB_PWD
+
     try:
         yield
     except Exception as err:
@@ -92,7 +92,8 @@ def _start(connection=None):
     # Set default connection.
     if connection is None:
         connection = config.db
-        connection = connection.replace("", os.getenv("ERRATA_DB_PWD"))
+        if os.getenv("ERRATA_DB_PWD"):
+            connection = connection.replace("ENV_ERRATA_DB_PWD", os.getenv("ERRATA_DB_PWD"))
 
     # Set engine.
     if _sa_connection != connection:
