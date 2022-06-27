@@ -11,6 +11,7 @@
 """
 import contextlib
 import logging
+import os
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -61,7 +62,7 @@ def create(connection=None, commitable=False):
     """
     _start(connection)
     logger.log_db("db connection [{}] opened".format(id(_sa_session)))
-
+ENV_ERRATA_DB_PWD
     try:
         yield
     except Exception as err:
@@ -91,6 +92,7 @@ def _start(connection=None):
     # Set default connection.
     if connection is None:
         connection = config.db
+        connection = connection.replace("", os.getenv("ERRATA_DB_PWD"))
 
     # Set engine.
     if _sa_connection != connection:
