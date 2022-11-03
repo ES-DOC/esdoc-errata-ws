@@ -23,9 +23,9 @@ mkdir -p $ERRATA_WS_HOME/ops/logs
 # STANDARD-SECTION: DB PARAMS
 # ###############################################################
 
-export ERRATA_DB_NAME=esdoc_errata
-export ERRATA_DB_USER=esdoc_errata_db_user
-export ERRATA_DB_ADMIN=esdoc_errata_db_admin
+export ERRATA_DB_NAME=${ERRATA_DB_NAME:esdoc_errata}
+export ERRATA_DB_USER=${ERRATA_DB_USER:esdoc_errata_db_user}
+export ERRATA_DB_ADMIN=${ERRATA_DB_ADMIN:esdoc_errata_db_admin}
 
 # ###############################################################
 # STANDARD-SECTION: ALIASES
