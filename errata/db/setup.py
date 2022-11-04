@@ -28,7 +28,10 @@ def execute():
     # Initialize schemas.
     # db_session.sa_engine.execute(DropSchema('public'))
     for schema in _SCHEMAS:
-        db_session.sa_engine.execute(CreateSchema(schema))
+        try:
+            db_session.sa_engine.execute(CreateSchema(schema))
+        except:
+            pass
 
     # Initialize tables.
     METADATA.create_all(db_session.sa_engine)
