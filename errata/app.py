@@ -45,6 +45,7 @@ def _get_app_endpoints():
         (r'/1/issue/accept', handlers.moderation.AcceptIssueRequestHandler),
         (r'/1/issue/close', handlers.publishing.CloseIssueRequestHandler),
         (r'/1/issue/create', handlers.publishing.CreateIssueRequestHandler),
+        (r'/1/issue/extend', handlers.moderation.ExtendIssueRequestHandler),
         (r'/1/issue/update', handlers.publishing.UpdateIssueRequestHandler),
         (r'/1/issue/reject', handlers.moderation.RejectIssueRequestHandler),
         (r'/1/issue/retrieve', handlers.publishing.RetrieveIssueRequestHandler),
