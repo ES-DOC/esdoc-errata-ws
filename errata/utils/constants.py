@@ -74,5 +74,11 @@ STATUS_ON_HOLD = u'onhold'
 STATUS_RESOLVED = u'resolved'
 STATUS_WONT_FIX = u'wontfix'
 
+# Issue moderation states.
+MODERATION_STATUS_ACCEPTED = "accepted"
+MODERATION_STATUS_IN_REVIEW = "in-review"
+MODERATION_STATUS_NOT_REQUIRED = "not-required"
+MODERATION_STATUS_REJECTED = "rejected"
+
 # regex
 VERSION_REGEX = r'(?P<version_string>(\.v|#)\d+)$'

@@ -1,0 +1,2 @@
+from errata.handlers.moderation.accept import AcceptIssueRequestHandler
+from errata.handlers.moderation.reject import RejectIssueRequestHandler

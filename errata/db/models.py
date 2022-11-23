@@ -1,14 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-.. module:: db.models.py
-   :license: GPL/CeCIL
-   :platform: Unix
-   :synopsis: ES-DOC Errata - db tables.
-
-.. moduleauthor:: Atef Bennasser <abenasser@ipsl.jussieu.fr>
-
-
-"""
 import collections
 import datetime as dt
 import uuid
@@ -29,9 +18,18 @@ from errata.utils import convertor
 from errata.utils.constants import *
 
 
-
 # Database schema.
 _SCHEMA = 'errata'
+
+# Issue status enumeration.
+_MODERATION_STATUS_ENUM = Enum(
+    MODERATION_STATUS_ACCEPTED,
+    MODERATION_STATUS_IN_REVIEW,
+    MODERATION_STATUS_NOT_REQUIRED,
+    MODERATION_STATUS_REJECTED,
+    schema=_SCHEMA,
+    name="IssueModerationEnum"
+    )
 
 # Issue status enumeration.
 _STATUS_ENUM = Enum(
@@ -99,6 +97,7 @@ class Issue(Entity):
     description = Column(Text, nullable=False)
     severity = Column(_SEVERITY_ENUM, nullable=False)
     status = Column(_STATUS_ENUM, nullable=False)
+    status_moderation = Column(_MODERATION_STATUS_ENUM, nullable=False)
 
     # Tracking columns.
     created_by = Column(Unicode(511))
