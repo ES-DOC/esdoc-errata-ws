@@ -31,6 +31,9 @@ class RetrieveIssueRequestHandler(tornado.web.RequestHandler):
 
         """
         self.set_header(constants.HTTP_HEADER_Access_Control_Allow_Origin, "*")
+        self.set_header("Access-Control-Allow-Headers", "x-requested-with")
+        self.set_header("Access-Control-Allow-Headers", "content-type, Authorization")
+        self.set_header('Access-Control-Allow-Methods', 'GET')
 
 
     def get(self):

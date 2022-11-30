@@ -22,7 +22,7 @@ from errata.db.models import PIDServiceTask
 
 
 
-def create_issue(obj, user_id):
+def create_issue(obj, user_id, user_is_authenticated = True):
     """Returns set of db entities created when processing a new issue.
 
     :param dict obj: Over the wire dictionary representation (i.e. coming from client).
@@ -42,9 +42,13 @@ def create_issue(obj, user_id):
     issue.title = obj[JF_TITLE].strip()
     issue.uid = obj[JF_UID].strip()
 
+    issue.status_moderation = MODERATION_STATUS_NOT_REQUIRED
+
     # Issue - tracking info.
     issue.created_by = user_id
     issue.created_date = dt.datetime.utcnow()
+
+    print(issue)
 
     return [issue] + _get_resources(issue, obj) + _get_facets(issue, obj) + _get_pid_tasks(issue, obj)
 
