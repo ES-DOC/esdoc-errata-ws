@@ -1,0 +1,14 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "additionalProperties": true,
+    "properties": {
+        "Authorization": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "Authorization"
+    ],
+    "title": "ES-DOC errata JSON schema: endpoint = /1/issue/reject",
+    "type": "object"
+}

@@ -66,7 +66,7 @@ class RejectIssueRequestHandler(tornado.web.RequestHandler):
             """Rejects issue under moderation.
 
             """
-            pass
+            self.issue.status_moderation = constants.MODERATION_STATUS_REJECTED
 
 
         # Process request.
@@ -74,6 +74,6 @@ class RejectIssueRequestHandler(tornado.web.RequestHandler):
             process_request(self, [
                 _validate_issue_exists,
                 _validate_user_access,
-                _validate_issue_status,
+                # _validate_issue_status,
                 _reject_issue
                 ])

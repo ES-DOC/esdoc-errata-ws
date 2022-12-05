@@ -66,7 +66,7 @@ class ExtendIssueRequestHandler(tornado.web.RequestHandler):
             """Extends issue moderation time window.
 
             """
-            pass
+            print(666)
 
 
         # Process request.
@@ -74,6 +74,6 @@ class ExtendIssueRequestHandler(tornado.web.RequestHandler):
             process_request(self, [
                 _validate_issue_exists,
                 _validate_user_access,
-                _validate_issue_status,
+                # _validate_issue_status,
                 _extend_issue
                 ])

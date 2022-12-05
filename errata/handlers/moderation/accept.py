@@ -51,22 +51,11 @@ class AcceptIssueRequestHandler(tornado.web.RequestHandler):
                 authorize(self.user_id, self.issue.project, self.issue.institute)
 
 
-        def _validate_issue_status():
-            """Validates that issue status allows it to be rejected.
-
-            """
-            if self.issue.status in {
-                constants.STATUS_ON_HOLD,
-                constants.STATUS_NEW
-                }:
-                raise exceptions.IssueStatusChangeError()
-
-
         def _accept_issue():
             """Accepts issue under moderation.
 
             """
-            pass
+            self.issue.status_moderation = constants.MODERATION_STATUS_ACCEPTED
 
 
         # Process request.
@@ -74,6 +63,5 @@ class AcceptIssueRequestHandler(tornado.web.RequestHandler):
             process_request(self, [
                 _validate_issue_exists,
                 _validate_user_access,
-                _validate_issue_status,
                 _accept_issue
                 ])
