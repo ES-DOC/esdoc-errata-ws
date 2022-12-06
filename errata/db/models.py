@@ -22,40 +22,40 @@ from errata.utils.constants import *
 _SCHEMA = 'errata'
 
 # Issue status enumeration.
-_MODERATION_STATUS_ENUM = Enum(
-    MODERATION_STATUS_ACCEPTED,
-    MODERATION_STATUS_IN_REVIEW,
-    MODERATION_STATUS_NOT_REQUIRED,
-    MODERATION_STATUS_REJECTED,
+_ISSUE_MODERATION_ENUM = Enum(
+    ISSUE_MODERATION_ACCEPTED,
+    ISSUE_MODERATION_IN_REVIEW,
+    ISSUE_MODERATION_NOT_REQUIRED,
+    ISSUE_MODERATION_REJECTED,
     schema=_SCHEMA,
     name="IssueModerationEnum"
     )
 
 # Issue status enumeration.
-_STATUS_ENUM = Enum(
-    STATUS_NEW,
-    STATUS_ON_HOLD,
-    STATUS_RESOLVED,
-    STATUS_WONT_FIX,
+_ISSUE_STATUS_ENUM = Enum(
+    ISSUE_STATUS_NEW,
+    ISSUE_STATUS_ON_HOLD,
+    ISSUE_STATUS_RESOLVED,
+    ISSUE_STATUS_WONT_FIX,
     schema=_SCHEMA,
     name="IssueWorkflowEnum"
     )
 
 # Issue severity enumeration.
-_SEVERITY_ENUM = Enum(
-    SEVERITY_LOW,
-    SEVERITY_MEDIUM,
-    SEVERITY_HIGH,
-    SEVERITY_CRITICAL,
+_ISSUE_SEVERITY_ENUM = Enum(
+    ISSUE_SEVERITY_LOW,
+    ISSUE_SEVERITY_MEDIUM,
+    ISSUE_SEVERITY_HIGH,
+    ISSUE_SEVERITY_CRITICAL,
     schema=_SCHEMA,
     name="IssueSeverityEnum"
     )
 
 # Issue resource type enumeration.
-_RESOURCE_TYPE_ENUM = Enum(
-    RESOURCE_TYPE_URL,
-    RESOURCE_TYPE_MATERIAL,
-    RESOURCE_TYPE_DATASET,
+_ISSUE_RESOURCE_ENUM = Enum(
+    ISSUE_RESOURCE_URL,
+    ISSUE_RESOURCE_MATERIAL,
+    ISSUE_RESOURCE_DATASET,
     schema=_SCHEMA,
     name="IssueResourceTypeEnum"
     )
@@ -95,9 +95,10 @@ class Issue(Entity):
     uid = Column(Unicode(63), nullable=False, unique=True, default=uuid.uuid4())
     title = Column(Unicode(255), nullable=False)
     description = Column(Text, nullable=False)
-    severity = Column(_SEVERITY_ENUM, nullable=False)
-    status = Column(_STATUS_ENUM, nullable=False)
-    status_moderation = Column(_MODERATION_STATUS_ENUM, nullable=False)
+    severity = Column(_ISSUE_SEVERITY_ENUM, nullable=False)
+    status = Column(_ISSUE_STATUS_ENUM, nullable=False)
+    ISSUE_MODERATION_ = Column(_ISSUE_MODERATION_ENUM, nullable=False)
+    moderation_window = Column(DateTime, nullable=False, default=dt.datetime.utcnow)
 
     # Tracking columns.
     created_by = Column(Unicode(511))
@@ -132,9 +133,9 @@ class Issue(Entity):
 
         obj = convertor.to_dict(self)
         obj['facets'] = _get_facets()
-        obj['datasets'] = _get_reources(RESOURCE_TYPE_DATASET)
-        obj['materials'] = _get_reources(RESOURCE_TYPE_MATERIAL)
-        obj['urls'] = _get_reources(RESOURCE_TYPE_URL)
+        obj['datasets'] = _get_reources(ISSUE_RESOURCE_DATASET)
+        obj['materials'] = _get_reources(ISSUE_RESOURCE_MATERIAL)
+        obj['urls'] = _get_reources(ISSUE_RESOURCE_URL)
 
         return obj
 
@@ -182,7 +183,7 @@ class IssueResource(Entity):
 
     # Column definitions.
     issue_uid = Column(Unicode(63), ForeignKey('{}.tbl_issue.uid'.format(_SCHEMA)), nullable=False)
-    resource_type = Column(_RESOURCE_TYPE_ENUM, nullable=False)
+    resource_type = Column(_ISSUE_RESOURCE_ENUM, nullable=False)
     resource_location = Column(Unicode(1023), nullable=False)
 
 

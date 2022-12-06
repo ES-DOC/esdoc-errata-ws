@@ -32,6 +32,7 @@ _GH_API_USER = "https://api.github.com/user"
 _GH_TEAMS = {
     'cdf2cim-publication': 2375689,
     'documentation-publication': 2375693,
+    'errata-moderation': 7098570,
     'errata-publication': 2375691,
 
     'cmip5-bcc': 2567241,

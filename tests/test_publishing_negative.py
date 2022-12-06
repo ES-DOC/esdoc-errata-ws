@@ -169,7 +169,7 @@ def _callback_08(issue, field):
 
 def _callback_09(issue, _):
     """Set status field to an invalid value."""
-    issue['status'] = STATUS_NEW
+    issue['status'] = ISSUE_STATUS_NEW
 
 
 def _assert_bad_ws_response(response):

@@ -114,7 +114,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             """
             # if self.issue.institute != get_institute(self.request.data):
             #     raise exceptions.IssueImmutableAttributeError('institute')
-            for attr in IMMUTABLE_ISSUE_ATTRIBUTES:
+            for attr in ISSUE_IMMUTABLE_ATTRIBUTES:
                 if self.request.data[attr].lower() != getattr(self.issue, attr).lower():
                     raise exceptions.IssueImmutableAttributeError(attr)
 
@@ -123,7 +123,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             """Validates that issue status allows it to be updated.
 
             """
-            if self.issue.status != STATUS_NEW and self.request.data[JF_STATUS] == STATUS_NEW:
+            if self.issue.status != ISSUE_STATUS_NEW and self.request.data[JF_STATUS] == ISSUE_STATUS_NEW:
                 raise exceptions.IssueStatusChangeError()
 
 

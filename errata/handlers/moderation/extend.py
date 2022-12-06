@@ -56,8 +56,8 @@ class ExtendIssueRequestHandler(tornado.web.RequestHandler):
 
             """
             if self.issue.status in {
-                constants.STATUS_ON_HOLD,
-                constants.STATUS_NEW
+                constants.ISSUE_STATUS_ON_HOLD,
+                constants.ISSUE_STATUS_NEW
                 }:
                 raise exceptions.IssueStatusChangeError()
 
@@ -66,7 +66,7 @@ class ExtendIssueRequestHandler(tornado.web.RequestHandler):
             """Extends issue moderation time window.
 
             """
-            print(666)
+            self.issue.moderation_window += dt.timedelta(weeks=2)
 
 
         # Process request.

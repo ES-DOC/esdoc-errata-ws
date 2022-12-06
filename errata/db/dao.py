@@ -66,7 +66,7 @@ def get_datasets(issue_uid):
 
     """
     qry = query(IssueResource)
-    qry = qry.filter(IssueResource.resource_type == RESOURCE_TYPE_DATASET)
+    qry = qry.filter(IssueResource.resource_type == ISSUE_RESOURCE_DATASET)
     if issue_uid is not None:
         qry = text_filter(qry, IssueResource.issue_uid, issue_uid)
 

@@ -55,7 +55,7 @@ class AcceptIssueRequestHandler(tornado.web.RequestHandler):
             """Accepts issue under moderation.
 
             """
-            self.issue.status_moderation = constants.MODERATION_STATUS_ACCEPTED
+            self.issue.ISSUE_MODERATION_ = constants.ISSUE_MODERATION_ACCEPTED
 
 
         # Process request.

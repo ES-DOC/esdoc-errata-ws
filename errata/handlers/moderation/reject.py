@@ -56,8 +56,8 @@ class RejectIssueRequestHandler(tornado.web.RequestHandler):
 
             """
             if self.issue.status in {
-                constants.STATUS_ON_HOLD,
-                constants.STATUS_NEW
+                constants.ISSUE_STATUS_ON_HOLD,
+                constants.ISSUE_STATUS_NEW
                 }:
                 raise exceptions.IssueStatusChangeError()
 
@@ -66,7 +66,7 @@ class RejectIssueRequestHandler(tornado.web.RequestHandler):
             """Rejects issue under moderation.
 
             """
-            self.issue.status_moderation = constants.MODERATION_STATUS_REJECTED
+            self.issue.ISSUE_MODERATION_ = constants.ISSUE_MODERATION_REJECTED
 
 
         # Process request.

@@ -35,6 +35,7 @@ def create_issue(obj, user_id, user_is_authenticated = True):
     # Issue - core fields.
     issue = Issue()
     issue.description = obj[JF_DESCRIPTION].strip()
+    issue.ISSUE_MODERATION_ = ISSUE_MODERATION_NOT_REQUIRED
     issue.project = obj[JF_PROJECT].lower()
     issue.institute = get_institute(obj)
     issue.severity = obj[JF_SEVERITY].lower()
@@ -42,13 +43,9 @@ def create_issue(obj, user_id, user_is_authenticated = True):
     issue.title = obj[JF_TITLE].strip()
     issue.uid = obj[JF_UID].strip()
 
-    issue.status_moderation = MODERATION_STATUS_NOT_REQUIRED
-
     # Issue - tracking info.
     issue.created_by = user_id
     issue.created_date = dt.datetime.utcnow()
-
-    print(issue)
 
     return [issue] + _get_resources(issue, obj) + _get_facets(issue, obj) + _get_pid_tasks(issue, obj)
 
@@ -112,9 +109,9 @@ def _get_resources(issue, obj):
     """
     resources = []
     for typeof, locations in (
-        (RESOURCE_TYPE_DATASET, obj[JF_DATASETS]),
-        (RESOURCE_TYPE_MATERIAL, obj.get(JF_MATERIALS, [])),
-        (RESOURCE_TYPE_URL, obj.get(JF_URLS, [])),
+        (ISSUE_RESOURCE_DATASET, obj[JF_DATASETS]),
+        (ISSUE_RESOURCE_MATERIAL, obj.get(JF_MATERIALS, [])),
+        (ISSUE_RESOURCE_URL, obj.get(JF_URLS, [])),
         ):
         for location in locations:
             resource = IssueResource()

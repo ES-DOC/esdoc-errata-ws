@@ -10,13 +10,15 @@
 
 """
 from errata.utils import config
+from errata.utils import constants
 from errata.utils import logger
 from errata.utils import security
 
 
 
-# GitHub team name.
-_GH_TEAM = 'errata-publication'
+# GitHub team names.
+_GH_TEAM_PUBLICATION = 'errata-publication'
+_GH_TEAM_MODERATION = 'errata-moderation'
 
 # Set of whitelisted endpoints.
 _WHITELISTED_ENDPOINTS = {
@@ -69,8 +71,38 @@ def authorize(user_id, project_id, institute_id):
 
     """
     # User must be a member of errata-publication team.
-    logger.log_web('Authorizing: {} --> {}'.format(user_id, _GH_TEAM))
-    security.authorize_user(_GH_TEAM, user_id)
+    logger.log_web('Authorizing: {} --> {}'.format(user_id, _GH_TEAM_PUBLICATION))
+    security.authorize_user(_GH_TEAM_PUBLICATION, user_id)
+
+    # User must be a member of {project}-{institute} specific team, e.g. cmip6-ipsl.
+    logger.log_web('Authorizing: {} --> {}-{}'.format(user_id, project_id, institute_id))
+    security.authorize_user('{}-{}'.format(project_id, institute_id), user_id)
+
+
+def authorize_moderation(user_id, project_id, institute_id):
+    """Authorizes user against errata-moderation GitHub team membership api.
+
+    :param str user_id: GitHub username.
+    :param str project_id: Project identifier, e.g. cmip6.
+    :param str institute_id: Institute identifier, e.g. ipsl.
+
+    """
+    # User must be a member of errata-moderation team.
+    logger.log_web('Authorizing: {} --> {}'.format(user_id, _GH_TEAM_MODERATION))
+    security.authorize_user(_GH_TEAM_MODERATION, user_id)
+
+
+def authorize_publication(user_id, project_id, institute_id):
+    """Authorizes user against errata-publication GitHub team membership api.
+
+    :param str user_id: GitHub username.
+    :param str project_id: Project identifier, e.g. cmip6.
+    :param str institute_id: Institute identifier, e.g. ipsl.
+
+    """
+    # User must be a member of errata-publication team.
+    logger.log_web('Authorizing: {} --> {}'.format(user_id, _GH_TEAM_PUBLICATION))
+    security.authorize_user(_GH_TEAM_PUBLICATION, user_id)
 
     # User must be a member of {project}-{institute} specific team, e.g. cmip6-ipsl.
     logger.log_web('Authorizing: {} --> {}-{}'.format(user_id, project_id, institute_id))
@@ -101,3 +133,4 @@ def secure_request(handler):
 
     # Make user-id available downstream.
     handler.user_id = credentials[0]
+    handler.user_type = "MODERATOR"

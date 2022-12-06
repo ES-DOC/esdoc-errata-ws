@@ -44,7 +44,7 @@ def create_issue_dict():
         JF_MATERIALS: _get_materials(),
         JF_PROJECT: project_id,
         JF_SEVERITY: pyessv.load_random('esdoc:errata:severity'),
-        JF_STATUS: STATUS_NEW,
+        JF_STATUS: ISSUE_STATUS_NEW,
         JF_TITLE: unicode(uuid.uuid4()),
         JF_UID: unicode(uuid.uuid4()),
         JF_URLS: ['https://es-doc.org/cmip6-dataset-errata']
