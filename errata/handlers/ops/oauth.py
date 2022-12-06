@@ -100,7 +100,7 @@ class CallbackRequestHandler(tornado.web.RequestHandler):
             expires_days=_COOKIE_EXPIRATION_IN_DAYS
             )
 
-        print(gh_user['login'].strip(), http_security.get_user_role(gh_user['login'].strip()))
+        # Set client access to user role.
         self.set_cookie(
             'errata-user-role',
             http_security.get_user_role(gh_user['login'].strip())
