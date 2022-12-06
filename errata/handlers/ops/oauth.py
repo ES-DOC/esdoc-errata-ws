@@ -19,6 +19,7 @@ from requests_oauthlib import OAuth2Session
 
 import errata
 from errata.utils import config
+from errata.utils import http_security
 from errata.utils.http import process_request
 
 
@@ -99,6 +100,12 @@ class CallbackRequestHandler(tornado.web.RequestHandler):
             expires_days=_COOKIE_EXPIRATION_IN_DAYS
             )
 
+        print(gh_user['login'].strip(), http_security.get_user_role(gh_user['login'].strip()))
+        self.set_cookie(
+            'errata-user-role',
+            http_security.get_user_role(gh_user['login'].strip())
+            )
+
         # Set XSRF header.
         self.set_header('X-XSRFToken', self.xsrf_token)            
 
@@ -110,6 +117,7 @@ def _encode_credentials(user, token):
     """Encodes credentials for later use.
 
     """
-    result = '{}:{}'.format(user['login'].strip(), token['access_token'].strip())
+    user_id = user['login'].strip()
+    access_token = token['access_token'].strip()
 
-    return base64.encodestring(result)
+    return base64.encodestring('{}:{}'.format(user_id, access_token))

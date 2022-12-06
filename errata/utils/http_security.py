@@ -113,6 +113,26 @@ def authorize_publication(user_id, project_id, institute_id):
     security.authorize_user('{}-{}'.format(project_id, institute_id), user_id)
 
 
+def get_user_role(user_id):
+    """Returns user's application role.
+
+    :param str user_id: GitHub username.
+    :returns: User role type.
+
+    """
+    try:
+        security.authorize_user(_GH_TEAM_MODERATION, user_id)
+    except security.AuthorizationError:
+        try:
+            security.authorize_user(_GH_TEAM_PUBLICATION, user_id)
+        except security.AuthorizationError:
+            return constants.USER_ROLE_ANONYMOUS
+        else:
+            return constants.USER_ROLE_AUTHOR
+    else:
+        return constants.USER_ROLE_MODERATOR
+
+
 def secure_request(handler):
     """Enforces request level security policy (if necessary).
 

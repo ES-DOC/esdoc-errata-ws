@@ -65,7 +65,6 @@ def _get_app_settings():
     """
     return {
         "cookie_secret": config.cookie_secret,
-        # "cookie_secret": os.urandom(24),
         "compress_response": True,
         "static_path": config.staticFilePath,
         "xsrf_cookies": True
