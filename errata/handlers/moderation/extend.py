@@ -6,6 +6,7 @@ from errata import db
 from errata.utils import config
 from errata.utils import constants
 from errata.utils import exceptions
+from errata.utils import http_security
 from errata.utils.http import process_request
 from errata.utils.http_security import authorize
 
@@ -48,18 +49,7 @@ class ExtendIssueRequestHandler(tornado.web.RequestHandler):
 
             """
             if config.apply_security_policy:
-                authorize(self.user_id, self.issue.project, self.issue.institute)
-
-
-        def _validate_issue_status():
-            """Validates that issue status allows it to be rejected.
-
-            """
-            if self.issue.status in {
-                constants.ISSUE_STATUS_ON_HOLD,
-                constants.ISSUE_STATUS_NEW
-                }:
-                raise exceptions.IssueStatusChangeError()
+                http_security.authorize_moderation(self.user_id, self.issue.project, self.issue.institute)
 
 
         def _extend_issue():
@@ -74,6 +64,5 @@ class ExtendIssueRequestHandler(tornado.web.RequestHandler):
             process_request(self, [
                 _validate_issue_exists,
                 _validate_user_access,
-                # _validate_issue_status,
                 _extend_issue
                 ])

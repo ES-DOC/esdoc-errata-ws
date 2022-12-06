@@ -10,7 +10,7 @@
 
 """
 from errata.utils import logger
-from errata.utils.constants import *
+from errata.utils import constants
 from errata.utils.convertor import to_dict
 from errata.utils.convertor import to_camel_case
 from errata.utils.exceptions import ERROR_CODES
@@ -19,7 +19,7 @@ from errata.utils.http_validator import validate_request
 
 
 
-def process_request(handler, tasks, error_tasks=None):
+def process_request(handler, tasks_exec, tasks_error=None):
     """Invokes a set of HTTP request processing tasks.
 
     :param HTTPRequestHandler handler: Request processing handler.
@@ -27,22 +27,56 @@ def process_request(handler, tasks, error_tasks=None):
     :param list error_tasks: Collection of error processing tasks.
 
     """
-    # Extend tasksets.
-    tasks = _get_tasks([_log_begin, secure_request, validate_request], tasks, [_log_success, _write_success])
-    error_tasks = _get_tasks([], error_tasks or [], [_log_error, write_error])
+    # Set execution tasks.
+    tasks_exec_pre = [_log_begin, secure_request, validate_request]
+    tasks_exec_post = [_log_success, _write_success]
+    tasks_exec = _get_tasks(tasks_exec_pre, tasks_exec, tasks_exec_post)
+
+    # Set error tasks.
+    tasks_error_pre = []
+    tasks_error_post = [_log_error, write_error]
+    tasks_error = _get_tasks(tasks_error_pre, tasks_error or [], tasks_error_post)
 
     # Invoke tasksets.
-    for task in tasks:
+    for task in tasks_exec:
         try:
             _invoke_task(handler, task)
         except Exception as err:
             try:
-                for task in error_tasks:
+                for task in tasks_error:
                     _invoke_task(handler, task, err)
             except:
                 # suppress error processing exceptions
                 pass
             break
+
+
+def _get_tasks(tasks_pre, tasks, tasks_post):
+    """Returns formatted & extended taskset.
+
+    """
+    try:
+        iter(tasks)
+    except TypeError:
+        tasks = [tasks]
+
+    return tasks_pre + tasks + tasks_post
+
+
+def _invoke_task(handler, task, err=None):
+    """Invokes a task.
+
+    """
+    try:
+        if err:
+            task(handler, err)
+        else:
+            task(handler)
+    except TypeError as te:
+        if err:
+            task(err)
+        else:
+            task()
 
 
 def _log(handler, msg, is_error=False):
@@ -170,7 +204,7 @@ def write_error(handler, error):
     try:
         handler.set_status(error.response_code)
     except AttributeError:
-        handler.set_status(HTTP_RESPONSE_SERVER_ERROR)
+        handler.set_status(constants.HTTP_RESPONSE_SERVER_ERROR)
 
 
 def _write_success(handler):
@@ -198,31 +232,3 @@ def _write_success(handler):
         del handler.output
     except AttributeError:
         pass
-
-
-def _get_tasks(pre_tasks, tasks, post_tasks):
-    """Returns formatted & extended taskset.
-
-    """
-    try:
-        iter(tasks)
-    except TypeError:
-        tasks = [tasks]
-
-    return pre_tasks + tasks + post_tasks
-
-
-def _invoke_task(handler, task, err=None):
-    """Invokes a task.
-
-    """
-    try:
-        if err:
-            task(handler, err)
-        else:
-            task(handler)
-    except TypeError as te:
-        if err:
-            task(err)
-        else:
-            task()

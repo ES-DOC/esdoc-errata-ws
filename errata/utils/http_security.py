@@ -1,14 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-.. module:: utils.http_security.py
-   :license: GPL/CeCIL
-   :platform: Unix
-   :synopsis: Miscellaneous utility functions.
-
-.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
-
-
-"""
 from errata.utils import config
 from errata.utils import constants
 from errata.utils import logger
@@ -70,13 +59,28 @@ def authorize(user_id, project_id, institute_id):
     :param str institute_id: Institute identifier, e.g. ipsl.
 
     """
-    # User must be a member of errata-publication team.
-    logger.log_web('Authorizing: {} --> {}'.format(user_id, _GH_TEAM_PUBLICATION))
-    security.authorize_user(_GH_TEAM_PUBLICATION, user_id)
+    # Authorize moderators.
+    try:
+        # ... user must be member of team: errata-moderation.
+        logger.log_web('Authorizing: {} --> {}'.format(user_id, _GH_TEAM_MODERATION))
+        security.authorize_user(_GH_TEAM_MODERATION, user_id)
+    except security.AuthorizationError:
+        pass
+    else:
+        return constants.USER_ROLE_MODERATOR
 
-    # User must be a member of {project}-{institute} specific team, e.g. cmip6-ipsl.
-    logger.log_web('Authorizing: {} --> {}-{}'.format(user_id, project_id, institute_id))
-    security.authorize_user('{}-{}'.format(project_id, institute_id), user_id)
+    # Authorize publishers.
+    try:
+        # ... user must be member of team: errata-publication.
+        logger.log_web('Authorizing: {} --> {}'.format(user_id, _GH_TEAM_PUBLICATION))
+        security.authorize_user(_GH_TEAM_PUBLICATION, user_id)
+        # ... user must be member of team: {project}-{institute}.
+        logger.log_web('Authorizing: {} --> {}-{}'.format(user_id, project_id, institute_id))
+        security.authorize_user('{}-{}'.format(project_id, institute_id), user_id)
+    except security.AuthorizationError as err:
+        raise err
+    else:
+        return constants.USER_ROLE_AUTHOR
 
 
 def authorize_moderation(user_id, project_id, institute_id):
@@ -122,7 +126,7 @@ def secure_request(handler):
     # Set credentials - either from web-form or cli client.
     credentials = handler.get_secure_cookie('errata-oauth-credentials') or \
                   handler.request.headers['Authorization']
-
+    
     # Strip credentials - i.e. destructure from b64 --> 2 member tuple.
     credentials = security.strip_credentials(credentials)
 
@@ -133,4 +137,3 @@ def secure_request(handler):
 
     # Make user-id available downstream.
     handler.user_id = credentials[0]
-    handler.user_type = "MODERATOR"

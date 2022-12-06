@@ -6,8 +6,8 @@ from errata import db
 from errata.utils import config
 from errata.utils import constants
 from errata.utils import exceptions
+from errata.utils import http_security
 from errata.utils.http import process_request
-from errata.utils.http_security import authorize
 
 
 # Query parameter names.
@@ -48,25 +48,14 @@ class RejectIssueRequestHandler(tornado.web.RequestHandler):
 
             """
             if config.apply_security_policy:
-                authorize(self.user_id, self.issue.project, self.issue.institute)
-
-
-        def _validate_issue_status():
-            """Validates that issue status allows it to be rejected.
-
-            """
-            if self.issue.status in {
-                constants.ISSUE_STATUS_ON_HOLD,
-                constants.ISSUE_STATUS_NEW
-                }:
-                raise exceptions.IssueStatusChangeError()
+                http_security.authorize_moderation(self.user_id, self.issue.project, self.issue.institute)
 
 
         def _reject_issue():
             """Rejects issue under moderation.
 
             """
-            self.issue.ISSUE_MODERATION_ = constants.ISSUE_MODERATION_REJECTED
+            self.issue.moderation_status = constants.ISSUE_MODERATION_REJECTED
 
 
         # Process request.
@@ -74,6 +63,5 @@ class RejectIssueRequestHandler(tornado.web.RequestHandler):
             process_request(self, [
                 _validate_issue_exists,
                 _validate_user_access,
-                # _validate_issue_status,
                 _reject_issue
                 ])

@@ -6,8 +6,8 @@ from errata import db
 from errata.utils import config
 from errata.utils import constants
 from errata.utils import exceptions
+from errata.utils import http_security
 from errata.utils.http import process_request
-from errata.utils.http_security import authorize
 
 
 # Query parameter names.
@@ -48,14 +48,14 @@ class AcceptIssueRequestHandler(tornado.web.RequestHandler):
 
             """
             if config.apply_security_policy:
-                authorize(self.user_id, self.issue.project, self.issue.institute)
+                http_security.authorize_moderation(self.user_id, self.issue.project, self.issue.institute)
 
 
         def _accept_issue():
             """Accepts issue under moderation.
 
             """
-            self.issue.ISSUE_MODERATION_ = constants.ISSUE_MODERATION_ACCEPTED
+            self.issue.issue_moderation = constants.ISSUE_MODERATION_ACCEPTED
 
 
         # Process request.

@@ -77,5 +77,10 @@ PID_TASK_STATE_COMPLETE = "complete"
 PID_TASK_STATE_ERROR = "error"
 PID_TASK_STATE_QUEUED = "queued"
 
+# User roles.
+USER_ROLE_ANONYMOUS="anonymous"
+USER_ROLE_AUTHOR="author"
+USER_ROLE_MODERATOR="moderator"
+
 # regex
 VERSION_REGEX = r'(?P<version_string>(\.v|#)\d+)$'

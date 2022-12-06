@@ -35,7 +35,7 @@ def create_issue(obj, user_id, user_is_authenticated = True):
     # Issue - core fields.
     issue = Issue()
     issue.description = obj[JF_DESCRIPTION].strip()
-    issue.ISSUE_MODERATION_ = ISSUE_MODERATION_NOT_REQUIRED
+    issue.moderation_status = ISSUE_MODERATION_NOT_REQUIRED
     issue.project = obj[JF_PROJECT].lower()
     issue.institute = get_institute(obj)
     issue.severity = obj[JF_SEVERITY].lower()
