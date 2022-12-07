@@ -60,6 +60,7 @@ An **authenticated** user authorised to perform the following actions:
 
 - Errata - Accept
 - Errata - Edit
+- Errata - Extend Moderation Window
 - Errata - Reject
 - Errata - Search
 - Errata - View
