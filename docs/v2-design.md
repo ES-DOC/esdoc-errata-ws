@@ -150,3 +150,7 @@ In the new system the user interface will be extended to support the moderation 
 
 - New Cron Job
   - Delete rejected errata N days after rejected
+
+## Open Ideas
+
+### Errata -> Reject: Allow moderator to enter a comment.

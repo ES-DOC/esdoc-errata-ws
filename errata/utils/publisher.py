@@ -50,6 +50,38 @@ def create_issue(obj, user_id, user_is_authenticated = True):
     return [issue] + _get_resources(issue, obj) + _get_facets(issue, obj) + _get_pid_tasks(issue, obj)
 
 
+def propose_issue(obj, user_id, user_is_authenticated = True):
+    """Returns set of db entities created when processing a new issue.
+
+    :param dict obj: Over the wire dictionary representation (i.e. coming from client).
+    :param str user_id: ID of user responsible for maintaining issue.
+
+    :returns: List of db entities.
+    :rtype: list
+
+    """
+    # Issue - core fields.
+    issue = Issue()
+    issue.description = obj[JF_DESCRIPTION].strip()
+    issue.moderation_status = ISSUE_MODERATION_NOT_REQUIRED
+    issue.project = obj[JF_PROJECT].lower()
+    issue.institute = get_institute(obj)
+    issue.severity = obj[JF_SEVERITY].lower()
+    issue.status = obj[JF_STATUS].lower()
+    issue.title = obj[JF_TITLE].strip()
+    issue.uid = obj[JF_UID].strip()
+
+    # Issue - tracking info.
+    issue.created_by = user_id
+    issue.created_date = dt.datetime.utcnow()
+
+    return \
+        [issue] + \
+        _get_resources(issue, obj) + \
+        _get_facets(issue, obj) + \
+        _get_pid_tasks(issue, obj)
+
+
 def update_issue(issue, obj, user_id):
     """Updates an issue.
 

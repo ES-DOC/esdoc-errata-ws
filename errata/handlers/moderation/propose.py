@@ -23,13 +23,13 @@ from errata.utils import security
 from errata.utils.constants import *
 from errata.utils.http import process_request
 from errata.utils.http_security import authorize
-from errata.utils.publisher import create_issue
+from errata.utils.publisher import propose_issue
 from errata.utils.publisher import get_institute
 from errata.utils.publisher import get_institutes
 from errata.utils.validation import validate_url
 
 
-class CreateIssueRequestHandler(tornado.web.RequestHandler):
+class ProposeIssueRequestHandler(tornado.web.RequestHandler):
     """issue handler.
 
     """
@@ -38,19 +38,7 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
 
         """
         self.set_header(constants.HTTP_HEADER_Access_Control_Allow_Origin, "*")
-        self.set_header("Access-Control-Allow-Headers", "content-type, Authorization")
         self.set_header('Access-Control-Allow-Methods', 'POST')
-        self.set_header('Access-Control-Allow-Credentials', True)
-        self.set_header('X-XSRFToken', self.xsrf_token)
-
-
-    def options(self):
-        """HTTP OPTIONS handler.
-
-        """
-        self.set_status(204)
-        self.set_default_headers()
-        self.finish()
 
 
     def post(self):
@@ -79,34 +67,6 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
                 raise exceptions.InvalidDatasetIdentifierError(self.request.data[JF_PROJECT])
 
 
-        def _validate_issue_institute():
-            """Validates datasets associated with incoming issue.
-
-            """
-            if len(get_institutes(self.request.data)) != 1:
-                raise exceptions.MultipleInstitutesError()
-
-
-        def _validate_user_access():
-            """Validates user's institutional access rights.
-
-            """
-            if config.apply_security_policy:
-                authorize(self.user_id, self.request.data[JF_PROJECT], get_institute(self.request.data))
-
-
-        def _validate_issue_title():
-            """Validates URL's associated with incoming request.
-
-            """
-            # Check db for existing titles.
-            issue_title = self.request.data[JF_TITLE]
-            with db.session.create():
-                existing_titles = db.dao.get_titles()
-                if issue_title in existing_titles:
-                    raise exceptions.TitleExistsError(issue_title)
-
-
         def _validate_issue_description():
             """Validates URL's associated with incoming request.
             When an issue is created, all descriptions in the db are dumped and compared to the new description.
@@ -124,6 +84,26 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
                         raise exceptions.SimilarIssueDescriptionError(desc[1])
 
 
+        def _validate_issue_institute():
+            """Validates datasets associated with incoming issue.
+
+            """
+            if len(get_institutes(self.request.data)) != 1:
+                raise exceptions.MultipleInstitutesError()
+
+
+        def _validate_issue_title():
+            """Validates URL's associated with incoming request.
+
+            """
+            # Check db for existing titles.
+            issue_title = self.request.data[JF_TITLE]
+            with db.session.create():
+                existing_titles = db.dao.get_titles()
+                if issue_title in existing_titles:
+                    raise exceptions.TitleExistsError(issue_title)
+
+
         def _validate_issue_urls():
             """Validates URL's associated with incoming request.
 
@@ -138,9 +118,12 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             """Persists data to dB.
 
             """
+            print(self.request.data)
+            print(self.request.data["userEmail"])
+
             with db.session.create():
                 # Map request data to db entities.
-                entities = create_issue(self.request.data, self.user_id)
+                entities = propose_issue(self.request.data, self.request.data["userEmail"])
 
                 # Insert issue first so that the foreign keys can be established.
                 db.session.insert(entities[0])
@@ -159,8 +142,6 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             # _validate_issue_description,
             _validate_issue_datasets,
             # _validate_issue_institute,
-            _validate_user_access,
             _validate_issue_urls,
             _persist
         ])
-

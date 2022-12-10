@@ -15,6 +15,7 @@ _WHITELISTED_ENDPOINTS = {
     '/status',
     '/validate-dataset-id',
     '/verify-authorization',
+    '/1/issue/propose',
     '/1/issue/retrieve',
     '/1/issue/retrieve-all',
     '/1/issue/search',

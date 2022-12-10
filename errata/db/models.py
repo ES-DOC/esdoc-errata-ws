@@ -14,6 +14,7 @@ from sqlalchemy import UniqueConstraint
 from sqlalchemy import Enum
 
 from errata.db.utils import Entity
+from errata.utils import config
 from errata.utils import convertor
 from errata.utils.constants import *
 
@@ -97,11 +98,20 @@ class Issue(Entity):
     description = Column(Text, nullable=False)
     severity = Column(_ISSUE_SEVERITY_ENUM, nullable=False)
     status = Column(_ISSUE_STATUS_ENUM, nullable=False)
-    moderation_status = Column(_ISSUE_MODERATION_ENUM, nullable=False)
-    moderation_window = Column(DateTime, nullable=False, default=dt.datetime.utcnow)
+    moderation_status = Column(
+        _ISSUE_MODERATION_ENUM,
+        nullable=False,
+        default=ISSUE_MODERATION_NOT_REQUIRED
+        )
+    moderation_window = Column(
+        DateTime,
+        nullable=False,
+        default=lambda: (dt.datetime.utcnow() + dt.timedelta(days=config.moderation.window_in_days))
+        )
 
     # Tracking columns.
     created_by = Column(Unicode(511))
+    created_by_email = Column(Unicode(511), nullable=True)
     created_date = Column(DateTime, nullable=False, default=dt.datetime.utcnow)
     updated_by = Column(Unicode(511))
     updated_date = Column(DateTime)
@@ -228,3 +238,4 @@ class PIDServiceTask(Entity):
 
         """
         return convertor.to_dict(self)
+
