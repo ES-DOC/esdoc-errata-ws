@@ -22,14 +22,12 @@ from errata.db.models import PIDServiceTask
 
 
 
-def create_issue(obj, user_id, user_is_authenticated = True):
+def create_issue(obj, user_id):
     """Returns set of db entities created when processing a new issue.
 
-    :param dict obj: Over the wire dictionary representation (i.e. coming from client).
-    :param str user_id: ID of user responsible for maintaining issue.
-
+    :param obj: Over the wire dictionary representation (i.e. coming from client).
+    :param user_id: ID of an authenticated user (publisher or moderator).
     :returns: List of db entities.
-    :rtype: list
 
     """
     # Issue - core fields.
@@ -47,23 +45,22 @@ def create_issue(obj, user_id, user_is_authenticated = True):
     issue.created_by = user_id
     issue.created_date = dt.datetime.utcnow()
 
+    # Return issue + associated entities.
     return [issue] + _get_resources(issue, obj) + _get_facets(issue, obj) + _get_pid_tasks(issue, obj)
 
 
-def propose_issue(obj, user_id, user_is_authenticated = True):
+def propose_issue(obj, user_email):
     """Returns set of db entities created when processing a new issue.
 
-    :param dict obj: Over the wire dictionary representation (i.e. coming from client).
-    :param str user_id: ID of user responsible for maintaining issue.
-
+    :param obj: Over the wire dictionary representation (i.e. coming from client).
+    :param user_email: Email of anonymous user.
     :returns: List of db entities.
-    :rtype: list
 
     """
     # Issue - core fields.
     issue = Issue()
     issue.description = obj[JF_DESCRIPTION].strip()
-    issue.moderation_status = ISSUE_MODERATION_NOT_REQUIRED
+    issue.moderation_status = ISSUE_MODERATION_IN_REVIEW
     issue.project = obj[JF_PROJECT].lower()
     issue.institute = get_institute(obj)
     issue.severity = obj[JF_SEVERITY].lower()
@@ -72,7 +69,7 @@ def propose_issue(obj, user_id, user_is_authenticated = True):
     issue.uid = obj[JF_UID].strip()
 
     # Issue - tracking info.
-    issue.created_by = user_id
+    issue.created_by = user_email
     issue.created_date = dt.datetime.utcnow()
 
     return \
@@ -85,9 +82,10 @@ def propose_issue(obj, user_id, user_is_authenticated = True):
 def update_issue(issue, obj, user_id):
     """Updates an issue.
 
-    :param db.models.Issue issue: Issue to be updated.
-    :param dict obj: Over the wire dictionary representation (i.e. coming from client).
-    :param str user_id: ID of user responsible for maintaining issue.
+    :param issue: Issue to be updated.
+    :param obj: Over the wire dictionary representation (i.e. coming from client).
+    :param user_id: ID of an authenticated user (publisher or moderator).
+    :returns: List of db entities.
 
     """
     # Issue - core fields.
@@ -106,9 +104,9 @@ def update_issue(issue, obj, user_id):
 def close_issue(issue, status, user_id):
     """Updates an issue.
 
-    :param db.models.Issue issue: Issue to be updated.
-    :param str status: Issue status.
-    :param str user_id: ID of user responsible for maintaining issue.
+    :param issue: Issue to be closed.
+    :param status: Issue status.
+    :param user_id: ID of an authenticated user (publisher or moderator).
 
     """
     # Issue - core fields.

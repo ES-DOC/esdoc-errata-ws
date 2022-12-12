@@ -111,7 +111,6 @@ class Issue(Entity):
 
     # Tracking columns.
     created_by = Column(Unicode(511))
-    created_by_email = Column(Unicode(511), nullable=True)
     created_date = Column(DateTime, nullable=False, default=dt.datetime.utcnow)
     updated_by = Column(Unicode(511))
     updated_date = Column(DateTime)
