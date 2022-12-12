@@ -26,7 +26,6 @@ class AcceptIssueRequestHandler(tornado.web.RequestHandler):
         """HTTP POST handler.
 
         """
-
         def _validate_issue_exists():
             """Validates that issue exists within dB.
 
