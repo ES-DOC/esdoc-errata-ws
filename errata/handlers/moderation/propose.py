@@ -1,27 +1,16 @@
-# -*- coding: utf-8 -*-
-
-"""
-.. module:: handlers.create.py
-   :license: GPL/CeCIL
-   :platform: Unix
-   :synopsis: ES-DOC Errata - create issue endpoint.
-
-.. module author:: Atef Bennasser <abenasser@ipsl.jussieu.fr>
-
-
-"""
-import tornado
 import re
-import pyessv
 from difflib import SequenceMatcher
+
+import pyessv
+import tornado
 
 from errata import db
 from errata.utils import config
+from errata.utils import constants
 from errata.utils import exceptions
 from errata.utils import http_security
-from errata.utils.constants import *
 from errata.utils.http import process_request
-from errata.utils.publisher import propose_issue
+from errata.utils.publisher import get_proposed_issue_entities
 from errata.utils.publisher import get_institutes
 from errata.utils.validation import validate_url
 
@@ -45,32 +34,35 @@ class ProposeIssueRequestHandler(tornado.web.RequestHandler):
             """Validates datasets associated with incoming issue.
 
             """
-            sanitzed_datasets = [dset.strip().encode('ascii', 'ignore').decode('ascii')
-                                 for dset in self.request.data[JF_DATASETS]]
-            if sanitzed_datasets is None or len(sanitzed_datasets) == 0:
+            # Exception if no usable dataset identifiers.
+            dsets_sanitized = [
+                dset.strip().encode('ascii', 'ignore').decode('ascii')
+                for dset in self.request.data[constants.JF_DATASETS]
+                ]
+            if dsets_sanitized is None or len(dsets_sanitized) == 0:
                 raise exceptions.EmptyDatasetList()
 
-            for dset in sanitzed_datasets:
-                if re.search(VERSION_REGEX, dset) is None:
+            # Exception if dataset version is missing.
+            for dset in dsets_sanitized:
+                if re.search(constants.VERSION_REGEX, dset) is None:
                     raise exceptions.MissingVersionNumber(dset)
 
+            # Exception if pyessv dataset parsing fails.
             try:
                 pyessv.parse_dataset_identifers(
-                    self.request.data[JF_PROJECT],
-                    sanitzed_datasets
+                    self.request.data[constants.JF_PROJECT],
+                    dsets_sanitized
                 )
             except pyessv.TemplateParsingError:
-                raise exceptions.InvalidDatasetIdentifierError(self.request.data[JF_PROJECT])
+                raise exceptions.InvalidDatasetIdentifierError(self.request.data[constants.JF_PROJECT])
 
 
         def _validate_issue_description():
-            """Validates URL's associated with incoming request.
-            When an issue is created, all descriptions in the db are dumped and compared to the new description.
-            The new description needs to be different to existing descriptions by predefined ratio (in ws.conf).
+            """Validates issue description is different to existing descriptions by a predefined ratio.
 
             """
             # Check db for existing descriptions.
-            issue_description = self.request.data[JF_DESCRIPTION]
+            issue_description = self.request.data[constants.JF_DESCRIPTION]
             with db.session.create():
                 existing_descriptions = db.dao.get_descriptions()
                 for desc in existing_descriptions:
@@ -84,6 +76,7 @@ class ProposeIssueRequestHandler(tornado.web.RequestHandler):
             """Validates datasets associated with incoming issue.
 
             """
+            # Exception if data is association >1 institute.
             if len(get_institutes(self.request.data)) != 1:
                 raise exceptions.MultipleInstitutesError()
 
@@ -92,8 +85,8 @@ class ProposeIssueRequestHandler(tornado.web.RequestHandler):
             """Validates URL's associated with incoming request.
 
             """
-            # Check db for existing titles.
-            issue_title = self.request.data[JF_TITLE]
+            # Exception if duplicate title.
+            issue_title = self.request.data[constants.JF_TITLE]
             with db.session.create():
                 existing_titles = db.dao.get_titles()
                 if issue_title in existing_titles:
@@ -104,7 +97,8 @@ class ProposeIssueRequestHandler(tornado.web.RequestHandler):
             """Validates URL's associated with incoming request.
 
             """
-            urls = self.request.data[JF_URLS] + self.request.data[JF_MATERIALS]
+            # Exception if an associated issue URL is invalid.
+            urls = self.request.data[constants.JF_URLS] + self.request.data[constants.JF_MATERIALS]
             urls = [i for i in urls if i]
             for url in urls:
                 validate_url(url)
@@ -114,12 +108,9 @@ class ProposeIssueRequestHandler(tornado.web.RequestHandler):
             """Persists data to dB.
 
             """
-            print(self.request.data)
-            print(self.request.data["userEmail"])
-
             with db.session.create():
                 # Map request data to db entities.
-                entities = propose_issue(self.request.data, self.request.data["userEmail"])
+                entities = get_proposed_issue_entities(self.request.data, self.request.data["userEmail"])
 
                 # Insert issue first so that the foreign keys can be established.
                 db.session.insert(entities[0])

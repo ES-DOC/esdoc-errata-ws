@@ -49,7 +49,7 @@ def create_issue(obj, user_id):
     return [issue] + _get_resources(issue, obj) + _get_facets(issue, obj) + _get_pid_tasks(issue, obj)
 
 
-def propose_issue(obj, user_email):
+def get_proposed_issue_entities(obj, user_email):
     """Returns set of db entities created when processing a new issue.
 
     :param obj: Over the wire dictionary representation (i.e. coming from client).
