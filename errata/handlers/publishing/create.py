@@ -1,26 +1,14 @@
-# -*- coding: utf-8 -*-
-
-"""
-.. module:: handlers.create.py
-   :license: GPL/CeCIL
-   :platform: Unix
-   :synopsis: ES-DOC Errata - create issue endpoint.
-
-.. module author:: Atef Bennasser <abenasser@ipsl.jussieu.fr>
-
-
-"""
-import tornado
 import re
-import pyessv
 from difflib import SequenceMatcher
+
+import pyessv
+import tornado
 
 from errata import db
 from errata.utils import config
 from errata.utils import constants
 from errata.utils import exceptions
-from errata.utils import security
-from errata.utils.constants import *
+from errata.utils import http_security
 from errata.utils.http import process_request
 from errata.utils.http_security import authorize
 from errata.utils.publisher import create_issue
@@ -37,11 +25,7 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
         """Set HTTP headers at the beginning of the request.
 
         """
-        self.set_header(constants.HTTP_HEADER_Access_Control_Allow_Origin, "*")
-        self.set_header("Access-Control-Allow-Headers", "content-type, Authorization")
-        self.set_header('Access-Control-Allow-Methods', 'POST')
-        self.set_header('Access-Control-Allow-Credentials', True)
-        self.set_header('X-XSRFToken', self.xsrf_token)
+        http_security.set_headers(self, True)
 
 
     def options(self):
@@ -62,21 +46,21 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
 
             """
             sanitzed_datasets = [dset.strip().encode('ascii', 'ignore').decode('ascii')
-                                 for dset in self.request.data[JF_DATASETS]]
+                                 for dset in self.request.data[constants.JF_DATASETS]]
             if sanitzed_datasets is None or len(sanitzed_datasets) == 0:
                 raise exceptions.EmptyDatasetList()
 
             for dset in sanitzed_datasets:
-                if re.search(VERSION_REGEX, dset) is None:
+                if re.search(constants.VERSION_REGEX, dset) is None:
                     raise exceptions.MissingVersionNumber(dset)
 
             try:
                 pyessv.parse_dataset_identifers(
-                    self.request.data[JF_PROJECT],
+                    self.request.data[constants.JF_PROJECT],
                     sanitzed_datasets
                 )
             except pyessv.TemplateParsingError:
-                raise exceptions.InvalidDatasetIdentifierError(self.request.data[JF_PROJECT])
+                raise exceptions.InvalidDatasetIdentifierError(self.request.data[constants.JF_PROJECT])
 
 
         def _validate_issue_institute():
@@ -92,7 +76,7 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
 
             """
             if config.apply_security_policy:
-                authorize(self.user_id, self.request.data[JF_PROJECT], get_institute(self.request.data))
+                authorize(self.user_id, self.request.data[constants.JF_PROJECT], get_institute(self.request.data))
 
 
         def _validate_issue_title():
@@ -100,7 +84,7 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
 
             """
             # Check db for existing titles.
-            issue_title = self.request.data[JF_TITLE]
+            issue_title = self.request.data[constants.JF_TITLE]
             with db.session.create():
                 existing_titles = db.dao.get_titles()
                 if issue_title in existing_titles:
@@ -114,7 +98,7 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
 
             """
             # Check db for existing descriptions.
-            issue_description = self.request.data[JF_DESCRIPTION]
+            issue_description = self.request.data[constants.JF_DESCRIPTION]
             with db.session.create():
                 existing_descriptions = db.dao.get_descriptions()
                 for desc in existing_descriptions:
@@ -128,7 +112,7 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
             """Validates URL's associated with incoming request.
 
             """
-            urls = self.request.data[JF_URLS] + self.request.data[JF_MATERIALS]
+            urls = self.request.data[constants.JF_URLS] + self.request.data[constants.JF_MATERIALS]
             urls = [i for i in urls if i]
             for url in urls:
                 validate_url(url)

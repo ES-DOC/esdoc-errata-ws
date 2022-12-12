@@ -1,21 +1,7 @@
-# -*- coding: utf-8 -*-
-
-"""
-.. module:: handlers.search.py
-   :license: GPL/CeCIL
-   :platform: Unix
-   :synopsis: ES-DOC Errata - search issues endpoint.
-
-.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
-
-
-"""
-import collections
-
 import tornado
 
 from errata import db
-from errata.utils import constants
+from errata.utils import http_security
 from errata.utils.http import process_request
 
 
@@ -32,7 +18,7 @@ class IssueSearchRequestHandler(tornado.web.RequestHandler):
         """Set HTTP headers at the beginning of the request.
 
         """
-        self.set_header(constants.HTTP_HEADER_Access_Control_Allow_Origin, "*")
+        http_security.set_headers(self)
 
 
     def get(self):

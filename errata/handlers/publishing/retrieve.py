@@ -1,19 +1,8 @@
-# -*- coding: utf-8 -*-
-
-"""
-.. module:: handlers.retrieve.py
-   :license: GPL/CeCIL
-   :platform: Unix
-   :synopsis: ES-DOC Errata - retrieve issue endpoint.
-
-.. moduleauthor:: Atef Bennasser <abenasser@ipsl.jussieu.fr>
-
-
-"""
 import tornado
 
 from errata import db
 from errata.utils import constants
+from errata.utils import http_security
 from errata.utils.http import process_request
 
 
@@ -23,7 +12,7 @@ _PARAM_UID = 'uid'
 
 
 class RetrieveIssueRequestHandler(tornado.web.RequestHandler):
-    """Retrieve issue request handler.
+    """Publishing retrieve issue handler.
 
     """
     def set_default_headers(self):

@@ -1,15 +1,3 @@
-# -*- coding: utf-8 -*-
-
-"""
-.. module:: handlers.close.py
-   :license: GPL/CeCIL
-   :platform: Unix
-   :synopsis: ES-DOC Errata - close issue endpoint.
-
-.. moduleauthor:: Atef Bennasser <abenasser@ipsl.jussieu.fr>
-
-
-"""
 import datetime as dt
 
 import tornado
@@ -18,6 +6,7 @@ from errata import db
 from errata.utils import config
 from errata.utils import constants
 from errata.utils import exceptions
+from errata.utils import http_security
 from errata.utils.http import process_request
 from errata.utils.http_security import authorize
 from errata.utils.publisher import close_issue
@@ -29,29 +18,29 @@ _PARAM_STATUS = 'status'
 
 
 class CloseIssueRequestHandler(tornado.web.RequestHandler):
-    """issue handler.
+    """Publishing close issue handler.
 
     """
     def set_default_headers(self):
         """Set HTTP headers at the beginning of the request.
 
         """
-        self.set_header(constants.HTTP_HEADER_Access_Control_Allow_Origin, "*")
-        self.set_header("Access-Control-Allow-Headers", "content-type, Authorization")
-        self.set_header('Access-Control-Allow-Methods', 'POST')
-        self.set_header('Access-Control-Allow-Credentials', True)
-        self.set_header('X-XSRFToken', self.xsrf_token)
+        http_security.set_headers(self, True)
+
 
     def options(self):
+        """HTTP OPTIONS handler.
+
+        """
         self.set_status(204)
         self.set_default_headers()
         self.finish()
+
 
     def post(self):
         """HTTP POST handler.
 
         """
-
         def _validate_issue_exists():
             """Validates that issue exists within dB.
 

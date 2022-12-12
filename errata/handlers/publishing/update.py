@@ -1,24 +1,14 @@
-# -*- coding: utf-8 -*-
-
-"""
-.. module:: handlers.update.py
-   :license: GPL/CeCIL
-   :platform: Unix
-   :synopsis: ES-DOC Errata - update issue endpoint.
-
-.. moduleauthor:: Atef Bennasser <abenasser@ipsl.jussieu.fr>
-
-
-"""
-import tornado
 import re
-import pyessv
 from difflib import SequenceMatcher
+
+import pyessv
+import tornado
 
 from errata import db
 from errata.utils import config
+from errata.utils import constants
 from errata.utils import exceptions
-from errata.utils.constants import *
+from errata.utils import http_security
 from errata.utils.http import process_request
 from errata.utils.publisher import get_institute
 from errata.utils.publisher import get_institutes
@@ -28,25 +18,24 @@ from errata.utils.validation import validate_url
 
 
 class UpdateIssueRequestHandler(tornado.web.RequestHandler):
-    """issue handler.
+    """Publishing update issue handler.
 
     """
-
     def set_default_headers(self):
         """Set HTTP headers at the beginning of the request.
 
         """
-        self.set_header(HTTP_HEADER_Access_Control_Allow_Origin, "*")
-        self.set_header("Access-Control-Allow-Headers", "content-type, Authorization")
-        self.set_header('Access-Control-Allow-Methods', 'POST')
-        self.set_header('Access-Control-Allow-Credentials', True)
-        self.set_header('X-XSRFToken', self.xsrf_token)
+        http_security.set_headers(self, True)
 
 
     def options(self):
+        """HTTP OPTIONS handler.
+
+        """
         self.set_status(204)
         self.set_default_headers()
         self.finish()
+
 
     def post(self):
         """HTTP POST handler.
@@ -57,20 +46,20 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
 
             """
             sanitized_datasets = [dt.strip().encode('ascii', 'ignore').decode('ascii')
-                                  for dt in self.request.data[JF_DATASETS]]
+                                  for dt in self.request.data[constants.JF_DATASETS]]
             if sanitized_datasets is None or sanitized_datasets == 0:
                 raise exceptions.EmptyDatasetList()
             else:
                 for dset in sanitized_datasets:
-                    if re.search(VERSION_REGEX, dset) is None:
+                    if re.search(constants.VERSION_REGEX, dset) is None:
                         raise exceptions.MissingVersionNumber(dset)
             try:
                 pyessv.parse_dataset_identifers(
-                    self.request.data[JF_PROJECT],
+                    self.request.data[constants.JF_PROJECT],
                     sanitized_datasets
                     )
             except pyessv.TemplateParsingError:
-                raise exceptions.InvalidDatasetIdentifierError(self.request.data[JF_PROJECT])
+                raise exceptions.InvalidDatasetIdentifierError(self.request.data[constants.JF_PROJECT])
 
 
         def _validate_issue_institute():
@@ -86,23 +75,23 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
 
             """
             if config.apply_security_policy:
-                authorize(self.user_id, self.request.data[JF_PROJECT], get_institute(self.request.data))
+                authorize(self.user_id, self.request.data[constants.JF_PROJECT], get_institute(self.request.data))
 
 
         def _validate_issue_exists():
             """Validates that the issue has been previously posted to the web-service.
 
             """
-            self.issue = db.dao.get_issue(self.request.data[JF_UID])
+            self.issue = db.dao.get_issue(self.request.data[constants.JF_UID])
             if self.issue is None:
-                raise exceptions.UnknownIssueError(self.request.data[JF_UID])
+                raise exceptions.UnknownIssueError(self.request.data[constants.JF_UID])
 
 
         def _validate_issue_urls():
             """Validates URL's associated with incoming request.
 
             """
-            urls = self.request.data[JF_URLS] + self.request.data[JF_MATERIALS]
+            urls = self.request.data[constants.JF_URLS] + self.request.data[constants.JF_MATERIALS]
             urls = [i for i in urls if i]
             for url in urls:
                 validate_url(url)
@@ -114,7 +103,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             """
             # if self.issue.institute != get_institute(self.request.data):
             #     raise exceptions.IssueImmutableAttributeError('institute')
-            for attr in ISSUE_IMMUTABLE_ATTRIBUTES:
+            for attr in constants.ISSUE_IMMUTABLE_ATTRIBUTES:
                 if self.request.data[attr].lower() != getattr(self.issue, attr).lower():
                     raise exceptions.IssueImmutableAttributeError(attr)
 
@@ -123,7 +112,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             """Validates that issue status allows it to be updated.
 
             """
-            if self.issue.status != ISSUE_STATUS_NEW and self.request.data[JF_STATUS] == ISSUE_STATUS_NEW:
+            if self.issue.status != constants.ISSUE_STATUS_NEW and self.request.data[constants.JF_STATUS] == constants.ISSUE_STATUS_NEW:
                 raise exceptions.IssueStatusChangeError()
 
 
@@ -136,8 +125,8 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
 
             """
             # Testing incoming description to db existing descriptions.
-            issue_description = self.request.data[JF_DESCRIPTION]
-            issue_uid = self.request.data[JF_UID]
+            issue_description = self.request.data[constants.JF_DESCRIPTION]
+            issue_uid = self.request.data[constants.JF_UID]
             # Check db for existing descriptions.
             existing_descriptions = db.dao.get_descriptions()
             for desc in existing_descriptions:
@@ -147,7 +136,7 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
                     if s.ratio() > config.allowed_description_similarity_ratio:
                         raise exceptions.SimilarIssueDescriptionError(desc[1])
             # Testing updated description to the db stored original description.
-            issue = db.dao.get_issue(self.request.data[JF_UID])
+            issue = db.dao.get_issue(self.request.data[constants.JF_UID])
             s = SequenceMatcher(None, issue_description, issue.description)
             # Here the test is < since the update description can't be too different from the original one,
             # Otherwise users are asked to create a new issue altogether.
@@ -174,8 +163,8 @@ class UpdateIssueRequestHandler(tornado.web.RequestHandler):
             # Update PID handle errata.
             dsets_new = db.dao.get_datasets(self.issue.uid)
             for action, identifiers in (
-                (PID_ACTION_DELETE, dsets_old - dsets_new),
-                (PID_ACTION_INSERT, dsets_new - dsets_old)
+                (constants.PID_ACTION_DELETE, dsets_old - dsets_new),
+                (constants.PID_ACTION_INSERT, dsets_new - dsets_old)
             ):
                 for identifier in identifiers:
                     task = db.models.PIDServiceTask()
