@@ -17,14 +17,11 @@ from difflib import SequenceMatcher
 
 from errata import db
 from errata.utils import config
-from errata.utils import constants
 from errata.utils import exceptions
-from errata.utils import security
+from errata.utils import http_security
 from errata.utils.constants import *
 from errata.utils.http import process_request
-from errata.utils.http_security import authorize
 from errata.utils.publisher import propose_issue
-from errata.utils.publisher import get_institute
 from errata.utils.publisher import get_institutes
 from errata.utils.validation import validate_url
 
@@ -37,8 +34,7 @@ class ProposeIssueRequestHandler(tornado.web.RequestHandler):
         """Set HTTP headers at the beginning of the request.
 
         """
-        self.set_header(constants.HTTP_HEADER_Access_Control_Allow_Origin, "*")
-        self.set_header('Access-Control-Allow-Methods', 'POST')
+        http_security.set_headers(self, True)
 
 
     def post(self):

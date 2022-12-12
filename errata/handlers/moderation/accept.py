@@ -1,7 +1,4 @@
-import datetime as dt
-
 import tornado
-
 from errata import db
 from errata.utils import config
 from errata.utils import constants
@@ -22,11 +19,7 @@ class AcceptIssueRequestHandler(tornado.web.RequestHandler):
         """Set HTTP headers at the beginning of the request.
 
         """
-        self.set_header(constants.HTTP_HEADER_Access_Control_Allow_Origin, "*")
-        self.set_header("Access-Control-Allow-Headers", "content-type, Authorization")
-        self.set_header('Access-Control-Allow-Methods', 'POST')
-        self.set_header('Access-Control-Allow-Credentials', True)
-        self.set_header('X-XSRFToken', self.xsrf_token)
+        http_security.set_headers(self, True)
 
 
     def post(self):
@@ -44,7 +37,7 @@ class AcceptIssueRequestHandler(tornado.web.RequestHandler):
 
 
         def _validate_user_access():
-            """Validates user's institutional access rights.
+            """Validates user's access rights.
 
             """
             if config.apply_security_policy:
@@ -58,7 +51,7 @@ class AcceptIssueRequestHandler(tornado.web.RequestHandler):
             self.issue.issue_moderation = constants.ISSUE_MODERATION_ACCEPTED
 
 
-        # Process request.
+        # Process request within dB session context.
         with db.session.create(commitable=True):
             process_request(self, [
                 _validate_issue_exists,
