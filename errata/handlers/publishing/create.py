@@ -18,7 +18,7 @@ from errata.utils.validation import validate_url
 
 
 class CreateIssueRequestHandler(tornado.web.RequestHandler):
-    """issue handler.
+    """Publishing create issue handler.
 
     """
     def set_default_headers(self):
