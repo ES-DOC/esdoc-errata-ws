@@ -1,26 +1,22 @@
+import smtplib
+
 from errata.notifications import constants
-from errata.notifications.templates import get_template
+from errata.notifications import templates
 
 
 def dispatch_on_accepted(errata_uid):
-	tmpl = get_template(constants.TMPL_ON_ERRATA_ACCEPTED)
+	email_body = templates.get_on_accepted_template(errata_uid)
 
-	return tmpl.render({
-		"errata_uid": errata_uid
-	})
+	return email_body
 
 
 def dispatch_on_proposed(errata_uid):
-	tmpl = get_template(constants.TMPL_ON_ERRATA_PROPOSED)
+	email_body = templates.get_on_proposed_template(errata_uid)
 
-	return tmpl.render({
-		"errata_uid": errata_uid
-	})
+	return email_body
 
 
 def dispatch_on_rejected(errata_uid):
-	tmpl = get_template(constants.TMPL_ON_ERRATA_REJECTED)
+	email_body = templates.get_on_rejected_template(errata_uid)
 
-	return tmpl.render({
-		"errata_uid": errata_uid
-	})
+	return email_body
