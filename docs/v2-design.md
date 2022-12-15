@@ -154,3 +154,5 @@ In the new system the user interface will be extended to support the moderation 
 ## Open Ideas
 
 ### Errata -> Reject: Allow moderator to enter a comment.
+
+### Errata -> Reject As Spam: Extra function to distinguish between rejecting sincere errata and real spam.

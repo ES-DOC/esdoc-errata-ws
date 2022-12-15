@@ -25,6 +25,7 @@ from errata.db.session import query
 from errata.db.session import raw_query
 from errata.db.utils import as_date_string
 from errata.db.utils import text_filter
+from errata.utils import constants
 from errata.utils.constants import *
 from errata.utils.validation import validate
 
@@ -96,7 +97,7 @@ def get_titles():
 
     """
     qry = raw_query(Issue.title)
-    # return filter(get_first_item(), qry.all())
+    
     return [x[0] for x in qry.all()]
 
 
@@ -107,12 +108,51 @@ def get_descriptions():
 
     """
     qry = raw_query(Issue.description, Issue.uid)
-    # return filter(get_first_item(), qry.all())
+    
     return [(x[0], x[1])for x in qry.all()]
 
 
 @validate(validate_get_issues)
 def get_issues(criteria=None):
+    """Returns collection of matching issues.
+
+    :param list criteria: Map of criteria facet-types to facet-values.
+
+    :returns: List of matching issues.
+    :rtype: list
+
+    """
+    if criteria is None:
+        return query(Issue).all()
+
+    qry = raw_query(
+        Issue.project,
+        Issue.institute,
+        Issue.uid,
+        Issue.title,
+        Issue.severity,
+        Issue.status,
+        as_date_string(Issue.created_date),
+        as_date_string(Issue.closed_date),
+        as_date_string(Issue.updated_date)
+        )
+
+    qry = qry.filter(Issue.moderation_status.in_([
+        constants.ISSUE_MODERATION_ACCEPTED,
+        constants.ISSUE_MODERATION_NOT_REQUIRED
+        ]))
+
+    for item in criteria:
+        sub_qry = query(IssueFacet.issue_uid)
+        sub_qry = sub_qry.filter(IssueFacet.facet_type == ':'.join(item.split(':')[0:3]))
+        sub_qry = text_filter(sub_qry, IssueFacet.facet_value, item.split(':')[-1])
+        qry = qry.filter(Issue.uid.in_(sub_qry))
+    
+    return qry.all()
+
+
+@validate(validate_get_issues)
+def get_issues_for_moderation(criteria=None):
     """Returns collection of matching issues.
 
     :param list criteria: Map of criteria facet-types to facet-values.

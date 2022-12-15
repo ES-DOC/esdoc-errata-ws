@@ -1,0 +1,20 @@
+To Whom It May Concern,
+
+This is an email from the ES-DOC Errata service.  Thank you for submitting a dataset errata proposal.
+
+1.  A moderator has reviewed your proposal and we have the pleasure to inform you that it has been ACCEPTED.  
+
+2.  Your errata can be viewed here:
+
+    http://localhost:5001/static/view.html?uid={{errata_uid}}
+
+3.  Your errata will now appear in the public facing search page:
+
+    http://localhost:5001/static/view.html?uid={{errata_uid}}
+
+
+4.  Thank you for your errata submission.  Your efforts truly help to keep the dataset archive coherent.
+
+Kind Regards,
+
+ES-DOC Errata team
