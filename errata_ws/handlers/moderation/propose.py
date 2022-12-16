@@ -97,7 +97,8 @@ class ProposeIssueRequestHandler(tornado.web.RequestHandler):
                     db.session.insert(entity, auto_commit=False)
                 
                 # Make available downstream.
-                self.issue = entities[0]
+                self.issue_created_by = entities[0].created_by
+                self.issue_uid = entities[0].uid
 
 
         def _notify():
@@ -105,8 +106,8 @@ class ProposeIssueRequestHandler(tornado.web.RequestHandler):
 
             """
             notifications.dispatch_on_proposed(
-                self.issue.created_by,
-                self.issue.uid
+                self.issue_created_by,
+                self.issue_uid
             )
 
 
