@@ -13,24 +13,24 @@ _TEMPLATE_ENV = jinja2.Environment(
 )
 
 
-def get_on_accepted_template(errata_uid):
-	tmpl = _TEMPLATE_ENV.get_template(constants.TMPL_ON_ERRATA_ACCEPTED)
+def get_on_accepted_email_body(errata_uid):
+	tmpl = _TEMPLATE_ENV.get_template(constants.ON_ERRATA_ACCEPTED_EMAIL_BODY_TEMPLATE)
 
 	return tmpl.render({
 		"errata_uid": errata_uid
 	})
 
 
-def get_on_proposed_template(errata_uid):
-	tmpl = _TEMPLATE_ENV.get_template(constants.TMPL_ON_ERRATA_PROPOSED)
+def get_on_proposed_email_body(errata_uid):
+	tmpl = _TEMPLATE_ENV.get_template(constants.ON_ERRATA_PROPOSED_EMAIL_BODY_TEMPLATE)
 
 	return tmpl.render({
 		"errata_uid": errata_uid
 	})
 
 
-def get_on_rejected_template(errata_uid):
-	tmpl = _TEMPLATE_ENV.get_template(constants.TMPL_ON_ERRATA_REJECTED)
+def get_on_rejected_email_body(errata_uid):
+	tmpl = _TEMPLATE_ENV.get_template(constants.ON_ERRATA_REJECTED_EMAIL_BODY_TEMPLATE)
 
 	return tmpl.render({
 		"errata_uid": errata_uid

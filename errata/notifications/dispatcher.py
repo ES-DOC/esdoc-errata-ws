@@ -1,51 +1,81 @@
 import smtplib
+from email.MIMEMultipart import MIMEMultipart
+from email.MIMEText import MIMEText
 
 from errata.notifications import constants
 from errata.notifications import templates
 
 
-
-HOST = "smtp.de.opalstack.com"
-CREDENTIALS = ("errata-moderation", "opalstack@Silence93!")
-PORT_SSL = 465
-PORT_TLS = 587
-SENDER = "errata-moderation@es-doc.org"
-RECIEVERS = "asladeofgreen@gmail.com"
-
-
 def dispatch_on_accepted(email_address, errata_uid):
-	email_body = templates.get_on_accepted_template(errata_uid)
+	"""Dispatches an email upon acceptance of an errata by a moderator.
 	
-	_dispatch(email_address, email_body)
+	:param email_address: Email address of errata proposer.
+	:param errata_uid: Unique identifier of proposed errata.
+
+	"""
+	body = templates.get_on_accepted_email_body(errata_uid)
+	subject = constants.ON_ERRATA_ACCEPTED_EMAIL_SUBJECT
+	msg = _get_message(email_address, body, subject)
+
+	_dispatch(msg)
 
 
 def dispatch_on_proposed(email_address, errata_uid):
-	email_body = templates.get_on_proposed_template(errata_uid)
+	"""Dispatches an email upon proposal of an errata by an anonymous user.
+	
+	:param email_address: Email address of errata proposer.
+	:param errata_uid: Unique identifier of proposed errata.
 
-	_dispatch(email_address, email_body)
+	"""
+	body = templates.get_on_proposed_email_body(errata_uid)
+	subject = constants.ON_ERRATA_PROPOSED_EMAIL_SUBJECT
+	msg = _get_message(email_address, body, subject)
+
+	_dispatch(msg)
 
 
 def dispatch_on_rejected(email_address, errata_uid):
-	email_body = templates.get_on_rejected_template(errata_uid)
+	"""Dispatches an email upon rejection of an errata by a moderator.
+	
+	:param email_address: Email address of errata proposer.
+	:param errata_uid: Unique identifier of proposed errata.
 
-	_dispatch(email_address, email_body)
+	"""
+	body = templates.get_on_rejected_email_body(errata_uid)
+	subject = constants.ON_ERRATA_REJECTED_EMAIL_SUBJECT
+	msg = _get_message(email_address, body, subject)
+
+	_dispatch(msg)
 
 
-def _dispatch(email_address, email_body):
+def _dispatch(msg):
 	"""Dispatches an email message.
 	
 	"""
-	# Connect over TLS port.
-	smtp = smtplib.SMTP(HOST, PORT_TLS)
+	# Open channel over TLS port.
+	smtp = smtplib.SMTP(constants.SMTP_HOST, constants.SMTP_PORT_TLS)
 
 	# Secure contents with TLS encryption.
 	smtp.starttls()
 
-	# Connect.
-	smtp.login(CREDENTIALS[0], CREDENTIALS[1])
+	# Authenticate.
+	smtp.login(constants.SMTP_CREDENTIALS[0], constants.SMTP_CREDENTIALS[1])
 
-	# Dispatch email.
-	smtp.sendmail(SENDER, [email_address], email_body)
-
-	# Close smtp channel.
+	# Dispatch.
+	smtp.sendmail(constants.ADDRESS_MODERATION, msg["To"], msg.as_string())
+	
+	# Close channel.
 	smtp.quit()
+
+
+def _get_message(address, body, subject):
+	"""Returns formatted message ready for dispatch.
+	
+	"""
+	msg = MIMEMultipart()
+	msg["From"] = constants.ADDRESS_MODERATION
+	msg["To"] = address
+	msg["Subject"] = subject
+	msg.attach(MIMEText(body))
+
+	return msg

@@ -1,3 +1,3 @@
-from errata.notifications.templates.accessor import get_on_accepted_template
-from errata.notifications.templates.accessor import get_on_proposed_template
-from errata.notifications.templates.accessor import get_on_rejected_template
+from errata.notifications.templates.accessor import get_on_accepted_email_body
+from errata.notifications.templates.accessor import get_on_proposed_email_body
+from errata.notifications.templates.accessor import get_on_rejected_email_body
