@@ -1,14 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-.. module:: handlers.retrieve.py
-   :license: GPL/CeCIL
-   :platform: Unix
-   :synopsis: ES-DOC Errata - retrieve issue endpoint.
-
-.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
-
-
-"""
 from sqlalchemy import or_
 
 from errata.db.dao_validator import validate_delete_facets

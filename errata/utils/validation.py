@@ -1,15 +1,3 @@
-# -*- coding: utf-8 -*-
-
-"""
-.. module:: utils.validation.py
-   :copyright: @2015 IPSL (http://ipsl.fr)
-   :license: GPL/CeCIL
-   :platform: Unix, Windows
-   :synopsis: Variable validation utilities.
-
-.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
-
-"""
 import uuid
 
 import arrow

@@ -1,15 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-
-.. module:: app.py
-   :license: GPL/CeCIL
-   :platform: Unix
-   :synopsis: ES-DOC Errata - web-service entry point.
-
-.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
-
-
-"""
 import os
 
 import tornado.web

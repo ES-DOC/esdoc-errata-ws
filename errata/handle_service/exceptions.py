@@ -1,14 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-.. module:: handle_service.exceptions.py
-   :license: GPL/CeCIL
-   :platform: Unix
-   :synopsis: Handle service custom exceptions.
-
-.. moduleauthor:: Atef Bennasser <abennasser@ipsl.jussieu.fr>
-
-
-"""
 class UnresolvedAggregationLevel(Exception):
     """Raised if aggregation level found is neither DATASET or FILE.
 

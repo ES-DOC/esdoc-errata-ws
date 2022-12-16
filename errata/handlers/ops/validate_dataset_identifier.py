@@ -1,15 +1,3 @@
-# -*- coding: utf-8 -*-
-
-"""
-.. module:: handlers.ops.credtest.py
-   :license: GPL/CeCIL
-   :platform: Unix
-   :synopsis: ES-DOC Errata - Authentication and authorization test.
-
-.. moduleauthor:: Atef Ben Nasser <abennasser@ipsl.fr>
-
-
-"""
 import tornado
 
 import pyessv

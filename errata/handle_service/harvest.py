@@ -1,14 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-.. module:: handle_service.harvest.py
-   :license: GPL/CeCIL
-   :platform: Unix
-   :synopsis: Handle service harvester.
-
-.. moduleauthor:: Atef Bennasser <abennasser@ipsl.jussieu.fr>
-
-
-"""
 from time import time
 
 from b2handle.handleclient import EUDATHandleClient

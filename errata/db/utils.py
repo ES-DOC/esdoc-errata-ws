@@ -1,14 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-.. module:: db.utils.py
-   :license: GPL/CeCIL
-   :platform: Unix
-   :synopsis: ES-DOC Errata - db utility functions.
-
-.. moduleauthor:: Atef Bennasser <abenasser@ipsl.jussieu.fr>
-
-
-"""
 import datetime as dt
 import random
 

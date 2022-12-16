@@ -1,15 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-
-.. module:: schemas.extender.py
-   :license: GPL/CeCIL
-   :platform: Unix
-   :synopsis: ES-DOC Errata - endpoint validation schema cache extender.
-
-.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
-
-
-"""
 import collections
 
 from errata.utils import constants

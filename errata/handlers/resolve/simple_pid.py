@@ -1,15 +1,3 @@
-# -*- coding: utf-8 -*-
-
-"""
-.. module:: handlers.hs_handler.py
-   :license: GPL/CeCIL
-   :platform: Unix
-   :synopsis: ES-DOC Errata - simple handle search endpoint (without crawler functions).
-
-.. module author:: Atef Bennasser <abenasser@ipsl.jussieu.fr>
-
-
-"""
 import tornado
 
 from errata.handle_service.harvest import harvest_simple_errata

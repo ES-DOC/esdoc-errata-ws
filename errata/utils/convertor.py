@@ -1,14 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-.. module:: utils.convertor.py
-   :license: GPL/CeCIL
-   :platform: Unix
-   :synopsis: Conversion utility functions.
-
-.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
-
-
-"""
 import collections
 import datetime
 import json

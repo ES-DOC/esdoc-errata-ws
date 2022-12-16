@@ -5,6 +5,7 @@ import pyessv
 import tornado
 
 from errata import db
+from errata import notifications
 from errata.utils import config
 from errata.utils import constants
 from errata.utils import exceptions
@@ -57,30 +58,6 @@ class ProposeIssueRequestHandler(tornado.web.RequestHandler):
                 raise exceptions.InvalidDatasetIdentifierError(self.request.data[constants.JF_PROJECT])
 
 
-        def _validate_issue_description():
-            """Validates issue description is different to existing descriptions by a predefined ratio.
-
-            """
-            # Check db for existing descriptions.
-            issue_description = self.request.data[constants.JF_DESCRIPTION]
-            with db.session.create():
-                existing_descriptions = db.dao.get_descriptions()
-                for desc in existing_descriptions:
-                    s = SequenceMatcher(None, issue_description, desc[0])
-                    similarity_ratio = s.ratio()
-                    if similarity_ratio > config.allowed_description_similarity_ratio:
-                        raise exceptions.SimilarIssueDescriptionError(desc[1])
-
-
-        def _validate_issue_institute():
-            """Validates datasets associated with incoming issue.
-
-            """
-            # Exception if data is association >1 institute.
-            if len(get_institutes(self.request.data)) != 1:
-                raise exceptions.MultipleInstitutesError()
-
-
         def _validate_issue_title():
             """Validates URL's associated with incoming request.
 
@@ -108,27 +85,36 @@ class ProposeIssueRequestHandler(tornado.web.RequestHandler):
             """Persists data to dB.
 
             """
-            with db.session.create():
+            with db.session.create(commitable=True):
                 # Map request data to db entities.
                 entities = get_proposed_issue_entities(self.request.data, self.request.data["userEmail"])
 
-                # Insert issue first so that the foreign keys can be established.
+                # Insert errata.
                 db.session.insert(entities[0])
 
-                # Insert facets/resources/pid-tasks.
+                # Insert associated entities (facets/resources/pid-tasks).
                 for entity in entities[1:]:
                     db.session.insert(entity, auto_commit=False)
                 
-                # Commit atomic transation.
-                db.session.commit()
+                # Make available downstream.
+                self.issue = entities[0]
+
+
+        def _notify():
+            """Notifies proposer & moderation team.
+
+            """
+            notifications.dispatch_on_proposed(
+                self.issue.created_by,
+                self.issue.uid
+            )
 
 
         # Process request.
         process_request(self, [
             _validate_issue_title,
-            # _validate_issue_description,
             _validate_issue_datasets,
-            # _validate_issue_institute,
             _validate_issue_urls,
-            _persist
+            _persist,
+            _notify
         ])

@@ -1,15 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-
-.. module:: schemas.cache.py
-   :license: GPL/CeCIL
-   :platform: Unix
-   :synopsis: ES-DOC Errata - endpoint validation schema cache.
-
-.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
-
-
-"""
 import collections
 
 from errata.schemas import loader

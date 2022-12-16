@@ -1,14 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-.. module:: handle_service.crawler.py
-   :license: GPL/CeCIL
-   :platform: Unix
-   :synopsis: Handle service dataset aggregation crawler.
-
-.. moduleauthor:: Atef Ben Nasser <abennasser@ipsl.jussieu.fr>
-
-
-"""
 from errata.handle_service.utils import *
 from errata.handle_service.entities import *
 from errata.utils import logger

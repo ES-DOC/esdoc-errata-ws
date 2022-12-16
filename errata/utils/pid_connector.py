@@ -1,14 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-.. module:: utils.pid_connector.py
-   :license: GPL/CeCIL
-   :platform: Unix
-   :synopsis: Encapsualtes interactions with remote PID service.
-
-.. moduleauthor:: Atef Ben Nasser <abenasser@ipsl.jussieu.fr>
-
-
-"""
 import contextlib
 
 import esgfpid

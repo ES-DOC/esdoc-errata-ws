@@ -1,14 +1,3 @@
-# -*- coding: utf-8 -*-
-
-"""
-.. module:: utils.exceptions.py
-   :platform: Unix
-   :synopsis: Custom exceptions used in this module for better readability of code.
-
-.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
-
-
-"""
 from errata.utils import constants
 from errata.utils import security
 

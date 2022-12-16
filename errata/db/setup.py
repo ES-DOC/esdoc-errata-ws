@@ -1,14 +1,3 @@
-# -*- coding: utf-8 -*-
-
-"""
-.. module:: prodiguer.db.setup.py
-   :platform: Unix
-   :synopsis: Initializes database.
-
-.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
-
-
-"""
 from sqlalchemy.schema import CreateSchema
 from sqlalchemy.schema import DropSchema
 

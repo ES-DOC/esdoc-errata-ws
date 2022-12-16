@@ -1,14 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-.. module:: utils.http.py
-   :license: GPL/CeCIL
-   :platform: Unix
-   :synopsis: HTTP utility functions, particulary process_request.
-
-.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
-
-
-"""
 from errata.utils import logger
 from errata.utils import constants
 from errata.utils.convertor import to_dict

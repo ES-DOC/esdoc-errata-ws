@@ -1,14 +1,3 @@
-# -*- coding: utf-8 -*-
-
-"""
-.. module:: errata.db.session.py
-   :platform: Unix
-   :synopsis: Database session manager.
-
-.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
-
-
-"""
 import contextlib
 import logging
 import os

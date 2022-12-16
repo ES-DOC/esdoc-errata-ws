@@ -1,14 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-.. module:: utils.factory.py
-   :license: GPL/CeCIL
-   :platform: Unix
-   :synopsis: Test issue factory.
-
-.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
-
-
-"""
 import datetime as dt
 import uuid
 

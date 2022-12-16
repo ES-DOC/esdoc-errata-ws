@@ -1,14 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-.. module:: utils.publisher.py
-   :license: GPL/CeCIL
-   :platform: Unix
-   :synopsis: Issue publisher helper functions.
-
-.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
-
-
-"""
 import pyessv
 
 import datetime as dt

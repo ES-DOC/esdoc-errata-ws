@@ -1,15 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-
-.. module:: utils.constants.py
-   :license: GPL/CeCIL
-   :platform: Unix
-   :synopsis: ES-DOC Errata - web-service constants.
-
-.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
-
-
-"""
 # Default endpoint.
 DEFAULT_ENDPOINT = r'/1/ops/heartbeat'
 

@@ -1,14 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-.. module:: utils.config.py
-   :license: GPL/CeCIL
-   :platform: Unix
-   :synopsis: Configuration utility functions.
-
-.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
-
-
-"""
 import os
 import logger
 import json

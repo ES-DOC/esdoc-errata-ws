@@ -1,14 +1,3 @@
-# -*- coding: utf-8 -*-
-
-"""
-.. module:: utils.facet_extractor.py
-   :platform: Unix
-   :synopsis: Encapsulates extraction of facets from dataset identifiers.
-
-.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
-
-
-"""
 import pyessv
 from pyessv.utils.compat import basestring
 

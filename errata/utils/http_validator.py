@@ -1,14 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-.. module:: utils.http_validator.py
-   :license: GPL/CeCIL
-   :platform: Unix
-   :synopsis: HTTP request validation.
-
-.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
-
-
-"""
 import json
 
 import jsonschema

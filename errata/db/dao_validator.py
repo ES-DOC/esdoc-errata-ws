@@ -1,16 +1,3 @@
-# -*- coding: utf-8 -*-
-
-"""
-.. module:: db.dao_validator.py
-   :license: GPL/CeCIL
-   :platform: Unix
-   :synopsis: ES-DOC Errata - db data access validator.
-
-
-.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
-
-
-"""
 import pyessv
 
 from errata.utils import constants

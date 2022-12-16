@@ -1,14 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-.. module:: handle_service.constants.py
-   :license: GPL/CeCIL
-   :platform: Unix
-   :synopsis: Handle service wrapper constants.
-
-.. moduleauthor:: Atef Bennasser <abennasser@ipsl.jussieu.fr>
-
-
-"""
 # Misc
 USERNAME = 'esgf-issue-manager'
 REPO = 'ipsl'

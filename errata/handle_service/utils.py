@@ -1,14 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-.. module:: handle_service.harvest.py
-   :license: GPL/CeCIL
-   :platform: Unix
-   :synopsis: Handle service utility functions.
-
-.. moduleauthor:: Atef Bennasser <abennasser@ipsl.jussieu.fr>
-
-
-"""
 import uuid
 import re
 import requests

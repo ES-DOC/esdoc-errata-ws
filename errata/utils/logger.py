@@ -1,16 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-.. module:: utils.logger.py
-   :license: GPL/CeCIL
-   :platform: Unix
-   :synopsis: Logging utility functions.
-
-.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
-
-
-"""
 import arrow
-
 
 
 # Set of logging levels.

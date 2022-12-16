@@ -1,14 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-.. module:: handle_service.entities.py
-   :license: GPL/CeCIL
-   :platform: Unix
-   :synopsis: Handle service handle registry response parsers.
-
-.. moduleauthor:: Atef Bennasser <abennasser@ipsl.jussieu.fr>
-
-
-"""
 from errata.handle_service.constants import *
 from errata.handle_service.exceptions import *
 from errata.handle_service.utils import get_handle_by_handle_string, make_handle_from_drsid_and_versionnumber
