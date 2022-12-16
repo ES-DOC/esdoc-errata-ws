@@ -6,8 +6,8 @@ import requests
 
 import pyessv
 from pyessv._utils.compat import basestring
-from errata.utils import factory
-from errata.utils.constants import *
+from errata_ws.utils import factory
+from errata_ws.utils.constants import *
 from tests import utils as tu
 
 

@@ -1,6 +1,6 @@
 import argparse
 
-from errata.utils import security
+from errata_ws.utils import security
 
 
 

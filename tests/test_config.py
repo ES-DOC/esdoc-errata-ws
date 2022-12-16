@@ -1,6 +1,6 @@
 import pyessv
 
-from errata.utils import config
+from errata_ws.utils import config
 
 from tests import utils as tu
 

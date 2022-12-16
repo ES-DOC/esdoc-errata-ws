@@ -1,0 +1,4 @@
+from errata_ws.handlers.moderation.accept import AcceptIssueRequestHandler
+from errata_ws.handlers.moderation.extend import ExtendIssueRequestHandler
+from errata_ws.handlers.moderation.propose import ProposeIssueRequestHandler
+from errata_ws.handlers.moderation.reject import RejectIssueRequestHandler

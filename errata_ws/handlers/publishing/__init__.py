@@ -1,0 +1,5 @@
+from errata_ws.handlers.publishing.close import CloseIssueRequestHandler
+from errata_ws.handlers.publishing.create import CreateIssueRequestHandler
+from errata_ws.handlers.publishing.retrieve import RetrieveIssueRequestHandler
+from errata_ws.handlers.publishing.retrieve_all import RetrieveAllIssuesRequestHandler
+from errata_ws.handlers.publishing.update import UpdateIssueRequestHandler

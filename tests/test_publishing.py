@@ -6,8 +6,8 @@ import urllib
 
 import requests
 
-from errata.utils import constants
-from errata.utils import factory
+from errata_ws.utils import constants
+from errata_ws.utils import factory
 from tests import utils as tu
 
 

@@ -4,7 +4,7 @@ import urllib
 
 import requests
 
-from errata.utils.constants import *
+from errata_ws.utils.constants import *
 
 
 

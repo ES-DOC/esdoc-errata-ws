@@ -1,0 +1,2 @@
+from errata_ws.handlers.resolve.pid import ResolvePIDRequestHandler
+from errata_ws.handlers.resolve.simple_pid import ResolveSimplePIDRequestHandler

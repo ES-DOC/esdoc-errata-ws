@@ -1,8 +1,8 @@
 import os
 
-from errata import db
-from errata.utils import config
-from errata.utils import logger
+from errata_ws import db
+from errata_ws.utils import config
+from errata_ws.utils import logger
 
 
 

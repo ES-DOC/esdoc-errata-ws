@@ -4,9 +4,9 @@ import os
 
 import requests
 
-from errata import db
-from errata.utils import logger
-from errata.utils import factory
+from errata_ws import db
+from errata_ws.utils import logger
+from errata_ws.utils import factory
 
 
 # Define command line arguments.

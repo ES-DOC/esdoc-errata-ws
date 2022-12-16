@@ -1,5 +1,5 @@
 import sys
-import errata as APP
+import errata_ws as APP
 
 
 
