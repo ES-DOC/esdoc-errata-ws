@@ -155,34 +155,8 @@ class TitleExistsError(RequestValidationException):
 
         """
         self.field = constants.JF_TITLE
-        msg = 'Title already exists in dB'
+        msg = 'An issue with the same title already exists in the system'
         super(TitleExistsError, self).__init__(msg)
-
-
-class SimilarIssueDescriptionError(RequestValidationException):
-    """Raised if the submitted issue post data contains an invalid dataset identifer.
-
-    """
-    def __init__(self, uid):
-        """Instance constructor.
-
-        """
-        self.field = constants.JF_DATASETS
-        msg = 'An issue with a highly similar description already exists in dB'
-        super(SimilarIssueDescriptionError, self).__init__(msg)
-
-
-class UpdatedDescriptionTooDifferentError(RequestValidationException):
-    """Raised if the submitted issue post data contains an invalid dataset identifer.
-
-    """
-    def __init__(self, ratio):
-        """Instance constructor.
-
-        """
-        self.field = constants.JF_DATASETS
-        msg = 'The updated description is too different to the original. Difference ratio = {}'.format(ratio)
-        super(UpdatedDescriptionTooDifferentError, self).__init__(msg)
 
 
 # Map of managed error codes.
@@ -195,8 +169,6 @@ ERROR_CODES = {
     IssueStatusChangeError: 905,
     IssueImmutableAttributeError: 906,
     TitleExistsError: 907,
-    SimilarIssueDescriptionError: 908,
-    UpdatedDescriptionTooDifferentError: 909,
     security.AuthenticationError: 990,
     security.AuthorizationError: 991
 }

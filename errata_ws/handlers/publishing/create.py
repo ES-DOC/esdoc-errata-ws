@@ -63,14 +63,6 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
                 raise exceptions.InvalidDatasetIdentifierError(self.request.data[constants.JF_PROJECT])
 
 
-        def _validate_issue_institute():
-            """Validates datasets associated with incoming issue.
-
-            """
-            if len(get_institutes(self.request.data)) != 1:
-                raise exceptions.MultipleInstitutesError()
-
-
         def _validate_user_access():
             """Validates user's institutional access rights.
 
@@ -89,23 +81,6 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
                 existing_titles = db.dao.get_titles()
                 if issue_title in existing_titles:
                     raise exceptions.TitleExistsError(issue_title)
-
-
-        def _validate_issue_description():
-            """Validates URL's associated with incoming request.
-            When an issue is created, all descriptions in the db are dumped and compared to the new description.
-            The new description needs to be different to existing descriptions by predefined ratio (in ws.conf).
-
-            """
-            # Check db for existing descriptions.
-            issue_description = self.request.data[constants.JF_DESCRIPTION]
-            with db.session.create():
-                existing_descriptions = db.dao.get_descriptions()
-                for desc in existing_descriptions:
-                    s = SequenceMatcher(None, issue_description, desc[0])
-                    similarity_ratio = s.ratio()
-                    if similarity_ratio > config.allowed_description_similarity_ratio:
-                        raise exceptions.SimilarIssueDescriptionError(desc[1])
 
 
         def _validate_issue_urls():
@@ -140,9 +115,7 @@ class CreateIssueRequestHandler(tornado.web.RequestHandler):
         # Process request.
         process_request(self, [
             _validate_issue_title,
-            # _validate_issue_description,
             _validate_issue_datasets,
-            # _validate_issue_institute,
             _validate_user_access,
             _validate_issue_urls,
             _persist
