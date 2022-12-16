@@ -52,9 +52,6 @@ def _dispatch(msg):
 	"""Dispatches a message to SMTP server.
 	
 	"""
-	# print(msg)
-	# return
-
 	# Open channel over TLS port.
 	smtp = smtplib.SMTP(constants.SMTP_HOST, constants.SMTP_PORT_TLS)
 
