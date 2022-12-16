@@ -1,15 +1,3 @@
-# -*- coding: utf-8 -*-
-
-"""
-.. module:: test_publishing_negative.py
-
-   :license: GPL / CeCILL
-   :platform: Unix, Windows
-   :synopsis: Executes web-service publishing endpoint tests (negative).
-
-.. moduleauthor:: Earth System Documentation (ES-DOC) <dev@es-doc.org>
-
-"""
 import json
 import urllib
 import uuid

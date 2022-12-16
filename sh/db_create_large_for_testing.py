@@ -1,15 +1,3 @@
-# -*- coding: utf-8 -*-
-
-"""
-.. module:: run_db_insert_test_issues.py
-   :license: GPL/CeCIL
-   :platform: Unix, Windows
-   :synopsis: Inserts test issues into the errata db.
-
-.. moduleauthor:: Atef Bennasser <abenasser@ipsl.jussieu.fr>
-
-
-"""
 import argparse
 import json
 import os

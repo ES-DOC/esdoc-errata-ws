@@ -1,15 +1,3 @@
-# -*- coding: utf-8 -*-
-
-"""
-.. module:: pid_sync_handles.py
-   :license: GPL/CeCIL
-   :platform: Unix, Windows
-   :synopsis: Synchornizes PID handles with remote PID service.
-
-.. moduleauthor:: Atef Bennasser <abenasser@ipsl.jussieu.fr>
-
-
-"""
 import logging
 import random
 import time

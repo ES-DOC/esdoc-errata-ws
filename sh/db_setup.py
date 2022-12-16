@@ -1,15 +1,3 @@
-# -*- coding: utf-8 -*-
-
-"""
-.. module:: run_db_setup.py
-   :license: GPL/CeCIL
-   :platform: Unix, Windows
-   :synopsis: Sets up errata db tables for use.
-
-.. moduleauthor:: Atef Bennasser <abenasser@ipsl.jussieu.fr>
-
-
-"""
 import os
 
 from errata import db

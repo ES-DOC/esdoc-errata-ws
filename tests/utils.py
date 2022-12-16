@@ -1,15 +1,3 @@
-# -*- coding: utf-8 -*-
-
-"""
-.. module:: utils.py
-
-   :license: GPL / CeCILL
-   :platform: Unix, Windows
-   :synopsis: Unit test utilities.
-
-.. moduleauthor:: Earth System Documentation (ES-DOC) <dev@es-doc.org>
-
-"""
 import datetime
 import os
 import random

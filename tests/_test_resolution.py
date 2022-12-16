@@ -1,15 +1,3 @@
-# -*- coding: utf-8 -*-
-
-"""
-.. module:: test_resolution.py
-
-   :license: GPL / CeCILL
-   :platform: Unix, Windows
-   :synopsis: Executes web-service resolution endpoint tests.
-
-.. moduleauthor:: Earth System Documentation (ES-DOC) <dev@es-doc.org>
-
-"""
 import json
 import os
 import urllib
