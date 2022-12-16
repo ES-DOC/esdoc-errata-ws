@@ -12,7 +12,6 @@ This is an email from the ES-DOC Errata service.  Thank you for submitting a dat
 
     http://localhost:5001/static/view.html?uid={{errata_uid}}
 
-
 4.  Thank you for your errata submission.  Your efforts truly help to keep the dataset archive coherent.
 
 Kind Regards,

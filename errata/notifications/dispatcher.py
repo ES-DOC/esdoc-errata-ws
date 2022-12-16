@@ -49,9 +49,12 @@ def dispatch_on_rejected(email_address, errata_uid):
 
 
 def _dispatch(msg):
-	"""Dispatches an email message.
+	"""Dispatches a message to SMTP server.
 	
 	"""
+	# print(msg)
+	# return
+
 	# Open channel over TLS port.
 	smtp = smtplib.SMTP(constants.SMTP_HOST, constants.SMTP_PORT_TLS)
 

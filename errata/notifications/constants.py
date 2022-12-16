@@ -1,3 +1,6 @@
+from errata.utils import config
+
+
 # Email address of moderation list.
 ADDRESS_MODERATION = "errata-moderation@es-doc.org"
 
@@ -20,13 +23,16 @@ ON_ERRATA_REJECTED_EMAIL_BODY_TEMPLATE = "on_rejected.txt"
 ON_ERRATA_REJECTED_EMAIL_SUBJECT = "ES-DOC :: ERRATA :: Moderation Rejection"
 
 # SMTP server -> host.
-SMTP_HOST = "smtp.de.opalstack.com"
+SMTP_HOST = config.moderation.smtp_server.host
 
 # SMTP server -> credentials.
-SMTP_CREDENTIALS = ("errata-moderation", "opalstack@Silence93!")
+SMTP_CREDENTIALS = (
+	config.moderation.smtp_server.credentials.user,
+	config.moderation.smtp_server.credentials.password
+	)
 
 # SMTP server -> SSL port.
-SMTP_PORT_SSL = 465
+SMTP_PORT_SSL = config.moderation.smtp_server.ports.ssl
 
 # SMTP server -> TLS port.
-SMTP_PORT_TLS = 587
+SMTP_PORT_TLS = config.moderation.smtp_server.ports.tls
