@@ -123,7 +123,8 @@ def get_issues(criteria=None):
         Issue.status,
         as_date_string(Issue.created_date),
         as_date_string(Issue.closed_date),
-        as_date_string(Issue.updated_date)
+        as_date_string(Issue.updated_date),
+        Issue.moderation_status
         )
 
     qry = qry.filter(Issue.moderation_status.in_([
@@ -141,7 +142,7 @@ def get_issues(criteria=None):
 
 
 @validate(validate_get_issues)
-def get_issues_for_moderation(criteria=None):
+def get_issues_for_moderation(criteria):
     """Returns collection of matching issues.
 
     :param list criteria: Map of criteria facet-types to facet-values.
@@ -162,7 +163,8 @@ def get_issues_for_moderation(criteria=None):
         Issue.status,
         as_date_string(Issue.created_date),
         as_date_string(Issue.closed_date),
-        as_date_string(Issue.updated_date)
+        as_date_string(Issue.updated_date),
+        Issue.moderation_status
         )
 
     for item in criteria:

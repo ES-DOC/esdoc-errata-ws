@@ -31,6 +31,7 @@ class IssueSearchSetupRequestHandler(tornado.web.RequestHandler):
                 'esdoc:errata:project',
                 'esdoc:errata:severity',
                 'esdoc:errata:status',
+                'esdoc:errata:moderation-status'
             }
             for project in pyessv.load('esdoc:errata:project'):
                 for vocab in project.data['facets']:

@@ -22,6 +22,15 @@ class AcceptIssueRequestHandler(tornado.web.RequestHandler):
         http_security.set_headers(self, True)
 
 
+    def options(self):
+        """HTTP OPTIONS handler.
+
+        """
+        self.set_status(204)
+        self.set_default_headers()
+        self.finish()
+
+
     def post(self):
         """HTTP POST handler.
 
@@ -47,10 +56,10 @@ class AcceptIssueRequestHandler(tornado.web.RequestHandler):
             """Accepts issue under moderation.
 
             """
-            self.issue.issue_moderation = constants.ISSUE_MODERATION_ACCEPTED
+            self.issue.moderation_status = constants.ISSUE_MODERATION_ACCEPTED
 
 
-        # Process request within dB session context.
+        # Process request.
         with db.session.create(commitable=True):
             process_request(self, [
                 _validate_issue_exists,
