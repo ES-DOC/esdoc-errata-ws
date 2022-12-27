@@ -98,16 +98,7 @@ class Issue(Entity):
     description = Column(Text, nullable=False)
     severity = Column(_ISSUE_SEVERITY_ENUM, nullable=False)
     status = Column(_ISSUE_STATUS_ENUM, nullable=False)
-    moderation_status = Column(
-        _ISSUE_MODERATION_ENUM,
-        nullable=False,
-        default=ISSUE_MODERATION_NOT_REQUIRED
-        )
-    moderation_window = Column(
-        DateTime,
-        nullable=False,
-        default=lambda: (dt.datetime.utcnow() + dt.timedelta(days=config.moderation.window_in_days))
-        )
+    moderation_status = Column(_ISSUE_MODERATION_ENUM, nullable=False, default=ISSUE_MODERATION_NOT_REQUIRED)
 
     # Tracking columns.
     created_by = Column(Unicode(511))
