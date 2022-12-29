@@ -11,7 +11,7 @@ from errata_ws.utils import exceptions
 from errata_ws.utils import http_security
 from errata_ws.utils.http import process_request
 from errata_ws.utils.http_security import authorize
-from errata_ws.utils.publisher import create_issue
+from errata_ws.utils.publisher import get_entities_on_errata_create
 from errata_ws.utils.publisher import get_institute
 from errata_ws.utils.publisher import get_institutes
 from errata_ws.utils.validation import validate_url
@@ -68,14 +68,19 @@ class CreateErrataRequestHandler(tornado.web.RequestHandler):
 
             """
             if config.apply_security_policy:
-                authorize(self.user_id, self.request.data[constants.JF_PROJECT], get_institute(self.request.data))
+                self.user_role = authorize(
+                    self.user_id, 
+                    self.request.data[constants.JF_PROJECT], 
+                    get_institute(self.request.data)
+                    )
+            else:
+                self.user_role = None
 
 
         def _validate_issue_title():
             """Validates URL's associated with incoming request.
 
             """
-            # Check db for existing titles.
             issue_title = self.request.data[constants.JF_TITLE]
             with db.session.create():
                 existing_titles = db.dao.get_titles()
@@ -99,7 +104,7 @@ class CreateErrataRequestHandler(tornado.web.RequestHandler):
             """
             with db.session.create():
                 # Map request data to db entities.
-                entities = create_issue(self.request.data, self.user_id)
+                entities = get_entities_on_errata_create(self.request.data, self.user_id, self.user_role)
 
                 # Insert issue first so that the foreign keys can be established.
                 db.session.insert(entities[0])

@@ -11,11 +11,12 @@ from errata_ws.db.models import PIDServiceTask
 
 
 
-def create_issue(obj, user_id):
+def get_entities_on_errata_create(obj, user_id, user_role):
     """Returns set of db entities created when processing a new issue.
 
     :param obj: Over the wire dictionary representation (i.e. coming from client).
-    :param user_id: ID of an authenticated user (publisher or moderator).
+    :param user_id: ID of an authenticated user (publisher | moderator).
+    :param user_role: Role of an authenticated user (anonymous | publisher | moderator).
     :returns: List of db entities.
 
     """
@@ -38,8 +39,8 @@ def create_issue(obj, user_id):
     return [issue] + _get_resources(issue, obj) + _get_facets(issue, obj) + _get_pid_tasks(issue, obj)
 
 
-def get_proposed_issue_entities(obj, user_email):
-    """Returns set of db entities created when processing a new issue.
+def get_entities_on_errata_propose(obj, user_email):
+    """Returns set of db entities created when proposing a new issue.
 
     :param obj: Over the wire dictionary representation (i.e. coming from client).
     :param user_email: Email of anonymous user.
@@ -68,34 +69,40 @@ def get_proposed_issue_entities(obj, user_email):
         _get_pid_tasks(issue, obj)
 
 
-def update_issue(issue, obj, user_id):
+def get_entities_on_errata_update(issue, obj, user_id, user_role):
     """Updates an issue.
 
     :param issue: Issue to be updated.
     :param obj: Over the wire dictionary representation (i.e. coming from client).
-    :param user_id: ID of an authenticated user (publisher or moderator).
+    :param user_id: ID of an authenticated user (publisher | moderator).
+    :param user_role: Role of an authenticated user (anonymous | publisher | moderator).
     :returns: List of db entities.
 
     """
-    # Issue - core fields.
+    # Update core fields.
     issue.description = obj[JF_DESCRIPTION].strip()
     issue.severity = obj[JF_SEVERITY].lower()
     issue.status = obj[JF_STATUS].lower()
     issue.title = obj[JF_TITLE].strip()
 
-    # Issue - tracking info.
+    # Update tracking info.
     issue.updated_by = user_id
     issue.updated_date = dt.datetime.utcnow()
+
+    # Update moderation info.
+    if user_role == USER_ROLE_MODERATOR:
+        issue.moderation_status = obj[JF_MODERATION_STATUS].lower()
 
     return _get_resources(issue, obj) + _get_facets(issue, obj)
 
 
-def close_issue(issue, status, user_id):
+def close_issue(issue, status, user_id, user_role):
     """Updates an issue.
 
     :param issue: Issue to be closed.
     :param status: Issue status.
-    :param user_id: ID of an authenticated user (publisher or moderator).
+    :param user_id: ID of an authenticated user (publisher | moderator).
+    :param user_role: Role of an authenticated user (anonymous | publisher | moderator).
 
     """
     # Issue - core fields.
@@ -150,6 +157,7 @@ def _get_facets(issue, obj):
 
     # Core facets.
     for facet_type in {
+            FACET_TYPE_MODERATION_STATUS,
             FACET_TYPE_PROJECT,
             FACET_TYPE_SEVERITY,
             FACET_TYPE_STATUS
@@ -158,7 +166,10 @@ def _get_facets(issue, obj):
         facet.project = issue.project
         facet.issue_uid = issue.uid
         facet.facet_type = u'esdoc:errata:{}'.format(facet_type)
-        facet.facet_value = getattr(issue, facet_type).lower()
+        if facet_type == FACET_TYPE_MODERATION_STATUS:
+            facet.facet_value = issue.moderation_status.lower()
+        else:
+            facet.facet_value = getattr(issue, facet_type).lower()
         facets.append(facet)
 
     # Project specific facets.

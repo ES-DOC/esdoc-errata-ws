@@ -33,7 +33,7 @@ def validate_get_issue(uid):
     v.validate_uid(uid, 'Issue unique identifier')
 
 
-def validate_get_issues(criteria=None):
+def validate_get_issues(criteria, exclude_in_moderation):
     """Function input validator: get_issues.
 
     """

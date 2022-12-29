@@ -37,7 +37,7 @@ class SearchErrataRequestHandler(tornado.web.RequestHandler):
 
             """
             with db.session.create():
-                self.issues = db.dao.get_issues(self.criteria)
+                self.issues = db.dao.get_issues(self.criteria, True)
                 self.total = db.utils.get_count(db.models.Issue)
 
 

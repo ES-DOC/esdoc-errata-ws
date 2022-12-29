@@ -5,14 +5,14 @@ import pyessv
 import tornado
 
 from errata_ws import db
+from errata_ws import notifications
 from errata_ws.utils import config
 from errata_ws.utils import constants
 from errata_ws.utils import exceptions
 from errata_ws.utils import http_security
 from errata_ws.utils.http import process_request
 from errata_ws.utils.publisher import get_institute
-from errata_ws.utils.publisher import get_institutes
-from errata_ws.utils.publisher import update_issue
+from errata_ws.utils.publisher import get_entities_on_errata_update
 from errata_ws.utils.http_security import authorize
 from errata_ws.utils.validation import validate_url
 
@@ -67,7 +67,13 @@ class UpdateErrataRequestHandler(tornado.web.RequestHandler):
 
             """
             if config.apply_security_policy:
-                authorize(self.user_id, self.request.data[constants.JF_PROJECT], get_institute(self.request.data))
+                self.user_role = authorize(
+                    self.user_id, 
+                    self.request.data[constants.JF_PROJECT], 
+                    get_institute(self.request.data)
+                    )
+            else:
+                self.user_role = None
 
 
         def _validate_issue_exists():
@@ -120,7 +126,7 @@ class UpdateErrataRequestHandler(tornado.web.RequestHandler):
             db.dao.delete_resources(self.issue.uid)
 
             # Update issue.
-            for entity in update_issue(self.issue, self.request.data, self.user_id):
+            for entity in get_entities_on_errata_update(self.issue, self.request.data, self.user_id, self.user_role):
                 db.session.insert(entity, auto_commit=False)
             db.session.commit()
 
@@ -138,6 +144,13 @@ class UpdateErrataRequestHandler(tornado.web.RequestHandler):
                     db.session.insert(task, False)
 
 
+        def _notify_on_moderation():
+            """Dispatches moderation notifications.
+
+            """
+            print(666)
+
+
         # Process request.
         with db.session.create(commitable=True):
             process_request(self, [
@@ -147,5 +160,6 @@ class UpdateErrataRequestHandler(tornado.web.RequestHandler):
                 _validate_issue_urls,
                 _validate_issue_immutable_attributes,
                 _validate_issue_status,
-                _persist
+                _persist,
+                _notify_on_moderation
             ])

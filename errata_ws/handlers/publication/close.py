@@ -55,7 +55,13 @@ class CloseErrataRequestHandler(tornado.web.RequestHandler):
 
             """
             if config.apply_security_policy:
-                authorize(self.user_id, self.issue.project, self.issue.institute)
+                self.user_role = authorize(
+                    self.user_id,
+                    self.request.data[constants.JF_PROJECT],
+                    get_institute(self.request.data)
+                    )
+            else:
+                self.user_role = None
 
 
         def _validate_issue_status():
@@ -73,7 +79,7 @@ class CloseErrataRequestHandler(tornado.web.RequestHandler):
             """Closes issue.
 
             """
-            close_issue(self.issue, self.get_argument(_PARAM_STATUS), self.user_id)
+            close_issue(self.issue, self.get_argument(_PARAM_STATUS), self.user_id, self.user_role)
 
 
         # Process request.

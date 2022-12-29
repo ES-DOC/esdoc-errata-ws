@@ -30,6 +30,7 @@ class SearchErrataModerationRequestHandler(tornado.web.RequestHandler):
 
             """
             self.criteria = self.get_argument(_PARAM_CRITERIA).split(',')
+            print(self.criteria)
 
 
         def _set_data():
@@ -37,7 +38,7 @@ class SearchErrataModerationRequestHandler(tornado.web.RequestHandler):
 
             """
             with db.session.create():
-                self.issues = db.dao.get_issues_for_moderation(self.criteria)
+                self.issues = db.dao.get_issues(self.criteria, False)
                 self.total = db.utils.get_count(db.models.Issue)
 
 

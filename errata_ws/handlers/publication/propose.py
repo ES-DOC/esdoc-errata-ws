@@ -1,18 +1,15 @@
 import re
-from difflib import SequenceMatcher
 
 import pyessv
 import tornado
 
 from errata_ws import db
 from errata_ws import notifications
-from errata_ws.utils import config
 from errata_ws.utils import constants
 from errata_ws.utils import exceptions
 from errata_ws.utils import http_security
 from errata_ws.utils.http import process_request
-from errata_ws.utils.publisher import get_proposed_issue_entities
-from errata_ws.utils.publisher import get_institutes
+from errata_ws.utils.publisher import get_entities_on_errata_propose
 from errata_ws.utils.validation import validate_url
 
 
@@ -87,7 +84,7 @@ class ProposeErrataRequestHandler(tornado.web.RequestHandler):
             """
             with db.session.create(commitable=True):
                 # Map request data to db entities.
-                entities = get_proposed_issue_entities(self.request.data, self.request.data["userEmail"])
+                entities = get_entities_on_errata_propose(self.request.data, self.request.data["userEmail"])
 
                 # Insert errata.
                 db.session.insert(entities[0])

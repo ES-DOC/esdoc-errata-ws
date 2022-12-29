@@ -45,6 +45,15 @@ def delete_resources(uid):
     qry.delete()
 
 
+def get_all_errata():
+    """Returns all errata.
+
+    :returns: List of errata.
+
+    """
+    return query(Issue).all()
+
+
 @validate(validate_get_datasets)
 def get_datasets(issue_uid):
     """Returns set of issue datasets.
@@ -102,18 +111,13 @@ def get_descriptions():
 
 
 @validate(validate_get_issues)
-def get_issues(criteria=None):
+def get_issues(criteria, exclude_in_moderation=True):
     """Returns collection of matching issues.
 
-    :param list criteria: Map of criteria facet-types to facet-values.
-
+    :param criteria: Map of criteria facet-types to facet-values.
     :returns: List of matching issues.
-    :rtype: list
 
     """
-    if criteria is None:
-        return query(Issue).all()
-
     qry = raw_query(
         Issue.project,
         Issue.institute,
@@ -127,10 +131,12 @@ def get_issues(criteria=None):
         Issue.moderation_status
         )
 
-    qry = qry.filter(Issue.moderation_status.in_([
-        constants.ISSUE_MODERATION_ACCEPTED,
-        constants.ISSUE_MODERATION_NOT_REQUIRED
-        ]))
+    if exclude_in_moderation is True:
+        print(777)
+        qry = qry.filter(Issue.moderation_status.notin_([
+            constants.ISSUE_MODERATION_IN_REVIEW,
+            constants.ISSUE_MODERATION_REJECTED
+            ]))
 
     for item in criteria:
         sub_qry = query(IssueFacet.issue_uid)
@@ -138,41 +144,6 @@ def get_issues(criteria=None):
         sub_qry = text_filter(sub_qry, IssueFacet.facet_value, item.split(':')[-1])
         qry = qry.filter(Issue.uid.in_(sub_qry))
     
-    return qry.all()
-
-
-@validate(validate_get_issues)
-def get_issues_for_moderation(criteria):
-    """Returns collection of matching issues.
-
-    :param list criteria: Map of criteria facet-types to facet-values.
-
-    :returns: List of matching issues.
-    :rtype: list
-
-    """
-    if criteria is None:
-        return query(Issue).all()
-
-    qry = raw_query(
-        Issue.project,
-        Issue.institute,
-        Issue.uid,
-        Issue.title,
-        Issue.severity,
-        Issue.status,
-        as_date_string(Issue.created_date),
-        as_date_string(Issue.closed_date),
-        as_date_string(Issue.updated_date),
-        Issue.moderation_status
-        )
-
-    for item in criteria:
-        sub_qry = query(IssueFacet.issue_uid)
-        sub_qry = sub_qry.filter(IssueFacet.facet_type == ':'.join(item.split(':')[0:3]))
-        sub_qry = text_filter(sub_qry, IssueFacet.facet_value, item.split(':')[-1])
-        qry = qry.filter(Issue.uid.in_(sub_qry))
-
     return qry.all()
 
 

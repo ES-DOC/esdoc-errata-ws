@@ -5,6 +5,7 @@ DEFAULT_ENDPOINT = r'/1/ops/heartbeat'
 DESCRIPTION_CHANGE_RATIO = 20
 
 # Core facet types.
+FACET_TYPE_MODERATION_STATUS = u'moderation-status'
 FACET_TYPE_PROJECT = u'project'
 FACET_TYPE_SEVERITY = u'severity'
 FACET_TYPE_STATUS = u'status'
@@ -20,6 +21,7 @@ HTTP_RESPONSE_SERVER_ERROR = 500
 JF_DESCRIPTION = u'description'
 JF_DATASETS = u'datasets'
 JF_MATERIALS = u'materials'
+JF_MODERATION_STATUS = u'moderationStatus'
 JF_PROJECT = u'project'
 JF_SEVERITY = u'severity'
 JF_STATUS = u'status'

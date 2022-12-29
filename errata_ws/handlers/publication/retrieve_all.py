@@ -26,7 +26,7 @@ class RetrieveAllErrataRequestHandler(tornado.web.RequestHandler):
 
             """
             with db.session.create():
-                self.issues = db.dao.get_issues()
+                self.issues = db.dao.get_all_errata()
                 self.resources = db.dao.get_resources()
                 self.facets = db.dao.get_facets()
 

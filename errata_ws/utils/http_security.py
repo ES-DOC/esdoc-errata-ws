@@ -60,10 +60,9 @@ def authorize(user_id, project_id, institute_id):
     :param str institute_id: Institute identifier, e.g. ipsl.
 
     """
-    print(6666666666666666666666666666666666666)
     # Authorize moderators.
     try:
-        # ... user must be member of team: errata-moderation.
+        # ... might be member of team: errata-moderation.
         logger.log_web('Authorizing: {} --> {}'.format(user_id, _GH_TEAM_MODERATION))
         security.authorize_user(_GH_TEAM_MODERATION, user_id)
     except security.AuthorizationError:
@@ -73,10 +72,10 @@ def authorize(user_id, project_id, institute_id):
 
     # Authorize publishers.
     try:
-        # ... user must be member of team: errata-publication.
+        # ... must be member of team: errata-publication.
         logger.log_web('Authorizing: {} --> {}'.format(user_id, _GH_TEAM_PUBLICATION))
         security.authorize_user(_GH_TEAM_PUBLICATION, user_id)
-        # ... user must be member of team: {project}-{institute}.
+        # ... must be member of team: {project}-{institute}.
         logger.log_web('Authorizing: {} --> {}-{}'.format(user_id, project_id, institute_id))
         security.authorize_user('{}-{}'.format(project_id, institute_id), user_id)
     except security.AuthorizationError as err:
