@@ -17,7 +17,7 @@ from errata_ws.utils.http_security import authorize
 from errata_ws.utils.validation import validate_url
 
 
-class UpdateIssueRequestHandler(tornado.web.RequestHandler):
+class UpdateErrataRequestHandler(tornado.web.RequestHandler):
     """Publishing update issue handler.
 
     """

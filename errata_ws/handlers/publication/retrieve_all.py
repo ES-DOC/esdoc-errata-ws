@@ -6,7 +6,7 @@ from errata_ws.utils.http import process_request
 
 
 
-class RetrieveAllIssuesRequestHandler(tornado.web.RequestHandler):
+class RetrieveAllErrataRequestHandler(tornado.web.RequestHandler):
     """Publishing retrieve all issues handler.
 
     """

@@ -17,7 +17,7 @@ _PARAM_UID = 'uid'
 _PARAM_STATUS = 'status'
 
 
-class CloseIssueRequestHandler(tornado.web.RequestHandler):
+class CloseErrataRequestHandler(tornado.web.RequestHandler):
     """Publishing close issue handler.
 
     """

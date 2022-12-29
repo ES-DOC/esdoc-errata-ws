@@ -17,7 +17,7 @@ from errata_ws.utils.publisher import get_institutes
 from errata_ws.utils.validation import validate_url
 
 
-class CreateIssueRequestHandler(tornado.web.RequestHandler):
+class CreateErrataRequestHandler(tornado.web.RequestHandler):
     """Publishing create issue handler.
 
     """

@@ -11,7 +11,7 @@ from errata_ws.utils.http import process_request
 _PARAM_UID = 'uid'
 
 
-class RetrieveIssueRequestHandler(tornado.web.RequestHandler):
+class RetrieveErrataRequestHandler(tornado.web.RequestHandler):
     """Publishing retrieve issue handler.
 
     """
