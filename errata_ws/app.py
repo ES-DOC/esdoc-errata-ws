@@ -30,19 +30,25 @@ def _get_app_endpoints():
         (r'/oauth/callback', handlers.operations.oauth.CallbackRequestHandler),
         (r'/validate-dataset-id', handlers.operations.ValidateDatasetIdentifierRequestHandler),
         (r'/verify-authorization', handlers.operations.VerifyAuthorizationRequestHandler),
-        (r'/1/issue/accept', handlers.moderation.AcceptIssueRequestHandler),
-        (r'/1/issue/close', handlers.publication.CloseIssueRequestHandler),
-        (r'/1/issue/create', handlers.publication.CreateIssueRequestHandler),
-        (r'/1/issue/moderation/accept', handlers.moderation.AcceptIssueRequestHandler),
-        (r'/1/issue/moderation/search', handlers.moderation.IssueSearchRequestHandler),
-        (r'/1/issue/moderation/propose', handlers.moderation.ProposeIssueRequestHandler),
-        (r'/1/issue/moderation/reject', handlers.moderation.RejectIssueRequestHandler),
-        (r'/1/issue/update', handlers.publication.UpdateIssueRequestHandler),
-        (r'/1/issue/reject', handlers.moderation.RejectIssueRequestHandler),
-        (r'/1/issue/retrieve', handlers.publication.RetrieveIssueRequestHandler),
-        (r'/1/issue/retrieve-all', handlers.publication.RetrieveAllIssuesRequestHandler),
-        (r'/1/issue/search', handlers.search.IssueSearchRequestHandler),
-        (r'/1/issue/search-setup', handlers.search.IssueSearchSetupRequestHandler),
+
+        # ... issue moderation
+        (r'/2/issue/moderation/accept', handlers.moderation.AcceptIssueRequestHandler),
+        (r'/2/issue/moderation/search', handlers.moderation.IssueSearchRequestHandler),
+        (r'/2/issue/moderation/propose', handlers.moderation.ProposeIssueRequestHandler),
+        (r'/2/issue/moderation/reject', handlers.moderation.RejectIssueRequestHandler),
+
+        # ... issue publication
+        (r'/2/issue/publication/close', handlers.publication.CloseIssueRequestHandler),
+        (r'/2/issue/publication/create', handlers.publication.CreateIssueRequestHandler),
+        (r'/2/issue/publication/retrieve', handlers.publication.RetrieveIssueRequestHandler),
+        (r'/2/issue/publication/retrieve-all', handlers.publication.RetrieveAllIssuesRequestHandler),
+        (r'/2/issue/publication/update', handlers.publication.UpdateIssueRequestHandler),
+
+        # ... search
+        (r'/2/issue/search', handlers.search.IssueSearchRequestHandler),
+        (r'/2/issue/search-setup', handlers.search.IssueSearchSetupRequestHandler),
+
+        # ... PID
         (r'/1/pid-queue/search', handlers.search.PIDQueueSearchRequestHandler),
         (r'/1/pid-queue/search-setup', handlers.search.PIDQueueSearchSetupRequestHandler),
         (r'/1/resolve/pid', handlers.resolve.ResolvePIDRequestHandler),
