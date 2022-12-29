@@ -61,6 +61,7 @@ def authorize(user_id, project_id, institute_id):
     :param str institute_id: Institute identifier, e.g. ipsl.
 
     """
+    print(6666666666666666666666666666666666666)
     # Authorize moderators.
     try:
         # ... user must be member of team: errata-moderation.
@@ -156,6 +157,7 @@ def secure_request(handler):
     if config.apply_security_policy:
         logger.log_web('Authenticating: {}'.format(credentials[0]))
         authenticate(credentials)
+        logger.log_web('Authenticated: {}'.format(credentials[0]))
 
     # Make user-id available downstream.
     handler.user_id = credentials[0]
