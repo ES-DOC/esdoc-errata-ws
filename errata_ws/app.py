@@ -31,20 +31,18 @@ def _get_app_endpoints():
         (r'/validate-dataset-id', handlers.operations.ValidateDatasetIdentifierRequestHandler),
         (r'/verify-authorization', handlers.operations.VerifyAuthorizationRequestHandler),
 
-        # ... issue moderation
-
         # ... issue publication
-        (r'/2/errata/publication/close', handlers.publication.CloseErrataRequestHandler),
-        (r'/2/errata/publication/create', handlers.publication.CreateErrataRequestHandler),
-        (r'/2/errata/publication/propose', handlers.publication.ProposeErrataRequestHandler),
-        (r'/2/errata/publication/retrieve', handlers.publication.RetrieveErrataRequestHandler),
-        (r'/2/errata/publication/retrieve-all', handlers.publication.RetrieveAllErrataRequestHandler),
-        (r'/2/errata/publication/update', handlers.publication.UpdateErrataRequestHandler),
+        (r'/2/publication/close', handlers.publication.CloseErrataRequestHandler),
+        (r'/2/publication/create', handlers.publication.CreateErrataRequestHandler),
+        (r'/2/publication/propose', handlers.publication.ProposeErrataRequestHandler),
+        (r'/2/publication/retrieve', handlers.publication.RetrieveErrataRequestHandler),
+        (r'/2/publication/retrieve-all', handlers.publication.RetrieveAllErrataRequestHandler),
+        (r'/2/publication/update', handlers.publication.UpdateErrataRequestHandler),
 
         # ... search
-        (r'/2/errata/search', handlers.search.SearchErrataRequestHandler),
-        (r'/2/errata/search/setup', handlers.search.SearchErrataSetupRequestHandler),
-        (r'/2/errata/search/moderation', handlers.search.SearchErrataModerationRequestHandler),
+        (r'/2/search/errata', handlers.search.SearchErrataRequestHandler),
+        (r'/2/search/errata/setup', handlers.search.SearchErrataSetupRequestHandler),
+        (r'/2/search/errata/moderation', handlers.search.SearchErrataModerationRequestHandler),
 
         # ... PID
         (r'/1/pid-queue/search', handlers.search.PIDQueueSearchRequestHandler),
