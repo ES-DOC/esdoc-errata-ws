@@ -32,21 +32,21 @@ def _get_app_endpoints():
         (r'/verify-authorization', handlers.operations.VerifyAuthorizationRequestHandler),
 
         # ... issue moderation
-        (r'/2/issue/moderation/accept', handlers.moderation.AcceptIssueRequestHandler),
-        (r'/2/issue/moderation/search', handlers.moderation.IssueSearchRequestHandler),
-        (r'/2/issue/moderation/propose', handlers.moderation.ProposeIssueRequestHandler),
-        (r'/2/issue/moderation/reject', handlers.moderation.RejectIssueRequestHandler),
+        (r'/2/errata/moderation/accept', handlers.moderation.AcceptIssueRequestHandler),
+        (r'/2/errata/moderation/search', handlers.moderation.IssueSearchRequestHandler),
+        (r'/2/errata/moderation/propose', handlers.moderation.ProposeIssueRequestHandler),
+        (r'/2/errata/moderation/reject', handlers.moderation.RejectIssueRequestHandler),
 
         # ... issue publication
-        (r'/2/issue/publication/close', handlers.publication.CloseIssueRequestHandler),
-        (r'/2/issue/publication/create', handlers.publication.CreateIssueRequestHandler),
-        (r'/2/issue/publication/retrieve', handlers.publication.RetrieveIssueRequestHandler),
-        (r'/2/issue/publication/retrieve-all', handlers.publication.RetrieveAllIssuesRequestHandler),
-        (r'/2/issue/publication/update', handlers.publication.UpdateIssueRequestHandler),
+        (r'/2/errata/publication/close', handlers.publication.CloseIssueRequestHandler),
+        (r'/2/errata/publication/create', handlers.publication.CreateIssueRequestHandler),
+        (r'/2/errata/publication/retrieve', handlers.publication.RetrieveIssueRequestHandler),
+        (r'/2/errata/publication/retrieve-all', handlers.publication.RetrieveAllIssuesRequestHandler),
+        (r'/2/errata/publication/update', handlers.publication.UpdateIssueRequestHandler),
 
         # ... search
-        (r'/2/issue/search', handlers.search.IssueSearchRequestHandler),
-        (r'/2/issue/search-setup', handlers.search.IssueSearchSetupRequestHandler),
+        (r'/2/errata/search', handlers.search.IssueSearchRequestHandler),
+        (r'/2/errata/search/setup', handlers.search.IssueSearchSetupRequestHandler),
 
         # ... PID
         (r'/1/pid-queue/search', handlers.search.PIDQueueSearchRequestHandler),
