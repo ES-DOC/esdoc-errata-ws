@@ -10,7 +10,7 @@ from errata_ws.utils.http import process_request
 _PARAM_CRITERIA = 'criteria'
 
 
-class ErrataModerationSearchRequestHandler(tornado.web.RequestHandler):
+class SearchErrataModerationRequestHandler(tornado.web.RequestHandler):
     """Search issue for moderation request handler.
 
     """

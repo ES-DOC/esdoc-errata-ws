@@ -7,7 +7,7 @@ from errata_ws.utils.http import process_request
 
 
 
-class IssueSearchSetupRequestHandler(tornado.web.RequestHandler):
+class SearchErrataSetupRequestHandler(tornado.web.RequestHandler):
     """Search issue request handler.
 
     """
