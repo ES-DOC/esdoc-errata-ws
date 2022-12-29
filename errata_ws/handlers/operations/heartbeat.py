@@ -21,7 +21,7 @@ class HeartbeatRequestHandler(tornado.web.RequestHandler):
             """
             self.output = {
                 "message": "ES-DOC ERRATA web service is operational @ {}".format(dt.datetime.utcnow()),
-                "version": errata.__version__
+                "version": errata_ws.__version__
             }
 
         # Process request.
