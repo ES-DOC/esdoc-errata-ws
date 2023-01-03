@@ -56,6 +56,8 @@ A key feature of the ES-DOC Errata service v2 is the ability of anonymous users 
 
 	2.3.	Select an errata proposed in `Test 001`.
 
+	2.4.	You will be directed to the edit errata page.
+
 3.	Moderate proposed errata.
 
 	3.1.	Click on `Moderate` button in page menu bar.
