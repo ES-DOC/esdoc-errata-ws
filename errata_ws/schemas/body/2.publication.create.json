@@ -23,6 +23,16 @@
             "type": "array",
             "uniqueItems": true
         },
+        "moderationStatus": {
+            "enum": [
+                "accepted",
+                "in-review",
+                "not-required",
+                "rejected"
+            ],
+            "minLength": 1,
+            "type": "string"
+        },
         "project": {
             "enum": [
                 "cmip5",
