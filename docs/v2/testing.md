@@ -70,4 +70,4 @@ A key feature of the ES-DOC Errata service v2 is the ability of anonymous users 
 
 4.	Return to moderation search page.
 
-	4.1.	Verify that errata's moderation status has indeed been updated.
+	4.1.	Verify that errata's moderation status has been updated -> Accepted.
