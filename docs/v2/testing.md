@@ -15,7 +15,7 @@ A key feature of the ES-DOC Errata service v2 is the ability of anonymous users 
 	https://test-errata-v2.es-doc.org
 
 
-### Test 001  Propose new errata
+## Test 001  Propose new errata
 
 0.	Apply pre-requisites.
 
