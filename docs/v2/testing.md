@@ -50,7 +50,7 @@ A key feature of the ES-DOC Errata service v2 is the ability of anonymous users 
 
 2.	Press the `Moderate` button in page menu bar.
 
-	2.1.	You will be directed to the errata moderation search page.
+	2.1.	You will be directed to the moderation search page.
 
 	2.2.	A list of errata in various moderation states will be displayed.
 
@@ -68,6 +68,6 @@ A key feature of the ES-DOC Errata service v2 is the ability of anonymous users 
 
 	3.4.	Verify system sends an email to anonymous user that proposed the accepted errata.
 
-4.	Return to moderate page.
+4.	Return to moderation search page.
 
 	4.1.	Verify that errata's moderation status has indeed been updated.
