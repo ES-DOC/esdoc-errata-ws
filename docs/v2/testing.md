@@ -1,4 +1,4 @@
-# ERRATA v2 Service Testing - 01
+# ERRATA v2 Service Testing
 
 ## Introduction
 
