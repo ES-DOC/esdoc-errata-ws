@@ -34,6 +34,7 @@ def _get_app_endpoints():
         # ... issue publication
         (r'/2/publication/close', handlers.publication.CloseErrataRequestHandler),
         (r'/2/publication/create', handlers.publication.CreateErrataRequestHandler),
+        (r'/2/publication/moderate', handlers.publication.ModerateErrataRequestHandler),
         (r'/2/publication/propose', handlers.publication.ProposeErrataRequestHandler),
         (r'/2/publication/retrieve', handlers.publication.RetrieveErrataRequestHandler),
         (r'/2/publication/retrieve-all', handlers.publication.RetrieveAllErrataRequestHandler),

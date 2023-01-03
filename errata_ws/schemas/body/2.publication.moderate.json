@@ -1,0 +1,26 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "additionalProperties": false,
+    "properties": {
+        "moderationStatus": {
+            "enum": [
+                "accepted",
+                "in-review",
+                "not-required",
+                "rejected"
+            ],
+            "minLength": 1,
+            "type": "string"
+        },
+        "uid": {
+            "pattern": "^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$",
+            "type": "string"
+        }
+    },
+    "required": [
+        "moderationStatus",
+        "uid"
+    ],
+    "title": "ES-DOC errata JSON schema: endpoint = /2/publication/moderate",
+    "type": "object"
+}
