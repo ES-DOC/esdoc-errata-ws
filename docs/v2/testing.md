@@ -15,13 +15,11 @@ A key feature of the ES-DOC Errata service v2 is the ability of anonymous users 
 	https://test-errata-v2.es-doc.org
 
 
-## Test 001  Propose new errata
+## Test 001: Propose new errata
 
 0.	Apply pre-requisites.
 
 1.  Navigate to homepage as an `anonymous` user.
-
-	1.1.	If you have previously successfully logged into the application as an authenticated user then you will need to clear your browser's Errata application session cookies.
 
 2.	Press the `Propose` button in page menu bar.
 
@@ -38,4 +36,36 @@ A key feature of the ES-DOC Errata service v2 is the ability of anonymous users 
 	4.2.	You will receive an email informing you that a moderator will review your errata in due course.
 
 	4.3.	Verify receipt of email and navigate to the view errata URL contained within the email.
- 
+
+
+## Test 002: Accept new errata
+
+0.	Apply pre-requisites.
+
+1.  Navigate to homepage as an `anonymous` user.
+
+	1.1.	Press the `Login` button in page menu bar.
+
+	1.2.	Authenticate via GitHub OAuth with GitHub user registered in `errata-moderation` team.
+
+2.	Press the `Moderate` button in page menu bar.
+
+	2.1.	You will be directed to the errata moderation search page.
+
+	2.2.	A list of errata in various moderation states will be displayed.
+
+	2.3.	Select an errata proposed in `Test 001`.
+
+3.	Moderate proposed errata.
+
+	3.1.	Click on `Moderate` button in page menu bar.
+
+	3.2.	Select `Accept` sub-menu.
+
+	3.3.	Verify application displays a confirmation message.
+
+	3.4.	Verify system sends an email to anonymous user that proposed the accepted errata.
+
+4.	Return to moderate page.
+
+	4.1.	Verify that errata's moderation status has indeed been updated.
