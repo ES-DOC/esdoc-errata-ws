@@ -165,6 +165,7 @@ def set_headers(handler, is_post=False):
     """Set HTTP headers for an endpint.
     
     """
+    print(handler.request.path, handler.request.path not in _WHITELISTED_ENDPOINTS)
     handler.set_header(constants.HTTP_HEADER_Access_Control_Allow_Origin, "*")
 
     if is_post:
