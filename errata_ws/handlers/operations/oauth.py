@@ -45,7 +45,7 @@ class AuthorizeRequestHandler(tornado.web.RequestHandler):
         # Open session with OAuth2 provider.
         gh_session = OAuth2Session(OAUTH_CLIENT_ID, scope=("read:org", ))
 
-        # Ask OAuth2 provider for an autohrisation URL.
+        # Ask OAuth2 provider for an authorisation URL.
         authorization_url, state = gh_session.authorization_url(OAUTH_URL_AUTHORIZE)
 
         # State is used to prevent CSRF, keep this for later.

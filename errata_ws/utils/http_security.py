@@ -162,16 +162,16 @@ def secure_request(handler):
 
 
 def set_headers(handler, is_post=False):
-    """Set HTTP headers for an endpint.
+    """Set HTTP headers for an endpoint.
     
     """
     handler.set_header(constants.HTTP_HEADER_Access_Control_Allow_Origin, "*")
+    handler.set_header('X-XSRFToken', handler.xsrf_token)
 
     if is_post is True:
         handler.set_header('Access-Control-Allow-Methods', 'POST')
 
     if handler.request.path not in _WHITELISTED_ENDPOINTS:
-        print(7777, handler.request.path)
         handler.set_header("Access-Control-Allow-Headers", "content-type, Authorization")
         handler.set_header('Access-Control-Allow-Credentials', True)
-        handler.set_header('X-XSRFToken', handler.xsrf_token)
+    
