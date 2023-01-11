@@ -4,7 +4,7 @@ This is an email from the ES-DOC Errata service.  Thank you for submitting a new
 
 1.  Your proposed errata can be viewed here:
 
-    http://localhost:5001/static/view.html?uid={{errata_uid}}
+    {{http_protocol}}://{{web_host}}/static/view.html?uid={{errata_uid}}
 
 2.  A notification has been sent to the ES-DOC errata moderation team.  
 
@@ -14,7 +14,7 @@ This is an email from the ES-DOC Errata service.  Thank you for submitting a new
 
 5.  If rejected, the errata will be removed form the system, however you can re-propose if you disagree with the moderation outcome.
 
-6.  Thank you for your errata submission.  Your efforts truly help to keep the dataset archive coherent.
+Thank you for your errata submission.  Your efforts truly help to keep the dataset archive coherent.
 
 Kind Regards,
 
