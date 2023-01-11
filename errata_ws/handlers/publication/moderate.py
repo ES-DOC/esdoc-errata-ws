@@ -1,5 +1,6 @@
 import tornado
 from errata_ws import db
+from errata_ws import notifications
 from errata_ws.utils import config
 from errata_ws.utils import constants
 from errata_ws.utils import exceptions
@@ -47,9 +48,30 @@ class ModerateErrataRequestHandler(tornado.web.RequestHandler):
             self.issue.moderation_status = self.request.data[constants.JF_MODERATION_STATUS]
 
 
+        def _notify():
+            """Notifies proposer & moderation team.
+
+            """
+            if self.issue.moderation_status == constants.ISSUE_MODERATION_ACCEPTED:
+                notifications.dispatch_on_accepted(
+                    self.request.protocol,
+                    self.request.host,
+                    self.issue_created_by,
+                    self.issue_uid
+                )
+            elif self.issue.moderation_status == constants.ISSUE_MODERATION_REJECTED:
+                notifications.dispatch_on_rejected(
+                    self.request.protocol,
+                    self.request.host,
+                    self.issue_created_by,
+                    self.issue_uid
+                )
+
+    
         with db.session.create(commitable=True):
             process_request(self, [
                 _validate_issue_exists,
                 _validate_user_access,
-                _update_moderation_status
+                _update_moderation_status,
+                _notify
                 ])
