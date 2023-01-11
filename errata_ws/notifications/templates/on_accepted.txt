@@ -6,13 +6,13 @@ This is an email from the ES-DOC Errata service.  Thank you for submitting a dat
 
 2.  Your errata can be viewed here:
 
-    http://localhost:5001/static/view.html?uid={{errata_uid}}
+    {{http_protocol}}://{{web_host}}/static/view.html?uid={{errata_uid}}
 
 3.  Your errata will now appear in the public facing search page:
 
-    http://localhost:5001/static/view.html?uid={{errata_uid}}
+    {{http_protocol}}://{{web_host}}/static/index.html
 
-4.  Thank you for your errata submission.  Your efforts truly help to keep the dataset archive coherent.
+Thank you for your errata submission.  Your efforts truly help to keep the dataset archive coherent.
 
 Kind Regards,
 

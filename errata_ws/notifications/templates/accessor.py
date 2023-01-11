@@ -13,43 +13,58 @@ _TEMPLATE_ENV = jinja2.Environment(
 )
 
 
-def get_on_accepted_email_body(errata_uid):
+def get_on_accepted_email_body(http_protocol, web_host, errata_uid):
 	"""Returns email body to be sent to an anonymous user when a moderator
 	   has accepted their errata proposal.
 
+	:param http_protocol: HTTP protocol of web-service serving errata content.
+	:param web_host: Host of web-service serving errata content.
 	:param errata_uid: Unique identifier of errata being processed.
+	:returns: Rendered content for email dispatch.
 
 	"""
 	tmpl = _TEMPLATE_ENV.get_template(constants.ON_ERRATA_ACCEPTED_EMAIL_BODY_TEMPLATE)
 
 	return tmpl.render({
-		"errata_uid": errata_uid
+		"errata_uid": errata_uid,
+		"http_protocol": http_protocol,
+		"web_host": web_host
 	})
 
 
-def get_on_proposed_email_body(errata_uid):
+def get_on_proposed_email_body(http_protocol, web_host, errata_uid):
 	"""Returns email body to be sent to a moderator when an anonymous user 
 	   has submitted an errata proposal.
 
+	:param http_protocol: HTTP protocol of web-service serving errata content.
+	:param web_host: Host of web-service serving errata content.
 	:param errata_uid: Unique identifier of errata being processed.
+	:returns: Rendered content for email dispatch.
 	
 	"""
 	tmpl = _TEMPLATE_ENV.get_template(constants.ON_ERRATA_PROPOSED_EMAIL_BODY_TEMPLATE)
 
 	return tmpl.render({
-		"errata_uid": errata_uid
+		"errata_uid": errata_uid,
+		"http_protocol": http_protocol,
+		"web_host": web_host
 	})
 
 
-def get_on_rejected_email_body(errata_uid):
+def get_on_rejected_email_body(http_protocol, web_host, errata_uid):
 	"""Returns email body to be sent to an anonymous user when a moderator
 	   has rejected their errata proposal.
 
+	:param http_protocol: HTTP protocol of web-service serving errata content.
+	:param web_host: Host of web-service serving errata content.
 	:param errata_uid: Unique identifier of errata being processed.
+	:returns: Rendered content for email dispatch.
 	
 	"""
 	tmpl = _TEMPLATE_ENV.get_template(constants.ON_ERRATA_REJECTED_EMAIL_BODY_TEMPLATE)
 
 	return tmpl.render({
-		"errata_uid": errata_uid
+		"errata_uid": errata_uid,
+		"http_protocol": http_protocol,
+		"web_host": web_host
 	})

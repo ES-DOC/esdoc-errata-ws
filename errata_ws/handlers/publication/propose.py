@@ -112,6 +112,8 @@ class ProposeErrataRequestHandler(tornado.web.RequestHandler):
 
             """
             notifications.dispatch_on_proposed(
+                self.request.protocol,
+                self.request.host,
                 self.issue_created_by,
                 self.issue_uid
             )

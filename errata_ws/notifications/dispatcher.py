@@ -6,42 +6,42 @@ from errata_ws.notifications import constants
 from errata_ws.notifications import templates
 
 
-def dispatch_on_accepted(address_of_proposer, errata_uid):
+def dispatch_on_accepted(http_protocol, web_host, address_of_proposer, errata_uid):
 	"""Dispatches an email upon acceptance of an errata by a moderator.
 	
 	:param address_of_proposer: Email address of errata proposer.
 	:param errata_uid: Unique identifier of errata being processed.
 
 	"""
-	body = templates.get_on_accepted_email_body(errata_uid)
+	body = templates.get_on_accepted_email_body(http_protocol, web_host, errata_uid)
 	subject = constants.ON_ERRATA_ACCEPTED_EMAIL_SUBJECT
 	msg = _get_message(address_of_proposer, body, subject)
 
 	_dispatch(msg)
 
 
-def dispatch_on_proposed(address_of_proposer, errata_uid):
+def dispatch_on_proposed(http_protocol, web_host, address_of_proposer, errata_uid):
 	"""Dispatches an email upon proposal of an errata by an anonymous user.
 	
 	:param address_of_proposer: Email address of errata proposer.
 	:param errata_uid: Unique identifier of errata being processed.
 
 	"""
-	body = templates.get_on_proposed_email_body(errata_uid)
+	body = templates.get_on_proposed_email_body(http_protocol, web_host, errata_uid)
 	subject = constants.ON_ERRATA_PROPOSED_EMAIL_SUBJECT
 	msg = _get_message(address_of_proposer, body, subject)
 
 	_dispatch(msg)
 
 
-def dispatch_on_rejected(address_of_proposer, errata_uid):
+def dispatch_on_rejected(http_protocol, web_host, address_of_proposer, errata_uid):
 	"""Dispatches an email upon rejection of an errata by a moderator.
 	
 	:param address_of_proposer: Email address of errata proposer.
 	:param errata_uid: Unique identifier of errata being processed.
 
 	"""
-	body = templates.get_on_rejected_email_body(errata_uid)
+	body = templates.get_on_rejected_email_body(http_protocol, web_host, errata_uid)
 	subject = constants.ON_ERRATA_REJECTED_EMAIL_SUBJECT
 	msg = _get_message(address_of_proposer, body, subject)
 
