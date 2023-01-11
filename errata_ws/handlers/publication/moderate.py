@@ -56,15 +56,15 @@ class ModerateErrataRequestHandler(tornado.web.RequestHandler):
                 notifications.dispatch_on_accepted(
                     self.request.protocol,
                     self.request.host,
-                    self.issue_created_by,
-                    self.issue_uid
+                    self.issue.created_by,
+                    self.issue.uid
                 )
             elif self.issue.moderation_status == constants.ISSUE_MODERATION_REJECTED:
                 notifications.dispatch_on_rejected(
                     self.request.protocol,
                     self.request.host,
-                    self.issue_created_by,
-                    self.issue_uid
+                    self.issue.created_by,
+                    self.issue.uid
                 )
 
     
