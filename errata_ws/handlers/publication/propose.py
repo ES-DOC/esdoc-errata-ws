@@ -24,6 +24,15 @@ class ProposeErrataRequestHandler(tornado.web.RequestHandler):
         http_security.set_headers(self, True)
 
 
+    def options(self):
+        """HTTP OPTIONS handler.
+
+        """
+        self.set_status(204)
+        self.set_default_headers()
+        self.finish()
+
+
     def post(self):
         """HTTP POST handler.
 
