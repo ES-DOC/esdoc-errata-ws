@@ -111,7 +111,13 @@ class ProposeErrataRequestHandler(tornado.web.RequestHandler):
             """Notifies proposer & moderation team.
 
             """
-            notifications.dispatch_on_proposed(
+            notifications.dispatch_on_proposed_1(
+                self.request.protocol,
+                self.request.host,
+                self.issue_created_by,
+                self.issue_uid
+            )
+            notifications.dispatch_on_proposed_2(
                 self.request.protocol,
                 self.request.host,
                 self.issue_created_by,

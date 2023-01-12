@@ -1,0 +1,19 @@
+Dear Moderators,
+
+This is an email from the ES-DOC Errata service.  
+
+1.	A new dataset errata proposal has been received and is awaiting moderation.
+
+2.  The email address of the proposer is: {{address_of_proposer}}.
+
+3.  The proposed errata can be viewed here:
+
+    {{http_protocol}}://{{web_host}}/static/view.html?uid={{errata_uid}}
+
+4.  Please endeavour to moderate the proposed errata within 14 days.
+
+Thank you for your errata moderation.  Your efforts truly help to keep the dataset archive coherent.
+
+Kind Regards,
+
+ES-DOC Errata team

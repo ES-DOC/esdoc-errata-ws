@@ -10,8 +10,11 @@ ON_ERRATA_ACCEPTED_EMAIL_BODY_TEMPLATE = "on_accepted.txt"
 # On errata accepted -> email subject.
 ON_ERRATA_ACCEPTED_EMAIL_SUBJECT = "ES-DOC :: ERRATA :: Moderation Acceptance"
 
-# On errata proposed -> email body template.
-ON_ERRATA_PROPOSED_EMAIL_BODY_TEMPLATE = "on_proposed.txt"
+# On errata proposed -> email body template 1.
+ON_ERRATA_PROPOSED_EMAIL_BODY_TEMPLATE_1 = "on_proposed_1.txt"
+
+# On errata proposed -> email body template 2.
+ON_ERRATA_PROPOSED_EMAIL_BODY_TEMPLATE_2 = "on_proposed_2.txt"
 
 # On errata proposed -> email subject.
 ON_ERRATA_PROPOSED_EMAIL_SUBJECT = "ES-DOC :: ERRATA :: Proposal Received"

@@ -32,9 +32,9 @@ def get_on_accepted_email_body(http_protocol, web_host, errata_uid):
 	})
 
 
-def get_on_proposed_email_body(http_protocol, web_host, errata_uid):
-	"""Returns email body to be sent to a moderator when an anonymous user 
-	   has submitted an errata proposal.
+def get_on_proposed_email_body_1(http_protocol, web_host, errata_uid):
+	"""Returns body of email to be sent to an anonymous user upon
+	submission of an errata proposal.
 
 	:param http_protocol: HTTP protocol of web-service serving errata content.
 	:param web_host: Host of web-service serving errata content.
@@ -42,9 +42,30 @@ def get_on_proposed_email_body(http_protocol, web_host, errata_uid):
 	:returns: Rendered content for email dispatch.
 	
 	"""
-	tmpl = _TEMPLATE_ENV.get_template(constants.ON_ERRATA_PROPOSED_EMAIL_BODY_TEMPLATE)
+	tmpl = _TEMPLATE_ENV.get_template(constants.ON_ERRATA_PROPOSED_EMAIL_BODY_TEMPLATE_1)
 
 	return tmpl.render({
+		"errata_uid": errata_uid,
+		"http_protocol": http_protocol,
+		"web_host": web_host
+	})
+
+
+def get_on_proposed_email_body_2(http_protocol, web_host, address_of_proposer, errata_uid):
+	"""Returns body of email to be sent to moderators upon submission of
+	an errata proposal by an anonymous user.
+
+	:param http_protocol: HTTP protocol of web-service serving errata content.
+	:param web_host: Host of web-service serving errata content.
+	:param errata_uid: Unique identifier of errata being processed.
+	:param address_of_proposer: Email address of errata proposer.
+	:returns: Rendered content for email dispatch.
+	
+	"""
+	tmpl = _TEMPLATE_ENV.get_template(constants.ON_ERRATA_PROPOSED_EMAIL_BODY_TEMPLATE_2)
+
+	return tmpl.render({
+		"address_of_proposer": address_of_proposer,
 		"errata_uid": errata_uid,
 		"http_protocol": http_protocol,
 		"web_host": web_host

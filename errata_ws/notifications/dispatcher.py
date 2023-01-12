@@ -9,6 +9,8 @@ from errata_ws.notifications import templates
 def dispatch_on_accepted(http_protocol, web_host, address_of_proposer, errata_uid):
 	"""Dispatches an email upon acceptance of an errata by a moderator.
 	
+	:param http_protocol: HTTP protocol of web-service serving errata content.
+	:param web_host: Host of web-service serving errata content.
 	:param address_of_proposer: Email address of errata proposer.
 	:param errata_uid: Unique identifier of errata being processed.
 
@@ -20,23 +22,43 @@ def dispatch_on_accepted(http_protocol, web_host, address_of_proposer, errata_ui
 	_dispatch(msg)
 
 
-def dispatch_on_proposed(http_protocol, web_host, address_of_proposer, errata_uid):
+def dispatch_on_proposed_1(http_protocol, web_host, address_of_proposer, errata_uid):
 	"""Dispatches an email upon proposal of an errata by an anonymous user.
 	
+	:param http_protocol: HTTP protocol of web-service serving errata content.
+	:param web_host: Host of web-service serving errata content.
 	:param address_of_proposer: Email address of errata proposer.
 	:param errata_uid: Unique identifier of errata being processed.
 
 	"""
-	body = templates.get_on_proposed_email_body(http_protocol, web_host, errata_uid)
+	body = templates.get_on_proposed_email_body_1(http_protocol, web_host, errata_uid)
 	subject = constants.ON_ERRATA_PROPOSED_EMAIL_SUBJECT
 	msg = _get_message(address_of_proposer, body, subject)
 
 	_dispatch(msg)
 
 
+def dispatch_on_proposed_2(http_protocol, web_host, address_of_proposer, errata_uid):
+	"""Dispatches an email upon proposal of an errata by an anonymous user.
+	
+	:param http_protocol: HTTP protocol of web-service serving errata content.
+	:param web_host: Host of web-service serving errata content.
+	:param address_of_proposer: Email address of errata proposer.
+	:param errata_uid: Unique identifier of errata being processed.
+
+	"""
+	body = templates.get_on_proposed_email_body_2(http_protocol, web_host, address_of_proposer, errata_uid)
+	subject = constants.ON_ERRATA_PROPOSED_EMAIL_SUBJECT
+	msg = _get_message(constants.ADDRESS_MODERATION, body, subject)
+
+	_dispatch(msg)
+	
+
 def dispatch_on_rejected(http_protocol, web_host, address_of_proposer, errata_uid):
 	"""Dispatches an email upon rejection of an errata by a moderator.
 	
+	:param http_protocol: HTTP protocol of web-service serving errata content.
+	:param web_host: Host of web-service serving errata content.
 	:param address_of_proposer: Email address of errata proposer.
 	:param errata_uid: Unique identifier of errata being processed.
 
