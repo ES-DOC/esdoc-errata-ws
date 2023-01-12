@@ -2,7 +2,7 @@ Dear Moderators,
 
 This is an email from the ES-DOC Errata service.  
 
-1.	A new dataset errata proposal has been received and is awaiting moderation.
+1.  A new dataset errata proposal has been received and is awaiting moderation.
 
 2.  The email address of the proposer is: {{address_of_proposer}}.
 
