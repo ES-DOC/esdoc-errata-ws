@@ -1,15 +1,3 @@
-# -*- coding: utf-8 -*-
-
-"""
-.. module:: test_publishing_negative.py
-
-   :license: GPL / CeCILL
-   :platform: Unix, Windows
-   :synopsis: Executes web-service publishing endpoint tests (negative).
-
-.. moduleauthor:: Earth System Documentation (ES-DOC) <dev@es-doc.org>
-
-"""
 import json
 import urllib
 import uuid
@@ -18,8 +6,8 @@ import requests
 
 import pyessv
 from pyessv._utils.compat import basestring
-from errata.utils import factory
-from errata.utils.constants import *
+from errata_ws.utils import factory
+from errata_ws.utils.constants import *
 from tests import utils as tu
 
 
@@ -169,7 +157,7 @@ def _callback_08(issue, field):
 
 def _callback_09(issue, _):
     """Set status field to an invalid value."""
-    issue['status'] = STATUS_NEW
+    issue['status'] = ISSUE_STATUS_NEW
 
 
 def _assert_bad_ws_response(response):

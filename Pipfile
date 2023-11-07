@@ -23,6 +23,7 @@ pyessv = "*"
 github3-py = "*"
 b2handle = "*"
 backports-abc = "*"
+jinja2 = "*"
 
 [requires]
 python_version = "2.7.18"

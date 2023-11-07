@@ -1,15 +1,3 @@
-# -*- coding: utf-8 -*-
-
-"""
-.. module:: test_publishing.py
-
-   :license: GPL / CeCILL
-   :platform: Unix, Windows
-   :synopsis: Executes web-service publishing endpoint tests.
-
-.. moduleauthor:: Earth System Documentation (ES-DOC) <dev@es-doc.org>
-
-"""
 import datetime as dt
 import json
 import os
@@ -18,8 +6,8 @@ import urllib
 
 import requests
 
-from errata.utils import constants
-from errata.utils import factory
+from errata_ws.utils import constants
+from errata_ws.utils import factory
 from tests import utils as tu
 
 
@@ -31,7 +19,7 @@ _ISSUE = factory.create_issue_dict()
 _URL_CLOSE = '{}/1/issue/close?'.format(tu.BASE_URL)
 _URL_CLOSE += urllib.urlencode({
     'uid': _ISSUE['uid'],
-    'status': constants.STATUS_RESOLVED
+    'status': constants.ISSUE_STATUS_RESOLVED
     })
 
 # Test endpoint: create issue.
@@ -93,7 +81,7 @@ def test_update():
 
     """
     # Update test issue.
-    _ISSUE['status'] = constants.STATUS_RESOLVED
+    _ISSUE['status'] = constants.ISSUE_STATUS_RESOLVED
     _ISSUE['datasets'] = factory.get_datasets(_ISSUE['project'], random.sample(_ISSUE['datasets'], 2))
 
     # Invoke WS endpoint.
@@ -156,7 +144,7 @@ def test_close_retrieve():
     issue = content['issue']
 
     # Assert core info.
-    assert issue['status'] == constants.STATUS_RESOLVED
+    assert issue['status'] == constants.ISSUE_STATUS_RESOLVED
 
     # Assert tracking info.
     assert issue['closedDate'] is not None

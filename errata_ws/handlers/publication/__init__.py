@@ -1,0 +1,7 @@
+from errata_ws.handlers.publication.close import CloseErrataRequestHandler
+from errata_ws.handlers.publication.create import CreateErrataRequestHandler
+from errata_ws.handlers.publication.moderate import ModerateErrataRequestHandler
+from errata_ws.handlers.publication.propose import ProposeErrataRequestHandler
+from errata_ws.handlers.publication.retrieve import RetrieveErrataRequestHandler
+from errata_ws.handlers.publication.retrieve_all import RetrieveAllErrataRequestHandler
+from errata_ws.handlers.publication.update import UpdateErrataRequestHandler

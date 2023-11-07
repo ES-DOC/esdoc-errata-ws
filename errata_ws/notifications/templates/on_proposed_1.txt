@@ -1,0 +1,21 @@
+To Whom It May Concern,
+
+This is an email from the ES-DOC Errata service.  Thank you for submitting a new dataset errata proposal.
+
+1.  Your proposed errata can be viewed here:
+
+    {{http_protocol}}://{{web_host}}/static/view.html?uid={{errata_uid}}
+
+2.  A notification has been sent to the ES-DOC errata moderation team.  
+
+3.  You will be notified via email of the moderation outcome (accept or reject).
+
+4.  If accepted, the errata will appear in the ES-DOC Errata Search portal.
+
+5.  If rejected, the errata will be removed form the system, however you can re-propose if you disagree with the moderation outcome.
+
+Thank you for your errata submission.  Your efforts truly help to keep the dataset archive coherent.
+
+Kind Regards,
+
+ES-DOC Errata team

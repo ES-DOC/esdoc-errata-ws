@@ -1,15 +1,3 @@
-# -*- coding: utf-8 -*-
-
-"""
-.. module:: test_ops.py
-
-   :license: GPL / CeCILL
-   :platform: Unix, Windows
-   :synopsis: Executes web-service operations (ops) endpoint tests.
-
-.. moduleauthor:: Earth System Documentation (ES-DOC) <dev@es-doc.org>
-
-"""
 import collections
 import json
 import os
@@ -19,7 +7,7 @@ import uuid
 import pyessv
 import requests
 
-from errata.utils import factory
+from errata_ws.utils import factory
 from tests import utils as tu
 
 

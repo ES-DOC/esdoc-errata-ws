@@ -1,24 +1,12 @@
-# -*- coding: utf-8 -*-
-
-"""
-.. module:: run_db_insert_test_issues.py
-   :license: GPL/CeCIL
-   :platform: Unix, Windows
-   :synopsis: Inserts test issues into the errata db.
-
-.. moduleauthor:: Atef Bennasser <abenasser@ipsl.jussieu.fr>
-
-
-"""
 import argparse
 import json
 import os
 
 import requests
 
-from errata import db
-from errata.utils import logger
-from errata.utils import factory
+from errata_ws import db
+from errata_ws.utils import logger
+from errata_ws.utils import factory
 
 
 # Define command line arguments.

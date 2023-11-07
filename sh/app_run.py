@@ -1,16 +1,5 @@
-# -*- coding: utf-8 -*-
-
-"""
-.. module:: app_run.py
-   :license: GPL/CeCIL
-   :platform: Unix, Windows
-   :synopsis: Runs the web-service.
-
-.. moduleauthor:: Mark A. Greenslade
-
-"""
 import sys
-import errata as APP
+import errata_ws as APP
 
 
 

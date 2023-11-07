@@ -1,18 +1,6 @@
-# -*- coding: utf-8 -*-
-
-"""
-.. module:: http_security.py
-   :license: GPL/CeCIL
-   :platform: Unix, Windows
-   :synopsis: Asserts user access control.
-
-.. moduleauthor:: Mark A. Conway-Greenslade
-
-
-"""
 import argparse
 
-from errata.utils import security
+from errata_ws.utils import security
 
 
 

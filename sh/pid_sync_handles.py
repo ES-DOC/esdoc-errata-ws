@@ -1,15 +1,3 @@
-# -*- coding: utf-8 -*-
-
-"""
-.. module:: pid_sync_handles.py
-   :license: GPL/CeCIL
-   :platform: Unix, Windows
-   :synopsis: Synchornizes PID handles with remote PID service.
-
-.. moduleauthor:: Atef Bennasser <abenasser@ipsl.jussieu.fr>
-
-
-"""
 import logging
 import random
 import time
@@ -17,13 +5,13 @@ import time
 import schedule
 
 from b2handle.handleclient import EUDATHandleClient
-from errata import db
-from errata.handle_service import exceptions
-from errata.handle_service.utils import resolve_input
-from errata.utils import config
-from errata.utils import constants
-from errata.utils import logger
-from errata.utils import pid_connector as pid
+from errata_ws import db
+from errata_ws.handle_service import exceptions
+from errata_ws.handle_service.utils import resolve_input
+from errata_ws.utils import config
+from errata_ws.utils import constants
+from errata_ws.utils import logger
+from errata_ws.utils import pid_connector as pid
 
 
 

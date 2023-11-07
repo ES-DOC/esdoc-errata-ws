@@ -1,0 +1,4 @@
+from errata_ws.notifications.templates.renderer import get_on_accepted_email_body
+from errata_ws.notifications.templates.renderer import get_on_proposed_email_body_1
+from errata_ws.notifications.templates.renderer import get_on_proposed_email_body_2
+from errata_ws.notifications.templates.renderer import get_on_rejected_email_body
