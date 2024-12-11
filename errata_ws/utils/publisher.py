@@ -50,7 +50,7 @@ def get_entities_on_errata_propose(obj, user_email):
     # Issue - core fields.
     issue = Issue()
     issue.description = obj[JF_DESCRIPTION].strip()
-    issue.moderation_status = ISSUE_MODERATION_IN_REVIEW
+    issue.moderation_status = ISSUE_MODERATION_IN_REVIEW.decode('utf-8')
     issue.project = obj[JF_PROJECT].lower()
     issue.institute = get_institute(obj)
     issue.severity = obj[JF_SEVERITY].lower()

@@ -14,7 +14,7 @@ from errata_ws.utils.validation import validate_url
 
 
 class ProposeErrataRequestHandler(tornado.web.RequestHandler):
-    """Prpose errata handler.
+    """Propose errata handler.
 
     """
     def set_default_headers(self):
