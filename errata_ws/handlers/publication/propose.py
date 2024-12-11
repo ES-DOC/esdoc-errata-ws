@@ -43,7 +43,7 @@ class ProposeErrataRequestHandler(tornado.web.RequestHandler):
             """
             # Exception if no usable dataset identifiers.
             dsets_sanitized = [
-                dset.strip().encode('ascii', 'ignore').decode('ascii')
+                dset.encode('ascii', 'ignore').decode('ascii')
                 for dset in self.request.data[constants.JF_DATASETS]
                 ]
             if dsets_sanitized is None or len(dsets_sanitized) == 0:
