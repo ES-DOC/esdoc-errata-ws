@@ -1,6 +1,6 @@
 Dear Moderators,
 
-This is an email from the ES-DOC Errata service.  
+This is an email from the Errata service.
 
 1.  A new dataset errata proposal has been received and is awaiting moderation.
 
@@ -16,4 +16,4 @@ Thank you for your errata moderation.  Your efforts truly help to keep the datas
 
 Kind Regards,
 
-ES-DOC Errata team
+The Errata team

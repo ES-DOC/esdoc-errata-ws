@@ -78,10 +78,10 @@ def _dispatch(msg):
 	smtp = smtplib.SMTP(constants.SMTP_HOST, constants.SMTP_PORT_TLS)
 
 	# Secure contents with TLS encryption.
-	smtp.starttls()
+	# smtp.starttls()
 
 	# Authenticate.
-	smtp.login(constants.SMTP_CREDENTIALS[0], constants.SMTP_CREDENTIALS[1])
+	# smtp.login(constants.SMTP_CREDENTIALS[0], constants.SMTP_CREDENTIALS[1])
 
 	# Dispatch.
 	smtp.sendmail(constants.ADDRESS_MODERATION, msg["To"], msg.as_string())

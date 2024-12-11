@@ -1,6 +1,6 @@
 To Whom It May Concern,
 
-This is an email from the ES-DOC Errata service.  Thank you for submitting a new dataset errata proposal.
+This is an email from the Errata service.  Thank you for submitting a new dataset errata proposal.
 
 1.  Your proposed errata can be viewed here:
 
@@ -18,4 +18,4 @@ Thank you for your errata submission.  Your efforts truly help to keep the datas
 
 Kind Regards,
 
-ES-DOC Errata team
+The Errata team
